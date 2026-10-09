@@ -8,7 +8,7 @@ import { extractUploadedFile } from '../../examples/site/upload.js';
 import { redactBlock } from '../../examples/site/redaction.js';
 import { routeForOcr } from '../../examples/site/ocr.js';
 
-const docFixture = new URL('../../../../corpus/doc/doc-legacy.doc', import.meta.url);
+const docFixture = new URL('./fixtures/legacy.doc', import.meta.url);
 
 describe('documentation examples', () => {
   it('runs the RAG ingestion recipe through the built-in DOC reader', async () => {
