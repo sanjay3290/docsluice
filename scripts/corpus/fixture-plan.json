@@ -58,5 +58,16 @@
     "source": "src/deck-slide-order.fodp",
     "formats": ["pptx", "odp", "pdf"],
     "requirements": ["PPT-1"]
+  },
+  {
+    "source": "src/scanned-image-only.fodt",
+    "formats": ["pdf"],
+    "requirements": ["PDF-4"]
+  },
+  {
+    "source": "src/encrypted-document.fodt",
+    "formats": ["pdf"],
+    "requirements": ["PDF-5"],
+    "pdfPassword": "docsluice-fixture-only"
   }
 ]
