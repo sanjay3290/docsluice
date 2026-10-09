@@ -20,6 +20,8 @@ const INVALID_FORMULA_ATTRIBUTE = '\u0000';
 export interface ParsedCell extends Cell {
   row: number;
   column: number;
+  /** Source OOXML type used internally for automatic header inference. */
+  valueType?: 'date' | 'error';
 }
 
 export interface ParsedTable {
@@ -584,7 +586,13 @@ function makeCell(
   if (pending.textExceeded || pending.valueExceeded) return undefined;
   if (pending.hasFormula && !pending.valuePresent) {
     if (!pending.address || pending.column === 0) return undefined;
-    return { row: pending.row, column: pending.column, text: '', raw: '', address: pending.address };
+    return {
+      row: pending.row,
+      column: pending.column,
+      text: '',
+      raw: '',
+      address: pending.address,
+    };
   }
   const value = pending.type === 's' ? pending.value : pending.valueParts.join('');
   let text: string;
@@ -638,7 +646,20 @@ function makeCell(
       text = formatNumber(text, formatCode, date1904, budget);
     }
   }
-  return { row: pending.row, column: pending.column, text, raw, address: pending.address };
+  const valueType =
+    raw !== null && raw !== '' && pending.type === 'd'
+      ? 'date'
+      : raw !== null && raw !== '' && pending.type === 'e'
+        ? 'error'
+        : undefined;
+  return {
+    row: pending.row,
+    column: pending.column,
+    text,
+    raw,
+    address: pending.address,
+    ...(valueType ? { valueType } : {}),
+  };
 }
 
 function parseStyleIndex(

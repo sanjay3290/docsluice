@@ -2,7 +2,13 @@ import type { Budget } from '../../core/budget.js';
 import type { Location, Cell } from '../../core/model.js';
 import { LimitExceededError } from '../../core/errors.js';
 import { parseA1RangeReference } from './features.js';
-import type { XlsxDefinedName, XlsxRange, XlsxSheetFeatures, XlsxTableFeature } from './features.js';
+import type {
+  XlsxDefinedName,
+  XlsxHeaderCell,
+  XlsxRange,
+  XlsxSheetFeatures,
+  XlsxTableFeature,
+} from './features.js';
 import { applyHiddenCellFlags, inferHeaderRows } from './features.js';
 import { parseCellAddress, formatRange } from './addresses.js';
 import type { ParsedCell, ParsedSheetCells, ParsedTable } from './cells.js';
@@ -62,7 +68,7 @@ export function integrateXlsxSheetFeatures(
       prepared.caption = match.displayName;
       prepared.headerRows = match.headerRowCount;
     } else {
-      prepared.headerRows = inferHeaderRows(table.rows, headerRowOption, budget);
+      prepared.headerRows = inferTableHeaderRows(table.rows, parsed.cells, headerRowOption, budget, staging);
     }
     applyHiddenTableFlags(prepared, features, budget);
     if (range) {
@@ -134,7 +140,7 @@ export function integrateXlsxSheetFeatures(
         if (existing.caption === undefined) existing.caption = definedName.name;
         continue;
       }
-      const headerRows = inferHeaderRows(block.rows, headerRowOption, budget);
+      const headerRows = inferTableHeaderRows(block.rows, parsed.cells, headerRowOption, budget, staging);
       if (!appendPreparedTable(parsed, block, definedName.name, headerRows, budget, staging)) {
         appendLimitReached = true;
         break;
@@ -216,6 +222,34 @@ function appendPreparedTable(
   (table as PreparedXlsxTable).headerRows = headerRows;
   parsed.tables.push(table);
   return true;
+}
+
+function inferTableHeaderRows(
+  rows: readonly (readonly Cell[])[],
+  sourceCells: Map<number, Map<number, ParsedCell>>,
+  option: 'auto' | boolean,
+  budget: Budget,
+  staging: XlsxTextStaging,
+): number {
+  const typedRows: XlsxHeaderCell[][] = [];
+  for (const row of rows) {
+    budget.tick();
+    staging.reserveObjects();
+    const typedRow: XlsxHeaderCell[] = [];
+    for (const cell of row) {
+      budget.tick();
+      staging.reserveObjects();
+      const address = cell.address ? parseCellAddress(cell.address, budget) : undefined;
+      const source = address ? sourceCells.get(address.row)?.get(address.column) : undefined;
+      typedRow.push({
+        text: cell.text,
+        raw: cell.raw,
+        ...(source?.valueType !== undefined ? { valueType: source.valueType } : {}),
+      });
+    }
+    typedRows.push(typedRow);
+  }
+  return inferHeaderRows(typedRows, option, budget);
 }
 
 function applyHiddenTableFlags(

@@ -5,6 +5,9 @@ import { readProperties } from '../../ooxml/props.js';
 import { scanFeatures } from '../../ooxml/features.js';
 import { openZip } from '../../zip/index.js';
 import type { XmlContext } from '../../xml/index.js';
+import { parseWorkbookDefinedNames, parseXlsxSheetFeatureBytes, readXlsxPeople } from './features.js';
+import type { PreparedXlsxNote, PreparedXlsxTable } from './feature-integration.js';
+import { integrateXlsxSheetFeatures } from './feature-integration.js';
 import { parseWorksheetCells } from './cells.js';
 import { parseStyles, parseStylesXml } from './styles.js';
 import type { ParsedSheetCells } from './cells.js';
@@ -12,7 +15,11 @@ import { readSharedStrings, XlsxTextStaging } from './strings.js';
 import { resolveWorkbookParts } from './sheets.js';
 import type { WorkbookSheet } from './sheets.js';
 
-export interface ParsedXlsxSheet extends WorkbookSheet, ParsedSheetCells {}
+export type ParsedXlsxSheet = WorkbookSheet &
+  Omit<ParsedSheetCells, 'tables'> & {
+    notes: PreparedXlsxNote[];
+    tables: PreparedXlsxTable[];
+  };
 
 /** Internal parse result, including sheet state for emitted section metadata. */
 export interface ParsedXlsxWorkbook {
@@ -41,6 +48,14 @@ export async function parseXlsx(ctx: ReadContext): Promise<ParsedXlsxWorkbook> {
   const staging = new XlsxTextStaging(ctx.budget);
   const resolved = await resolveWorkbookParts(parts, xmlContext, staging);
   if (!resolved) return { workbookPart: '', sheets: [] };
+
+  const definedNames = parseWorkbookDefinedNames(
+    resolved.workbookBytes,
+    resolved.sheetDescriptors,
+    xmlContext,
+    staging,
+  );
+  const people = await readXlsxPeople(parts, resolved.workbook, xmlContext, staging, ctx.options.metadata);
 
   const features = await scanFeatures(parts, archive, xmlContext);
   for (const [name, enabled] of Object.entries(features)) {
@@ -95,7 +110,26 @@ export async function parseXlsx(ctx: ReadContext): Promise<ParsedXlsxWorkbook> {
       resolved.date1904,
       ctx.options.formulas,
     );
-    sheets.push({ ...sheet, ...parsed });
+    const sheetFeatures = await parseXlsxSheetFeatureBytes(
+      bytes,
+      sheet,
+      parts,
+      people,
+      xmlContext,
+      staging,
+      ctx.options.metadata,
+    );
+    const integration = integrateXlsxSheetFeatures(
+      parsed,
+      sheet,
+      sheetFeatures,
+      definedNames,
+      ctx.budget,
+      staging,
+      'auto',
+      ctx.options.metadata,
+    );
+    sheets.push({ ...sheet, ...parsed, tables: integration.tables, notes: integration.notes });
   }
   return { workbookPart: resolved.workbook, sheets };
 }
@@ -123,9 +157,18 @@ function emitWorkbook(parsed: ParsedXlsxWorkbook, ctx: ReadContext): void {
         for (const table of sheet.tables) {
           ctx.budget.tick();
           const tableLoc: Location = { ...loc, range: table.range };
-          if (!ctx.out.table(table.rows, 0, tableLoc)) {
+          if (!ctx.out.table(table.rows, table.headerRows, tableLoc, table.caption)) {
             stopped = true;
             break;
+          }
+        }
+        if (!stopped) {
+          for (const note of sheet.notes) {
+            ctx.budget.tick();
+            if (!ctx.out.note('comment', note.text, note.loc, note.author)) {
+              stopped = true;
+              break;
+            }
           }
         }
       }

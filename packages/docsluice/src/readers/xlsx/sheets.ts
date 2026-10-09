@@ -23,6 +23,10 @@ export interface WorkbookSheet {
 
 export interface WorkbookParts {
   workbook: string;
+  workbookBytes: Uint8Array;
+  /** Source-order sheet descriptors retain localSheetId positions, including unresolved parts. */
+  sheetDescriptors: WorkbookSheet[];
+  /** Only sheets with valid worksheet relationships are parsed and emitted. */
   sheets: WorkbookSheet[];
   date1904: boolean;
   sharedStrings?: string;
@@ -48,6 +52,7 @@ export async function resolveWorkbookParts(
   }
   const relationships = await readRelationships(parts, office.part, ctx);
   const sheets: WorkbookSheet[] = [];
+  const sheetDescriptors: WorkbookSheet[] = [];
   let sheetNameChars = 0;
   let warnedSheetIssue = false;
   let validRoot = false;
@@ -155,28 +160,35 @@ export async function resolveWorkbookParts(
           const relationship = currentSheet.relationshipId
             ? relationships.get(currentSheet.relationshipId)
             : undefined;
-          if (
-            !currentSheet.name ||
-            !relationship ||
-            relationship.external ||
-            !relationship.part ||
-            relationship.type !== WORKSHEET_REL
-          ) {
+          const resolved = Boolean(
+            currentSheet.name &&
+            relationship &&
+            !relationship.external &&
+            relationship.part &&
+            relationship.type === WORKSHEET_REL,
+          );
+          if (!resolved) {
             if (!warnedSheetIssue) {
               warnedSheetIssue = true;
               warn(ctx, 'A workbook sheet could not be resolved.');
             }
-          } else if (
-            sheets.length >= MAX_WORKBOOK_SHEETS ||
-            currentSheet.name.length > MAX_WORKBOOK_SHEET_NAME_CHARS - sheetNameChars
-          ) {
+          }
+          if (sheetDescriptors.length >= MAX_WORKBOOK_SHEETS) {
             if (!warnedSheetIssue) {
               warnedSheetIssue = true;
               warn(ctx, 'The workbook sheet list exceeded the bounded reader capacity.');
             }
           } else {
             staging.reserveObjects();
-            sheetNameChars += currentSheet.name.length;
+            const nameTooLong =
+              currentSheet.name !== undefined &&
+              currentSheet.name.length > MAX_WORKBOOK_SHEET_NAME_CHARS - sheetNameChars;
+            if (nameTooLong && !warnedSheetIssue) {
+              warnedSheetIssue = true;
+              warn(ctx, 'The workbook sheet list exceeded the bounded reader capacity.');
+            }
+            const name = nameTooLong ? '' : (currentSheet.name ?? '');
+            if (!nameTooLong) sheetNameChars += name.length;
             if (
               currentSheet.sourceState !== undefined &&
               currentSheet.sourceState !== 'visible' &&
@@ -187,13 +199,19 @@ export async function resolveWorkbookParts(
               warnedSheetIssue = true;
               warn(ctx, 'A workbook sheet state could not be read.');
             }
-            const state =
+            const state: WorkbookSheet['state'] =
               currentSheet.sourceState === 'veryHidden'
                 ? 'very'
                 : currentSheet.sourceState === 'hidden'
                   ? 'hidden'
                   : 'visible';
-            sheets.push({ name: currentSheet.name, state, part: relationship.part });
+            const descriptor = {
+              name,
+              state,
+              part: resolved && !nameTooLong ? relationship!.part! : '',
+            };
+            sheetDescriptors.push(descriptor);
+            if (resolved && !nameTooLong) sheets.push(descriptor);
           }
           currentSheet = undefined;
         }
@@ -212,6 +230,8 @@ export async function resolveWorkbookParts(
   const styles = findRelationship(relationships, STYLES_REL, ctx)?.part;
   return {
     workbook: office.part,
+    workbookBytes,
+    sheetDescriptors,
     sheets,
     date1904,
     ...(sharedStrings ? { sharedStrings } : {}),

@@ -23,13 +23,14 @@ function createContext(
   limits: Partial<typeof DEFAULT_LIMITS> = {},
   formulas = false,
   budgetOptions: { onLimit?: 'truncate' | 'throw'; strict?: boolean; signal?: AbortSignal } = {},
+  metadata = true,
 ) {
   const warnings = new WarningSink({ strict: budgetOptions.strict });
   const budget = new Budget(
     { ...DEFAULT_LIMITS, ...limits },
     { warnings, onLimit: budgetOptions.onLimit, signal: budgetOptions.signal },
   );
-  const options = { metadata: true, formulas } as ResolvedOptions;
+  const options = { metadata, formulas } as ResolvedOptions;
   const out = new DocBuilder(
     'xlsx',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -91,7 +92,341 @@ function largeWorkbook(rowCount: number): Uint8Array {
   ]);
 }
 
+function localNameWorkbook(): Uint8Array {
+  const xml = new TextEncoder();
+  return makeZip([
+    {
+      name: '_rels/.rels',
+      data: xml.encode(
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="office" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+      ),
+    },
+    {
+      name: 'xl/workbook.xml',
+      data: xml.encode(
+        '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Unavailable" sheetId="1" r:id="missing"/><sheet name="Actual" sheetId="2" r:id="sheet"/></sheets><definedNames><definedName name="LocalRange" localSheetId="1">$A$1:$B$1</definedName></definedNames></workbook>',
+      ),
+    },
+    {
+      name: 'xl/_rels/workbook.xml.rels',
+      data: xml.encode(
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="sheet" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>',
+      ),
+    },
+    {
+      name: 'xl/worksheets/sheet1.xml',
+      data: xml.encode(
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>Local</t></is></c><c r="B1" t="inlineStr"><is><t>Range</t></is></c></row></sheetData></worksheet>',
+      ),
+    },
+  ]);
+}
+
+function workbookWithSheetState(state: string, workbookProperties = ''): Uint8Array {
+  const xml = new TextEncoder();
+  return makeZip([
+    {
+      name: '_rels/.rels',
+      data: xml.encode(
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="office" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+      ),
+    },
+    {
+      name: 'xl/workbook.xml',
+      data: xml.encode(
+        `<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">${workbookProperties}<sheets><sheet name="State" state="${state}" r:id="sheet"/></sheets></workbook>`,
+      ),
+    },
+    {
+      name: 'xl/_rels/workbook.xml.rels',
+      data: xml.encode(
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="sheet" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>',
+      ),
+    },
+    {
+      name: 'xl/worksheets/sheet1.xml',
+      data: xml.encode(
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>value</t></is></c></row></sheetData></worksheet>',
+      ),
+    },
+    { name: 'xl/vbaProject.bin', data: new Uint8Array([0]) },
+  ]);
+}
+
+function invalidWorkbookRoot(): Uint8Array {
+  const xml = new TextEncoder();
+  return makeZip([
+    {
+      name: '_rels/.rels',
+      data: xml.encode(
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="office" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+      ),
+    },
+    { name: 'xl/workbook.xml', data: xml.encode('<notWorkbook/>') },
+  ]);
+}
+
+function typedHeaderWorkbook(firstCell: string, blankFormattedNumber = false): Uint8Array {
+  const xml = new TextEncoder();
+  return makeZip([
+    {
+      name: '_rels/.rels',
+      data: xml.encode(
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="office" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+      ),
+    },
+    {
+      name: 'xl/workbook.xml',
+      data: xml.encode(
+        '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Typed" r:id="sheet"/></sheets></workbook>',
+      ),
+    },
+    {
+      name: 'xl/_rels/workbook.xml.rels',
+      data: xml.encode(
+        `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="sheet" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>${blankFormattedNumber ? '<Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' : ''}</Relationships>`,
+      ),
+    },
+    {
+      name: 'xl/worksheets/sheet1.xml',
+      data: xml.encode(
+        `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1">${firstCell}</row><row r="2"><c r="A2" t="n"${blankFormattedNumber ? ' s="1"' : ''}><v>42</v></c></row></sheetData></worksheet>`,
+      ),
+    },
+    ...(blankFormattedNumber
+      ? [
+          {
+            name: 'xl/styles.xml',
+            data: xml.encode(
+              '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="&quot;&quot;"/></numFmts><cellXfs count="2"><xf numFmtId="0"/><xf numFmtId="164"/></cellXfs></styleSheet>',
+            ),
+          },
+        ]
+      : []),
+  ]);
+}
+
+function oversizedSheetNameWorkbook(): Uint8Array {
+  const xml = new TextEncoder();
+  const workbook = xml.encode(
+    `<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${'x'.repeat(20_000_001)}" r:id="large"/><sheet name="Actual" r:id="actual"/></sheets><definedNames><definedName name="LocalRange" localSheetId="1">$A$1</definedName></definedNames></workbook>`,
+  );
+  return makeZip([
+    {
+      name: '_rels/.rels',
+      data: xml.encode(
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="office" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+      ),
+    },
+    { name: 'xl/workbook.xml', data: workbook },
+    {
+      name: 'xl/_rels/workbook.xml.rels',
+      data: xml.encode(
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="large" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/large.xml"/><Relationship Id="actual" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/actual.xml"/></Relationships>',
+      ),
+    },
+    {
+      name: 'xl/worksheets/actual.xml',
+      data: xml.encode(
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>value</t></is></c></row></sheetData></worksheet>',
+      ),
+    },
+  ]);
+}
+
 describe('xlsx sparse sheets and strings', () => {
+  it('wires worksheet tables, headers, hidden cells, comments, and names into the document', async () => {
+    const { ctx, out, warnings } = createContext(
+      fixture('headers_comments_hidden_tables_defined_names.xlsx'),
+    );
+    await xlsxReader.read(ctx);
+    const document = out.finish();
+    const section = document.blocks.find((block) => block.kind === 'section' && block.role === 'sheet');
+    expect(section?.kind).toBe('section');
+    if (section?.kind !== 'section') throw new Error('Expected worksheet section.');
+    const table = section.blocks.find((block) => block.kind === 'table');
+    expect(table?.kind).toBe('table');
+    if (table?.kind !== 'table') throw new Error('Expected worksheet table.');
+    expect(table.caption).toBe('FeatureTable');
+    expect(table.headerRows).toBe(1);
+    expect(table.loc.range).toBe('A1:B3');
+    expect(table.rows[2]?.map((cell) => cell.hidden)).toEqual([true, true]);
+    const tables = section.blocks.filter((block) => block.kind === 'table');
+    expect(tables).toHaveLength(2);
+    expect(tables.map((block) => (block.kind === 'table' ? [block.caption, block.loc.range] : []))).toEqual([
+      ['FeatureTable', 'A1:B3'],
+      ['FeatureRange', 'A1:B2'],
+    ]);
+    expect(section.blocks.find((block) => block.kind === 'note')).toMatchObject({
+      kind: 'note',
+      role: 'comment',
+      text: 'Self-authored note text.',
+      author: 'Fixture Author',
+      loc: { sheet: 'Features', range: 'A2', path: 'xl/comments1.xml' },
+    });
+    expect(warnings.warnings).toEqual([]);
+  });
+
+  it('resolves local defined names by workbook ordinal when an earlier sheet is unavailable', async () => {
+    const { ctx, out, warnings } = createContext(localNameWorkbook());
+    await xlsxReader.read(ctx);
+    const document = out.finish();
+    const section = document.blocks.find((block) => block.kind === 'section' && block.role === 'sheet');
+    expect(section?.kind).toBe('section');
+    if (section?.kind !== 'section') throw new Error('Expected worksheet section.');
+    const table = section.blocks.find((block) => block.kind === 'table');
+    expect(table?.kind).toBe('table');
+    if (table?.kind !== 'table') throw new Error('Expected worksheet table.');
+    expect(table.caption).toBe('LocalRange');
+    expect(table.loc).toMatchObject({ sheet: 'Actual', range: 'A1:B1' });
+    expect(
+      warnings.warnings.filter(({ message }) => message.includes('sheet could not be resolved')),
+    ).toHaveLength(1);
+    expect(warnings.warnings.some(({ message }) => message.includes('defined-name'))).toBe(false);
+  });
+
+  it('keeps later sheet ordinals when an earlier source name exceeds the source cap', async () => {
+    const { ctx, out, warnings } = createContext(oversizedSheetNameWorkbook());
+    await xlsxReader.read(ctx);
+    const document = out.finish();
+    const sections = document.blocks.filter((block) => block.kind === 'section' && block.role === 'sheet');
+    expect(sections.map((block) => (block.kind === 'section' ? block.title : undefined))).toEqual(['Actual']);
+    const section = sections[0];
+    expect(section?.kind).toBe('section');
+    if (section?.kind !== 'section') throw new Error('Expected retained worksheet section.');
+    expect(section.blocks.find((block) => block.kind === 'table')).toMatchObject({
+      kind: 'table',
+      caption: 'LocalRange',
+      loc: { sheet: 'Actual', range: 'A1' },
+    });
+    expect(warnings.warnings.some(({ message }) => message.includes('bounded reader capacity'))).toBe(true);
+    expect(warnings.warnings.some(({ message }) => message.includes('defined-name'))).toBe(false);
+  }, 15_000);
+
+  it('warns for an unknown source sheet state while retaining that worksheet', async () => {
+    const { ctx, out, warnings } = createContext(workbookWithSheetState('notAState'));
+    await xlsxReader.read(ctx);
+    const document = out.finish();
+    expect(document.blocks.some((block) => block.kind === 'section' && block.title === 'State')).toBe(true);
+    expect(warnings.warnings.some(({ message }) => message.includes('sheet state could not be read'))).toBe(
+      true,
+    );
+    expect(document.features.hasMacros).toBe(true);
+    expect(warnings.warnings.some(({ code }) => code === 'MACROS_PRESENT')).toBe(true);
+  });
+
+  it('warns once when workbook date-system properties are duplicated or malformed', async () => {
+    const duplicate = createContext(
+      workbookWithSheetState('visible', '<workbookPr date1904="true"/><workbookPr date1904="false"/>'),
+    );
+    await xlsxReader.read(duplicate.ctx);
+    expect(
+      duplicate.warnings.warnings.filter(({ message }) => message.includes('date-system properties')),
+    ).toHaveLength(1);
+
+    const malformed = createContext(workbookWithSheetState('visible', '<workbookPr date1904="maybe"/>'));
+    await xlsxReader.read(malformed.ctx);
+    expect(
+      malformed.warnings.warnings.filter(({ message }) => message.includes('date-system properties')),
+    ).toHaveLength(1);
+  });
+
+  it('recovers when the package points to an invalid workbook XML root', async () => {
+    const { ctx, out, warnings } = createContext(invalidWorkbookRoot());
+    await xlsxReader.read(ctx);
+    expect(out.finish().blocks).toEqual([]);
+    expect(warnings.warnings.some(({ message }) => message.includes('workbook part could not be read'))).toBe(
+      true,
+    );
+  });
+
+  it('closes the sheet section and stops when the builder rejects a table', async () => {
+    const context = createContext(fixture('headers_comments_hidden_tables_defined_names.xlsx'));
+    (context.out as unknown as { table: () => boolean }).table = () => false;
+    await xlsxReader.read(context.ctx);
+    const section = context.out.finish().blocks.find((block) => block.kind === 'section');
+    expect(section?.kind).toBe('section');
+    if (section?.kind !== 'section') throw new Error('Expected balanced worksheet section.');
+    expect(section.blocks).toEqual([]);
+  });
+
+  it('closes the sheet section and stops when the builder rejects a note', async () => {
+    const context = createContext(fixture('headers_comments_hidden_tables_defined_names.xlsx'));
+    (context.out as unknown as { note: () => boolean }).note = () => false;
+    await xlsxReader.read(context.ctx);
+    const section = context.out.finish().blocks.find((block) => block.kind === 'section');
+    expect(section?.kind).toBe('section');
+    if (section?.kind !== 'section') throw new Error('Expected balanced worksheet section.');
+    expect(section.blocks.filter((block) => block.kind === 'table')).toHaveLength(2);
+    expect(section.blocks.some((block) => block.kind === 'note')).toBe(false);
+  });
+
+  it('reports rows and cells skipped by the shared cell quota', async () => {
+    const { ctx, out, warnings } = createContext(
+      fixture('headers_comments_hidden_tables_defined_names.xlsx'),
+      { cells: 1 },
+    );
+    await xlsxReader.read(ctx);
+    const document = out.finish();
+    expect(document.stats.truncated).toBe(true);
+    expect(
+      warnings.warnings.some(({ code, message }) => code === 'TRUNCATED' && message.includes('skipped')),
+    ).toBe(true);
+  });
+
+  it.each([
+    ['an error cell', '<c r="A1" t="e"><v>#DIV/0!</v></c>', 0],
+    ['a date cell', '<c r="A1" t="d"><v>2025-10-09</v></c>', 0],
+    ['literal error-looking text', '<c r="A1" t="inlineStr"><is><t>#DIV/0!</t></is></c>', 1],
+  ])('uses source value types for automatic headers with %s', async (_label, firstCell, headerRows) => {
+    const { ctx, out } = createContext(typedHeaderWorkbook(firstCell));
+    await xlsxReader.read(ctx);
+    const section = out.finish().blocks.find((block) => block.kind === 'section' && block.role === 'sheet');
+    expect(section?.kind).toBe('section');
+    if (section?.kind !== 'section') throw new Error('Expected typed worksheet section.');
+    const table = section.blocks.find((block) => block.kind === 'table');
+    expect(table?.kind).toBe('table');
+    if (table?.kind !== 'table') throw new Error('Expected typed worksheet table.');
+    expect(table.headerRows).toBe(headerRows);
+    expect(table.rows.flat().every((cell) => !Object.hasOwn(cell, 'valueType'))).toBe(true);
+  });
+
+  it('does not treat a formatted-empty numeric cell as an empty source cell', async () => {
+    const { ctx, out } = createContext(
+      typedHeaderWorkbook('<c r="A1" t="inlineStr"><is><t>Header</t></is></c>', true),
+    );
+    await xlsxReader.read(ctx);
+    const section = out.finish().blocks.find((block) => block.kind === 'section' && block.role === 'sheet');
+    expect(section?.kind).toBe('section');
+    if (section?.kind !== 'section') throw new Error('Expected typed worksheet section.');
+    const table = section.blocks.find((block) => block.kind === 'table');
+    expect(table?.kind).toBe('table');
+    if (table?.kind !== 'table') throw new Error('Expected typed worksheet table.');
+    expect(table.rows[1]?.[0]?.text).toBe('');
+    expect(table.rows[1]?.[0]).not.toHaveProperty('valueType');
+    expect(table.headerRows).toBe(1);
+  });
+
+  it('retains notes but omits comment-author metadata when metadata is disabled', async () => {
+    const context = createContext(
+      fixture('headers_comments_hidden_tables_defined_names.xlsx'),
+      {},
+      false,
+      {},
+      false,
+    );
+    await xlsxReader.read(context.ctx);
+    const document = context.out.finish();
+    const section = document.blocks.find((block) => block.kind === 'section' && block.role === 'sheet');
+    expect(section?.kind).toBe('section');
+    if (section?.kind !== 'section') throw new Error('Expected worksheet section.');
+    expect(section.blocks.find((block) => block.kind === 'note')).toMatchObject({
+      kind: 'note',
+      text: 'Self-authored note text.',
+    });
+    expect(section.blocks.find((block) => block.kind === 'note')).not.toHaveProperty('author');
+  });
+
   it('emits cached, shared, and array formulas only when requested', async () => {
     const bytes = fixture('formula_cached_missing_shared_array.xlsx');
     const disabled = createContext(bytes);
