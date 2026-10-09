@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<!DOCTYPE root [<!ENTITY ext SYSTEM "file:///docsluice-fixture-secret">]><root>before &ext; after</root>

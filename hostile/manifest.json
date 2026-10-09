@@ -1,6 +1,7 @@
 [
   {
     "file": "xml/xxe-file.xml",
+    "format": "xml",
     "expect": {
       "warnings": [
         "DTD_IGNORED",
@@ -13,6 +14,7 @@
   },
   {
     "file": "xml/xxe-url.xml",
+    "format": "xml",
     "expect": {
       "warnings": [
         "DTD_IGNORED",
@@ -25,6 +27,7 @@
   },
   {
     "file": "xml/billion-laughs.xml",
+    "format": "xml",
     "expect": {
       "warnings": [
         "DTD_IGNORED",
@@ -231,5 +234,27 @@
     "maxMs": 2000,
     "maxHeapMB": 128,
     "requirement": "SEC-12"
+  },
+  {
+    "file": "json/proto-keys.json",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-6"
+  },
+  {
+    "file": "json/deep-100000.json",
+    "format": "json",
+    "expect": {
+      "warnings": [
+        "TRUNCATED",
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-8"
   }
 ]

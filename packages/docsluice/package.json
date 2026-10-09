@@ -33,6 +33,12 @@
       ],
       "tsv": [
         "dist/tsv.d.ts"
+      ],
+      "json": [
+        "dist/json.d.ts"
+      ],
+      "xml": [
+        "dist/xml.d.ts"
       ]
     }
   },
@@ -64,6 +70,14 @@
     "./tsv": {
       "import": "./dist/tsv.js",
       "require": "./dist/tsv.cjs"
+    },
+    "./json": {
+      "import": "./dist/json.js",
+      "require": "./dist/json.cjs"
+    },
+    "./xml": {
+      "import": "./dist/xml.js",
+      "require": "./dist/xml.cjs"
     },
     "./package.json": "./package.json"
   },
