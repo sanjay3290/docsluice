@@ -58,5 +58,8 @@
     "rag",
     "llm",
     "parser"
-  ]
+  ],
+  "dependencies": {
+    "fflate": "0.8.2"
+  }
 }

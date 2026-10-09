@@ -1,0 +1,3 @@
+SPDX-License-Identifier: CC0-1.0
+Source: generated for docsluice by scripts/hostile/zip-nested-4gib.mjs using Node.js zlib.
+Notes: the inner ZIP64 member represents exactly 4,294,967,296 zero bytes, streamed through 64 KiB chunks; no 4 GiB buffer or file is created. The outer ZIP is padded with a deterministic comment to 42 KiB.
