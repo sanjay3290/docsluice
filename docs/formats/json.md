@@ -1,0 +1,7 @@
+# JSON
+
+The JSON reader emits one paragraph for each scalar value. Paths are stable JSON-style paths: `$` is the root, object keys that are identifiers use dot notation (for example `$.profile.name`), other keys use JSON-quoted brackets (for example `$["display.name"]`), and arrays use zero-based indices (for example `$.items[0]`). Empty objects and arrays have no scalar paragraph. Each paragraph's `loc.path` carries this path; child documents prefix it with the child path and `#`.
+
+Inputs smaller than 64 KiB also include a two-space pretty-printed JSON code block when its expanded text fits the remaining output budget and a 1,000,000-character staging cap. Formatting uses an explicit stack and checks the output budget as it stages text. The reader scans nesting with the shared block-depth budget before calling `JSON.parse`; input deeper than the configured `blockDepth` is skipped with `DEPTH_LIMIT` under truncation, or throws `LIMIT_EXCEEDED` when `onLimit: 'throw'`. Malformed JSON gives `UNREADABLE_PART` without copying input text into warnings. File keys are read as own properties and never assigned to objects by the reader, so keys such as `__proto__`, `constructor` and `prototype` remain data.
+
+The reader does not implement NDJSON or YAML. The whole JSON input is decoded and parsed in memory, bounded by the shared input limit.

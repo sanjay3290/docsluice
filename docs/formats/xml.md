@@ -16,4 +16,6 @@ The parser skips processing instructions and comments, exposes CDATA as text, an
 
 Malformed parts are recovered when possible and produce `UNREADABLE_PART`. Hitting the configured XML depth or output limit is handled through the shared budget policy.
 
+The generic XML reader reuses `parseXml`. It emits one paragraph for each element that has non-whitespace direct text; text inside child elements is emitted for those child elements separately. Attributes are skipped. Locations use local element names under a leading slash (for example `/root/child[2]/name`); a one-based index is added only when a same-named element repeats among the same parent's children. A child document prefixes the path with its child path and `#`. Namespace declarations and other attributes never become text blocks.
+
 The scanner follows the relevant XML syntax and namespace scoping rules in the [W3C XML 1.0 Recommendation](https://www.w3.org/TR/xml/) and [Namespaces in XML 1.0](https://www.w3.org/TR/xml-names/), with entity processing intentionally restricted for safety.
