@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, realpath, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -8,6 +8,11 @@ import {
   parseRuntimeAllowlist,
   validateRuntimeDependencies,
 } from './check-deps.mjs';
+
+// Resolve symlinks (macOS /var -> /private/var): the checker compares real paths.
+async function makeTempRoot() {
+  return realpath(await mkdtemp(path.join(os.tmpdir(), 'docsluice-check-deps-')));
+}
 
 test('parses runtime packages from the ADR dependency table', () => {
   const allowlist = parseRuntimeAllowlist(`
@@ -168,7 +173,7 @@ test('resolves runtime lock versions from the workspace before hoisted dev packa
 });
 
 test('finds install lifecycle scripts in nested and scoped packages', async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'docsluice-check-deps-'));
+  const root = await makeTempRoot();
   try {
     const nested = path.join(root, 'node_modules', 'parent', 'node_modules', '@scope', 'child');
     await mkdir(nested, { recursive: true });
@@ -186,7 +191,7 @@ test('finds install lifecycle scripts in nested and scoped packages', async () =
 });
 
 test('finds packages that trigger npm’s implicit node-gyp install', async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'docsluice-check-deps-'));
+  const root = await makeTempRoot();
   try {
     const packageDir = path.join(root, 'node_modules', 'native-addon');
     await mkdir(packageDir, { recursive: true });
@@ -204,7 +209,7 @@ test('finds packages that trigger npm’s implicit node-gyp install', async () =
 });
 
 test('finds binding.gyp and respects gypfile false', async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'docsluice-check-deps-'));
+  const root = await makeTempRoot();
   try {
     const activeDir = path.join(root, 'node_modules', 'active-addon');
     const disabledDir = path.join(root, 'node_modules', 'disabled-addon');
@@ -227,7 +232,7 @@ test('finds binding.gyp and respects gypfile false', async () => {
 });
 
 test('fails closed when node_modules is missing', async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'docsluice-check-deps-'));
+  const root = await makeTempRoot();
   try {
     await assert.rejects(collectPackagesWithInstallScripts(root), /node_modules directory is missing/i);
   } finally {
