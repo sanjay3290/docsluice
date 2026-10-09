@@ -1,0 +1,3 @@
+SPDX-License-Identifier: CC0-1.0
+Source: LibreOfficeDev 26.8.0.0.alpha0 MS Excel 97 export of the self-authored biff8-source.xlsx input, authored by build_source.py.
+Notes: No external document contents. Formula cache can be recalculated during fixture preparation. No extraction golden is asserted by this sidecar.
