@@ -1,0 +1,27 @@
+name: Golden tooling
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: golden-tooling-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  runner-tests:
+    name: Golden runner tests (Node 24)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: node --test scripts/test/golden-run.test.mjs

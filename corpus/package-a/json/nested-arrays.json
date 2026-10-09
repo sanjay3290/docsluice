@@ -1,0 +1,8 @@
+{
+  "title": "Synthetic route plan",
+  "stops": [
+    { "name": "Birch bridge", "coordinates": [4, 9] },
+    { "name": "Willow marker", "coordinates": [7, 2] }
+  ],
+  "complete": false
+}

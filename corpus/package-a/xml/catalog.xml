@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog>
+  <item id="pencil"><name>Graphite pencil</name><count>4</count></item>
+  <item id="notebook"><name>Field notebook</name><count>2</count></item>
+</catalog>

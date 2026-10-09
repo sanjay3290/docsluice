@@ -1,0 +1,4 @@
+North: Ångström
+South: café
+East: 東京
+West: 🧭

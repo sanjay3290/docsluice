@@ -1,0 +1,2 @@
+Small synthetic corpus note.
+Second line, stable and intentionally ordinary.
