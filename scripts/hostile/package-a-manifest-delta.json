@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "10ae4985a425842f965bccbb9c86a7e6018c5412",
+  "status": "partial-extract-missing",
+  "entries": [
+    {
+      "file": "package-a/xml/xxe-file.xml",
+      "requirements": [
+        "SEC-4",
+        "SEC-10"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "scanXml",
+        "rootPresent": true,
+        "text": "&e;",
+        "warnings": [
+          "DTD_IGNORED",
+          "UNKNOWN_ENTITY"
+        ]
+      }
+    },
+    {
+      "file": "package-a/xml/xxe-url.xml",
+      "requirements": [
+        "SEC-4",
+        "SEC-10"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "scanXml",
+        "rootPresent": true,
+        "text": "&e;",
+        "warnings": [
+          "DTD_IGNORED",
+          "UNKNOWN_ENTITY"
+        ]
+      }
+    },
+    {
+      "file": "package-a/xml/xxe-parameter.xml",
+      "requirements": [
+        "SEC-4",
+        "SEC-10"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "scanXml",
+        "rootPresent": true,
+        "text": "local",
+        "warnings": [
+          "DTD_IGNORED"
+        ]
+      }
+    },
+    {
+      "file": "package-a/xml/billion-laughs.xml",
+      "requirements": [
+        "SEC-5"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "scanXml",
+        "rootPresent": true,
+        "text": "&lol5;",
+        "warnings": [
+          "DTD_IGNORED",
+          "UNKNOWN_ENTITY"
+        ]
+      }
+    },
+    {
+      "file": "package-a/xml/quadratic-entities.xml",
+      "requirements": [
+        "SEC-5",
+        "SEC-7"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "scanXml",
+        "rootPresent": true,
+        "text": "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;",
+        "warnings": [
+          "DTD_IGNORED",
+          "UNKNOWN_ENTITY"
+        ]
+      }
+    },
+    {
+      "file": "package-a/xml/deep-10000.xml",
+      "requirements": [
+        "SEC-8"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "parseXml",
+        "rootPresent": true,
+        "warnings": [
+          "TRUNCATED"
+        ],
+        "maxDepth": 256
+      }
+    },
+    {
+      "file": "package-a/xml/xml-proto-attributes.xml",
+      "requirements": [
+        "SEC-6"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "scanXml",
+        "rootPresent": true,
+        "attributesAreStrings": true
+      }
+    },
+    {
+      "file": "package-a/xml/xml-pi-network.xml",
+      "requirements": [
+        "SEC-4",
+        "SEC-10"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "scanXml",
+        "rootPresent": true,
+        "text": "local",
+        "warnings": []
+      }
+    },
+    {
+      "file": "package-a/json/json-proto.json",
+      "requirements": [
+        "SEC-6"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498"
+    },
+    {
+      "file": "package-a/json/json-deep-10000.json",
+      "requirements": [
+        "SEC-8"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498"
+    },
+    {
+      "file": "package-a/csv/csv-proto-header.csv",
+      "requirements": [
+        "SEC-6"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498"
+    },
+    {
+      "file": "package-a/csv/csv-unterminated-quote.csv",
+      "requirements": [
+        "SEC-8"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498"
+    },
+    {
+      "file": "package-a/misc/html-deep-10000.html",
+      "requirements": [
+        "SEC-8"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498"
+    },
+    {
+      "file": "package-a/misc/markdown-deep-10000.md",
+      "requirements": [
+        "SEC-8"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498"
+    },
+    {
+      "file": "package-a/misc/regex-near-miss.txt",
+      "requirements": [
+        "SEC-7"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498"
+    },
+    {
+      "file": "package-a/misc/invalid-utf8.txt",
+      "requirements": [
+        "SEC-7"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498"
+    },
+    {
+      "file": "package-a/misc/wrong-executable.pdf",
+      "requirements": [
+        "SEC-10"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498"
+    },
+    {
+      "file": "package-a/misc/html-remote-image.html",
+      "requirements": [
+        "SEC-10"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498"
+    },
+    {
+      "file": "package-a/zip/zip-high-ratio.zip",
+      "requirements": [
+        "SEC-1"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "openZip/read",
+        "outcome": "throws",
+        "errorCode": "LIMIT_EXCEEDED"
+      }
+    },
+    {
+      "file": "package-a/zip/zip-nested-high-ratio.zip",
+      "requirements": [
+        "SEC-1"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "openZip/read",
+        "outcome": "entry-bytes",
+        "entryName": "inner.zip",
+        "prefixBytes": [
+          80,
+          75
+        ]
+      }
+    },
+    {
+      "file": "package-a/zip/zip-many-entries.zip",
+      "requirements": [
+        "SEC-2"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "openZip",
+        "outcome": "limited",
+        "entries": 0,
+        "warningCodes": [
+          "TRUNCATED"
+        ]
+      }
+    },
+    {
+      "file": "package-a/zip/zip-quine-chain.zip",
+      "requirements": [
+        "SEC-8",
+        "SEC-9"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "openZip/read",
+        "outcome": "finite-nested-zip-chain",
+        "levels": 8,
+        "leafName": "payload.txt"
+      }
+    },
+    {
+      "file": "package-a/zip/zip-path-traversal.zip",
+      "requirements": [
+        "SEC-3"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "openZip",
+        "outcome": "display-name",
+        "names": [
+          "etc/passwd"
+        ]
+      }
+    },
+    {
+      "file": "package-a/zip/zip-overlap.zip",
+      "requirements": [
+        "SEC-1",
+        "SEC-9"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "openZip",
+        "outcome": "overlap",
+        "unreadable": [
+          false,
+          true
+        ],
+        "warningCodes": [
+          "UNREADABLE_PART"
+        ]
+      }
+    },
+    {
+      "file": "package-a/zip/zip64-size-lie.zip",
+      "requirements": [
+        "SEC-1"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "openZip",
+        "outcome": "throws",
+        "errorCode": "CORRUPT_FILE"
+      }
+    },
+    {
+      "file": "package-a/zip/zip64-count-lie.zip",
+      "requirements": [
+        "SEC-2"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "openZip",
+        "outcome": "limited",
+        "entries": 0,
+        "warningCodes": [
+          "TRUNCATED"
+        ]
+      }
+    },
+    {
+      "file": "package-a/zip/zip-truncated-central.zip",
+      "requirements": [
+        "SEC-1"
+      ],
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "extraction": "blocked: extract() is not present in foundation 10ae498",
+      "parserObservation": {
+        "api": "openZip",
+        "outcome": "throws",
+        "errorCode": "CORRUPT_FILE"
+      }
+    }
+  ]
+}
