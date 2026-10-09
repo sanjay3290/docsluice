@@ -45,3 +45,17 @@ export interface ExtractOptions {
   /** Called for each top-level block as it is produced (EXT-2). */
   onBlock?: (block: Block) => void;
 }
+
+/** Effective options shared by the root reader and every nested reader. */
+export interface ResolvedOptions extends Omit<ExtractOptions, 'limits' | 'strict'> {
+  readonly limits: Readonly<Limits>;
+  readonly onLimit: 'truncate' | 'throw';
+  readonly strict: boolean | readonly WarningCode[];
+  readonly metadata: boolean;
+  readonly children: 'extract' | 'list' | 'skip';
+  readonly childBytes: boolean;
+  readonly runs: boolean;
+  readonly revisions: 'accept' | 'reject' | 'show';
+  readonly includeHidden: boolean;
+  readonly formulas: boolean;
+}
