@@ -1,11 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { AbortError } from '../../../src/core/errors.js';
+import { AbortError, LimitExceededError } from '../../../src/core/errors.js';
 import { Budget } from '../../../src/core/budget.js';
 import { DEFAULT_LIMITS } from '../../../src/core/limits.js';
 import { WarningSink } from '../../../src/core/warnings.js';
 import { parseXml } from '../../../src/xml/index.js';
-import { parseStyles } from '../../../src/readers/xlsx/styles.js';
+import { parseStyles, parseStylesXml } from '../../../src/readers/xlsx/styles.js';
 
 const SHEET_NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const libreOfficeStyles = readFileSync(
@@ -156,5 +156,46 @@ describe('XLSX styles', () => {
     controller.abort();
     const abortedBudget = new Budget(DEFAULT_LIMITS, { signal: controller.signal });
     expect(() => parseStyles(root, abortedBudget, new WarningSink())).toThrow(AbortError);
+  });
+
+  it('bounds source XML while building the stylesheet tree, before retaining oversized trees', () => {
+    const budget = new Budget(DEFAULT_LIMITS);
+    const warnings = new WarningSink();
+    const children = '<irrelevant/>'.repeat(100_001);
+    const source = `<styleSheet xmlns="${SHEET_NS}">${children}<cellXfs><xf/></cellXfs></styleSheet>`;
+    expect(() => parseStylesXml(new TextEncoder().encode(source), budget, warnings)).toThrow(
+      LimitExceededError,
+    );
+    expect(warnings.warnings).toHaveLength(0);
+  });
+
+  it('counts attributes against source object limits before copying them into the tree', () => {
+    const attrs = Array.from({ length: 100_001 }, (_unused, index) => ` a${index}="x"`).join('');
+    const source = `<styleSheet xmlns="${SHEET_NS}"${attrs}><cellXfs><xf/></cellXfs></styleSheet>`;
+    expect(() =>
+      parseStylesXml(new TextEncoder().encode(source), new Budget(DEFAULT_LIMITS), new WarningSink()),
+    ).toThrow(LimitExceededError);
+  });
+
+  it('stops before retaining oversized text chunks in the stylesheet tree', () => {
+    const source = `<styleSheet xmlns="${SHEET_NS}">${'x'.repeat(20_000_001)}</styleSheet>`;
+    expect(() =>
+      parseStylesXml(new TextEncoder().encode(source), new Budget(DEFAULT_LIMITS), new WarningSink()),
+    ).toThrow(LimitExceededError);
+  });
+
+  it('parses formats under a zero output quota because styles are source metadata', () => {
+    const budget = new Budget({ ...DEFAULT_LIMITS, outputChars: 0 });
+    const warnings = new WarningSink();
+    const result = parseStylesXml(
+      new TextEncoder().encode(
+        `<styleSheet xmlns="${SHEET_NS}"><numFmts><numFmt numFmtId="164" formatCode="0.00"/></numFmts><cellXfs><xf numFmtId="164"/></cellXfs></styleSheet>`,
+      ),
+      budget,
+      warnings,
+    );
+    expect(result.getStyleFormat(0)).toBe('0.00');
+    expect(budget.outputChars).toBe(0);
+    expect(warnings.warnings).toHaveLength(0);
   });
 });

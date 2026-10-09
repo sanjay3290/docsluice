@@ -1,9 +1,8 @@
 # XLSX number-format helper
 
 `formatNumber(value, formatCode, date1904?, budget?)` converts a stored numeric or
-text value to a deterministic display string. It does not parse `styles.xml`,
-select cells, read formulas, or evaluate formula text. XLSX reader integration is
-separate work. `builtInNumberFormat(id)` provides the standard built-in code for
+text value to a deterministic display string. The XLSX reader uses it after resolving the style index from `styles.xml`; it
+never reads or evaluates formula text. `builtInNumberFormat(id)` provides the standard built-in code for
 IDs 0–49 and returns `General` for reserved or unknown IDs.
 
 The helper recognizes up to four sections, numeric conditions, quoted and escaped
@@ -62,9 +61,9 @@ are recorded in the JSON. Both reference files have CC0-1.0 license sidecars.
 Of the 421 rows, 349 are compared directly, 64 pre-March-1900 calendar rows are
 excluded for Calc/Excel epoch differences, and 8 underscore-padding rows are
 excluded because Calc renders width-dependent spaces that this helper skips.
-The test does not derive display strings from raw numeric values. These checks
-validate the helper only and do not establish Excel compatibility or
-XLSX-reader acceptance.
+The test does not derive display strings from raw numeric values. These checks validate both the scalar formatter and the end-to-end XLSX styles
+lookup for the comparable corpus rows. They do not establish Excel
+compatibility for LibreOffice's early-1900 epoch or width-dependent padding.
 
 The separate self-authored captures under
 `packages/docsluice/test/readers/xlsx/fixtures/numfmt/` include

@@ -10,6 +10,7 @@ const OFFICE_REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relati
 const WORKSHEET_REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet';
 const SHARED_STRINGS_REL =
   'http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings';
+const STYLES_REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles';
 const OFFICE_REL_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 const MAX_WORKBOOK_SHEETS = 500_000;
 const MAX_WORKBOOK_SHEET_NAME_CHARS = 20_000_000;
@@ -23,7 +24,9 @@ export interface WorkbookSheet {
 export interface WorkbookParts {
   workbook: string;
   sheets: WorkbookSheet[];
+  date1904: boolean;
   sharedStrings?: string;
+  styles?: string;
 }
 
 /** Resolve the workbook and sheet part names through package relationships. */
@@ -49,6 +52,9 @@ export async function resolveWorkbookParts(
   let warnedSheetIssue = false;
   let validRoot = false;
   let hasSheets = false;
+  let date1904 = false;
+  let hasWorkbookProperties = false;
+  let warnedWorkbookProperties = false;
   let currentSheet:
     { name?: string; relationshipId?: string; sourceState?: string; depth: number } | undefined;
   const stack: Array<{ localName: string; namespaceURI?: string; namespaces: Map<string, string> }> = [];
@@ -73,6 +79,30 @@ export async function resolveWorkbookParts(
         }
         if (stack.length === 0) {
           validRoot = info.localName === 'workbook' && info.namespaceURI === MAIN;
+        }
+        if (
+          info.namespaceURI === MAIN &&
+          info.localName === 'workbookPr' &&
+          parent?.localName === 'workbook' &&
+          parent.namespaceURI === MAIN &&
+          stack.length === 1
+        ) {
+          if (hasWorkbookProperties) {
+            if (!warnedWorkbookProperties) {
+              warnedWorkbookProperties = true;
+              warn(ctx, 'Workbook date-system properties could not be read.');
+            }
+          } else {
+            hasWorkbookProperties = true;
+            const rawDate1904 = attrs.get('date1904');
+            if (rawDate1904 === '1' || rawDate1904 === 'true') date1904 = true;
+            else if (rawDate1904 === undefined || rawDate1904 === '0' || rawDate1904 === 'false')
+              date1904 = false;
+            else if (!warnedWorkbookProperties) {
+              warnedWorkbookProperties = true;
+              warn(ctx, 'Workbook date-system properties could not be read.');
+            }
+          }
         }
         if (
           info.namespaceURI === MAIN &&
@@ -179,7 +209,14 @@ export async function resolveWorkbookParts(
   if (!hasSheets) warn(ctx, 'The workbook sheet list could not be read.');
   // Relationship order for sharedStrings is independent of the sheet list.
   const sharedStrings = findRelationship(relationships, SHARED_STRINGS_REL, ctx)?.part;
-  return { workbook: office.part, sheets, ...(sharedStrings ? { sharedStrings } : {}) };
+  const styles = findRelationship(relationships, STYLES_REL, ctx)?.part;
+  return {
+    workbook: office.part,
+    sheets,
+    date1904,
+    ...(sharedStrings ? { sharedStrings } : {}),
+    ...(styles ? { styles } : {}),
+  };
 }
 
 function findRelationship(

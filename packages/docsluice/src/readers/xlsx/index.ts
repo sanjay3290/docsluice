@@ -6,6 +6,7 @@ import { scanFeatures } from '../../ooxml/features.js';
 import { openZip } from '../../zip/index.js';
 import type { XmlContext } from '../../xml/index.js';
 import { parseWorksheetCells } from './cells.js';
+import { parseStyles, parseStylesXml } from './styles.js';
 import type { ParsedSheetCells } from './cells.js';
 import { readSharedStrings, XlsxTextStaging } from './strings.js';
 import { resolveWorkbookParts } from './sheets.js';
@@ -13,7 +14,7 @@ import type { WorkbookSheet } from './sheets.js';
 
 export interface ParsedXlsxSheet extends WorkbookSheet, ParsedSheetCells {}
 
-/** Internal parse result, including sheet state until the public builder supports it. */
+/** Internal parse result, including sheet state for emitted section metadata. */
 export interface ParsedXlsxWorkbook {
   workbookPart: string;
   sheets: ParsedXlsxSheet[];
@@ -51,6 +52,15 @@ export async function parseXlsx(ctx: ReadContext): Promise<ParsedXlsxWorkbook> {
   }
   ctx.out.setMetadata(await readProperties(parts, xmlContext, ctx.options.metadata));
 
+  const stylesPart = resolved.styles ? await parts.read(resolved.styles) : undefined;
+  const styles = stylesPart
+    ? parseStylesXml(stylesPart, ctx.budget, ctx.warnings, { path: partLocation(ctx.path, resolved.styles!) })
+    : parseStyles(
+        undefined,
+        ctx.budget,
+        ctx.warnings,
+        resolved.styles ? { path: partLocation(ctx.path, resolved.styles) } : undefined,
+      );
   const sharedStringsPart = resolved.sharedStrings ? await parts.read(resolved.sharedStrings) : undefined;
   const sharedStrings = sharedStringsPart
     ? readSharedStrings(
@@ -81,6 +91,8 @@ export async function parseXlsx(ctx: ReadContext): Promise<ParsedXlsxWorkbook> {
       ctx.warnings,
       partLocation(ctx.path, sheet.part),
       staging,
+      styles,
+      resolved.date1904,
     );
     sheets.push({ ...sheet, ...parsed });
   }

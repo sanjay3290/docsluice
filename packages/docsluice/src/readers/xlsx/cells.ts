@@ -4,6 +4,8 @@ import type { WarningSink } from '../../core/warnings.js';
 import { scanXml } from '../../xml/index.js';
 import { formatRange, parseCellAddress } from './addresses.js';
 import { XlsxTextStaging, xlsxStagingXmlContext } from './strings.js';
+import { formatNumber } from './numfmt.js';
+import type { XlsxStyles } from './styles.js';
 
 const MAIN = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const MAX_MERGES = 500_000;
@@ -36,6 +38,8 @@ interface PendingCell {
   address: string;
   type: string;
   value: string;
+  styleIndex: number;
+  styleIndexInvalid: boolean;
   valueParts: string[];
   valueChars: number;
   inlineParts: string[];
@@ -56,6 +60,8 @@ export function parseWorksheetCells(
   warnings: WarningSink,
   path?: string,
   staging = new XlsxTextStaging(budget),
+  styles?: XlsxStyles,
+  date1904 = false,
 ): ParsedSheetCells {
   const cells = new Map<number, Map<number, ParsedCell>>();
   const merges: Array<{ row: number; column: number; rowSpan: number; colSpan: number; address: string }> =
@@ -77,6 +83,7 @@ export function parseWorksheetCells(
   let warnedMergeLimit = false;
   let warnedBadString = false;
   let warnedStringIndex = false;
+  let warnedStyleIndex = false;
   let malformed = false;
   const stack: Array<{ localName: string; namespaceURI?: string }> = [];
   scanXml(
@@ -125,6 +132,18 @@ export function parseWorksheetCells(
           stack.length === 3
         ) {
           const address = attrs.get('r') ?? '';
+          const parsedStyle = parseStyleIndex(attrs.get('s'), budget);
+          const styleIndex = parsedStyle.index ?? 0;
+          const styleIndexInvalid =
+            parsedStyle.invalid || (styles !== undefined && styleIndex >= styles.cellNumFmtIds.length);
+          if (styleIndexInvalid && !warnedStyleIndex) {
+            warnings.add({
+              code: 'UNREADABLE_PART',
+              message: 'A cell style index could not be resolved.',
+              ...(path ? { loc: { path } } : {}),
+            });
+            warnedStyleIndex = true;
+          }
           const parsed = parseCellAddress(address, budget);
           const explicitRow = parsed?.row ?? row;
           if (!parsed) warnedBadAddress = true;
@@ -135,6 +154,8 @@ export function parseWorksheetCells(
             address,
             type: attrs.get('t') ?? 'n',
             value: '',
+            styleIndex,
+            styleIndexInvalid,
             valueParts: [],
             valueChars: 0,
             inlineParts: [],
@@ -310,15 +331,22 @@ export function parseWorksheetCells(
           stack.length === 4 &&
           inSheetData
         ) {
-          const parsedCell = makeCell(cell, sharedStrings, () => {
-            if (warnedStringIndex) return;
-            warnedStringIndex = true;
-            warnings.add({
-              code: 'UNREADABLE_PART',
-              message: 'A shared string index could not be resolved.',
-              ...(path ? { loc: { path } } : {}),
-            });
-          });
+          const parsedCell = makeCell(
+            cell,
+            sharedStrings,
+            () => {
+              if (warnedStringIndex) return;
+              warnedStringIndex = true;
+              warnings.add({
+                code: 'UNREADABLE_PART',
+                message: 'A shared string index could not be resolved.',
+                ...(path ? { loc: { path } } : {}),
+              });
+            },
+            styles,
+            date1904,
+            budget,
+          );
           if (!parsedCell) {
             warnedBadString = true;
             skippedCells += 1;
@@ -404,10 +432,30 @@ export function parseWorksheetCells(
   };
 }
 
+function parseStyleIndex(
+  raw: string | undefined,
+  budget: Budget,
+): { index: number | undefined; invalid: boolean } {
+  if (raw === undefined) return { index: 0, invalid: false };
+  if (raw.length === 0 || raw.length > 16) return { index: undefined, invalid: true };
+  let index = 0;
+  for (let offset = 0; offset < raw.length; offset += 1) {
+    budget.tick();
+    const digit = raw.charCodeAt(offset) - 48;
+    if (digit < 0 || digit > 9) return { index: undefined, invalid: true };
+    index = index * 10 + digit;
+    if (!Number.isSafeInteger(index)) return { index: undefined, invalid: true };
+  }
+  return { index, invalid: false };
+}
+
 function makeCell(
   pending: PendingCell,
   sharedStrings: readonly string[],
   warnSharedString: () => void,
+  styles?: XlsxStyles,
+  date1904 = false,
+  budget?: Budget,
 ): ParsedCell | undefined {
   if (pending.textExceeded || pending.valueExceeded) return undefined;
   const value = pending.type === 's' ? pending.value : pending.valueParts.join('');
@@ -454,6 +502,14 @@ function makeCell(
       break;
   }
   if (!pending.address || pending.column === 0) return undefined;
+  if (styles) {
+    const formatCode = pending.styleIndexInvalid ? 'General' : styles.getStyleFormat(pending.styleIndex);
+    if (pending.type === 'n') {
+      text = formatNumber(typeof raw === 'number' ? raw : value, formatCode, date1904, budget);
+    } else if (pending.type === 's' || pending.type === 'inlineStr' || pending.type === 'str') {
+      text = formatNumber(text, formatCode, date1904, budget);
+    }
+  }
   return { row: pending.row, column: pending.column, text, raw, address: pending.address };
 }
 

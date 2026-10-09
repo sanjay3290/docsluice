@@ -1,8 +1,12 @@
 import type { Budget } from '../../core/budget.js';
+import { LimitExceededError } from '../../core/errors.js';
 import type { Location } from '../../core/model.js';
 import type { WarningSink } from '../../core/warnings.js';
+import { scanXml } from '../../xml/index.js';
+import type { XmlElementInfo } from '../../xml/index.js';
 import type { XmlElement } from '../../xml/tree.js';
 import { builtInNumberFormat } from './numfmt.js';
+import { xlsxStagingXmlContext } from './strings.js';
 
 const SPREADSHEET_NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const MAX_SOURCE_OBJECTS = 100_000;
@@ -22,6 +26,65 @@ export interface XlsxStyles {
   readonly cellNumFmtIds: readonly number[];
   /** Resolve an `s` cell-style index to a number format code. */
   getStyleFormat(styleIndex: number): string;
+}
+
+/** Parse styles XML into a bounded tree before resolving its number-format records. */
+export function parseStylesXml(
+  bytes: Uint8Array,
+  budget: Budget,
+  warnings: WarningSink,
+  loc?: Location,
+): XlsxStyles {
+  let root: XmlElement | undefined;
+  const stack: XmlElement[] = [];
+  let retainedObjects = 0;
+  let retainedChars = 0;
+  const reserveObject = (amount = 1): void => {
+    if (amount > MAX_SOURCE_OBJECTS - retainedObjects)
+      throw new LimitExceededError('xlsxStyleObjects', MAX_SOURCE_OBJECTS);
+    retainedObjects += amount;
+  };
+  const reserveChars = (amount: number): void => {
+    if (!Number.isSafeInteger(amount) || amount < 0 || amount > MAX_SOURCE_TEXT - retainedChars)
+      throw new LimitExceededError('xlsxStyleChars', MAX_SOURCE_TEXT);
+    retainedChars += amount;
+  };
+  const elementChars = (info: XmlElementInfo): number =>
+    info.name.length + info.localName.length + (info.namespaceURI?.length ?? 0);
+
+  scanXml(
+    bytes,
+    {
+      onOpen(name, attrs, info) {
+        budget.tick();
+        reserveObject(1 + attrs.size);
+        reserveChars(elementChars(info));
+        for (const [attributeName, value] of attrs) {
+          budget.tick();
+          reserveChars(attributeName.length + value.length);
+        }
+        const element: XmlElement = { ...info, name, attrs: new Map(attrs), children: [] };
+        const parent = stack.at(-1);
+        if (parent) parent.children.push(element);
+        else if (!root) root = element;
+        stack.push(element);
+      },
+      onText(text) {
+        budget.tick();
+        const parent = stack.at(-1);
+        if (!parent) return;
+        reserveObject();
+        reserveChars(text.length);
+        parent.children.push(text);
+      },
+      onClose() {
+        budget.tick();
+        stack.pop();
+      },
+    },
+    xlsxStagingXmlContext(budget, warnings, loc?.path),
+  );
+  return parseStyles(root, budget, warnings, loc);
 }
 
 const EMPTY_STYLES: XlsxStyles = Object.freeze({
