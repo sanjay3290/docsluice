@@ -1,1 +1,1 @@
-*.ics -text whitespace=cr-at-eol,-blank-at-eof
+*.ics -text whitespace=cr-at-eol,-blank-at-eof,-blank-at-eol
