@@ -3,6 +3,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { URL } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const renderDoc = {
@@ -31,9 +33,13 @@ test('ESM entry loads', async () => {
   assert.equal(mod.DEFAULT_LIMITS.zipEntries, 10_000);
   assert.equal(typeof mod.parseXml, 'function');
   assert.equal(typeof mod.scanXml, 'function');
-  const image = await mod.extract(Uint8Array.of(137, 80, 78, 71, 13, 10, 26, 10));
+  const image = await mod.extract(
+    new Uint8Array(readFileSync(new URL('../../../corpus/images/tiny.png', import.meta.url))),
+  );
   assert.equal(image.format, 'png');
-  assert.deepEqual(image.blocks, []);
+  assert.deepEqual(image.blocks, [
+    { kind: 'image', mimeType: 'image/png', width: 1, height: 1, loc: { offset: [0, 0] } },
+  ]);
   assert.equal(mod.toText(renderDoc), 'Title\n\na\tb');
   assert.equal(typeof mod.toJSON, 'function');
   assert.equal(

@@ -1,11 +1,15 @@
 import type { Block, FormatId, WarningCode } from './model.js';
 import type { Limits } from './limits.js';
+import type { ReaderRegistry } from './registry.js';
 
 /**
  * Options for `extract()` (PRD sections 7-17). Every option has a safe default; none is required.
  * Option names are the same across formats. A reader ignores options it does not use, with no warning.
  */
 export interface ExtractOptions {
+  /** Isolated per-call reader registry. Defaults to the shared built-in registry. */
+  registry?: ReaderRegistry;
+
   /** File name hint (IN-3). Never trusted over content (IN-8). */
   filename?: string;
   /** MIME type hint (IN-3). Never trusted over content (IN-8). */
@@ -24,6 +28,8 @@ export interface ExtractOptions {
 
   /** `false` drops all personal metadata in one switch (MOD-4, section 15). Default true. */
   metadata?: boolean;
+  /** Include image GPS coordinates in metadata. Default false for privacy. */
+  imageGps?: boolean;
   /** Child documents: 'extract' (default), 'list' or 'skip' (NST-4). */
   children?: 'extract' | 'list' | 'skip';
   /** Keep raw bytes of child documents (NST-5). Default false. */
@@ -52,6 +58,7 @@ export interface ResolvedOptions extends Omit<ExtractOptions, 'limits' | 'strict
   readonly onLimit: 'truncate' | 'throw';
   readonly strict: boolean | readonly WarningCode[];
   readonly metadata: boolean;
+  readonly imageGps: boolean;
   readonly children: 'extract' | 'list' | 'skip';
   readonly childBytes: boolean;
   readonly runs: boolean;

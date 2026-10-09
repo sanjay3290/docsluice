@@ -14,6 +14,7 @@ import type {
 } from './model.js';
 import type { ExtractOptions, ResolvedOptions } from './options.js';
 import type { Budget } from './budget.js';
+import { assignBlockOffsets } from '../render/text.js';
 
 type SectionRole = SectionBlock['role'];
 type NoteRole = NoteBlock['role'];
@@ -364,6 +365,11 @@ export class DocBuilder {
   #stopped = false;
   #sectionDepth = 0;
   #pendingOutputChars = 0;
+  #streamSink: ((block: Block) => void) | undefined;
+  #streamFlush: (() => Promise<void>) | undefined;
+  #streamOffset = 0;
+  #streamHasBlock = false;
+  #maxRetainedRootBlocks = 0;
 
   /**
    * @param format Detected or forced document format.
@@ -381,6 +387,25 @@ export class DocBuilder {
     this.#mimeType = mimeType;
     this.#budget = budget;
     this.#options = options;
+  }
+
+  /** @internal Attach the bounded async-iterator sink used by `extractStream()`. */
+  setStreamSink(sink: (block: Block) => void, flush: () => Promise<void>): void {
+    this.#streamSink = sink;
+    this.#streamFlush = flush;
+  }
+
+  /** @internal Peak number of root blocks retained by the builder during extraction. */
+  get maxRetainedRootBlocks(): number {
+    return this.#maxRetainedRootBlocks;
+  }
+
+  /**
+   * Yield control to the `extractStream()` consumer and wait until its current block is taken.
+   * Incremental readers should call this after each emitted top-level block.
+   */
+  async flush(): Promise<void> {
+    await this.#streamFlush?.();
   }
 
   /** Add a heading. Returns false when output was truncated. */
@@ -621,12 +646,27 @@ export class DocBuilder {
     if (target === this.#blocks) {
       for (const retained of forest) {
         this.#budget.tick();
+        if (this.#streamSink) {
+          const streamed = cloneValue(retained, this.#budget);
+          this.#streamOffset = assignBlockOffsets(
+            streamed,
+            this.#streamOffset,
+            this.#streamHasBlock,
+            this.#budget,
+          );
+          this.#streamHasBlock = true;
+          this.#streamSink(streamed);
+        } else {
+          target.push(retained);
+          this.#maxRetainedRootBlocks = Math.max(this.#maxRetainedRootBlocks, target.length);
+        }
         this.#options.onBlock?.(cloneValue(retained, this.#budget));
       }
-    }
-    for (const retained of forest) {
-      this.#budget.tick();
-      target.push(retained);
+    } else {
+      for (const retained of forest) {
+        this.#budget.tick();
+        target.push(retained);
+      }
     }
     return true;
   }

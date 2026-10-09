@@ -148,5 +148,26 @@
     "maxMs": 2000,
     "maxHeapMB": 256,
     "requirement": "R2"
+  },
+  {
+    "file": "images/tiff-cyclic-ifd.tif",
+    "expect": { "warnings": ["UNREADABLE_PART"] },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "images/tiff-huge-count.tif",
+    "expect": { "warnings": ["UNREADABLE_PART"] },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "images/tiff-truncated-value-offset.tif",
+    "expect": { "warnings": ["UNREADABLE_PART"] },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-1"
   }
 ]

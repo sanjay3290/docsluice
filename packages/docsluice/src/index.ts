@@ -3,6 +3,8 @@ export { toJSON } from './render/json.js';
 export type { ToJSONOptions } from './render/json.js';
 export type { ExtractOptions } from './core/options.js';
 export { extract } from './core/extract.js';
+export { extractStream } from './core/extract.js';
+export type { AsyncBlockStream } from './core/stream.js';
 export { detect } from './detect/detect.js';
 export type { Limits } from './core/limits.js';
 export { DEFAULT_LIMITS, resolveLimits } from './core/limits.js';
@@ -20,12 +22,17 @@ export {
   LimitExceededError,
   TimeoutError,
   AbortError,
+  PluginContractError,
   StrictModeError,
 } from './core/errors.js';
 export type { ErrorCode } from './core/errors.js';
+export { createRegistry, registerFormat, READER_CONTRACT_VERSION } from './core/registry.js';
+export type { FormatPlugin } from './core/registry.js';
 export { parseXml, scanXml } from './xml/index.js';
 export type { XmlContext, XmlElement, XmlElementInfo, XmlHandler } from './xml/index.js';
 export { toText } from './render/text.js';
 export type { TextOptions } from './render/layout.js';
 export { toMarkdown } from './render/markdown.js';
 export type { MarkdownOptions } from './render/markdown.js';
+export { chunk } from './chunk/index.js';
+export type { Chunk, ChunkOptions, ChunkStrategy, ChunkWarning } from './chunk/index.js';

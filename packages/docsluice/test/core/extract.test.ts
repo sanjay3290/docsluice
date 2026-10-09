@@ -165,7 +165,7 @@ describe('extraction pipeline', () => {
     expect(load).toHaveBeenCalledTimes(1);
   });
 
-  it('does not import readers while returning empty documents for detected images', async () => {
+  it('keeps unsupported image formats empty when the custom registry has no image reader', async () => {
     const { registry: readers, load } = registry();
     const extract = createExtractor(readers);
     const png = await extract(new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]));

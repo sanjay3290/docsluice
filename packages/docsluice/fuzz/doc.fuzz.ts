@@ -28,6 +28,7 @@ export async function fuzzDoc(input: Uint8Array): Promise<void> {
         onLimit: 'truncate',
         strict: false,
         metadata: true,
+        imageGps: false,
         children: 'extract',
         childBytes: false,
         runs: false,
