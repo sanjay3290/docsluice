@@ -93,6 +93,7 @@ export async function parseXlsx(ctx: ReadContext): Promise<ParsedXlsxWorkbook> {
       staging,
       styles,
       resolved.date1904,
+      ctx.options.formulas,
     );
     sheets.push({ ...sheet, ...parsed });
   }

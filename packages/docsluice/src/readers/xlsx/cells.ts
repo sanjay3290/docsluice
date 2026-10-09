@@ -1,6 +1,8 @@
 import type { Cell } from '../../core/model.js';
 import type { Budget } from '../../core/budget.js';
 import type { WarningSink } from '../../core/warnings.js';
+import { XlsxFormulaResolver } from './formulas.js';
+import type { XlsxFormulaMetadata } from './formulas.js';
 import { scanXml } from '../../xml/index.js';
 import { formatRange, parseCellAddress } from './addresses.js';
 import { XlsxTextStaging, xlsxStagingXmlContext } from './strings.js';
@@ -9,6 +11,11 @@ import type { XlsxStyles } from './styles.js';
 
 const MAIN = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const MAX_MERGES = 500_000;
+const MAX_FORMULA_TEXT_CHARS = 2_000_000;
+const MAX_RETAINED_FORMULA_TEXT_CHARS = 20_000_000;
+const MAX_CELL_TEXT_CHARS = 32_767;
+const MAX_RETAINED_INLINE_TEXT_CHARS = 20_000_000;
+const INVALID_FORMULA_ATTRIBUTE = '\u0000';
 
 export interface ParsedCell extends Cell {
   row: number;
@@ -40,8 +47,18 @@ interface PendingCell {
   value: string;
   styleIndex: number;
   styleIndexInvalid: boolean;
+  valuePresent: boolean;
   valueParts: string[];
   valueChars: number;
+  hasFormula: boolean;
+  formulaSeen: boolean;
+  inFormula: boolean;
+  formulaType?: string;
+  formulaSharedIndex?: string;
+  formulaRef?: string;
+  formulaParts: string[];
+  formulaChars: number;
+  formulaMetadata?: XlsxFormulaMetadata;
   inlineParts: string[];
   inlineChars: number;
   inInlineString: boolean;
@@ -62,10 +79,24 @@ export function parseWorksheetCells(
   staging = new XlsxTextStaging(budget),
   styles?: XlsxStyles,
   date1904 = false,
+  formulasEnabled = false,
 ): ParsedSheetCells {
   const cells = new Map<number, Map<number, ParsedCell>>();
   const merges: Array<{ row: number; column: number; rowSpan: number; colSpan: number; address: string }> =
     [];
+  const retainedFormulas: Array<{
+    cell: ParsedCell;
+    metadata: XlsxFormulaMetadata;
+    hasCachedValue: boolean;
+  }> = [];
+  const formulaResolver = new XlsxFormulaResolver(
+    formulaBudget(budget, staging),
+    warnings,
+    path ? { path } : undefined,
+  );
+  let retainedFormulaTextChars = 0;
+  let retainedInlineTextChars = 0;
+  let warnedFormulaStageLimit = false;
   let cell: PendingCell | undefined;
   let row = 0;
   let rowHadCell = false;
@@ -83,6 +114,7 @@ export function parseWorksheetCells(
   let warnedMergeLimit = false;
   let warnedBadString = false;
   let warnedStringIndex = false;
+  let warnedDuplicateFormula = false;
   let warnedStyleIndex = false;
   let malformed = false;
   const stack: Array<{ localName: string; namespaceURI?: string }> = [];
@@ -156,8 +188,14 @@ export function parseWorksheetCells(
             value: '',
             styleIndex,
             styleIndexInvalid,
+            valuePresent: false,
             valueParts: [],
             valueChars: 0,
+            hasFormula: false,
+            formulaSeen: false,
+            inFormula: false,
+            formulaParts: [],
+            formulaChars: 0,
             inlineParts: [],
             inlineChars: 0,
             inInlineString: false,
@@ -172,13 +210,40 @@ export function parseWorksheetCells(
         } else if (
           cell &&
           info.namespaceURI === MAIN &&
+          info.localName === 'f' &&
+          parent?.localName === 'c' &&
+          parent.namespaceURI === MAIN &&
+          stack.length === 4
+        ) {
+          cell.hasFormula = true;
+          if (!cell.valuePresent) {
+            retainedInlineTextChars -= cell.inlineChars;
+            cell.inlineParts = [];
+            cell.inlineChars = 0;
+            cell.textExceeded = false;
+          }
+          if (cell.formulaSeen) warnedDuplicateFormula = true;
+          else {
+            cell.formulaSeen = true;
+            if (formulasEnabled) {
+              staging.reserveObjects(4);
+              cell.formulaType = boundedFormulaAttribute(attrs.get('t'), 16);
+              cell.formulaSharedIndex = boundedFormulaAttribute(attrs.get('si'), 16);
+              cell.formulaRef = boundedFormulaAttribute(attrs.get('ref'), 32);
+              cell.inFormula = true;
+            }
+          }
+        } else if (
+          cell &&
+          info.namespaceURI === MAIN &&
           info.localName === 'v' &&
           parent?.localName === 'c' &&
           parent.namespaceURI === MAIN &&
           stack.length === 4
-        )
+        ) {
+          cell.valuePresent = true;
           cell.inValue = true;
-        else if (
+        } else if (
           cell &&
           info.namespaceURI === MAIN &&
           info.localName === 'is' &&
@@ -248,6 +313,15 @@ export function parseWorksheetCells(
       onText(text) {
         budget.tick();
         if (!cell) return;
+        if (cell.inFormula && stack.at(-1)?.localName === 'f' && stack.at(-1)?.namespaceURI === MAIN) {
+          const remaining = MAX_FORMULA_TEXT_CHARS + 1 - cell.formulaChars;
+          const length = Math.min(text.length, Math.max(0, remaining));
+          if (length > 0) {
+            staging.reserveObjects();
+            cell.formulaParts.push(length === text.length ? text : text.slice(0, length));
+            cell.formulaChars += length;
+          }
+        }
         if (cell.inValue && stack.at(-1)?.localName === 'v' && stack.at(-1)?.namespaceURI === MAIN) {
           if (cell.type === 's') {
             if (cell.value.length + text.length > 16) cell.valueExceeded = true;
@@ -265,19 +339,44 @@ export function parseWorksheetCells(
           } else cell.textExceeded = true;
         }
         if (cell.inInlineText && stack.at(-1)?.localName === 't' && stack.at(-1)?.namespaceURI === MAIN) {
+          if (cell.hasFormula && !cell.valuePresent) return;
           if (
-            staging.canReserveOutputChars(cell.inlineChars + text.length) &&
+            text.length <= MAX_CELL_TEXT_CHARS - cell.inlineChars &&
+            text.length <= MAX_RETAINED_INLINE_TEXT_CHARS - retainedInlineTextChars &&
             cell.inlineParts.length < 100_000
           ) {
             staging.reserveObjects();
             cell.inlineParts.push(text);
             cell.inlineChars += text.length;
+            retainedInlineTextChars += text.length;
           } else cell.textExceeded = true;
         }
       },
       onClose(_name, info) {
         budget.tick();
         const parent = stack.at(-2);
+        if (
+          info.namespaceURI === MAIN &&
+          cell &&
+          info.localName === 'f' &&
+          parent?.localName === 'c' &&
+          parent.namespaceURI === MAIN &&
+          stack.length === 5 &&
+          cell.inFormula
+        ) {
+          cell.inFormula = false;
+          const metadata: XlsxFormulaMetadata = {
+            text: cell.formulaParts.join(''),
+            ...(cell.formulaType !== undefined ? { type: cell.formulaType } : {}),
+            ...(cell.formulaSharedIndex !== undefined ? { sharedIndex: cell.formulaSharedIndex } : {}),
+            ...(cell.formulaRef !== undefined ? { ref: cell.formulaRef } : {}),
+          };
+          cell.formulaMetadata = metadata;
+          if (metadata.type === 'shared') {
+            staging.reserveObjects();
+            formulaResolver.register(cell.address, metadata);
+          }
+        }
         if (
           info.namespaceURI === MAIN &&
           cell &&
@@ -347,6 +446,7 @@ export function parseWorksheetCells(
             date1904,
             budget,
           );
+          let retainedFormula = false;
           if (!parsedCell) {
             warnedBadString = true;
             skippedCells += 1;
@@ -374,9 +474,33 @@ export function parseWorksheetCells(
               cells.set(parsedCell.row, destination);
               keptCells += 1;
               rowKeptCell = true;
+              if (formulasEnabled && cell.formulaMetadata) {
+                const formulaTextChars =
+                  cell.formulaMetadata.type === 'shared' ? 0 : cell.formulaMetadata.text.length;
+                if (formulaTextChars <= MAX_RETAINED_FORMULA_TEXT_CHARS - retainedFormulaTextChars) {
+                  staging.reserveObjects();
+                  retainedFormulas.push({
+                    cell: parsedCell,
+                    metadata: cell.formulaMetadata,
+                    hasCachedValue: cell.valuePresent,
+                  });
+                  retainedFormulaTextChars += formulaTextChars;
+                  retainedFormula = true;
+                } else if (!warnedFormulaStageLimit) {
+                  warnings.add({
+                    code: 'UNREADABLE_PART',
+                    message: 'A worksheet formula exceeded the bounded reader capacity.',
+                    ...(path ? { loc: { path } } : {}),
+                  });
+                  warnedFormulaStageLimit = true;
+                }
+              }
             } else {
               skippedCells += 1;
             }
+          }
+          if (cell.hasFormula && !cell.valuePresent && (!formulasEnabled || !retainedFormula)) {
+            formulaResolver.resolve(cell.address, cell.formulaMetadata ?? { text: '' }, false, false);
           }
           cell = undefined;
         } else if (
@@ -410,6 +534,23 @@ export function parseWorksheetCells(
       ...(path ? { loc: { path } } : {}),
     });
   }
+  if (warnedDuplicateFormula) {
+    warnings.add({
+      code: 'UNREADABLE_PART',
+      message: 'A worksheet cell contained duplicate formula elements.',
+      ...(path ? { loc: { path } } : {}),
+    });
+  }
+  for (const retained of retainedFormulas) {
+    budget.tick();
+    const formula = formulaResolver.resolve(
+      retained.cell.address!,
+      retained.metadata,
+      retained.hasCachedValue,
+      true,
+    );
+    if (formula !== undefined) retained.cell.formula = formula;
+  }
   for (const merge of merges) {
     budget.tick();
     const anchor = cells.get(merge.row)?.get(merge.column);
@@ -432,23 +573,6 @@ export function parseWorksheetCells(
   };
 }
 
-function parseStyleIndex(
-  raw: string | undefined,
-  budget: Budget,
-): { index: number | undefined; invalid: boolean } {
-  if (raw === undefined) return { index: 0, invalid: false };
-  if (raw.length === 0 || raw.length > 16) return { index: undefined, invalid: true };
-  let index = 0;
-  for (let offset = 0; offset < raw.length; offset += 1) {
-    budget.tick();
-    const digit = raw.charCodeAt(offset) - 48;
-    if (digit < 0 || digit > 9) return { index: undefined, invalid: true };
-    index = index * 10 + digit;
-    if (!Number.isSafeInteger(index)) return { index: undefined, invalid: true };
-  }
-  return { index, invalid: false };
-}
-
 function makeCell(
   pending: PendingCell,
   sharedStrings: readonly string[],
@@ -458,6 +582,10 @@ function makeCell(
   budget?: Budget,
 ): ParsedCell | undefined {
   if (pending.textExceeded || pending.valueExceeded) return undefined;
+  if (pending.hasFormula && !pending.valuePresent) {
+    if (!pending.address || pending.column === 0) return undefined;
+    return { row: pending.row, column: pending.column, text: '', raw: '', address: pending.address };
+  }
   const value = pending.type === 's' ? pending.value : pending.valueParts.join('');
   let text: string;
   let raw: string | number | boolean | null;
@@ -511,6 +639,23 @@ function makeCell(
     }
   }
   return { row: pending.row, column: pending.column, text, raw, address: pending.address };
+}
+
+function parseStyleIndex(
+  raw: string | undefined,
+  budget: Budget,
+): { index: number | undefined; invalid: boolean } {
+  if (raw === undefined) return { index: 0, invalid: false };
+  if (raw.length === 0 || raw.length > 16) return { index: undefined, invalid: true };
+  let index = 0;
+  for (let offset = 0; offset < raw.length; offset += 1) {
+    budget.tick();
+    const digit = raw.charCodeAt(offset) - 48;
+    if (digit < 0 || digit > 9) return { index: undefined, invalid: true };
+    index = index * 10 + digit;
+    if (!Number.isSafeInteger(index)) return { index: undefined, invalid: true };
+  }
+  return { index, invalid: false };
 }
 
 function compactTables(
@@ -608,6 +753,7 @@ function compactTables(
             address: cell.address,
             ...(cell.rowSpan ? { rowSpan: cell.rowSpan } : {}),
             ...(cell.colSpan ? { colSpan: cell.colSpan } : {}),
+            ...(cell.formula !== undefined ? { formula: cell.formula } : {}),
           });
           keptCells += 1;
         } else {
@@ -636,4 +782,18 @@ function columnName(column: number, budget: Budget): string {
     value = Math.floor((value - 1) / 26);
   }
   return output;
+}
+
+function boundedFormulaAttribute(value: string | undefined, maximum: number): string | undefined {
+  if (value === undefined) return undefined;
+  return value.length <= maximum ? value : INVALID_FORMULA_ATTRIBUTE;
+}
+
+/** Formula output is charged here; visible cell text remains staged for DocBuilder. */
+function formulaBudget(budget: Budget, staging: XlsxTextStaging): Budget {
+  return {
+    tick: () => budget.tick(),
+    checkOutputChars: (amount: number) => staging.canReserveOutputChars(amount),
+    addOutputChars: (amount: number) => budget.addOutputChars(amount),
+  } as unknown as Budget;
 }

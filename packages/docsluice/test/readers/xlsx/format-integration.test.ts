@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { Budget } from '../../../src/core/budget.js';
 import { DocBuilder } from '../../../src/core/builder.js';
+import { LimitExceededError } from '../../../src/core/errors.js';
 import { DEFAULT_LIMITS } from '../../../src/core/limits.js';
 import type { ResolvedOptions } from '../../../src/core/options.js';
 import type { ReadContext } from '../../../src/core/reader.js';
@@ -60,10 +61,15 @@ function workbook(stylesXml: string | undefined, cellsXml: string, date1904?: st
   return makeZip(files);
 }
 
-function context(bytes: Uint8Array, limits: Partial<typeof DEFAULT_LIMITS> = {}) {
+function context(
+  bytes: Uint8Array,
+  limits: Partial<typeof DEFAULT_LIMITS> = {},
+  formulas = false,
+  budgetOptions: { onLimit?: 'truncate' | 'throw' } = {},
+) {
   const warnings = new WarningSink();
-  const budget = new Budget({ ...DEFAULT_LIMITS, ...limits }, { warnings });
-  const options = { metadata: false } as ResolvedOptions;
+  const budget = new Budget({ ...DEFAULT_LIMITS, ...limits }, { warnings, onLimit: budgetOptions.onLimit });
+  const options = { metadata: false, formulas } as ResolvedOptions;
   const out = new DocBuilder(
     'xlsx',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -86,6 +92,56 @@ function context(bytes: Uint8Array, limits: Partial<typeof DEFAULT_LIMITS> = {})
 const styledFormats = `<styleSheet xmlns="${MAIN}"><numFmts count="5"><numFmt numFmtId="164" formatCode="0.00"/><numFmt numFmtId="165" formatCode="0%"/><numFmt numFmtId="166" formatCode="# ?/?"/><numFmt numFmtId="167" formatCode="&quot;$&quot;#,##0.00"/><numFmt numFmtId="168" formatCode="0.00;[Red](0.00);&quot;zero&quot;;&quot;text:&quot;@"/></numFmts><cellXfs count="7"><xf numFmtId="0"/><xf numFmtId="164"/><xf numFmtId="165"/><xf numFmtId="166"/><xf numFmtId="167"/><xf numFmtId="168"/><xf numFmtId="14"/></cellXfs></styleSheet>`;
 
 describe('XLSX number format reader integration', () => {
+  it('keeps formula text separate from styled cached values and budgets both together', async () => {
+    const styledFormula = workbook(
+      `<styleSheet xmlns="${MAIN}"><numFmts><numFmt numFmtId="164" formatCode="0.00"/></numFmts><cellXfs count="2"><xf numFmtId="0"/><xf numFmtId="164"/></cellXfs></styleSheet>`,
+      '<c r="A1" s="1"><f>1+1</f><v>2</v></c>',
+    );
+    const exact = context(styledFormula, { outputChars: 16 }, true);
+    await xlsxReader.read(exact.ctx);
+    const document = exact.out.finish();
+    const section = document.blocks.find((block) => block.kind === 'section');
+    const table =
+      section?.kind === 'section' ? section.blocks.find((block) => block.kind === 'table') : undefined;
+    expect(table?.kind).toBe('table');
+    if (table?.kind !== 'table') throw new Error('Expected formatted formula table');
+    expect(table.rows[0]?.[0]).toMatchObject({ text: '2.00', raw: 2, formula: '1+1' });
+    expect(exact.budget.outputChars).toBe(16);
+    expect(exact.budget.truncated).toBe(false);
+
+    const oneShort = context(styledFormula, { outputChars: 15 }, true);
+    await xlsxReader.read(oneShort.ctx);
+    const shortDocument = oneShort.out.finish();
+    const shortSection = shortDocument.blocks.find((block) => block.kind === 'section');
+    const shortTable =
+      shortSection?.kind === 'section'
+        ? shortSection.blocks.find((block) => block.kind === 'table')
+        : undefined;
+    expect(shortTable?.kind).toBe('table');
+    if (shortTable?.kind !== 'table') throw new Error('Expected cached-value table below formula limit');
+    expect(shortTable.rows[0]?.[0]).toMatchObject({ text: '2.00', raw: 2 });
+    expect(Object.hasOwn(shortTable.rows[0]![0]!, 'formula')).toBe(false);
+    expect(oneShort.budget.outputChars).toBe(13);
+    expect(oneShort.budget.truncated).toBe(true);
+    expect(oneShort.warnings.warnings.some(({ code }) => code === 'TRUNCATED')).toBe(true);
+
+    const throwing = context(styledFormula, { outputChars: 15 }, true, { onLimit: 'throw' });
+    await expect(xlsxReader.read(throwing.ctx)).rejects.toBeInstanceOf(LimitExceededError);
+
+    const cachedOnly = context(styledFormula);
+    await xlsxReader.read(cachedOnly.ctx);
+    const cachedDocument = cachedOnly.out.finish();
+    const cachedSection = cachedDocument.blocks.find((block) => block.kind === 'section');
+    const cachedTable =
+      cachedSection?.kind === 'section'
+        ? cachedSection.blocks.find((block) => block.kind === 'table')
+        : undefined;
+    expect(cachedTable?.kind).toBe('table');
+    if (cachedTable?.kind !== 'table') throw new Error('Expected cached-value table');
+    expect(cachedTable.rows[0]?.[0]).toMatchObject({ text: '2.00', raw: 2 });
+    expect(Object.hasOwn(cachedTable.rows[0]![0]!, 'formula')).toBe(false);
+  });
+
   it('formats styled numeric and string cells through their workbook styles relationship', async () => {
     const bytes = workbook(
       styledFormats,

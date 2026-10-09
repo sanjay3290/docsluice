@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { Budget } from '../../../src/core/budget.js';
+import { AbortError, LimitExceededError, StrictModeError } from '../../../src/core/errors.js';
 import { DEFAULT_LIMITS } from '../../../src/core/limits.js';
 import type { ResolvedOptions } from '../../../src/core/options.js';
 import { DocBuilder } from '../../../src/core/builder.js';
@@ -17,10 +18,18 @@ import { makeZip } from '../../helpers/zip.js';
 const fixture = (name: string): Uint8Array =>
   new Uint8Array(readFileSync(new URL(`./fixtures/${name}`, import.meta.url)));
 
-function createContext(bytes: Uint8Array, limits: Partial<typeof DEFAULT_LIMITS> = {}) {
-  const warnings = new WarningSink();
-  const budget = new Budget({ ...DEFAULT_LIMITS, ...limits }, { warnings });
-  const options = { metadata: true } as ResolvedOptions;
+function createContext(
+  bytes: Uint8Array,
+  limits: Partial<typeof DEFAULT_LIMITS> = {},
+  formulas = false,
+  budgetOptions: { onLimit?: 'truncate' | 'throw'; strict?: boolean; signal?: AbortSignal } = {},
+) {
+  const warnings = new WarningSink({ strict: budgetOptions.strict });
+  const budget = new Budget(
+    { ...DEFAULT_LIMITS, ...limits },
+    { warnings, onLimit: budgetOptions.onLimit, signal: budgetOptions.signal },
+  );
+  const options = { metadata: true, formulas } as ResolvedOptions;
   const out = new DocBuilder(
     'xlsx',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -42,6 +51,11 @@ function createContext(bytes: Uint8Array, limits: Partial<typeof DEFAULT_LIMITS>
 
 function sheetByName(parsed: ParsedXlsxWorkbook, name: string) {
   return parsed.sheets.find((sheet) => sheet.name === name)!;
+}
+
+function formulaFixtureTable(blocks: ReturnType<DocBuilder['finish']>['blocks']) {
+  const section = blocks.find((block) => block.kind === 'section' && block.role === 'sheet');
+  return section?.kind === 'section' ? section.blocks.find((block) => block.kind === 'table') : undefined;
 }
 
 function largeWorkbook(rowCount: number): Uint8Array {
@@ -78,6 +92,252 @@ function largeWorkbook(rowCount: number): Uint8Array {
 }
 
 describe('xlsx sparse sheets and strings', () => {
+  it('emits cached, shared, and array formulas only when requested', async () => {
+    const bytes = fixture('formula_cached_missing_shared_array.xlsx');
+    const disabled = createContext(bytes);
+    await xlsxReader.read(disabled.ctx);
+    const defaultDocument = disabled.out.finish();
+    const defaultTable = formulaFixtureTable(defaultDocument.blocks);
+    expect(defaultTable?.kind).toBe('table');
+    if (defaultTable?.kind !== 'table') throw new Error('Expected formula fixture table.');
+    expect(defaultTable.rows.map((row) => row.map((cell) => cell.text))).toEqual([
+      ['5'],
+      [''],
+      ['6'],
+      ['7'],
+      ['10'],
+      ['12'],
+    ]);
+    expect(defaultTable.rows.flat().some((cell) => Object.hasOwn(cell, 'formula'))).toBe(false);
+    expect(disabled.warnings.warnings.filter(({ message }) => message.includes('cached value'))).toHaveLength(
+      1,
+    );
+    expect(disabled.budget.outputChars).toBe(15);
+
+    const enabled = createContext(bytes, {}, true);
+    await xlsxReader.read(enabled.ctx);
+    const formulaDocument = enabled.out.finish();
+    const formulaTable = formulaFixtureTable(formulaDocument.blocks);
+    expect(formulaTable?.kind).toBe('table');
+    if (formulaTable?.kind !== 'table') throw new Error('Expected formula fixture table.');
+    expect(formulaTable.rows.flat().map(({ text, formula }) => [text, formula])).toEqual([
+      ['5', '1+1'],
+      ['', 'NOW()'],
+      ['6', 'A1+1'],
+      ['7', 'A1+1'],
+      ['10', 'A1:A2*2'],
+      ['12', undefined],
+    ]);
+    expect(formulaTable.rows[0]?.[0]).toMatchObject({ text: '5', raw: 5, formula: '1+1' });
+    expect(enabled.warnings.warnings.filter(({ message }) => message.includes('cached value'))).toHaveLength(
+      1,
+    );
+    expect(enabled.budget.outputChars).toBe(38);
+  });
+
+  it('budgets formula, cached text, and sheet title together at the exact output limit', async () => {
+    const bytes = fixture('formula_cached_missing_shared_array.xlsx');
+    const exact = createContext(bytes, { outputChars: 38 }, true);
+    await xlsxReader.read(exact.ctx);
+    const document = exact.out.finish();
+    expect(formulaFixtureTable(document.blocks)).toBeDefined();
+    expect(exact.budget.outputChars).toBe(38);
+    expect(document.stats.truncated).toBe(false);
+
+    const truncated = createContext(bytes, { outputChars: 37 }, true);
+    await xlsxReader.read(truncated.ctx);
+    const partial = truncated.out.finish();
+    const table = formulaFixtureTable(partial.blocks);
+    expect(table?.kind).toBe('table');
+    if (table?.kind !== 'table') throw new Error('Expected retained cached-value table.');
+    expect(table.rows[4]?.[0]).toMatchObject({ text: '10' });
+    expect(table.rows[4]?.[0]?.formula).toBeUndefined();
+    expect(truncated.budget.truncated).toBe(true);
+    expect(truncated.warnings.warnings.some(({ code }) => code === 'TRUNCATED')).toBe(true);
+  });
+
+  it('propagates output throw, strict warnings, and aborts through the reader', async () => {
+    const bytes = fixture('formula_cached_missing_shared_array.xlsx');
+    const throwing = createContext(bytes, { outputChars: 37 }, true, { onLimit: 'throw' });
+    await expect(xlsxReader.read(throwing.ctx)).rejects.toBeInstanceOf(LimitExceededError);
+
+    const strict = createContext(bytes, { outputChars: 37 }, true, { strict: true });
+    await expect(xlsxReader.read(strict.ctx)).rejects.toBeInstanceOf(StrictModeError);
+
+    const controller = new AbortController();
+    const aborted = createContext(bytes, {}, true, { signal: controller.signal });
+    controller.abort();
+    await expect(xlsxReader.read(aborted.ctx)).rejects.toBeInstanceOf(AbortError);
+  });
+
+  it('distinguishes a missing cached value from an explicitly empty cached value', () => {
+    const xml = new TextEncoder().encode(
+      '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1" t="str"><f>NOW()</f></c><c r="A2" t="str"><f>""</f><v></v></c></row></sheetData></worksheet>',
+    );
+    const warnings = new WarningSink();
+    const budget = new Budget(DEFAULT_LIMITS, { warnings });
+    const parsed = parseWorksheetCells(xml, [], budget, warnings);
+    expect(parsed.cells.get(1)?.get(1)).toMatchObject({ text: '', raw: '' });
+    expect(parsed.cells.get(2)?.get(1)).toMatchObject({ text: '', raw: '' });
+    expect(warnings.warnings.filter(({ message }) => message.includes('cached value'))).toHaveLength(1);
+  });
+
+  it.each([false, true])(
+    'keeps every formula cell without a cached value blank and warns once when formulas=%s',
+    (formulas) => {
+      const xml = new TextEncoder().encode(
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:e="urn:extension"><sheetData><row r="1"><c r="A1" t="s"><f>NOW()</f></c><c r="A2" t="n"><f>NOW()</f></c><c r="A3" t="str"><f>NOW()</f></c><c r="A4" t="b"><f>NOW()</f></c><c r="A5" t="inlineStr"><f>NOW()</f><is><t>INLINE_SECRET</t><e:t>EXTENSION_SECRET</e:t></is></c><c r="A6" t="inlineStr"><is><t>PRE_INLINE_SECRET</t></is><f>NOW()</f></c></row></sheetData></worksheet>',
+      );
+      const warnings = new WarningSink();
+      const budget = new Budget(DEFAULT_LIMITS, { warnings });
+      const parsed = parseWorksheetCells(
+        xml,
+        ['valid shared-string cache'],
+        budget,
+        warnings,
+        undefined,
+        new XlsxTextStaging(budget),
+        undefined,
+        false,
+        formulas,
+      );
+      const cells = [...parsed.cells.values()].flatMap((row) => [...row.values()]);
+      expect(cells).toHaveLength(6);
+      expect(cells.map(({ text, raw }) => [text, raw])).toEqual([
+        ['', ''],
+        ['', ''],
+        ['', ''],
+        ['', ''],
+        ['', ''],
+        ['', ''],
+      ]);
+      expect(cells.some(({ text, raw }) => `${text}${String(raw)}`.includes('SECRET'))).toBe(false);
+      expect(warnings.warnings.filter(({ message }) => message.includes('cached value'))).toHaveLength(1);
+      expect(warnings.warnings.filter(({ message }) => message.includes('shared string index'))).toHaveLength(
+        0,
+      );
+
+      const strictWarnings = new WarningSink({ strict: true });
+      const strictBudget = new Budget(DEFAULT_LIMITS, { warnings: strictWarnings });
+      expect(() =>
+        parseWorksheetCells(
+          xml,
+          ['valid shared-string cache'],
+          strictBudget,
+          strictWarnings,
+          undefined,
+          new XlsxTextStaging(strictBudget),
+          undefined,
+          false,
+          formulas,
+        ),
+      ).toThrow(StrictModeError);
+    },
+  );
+
+  it('does not let uncached inline formula text consume a tight output quota', () => {
+    const xml = new TextEncoder().encode(
+      '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1" t="inlineStr"><f>NOW()</f><is><t>IGNORED_INLINE_TEXT</t></is></c><c r="A2" t="inlineStr"><is><t>PRE_IGNORED_INLINE_TEXT</t></is><f>NOW()</f></c></row></sheetData></worksheet>',
+    );
+    for (const formulas of [false, true]) {
+      const warnings = new WarningSink();
+      const budget = new Budget({ ...DEFAULT_LIMITS, outputChars: 0 }, { warnings });
+      const parsed = parseWorksheetCells(
+        xml,
+        [],
+        budget,
+        warnings,
+        undefined,
+        new XlsxTextStaging(budget),
+        undefined,
+        false,
+        formulas,
+      );
+      expect(parsed.keptCells).toBe(2);
+      expect(parsed.skippedCells).toBe(0);
+      expect(parsed.cells.get(1)?.get(1)).toMatchObject({ text: '', raw: '' });
+      expect(parsed.cells.get(2)?.get(1)).toMatchObject({ text: '', raw: '' });
+      expect(budget.truncated).toBe(formulas);
+      expect(budget.outputChars).toBe(0);
+      expect(warnings.warnings.filter(({ message }) => message.includes('cached value'))).toHaveLength(1);
+    }
+  });
+
+  it('preserves cached values and treats an explicit empty v as a cached value', () => {
+    const xml = new TextEncoder().encode(
+      '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1" t="s"><f>NOW()</f><v>0</v></c><c r="A2" t="str"><f>NOW()</f><v>cached string</v></c><c r="A3" t="b"><f>NOW()</f><v>1</v></c><c r="A4" t="n"><f>NOW()</f><v>2.5</v></c><c r="A5" t="str"><f>NOW()</f><v></v></c></row></sheetData></worksheet>',
+    );
+    const warnings = new WarningSink();
+    const budget = new Budget(DEFAULT_LIMITS, { warnings });
+    const parsed = parseWorksheetCells(
+      xml,
+      ['shared cache'],
+      budget,
+      warnings,
+      undefined,
+      new XlsxTextStaging(budget),
+      undefined,
+      false,
+      true,
+    );
+    const cells = [...parsed.cells.values()].flatMap((row) => [...row.values()]);
+    expect(cells.map(({ text, raw }) => [text, raw])).toEqual([
+      ['shared cache', 'shared cache'],
+      ['cached string', 'cached string'],
+      ['TRUE', true],
+      ['2.5', 2.5],
+      ['', ''],
+    ]);
+    expect(warnings.warnings.filter(({ message }) => message.includes('cached value'))).toHaveLength(0);
+  });
+
+  it('bounds hostile shared indexes, references, and formula text without leaking source content', () => {
+    const overlongIndex = '9'.repeat(30);
+    const overlongRef = `A1:A2${'X'.repeat(40)}`;
+    const xml = new TextEncoder().encode(
+      `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1"><f t="shared" si="${overlongIndex}" ref="A1:A2">SECRET_INDEX</f><v>1</v></c><c r="B1"><f t="shared" si="2" ref="${overlongRef}">SECRET_REF</f><v>2</v></c></row></sheetData></worksheet>`,
+    );
+    const warnings = new WarningSink();
+    const budget = new Budget(DEFAULT_LIMITS, { warnings });
+    const parsed = parseWorksheetCells(
+      xml,
+      [],
+      budget,
+      warnings,
+      undefined,
+      new XlsxTextStaging(budget),
+      undefined,
+      false,
+      true,
+    );
+    expect(parsed.cells.get(1)?.get(1)?.formula).toBeUndefined();
+    expect(parsed.cells.get(1)?.get(2)?.formula).toBeUndefined();
+    expect(JSON.stringify(warnings.warnings)).not.toMatch(/SECRET_|9{10}|X{10}/);
+  });
+
+  it('bounds oversized formula text and omits formula metadata from the output', () => {
+    const text = 'x'.repeat(2_000_001);
+    const xml = new TextEncoder().encode(
+      `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1"><f>${text}</f><v>5</v></c></row></sheetData></worksheet>`,
+    );
+    const warnings = new WarningSink();
+    const budget = new Budget(DEFAULT_LIMITS, { warnings });
+    const parsed = parseWorksheetCells(
+      xml,
+      [],
+      budget,
+      warnings,
+      undefined,
+      new XlsxTextStaging(budget),
+      undefined,
+      false,
+      true,
+    );
+    expect(parsed.cells.get(1)?.get(1)).toMatchObject({ text: '5', raw: 5 });
+    expect(parsed.cells.get(1)?.get(1)?.formula).toBeUndefined();
+    expect(JSON.stringify(warnings.warnings)).not.toContain('x'.repeat(100));
+  });
+
   it('uses workbook sheet order, resolves states and string/cell types', async () => {
     const bytes = fixture('basics_order_states_strings_types_merges.xlsx');
     const { ctx, warnings } = createContext(bytes);
