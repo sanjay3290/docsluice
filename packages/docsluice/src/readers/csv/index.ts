@@ -1,11 +1,15 @@
 import type { Cell, FormatId } from '../../core/model.js';
 import type { ReadContext, Reader } from '../../core/reader.js';
-import { decodeText, detectEncoding } from '../../detect/encoding.js';
+import type { Budget } from '../../core/budget.js';
+import type { WarningSink } from '../../core/warnings.js';
+import { decodeText, detectEncoding, type TextEncoding } from '../../detect/encoding.js';
 
 const MAX_COLUMNS = 16_384;
 const MAX_QUOTED_CHARS = 1_000_000;
 const SNIFF_BYTES = 8 * 1024;
 const DECODE_CHUNK_BYTES = 64 * 1024;
+const STREAM_DECODE_BYTES = 8 * 1024;
+const STREAM_BATCH_ROWS = 1_000;
 const DELIMITERS = [',', ';', '\t', '|'] as const;
 
 type RowHandler = (row: string[]) => boolean | void;
@@ -171,6 +175,161 @@ export function parseDelimitedByteChunks(chunks: Iterable<Uint8Array>, delimiter
   for (const chunk of chunks) parser.write(decoder.decode(chunk, { stream: true }));
   parser.write(decoder.decode(), true);
   return rows;
+}
+
+/** The stream adapter shape used by the CSV helper until the core stream API lands. */
+export interface DelimitedStreamInput {
+  readonly prefix: Uint8Array;
+  /** Yields the complete source, including `prefix` bytes. */
+  chunks(): AsyncIterable<Uint8Array>;
+}
+
+/** Small output surface needed by incremental CSV extraction and bounded test sinks. */
+export interface DelimitedStreamContext {
+  readonly budget: Budget;
+  readonly warnings: WarningSink;
+  readonly path: string;
+  readonly out: {
+    setEncoding(encoding: TextEncoding): void;
+    table(rows: Cell[][], headerRows: number, loc?: { path?: string; range?: string }): boolean;
+  };
+}
+
+/**
+ * Parse a stream into at most 1,000-row tables. The input's chunks() iterable must
+ * yield the whole source, including bytes in prefix; prefix is only used for sniffing.
+ */
+export async function readDelimitedStream(
+  ctx: DelimitedStreamContext,
+  input: DelimitedStreamInput,
+  flush: () => Promise<void>,
+  delimiter?: string,
+): Promise<number> {
+  ctx.budget.tick();
+  const detected = detectEncoding(input.prefix);
+  if (!detected.isText || detected.encoding === 'unsupported') return 0;
+  ctx.out.setEncoding(detected.encoding);
+  if (detected.warning)
+    ctx.warnings.add({ code: detected.warning, message: 'Text encoding was inferred from the byte sample.' });
+  const sampleText = decodeText(input.prefix.subarray(0, SNIFF_BYTES), detected.encoding);
+  const sniffText = sampleText.charCodeAt(0) === 0xfeff ? sampleText.slice(1) : sampleText;
+  const chosen = delimiter ?? sniffDelimiter(sniffText, () => ctx.budget.tick());
+  const decoder = new TextDecoder(detected.encoding);
+  const pendingRows: string[][] = [];
+  let pendingChars = 0;
+  let emittedRows = 0;
+  let parseStopped = false;
+  let cellStopped = false;
+  const parser = new IncrementalDelimitedParser(
+    chosen,
+    (row) => {
+      ctx.budget.tick();
+      const rowChars = row.reduce((sum, cell) => sum + cell.length, 0);
+      if (!ctx.budget.checkOutputChars(pendingChars + rowChars)) {
+        parseStopped = true;
+        return false;
+      }
+      pendingRows.push(row);
+      pendingChars += rowChars;
+      return true;
+    },
+    Math.max(0, ctx.budget.limits.outputChars - ctx.budget.outputChars),
+  );
+
+  const emitPending = async (final = false): Promise<boolean> => {
+    let offset = 0;
+    while (pendingRows.length - offset >= (final ? 1 : STREAM_BATCH_ROWS)) {
+      ctx.budget.tick();
+      const batch = pendingRows.slice(offset, offset + STREAM_BATCH_ROWS);
+      let width = 0;
+      for (const row of batch) {
+        ctx.budget.tick();
+        width = Math.max(width, row.length);
+      }
+      const available = Math.max(0, ctx.budget.limits.cells - ctx.budget.cells);
+      const acceptedRows = Math.min(batch.length, width === 0 ? 0 : Math.floor(available / width));
+      if (acceptedRows > 0) {
+        const acceptedCells = acceptedRows * width;
+        if (!ctx.budget.addCells(acceptedCells)) return false;
+        const cells: Cell[][] = [];
+        for (let rowIndex = 0; rowIndex < acceptedRows; rowIndex += 1) {
+          ctx.budget.tick();
+          const sourceRow = batch[rowIndex]!;
+          const outputRow: Cell[] = [];
+          for (let column = 0; column < width; column += 1) {
+            ctx.budget.tick();
+            outputRow.push({
+              text: sourceRow[column] ?? '',
+              address: `${columnName(column + 1)}${emittedRows + rowIndex + 1}`,
+            });
+          }
+          cells.push(outputRow);
+        }
+        const startRow = emittedRows + 1;
+        const endRow = emittedRows + acceptedRows;
+        const endColumn = columnName(width);
+        const loc = {
+          range: `A${startRow}:${endColumn}${endRow}`,
+          ...(ctx.path.length > 0 ? { path: ctx.path } : {}),
+        };
+        if (!ctx.out.table(cells, 0, loc)) {
+          parseStopped = true;
+          return false;
+        }
+        emittedRows += acceptedRows;
+        for (let rowIndex = 0; rowIndex < acceptedRows; rowIndex += 1) {
+          const row = batch[rowIndex]!;
+          pendingChars -= row.reduce((sum, cell) => sum + cell.length, 0);
+        }
+        if (acceptedRows < batch.length) {
+          ctx.budget.addCells(width);
+          cellStopped = true;
+          parseStopped = true;
+          pendingRows.splice(0, offset + acceptedRows);
+          await flush();
+          return false;
+        }
+        offset += acceptedRows;
+        await flush();
+      } else {
+        ctx.budget.addCells(Math.max(width, 1));
+        cellStopped = true;
+        parseStopped = true;
+        return false;
+      }
+    }
+    if (offset > 0) pendingRows.splice(0, offset);
+    return true;
+  };
+
+  let complete = true;
+  outer: for await (const sourceChunk of input.chunks()) {
+    for (let offset = 0; offset < sourceChunk.length; offset += STREAM_DECODE_BYTES) {
+      ctx.budget.tick();
+      const end = Math.min(sourceChunk.length, offset + STREAM_DECODE_BYTES);
+      const text = decoder.decode(sourceChunk.subarray(offset, end), { stream: true });
+      if (!parser.write(text, false, () => ctx.budget.tick())) complete = false;
+      const emitted = await emitPending(!complete);
+      await flush();
+      if (!emitted) complete = false;
+      if (!complete) break outer;
+    }
+  }
+  if (complete) {
+    const finalText = decoder.decode();
+    parser.write(finalText, true, () => ctx.budget.tick());
+    await emitPending(true);
+    await flush();
+  }
+  if (parser.malformed)
+    ctx.warnings.add({ code: 'UNREADABLE_PART', message: 'Malformed CSV quoting was recovered.' });
+  if (parseStopped || cellStopped) {
+    ctx.warnings.add({
+      code: 'TRUNCATED',
+      message: `CSV stream stopped after ${emittedRows} rows; additional rows may have been skipped.`,
+    });
+  }
+  return emittedRows;
 }
 
 function sniffDelimiter(text: string, tick: () => void): string {

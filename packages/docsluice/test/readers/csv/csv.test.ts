@@ -6,6 +6,7 @@ import type { ReadContext } from '../../../src/core/reader.js';
 import type { ResolvedOptions } from '../../../src/core/options.js';
 import { WarningSink } from '../../../src/core/warnings.js';
 import csvReader, {
+  readDelimitedStream,
   parseDelimitedByteChunks,
   parseDelimitedChunks,
   IncrementalDelimitedParser,
@@ -206,5 +207,139 @@ describe('CSV and TSV readers', () => {
       extractChild: async () => {},
     } as ReadContext;
     await expect(csvReader.read(ctx)).rejects.toThrow();
+  });
+
+  it('streams in 1,000-row batches with per-batch ranges and ragged padding', async () => {
+    const source = Array.from({ length: 1001 }, (_, index) => (index === 1000 ? 'tail' : 'a,b')).join('\n');
+    const bytes = new TextEncoder().encode(source);
+    const warnings = new WarningSink();
+    const budget = new Budget(resolveLimits({ cells: 3000 }), { warnings });
+    const out = new DocBuilder('csv', 'text/csv', budget);
+    let flushes = 0;
+    const chunks = async function* () {
+      await Promise.resolve();
+      for (let index = 0; index < bytes.length; index += 13) yield bytes.subarray(index, index + 13);
+    };
+    const emitted = await readDelimitedStream(
+      { budget, warnings, path: 'child.csv', out },
+      { prefix: bytes.subarray(0, 32), chunks },
+      async () => {
+        flushes += 1;
+        await Promise.resolve();
+      },
+    );
+    const doc = out.finish();
+    expect(emitted).toBe(1001);
+    expect(doc.blocks).toHaveLength(2);
+    expect(doc.blocks[0]).toMatchObject({
+      kind: 'table',
+      headerRows: 0,
+      loc: { path: 'child.csv', range: 'A1:B1000' },
+    });
+    expect(doc.blocks[1]).toMatchObject({
+      kind: 'table',
+      loc: { path: 'child.csv', range: 'A1001:A1001' },
+    });
+    expect(doc.blocks[1]?.kind === 'table' && doc.blocks[1].rows[0]).toEqual([
+      { text: 'tail', address: 'A1001' },
+    ]);
+    expect(flushes).toBeGreaterThan(2);
+  });
+
+  it('preserves CSV rows through every UTF-8 and UTF-16 byte split', async () => {
+    const utf8 = new TextEncoder().encode('a,b\r\n☃,x');
+    const utf16Text = 'a,b\r\n☃,x';
+    const utf16 = new Uint8Array(2 + utf16Text.length * 2);
+    utf16.set([0xff, 0xfe]);
+    for (let index = 0; index < utf16Text.length; index += 1) {
+      const codeUnit = utf16Text.charCodeAt(index);
+      utf16[2 + index * 2] = codeUnit & 0xff;
+      utf16[3 + index * 2] = codeUnit >> 8;
+    }
+    for (const bytes of [utf8, utf16]) {
+      const expectedEncoding = bytes === utf8 ? 'utf-8' : 'utf-16le';
+      for (let split = 0; split <= bytes.length; split += 1) {
+        const warnings = new WarningSink();
+        const budget = new Budget(resolveLimits(), { warnings });
+        const out = new DocBuilder('csv', 'text/csv', budget);
+        const chunks = async function* () {
+          await Promise.resolve();
+          yield bytes.subarray(0, split);
+          yield bytes.subarray(split);
+        };
+        await readDelimitedStream(
+          { budget, warnings, path: '', out },
+          { prefix: bytes.subarray(0, 32), chunks },
+          async () => {
+            await Promise.resolve();
+          },
+        );
+        const doc = out.finish();
+        expect(doc.encoding).toBe(expectedEncoding);
+        expect(doc.blocks[0]).toMatchObject({
+          kind: 'table',
+          rows: [
+            [{ text: 'a' }, { text: 'b' }],
+            [{ text: '☃' }, { text: 'x' }],
+          ],
+        });
+      }
+    }
+  });
+
+  it('honors streamed cell, output and abort limits', async () => {
+    const bytes = new TextEncoder().encode('a,b\n1,2\n3,4\n5,6');
+    const warnings = new WarningSink();
+    const budget = new Budget(resolveLimits({ cells: 3 }), { warnings });
+    const out = new DocBuilder('csv', 'text/csv', budget);
+    const chunks = async function* () {
+      await Promise.resolve();
+      yield bytes;
+    };
+    await readDelimitedStream(
+      { budget, warnings, path: '', out },
+      { prefix: bytes.subarray(0, 16), chunks },
+      async () => {
+        await Promise.resolve();
+      },
+    );
+    const cellDoc = out.finish();
+    expect(cellDoc.blocks[0]?.kind === 'table' && cellDoc.blocks[0].rows.flat().length).toBeLessThanOrEqual(
+      3,
+    );
+    expect(warnings.warnings.map((warning) => warning.code)).toContain('TRUNCATED');
+
+    const outputWarnings = new WarningSink();
+    const outputBudget = new Budget(resolveLimits({ outputChars: 2 }), { warnings: outputWarnings });
+    const output = new DocBuilder('csv', 'text/csv', outputBudget);
+    await readDelimitedStream(
+      { budget: outputBudget, warnings: outputWarnings, path: '', out: output },
+      { prefix: bytes.subarray(0, 16), chunks },
+      async () => {
+        await Promise.resolve();
+      },
+    );
+    expect(output.finish().stats.truncated).toBe(true);
+
+    const controller = new AbortController();
+    const abortWarnings = new WarningSink();
+    const abortBudget = new Budget(resolveLimits(), { warnings: abortWarnings, signal: controller.signal });
+    const abortOut = new DocBuilder('csv', 'text/csv', abortBudget);
+    const manyRows = new TextEncoder().encode('a,b\n'.repeat(5000));
+    const abortChunks = async function* () {
+      await Promise.resolve();
+      for (let index = 0; index < manyRows.length; index += 8192)
+        yield manyRows.subarray(index, index + 8192);
+    };
+    await expect(
+      readDelimitedStream(
+        { budget: abortBudget, warnings: abortWarnings, path: '', out: abortOut },
+        { prefix: manyRows.subarray(0, 32), chunks: abortChunks },
+        async () => {
+          await Promise.resolve();
+          controller.abort();
+        },
+      ),
+    ).rejects.toThrow();
   });
 });
