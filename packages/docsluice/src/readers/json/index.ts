@@ -234,7 +234,7 @@ export const reader: Reader = {
       if (frame.value === null || typeof frame.value !== 'object') {
         const framePath = formatPath(frame.path, ctx);
         if (framePath === undefined) return;
-        const locPath = ctx.path ? `${ctx.path}#${framePath}` : framePath;
+        const locPath = ctx.path ? `${ctx.path}/${framePath}` : framePath;
         stack.pop();
         if (!ctx.out.paragraph(`${framePath}: ${scalarText(frame.value)}`, { path: locPath })) return;
         continue;

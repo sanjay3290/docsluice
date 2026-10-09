@@ -134,7 +134,7 @@ describe('JSON reader', () => {
       extractChild: async () => {},
     });
     expect(out.finish().blocks).toMatchObject([
-      { loc: { path: 'archive/data.json#$.a' } },
+      { loc: { path: 'archive/data.json/$.a' } },
       { kind: 'code', loc: { path: 'archive/data.json' } },
     ]);
   });

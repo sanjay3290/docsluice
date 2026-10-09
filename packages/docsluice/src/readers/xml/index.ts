@@ -55,7 +55,7 @@ export const reader: Reader = {
       ctx.budget.tick();
       const frame = stack.pop()!;
       const text = directText(frame.element, ctx);
-      const path = ctx.path ? `${ctx.path}#${frame.path}` : frame.path;
+      const path = ctx.path ? `${ctx.path}${frame.path}` : frame.path;
       if (text && !ctx.out.paragraph(text, { path })) return;
 
       const { counts, elements } = childCounts(frame.element, ctx);

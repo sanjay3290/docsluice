@@ -27,6 +27,20 @@ async function parse(source: string, limits: Record<string, number> = {}) {
 }
 
 describe('XML reader', () => {
+  it('prefixes element locations with the pipeline child path exactly once', async () => {
+    const budget = new Budget(resolveLimits());
+    const out = new DocBuilder('xml', 'application/xml', budget);
+    await reader.read({
+      bytes: new TextEncoder().encode('<root><item>child</item></root>'),
+      options: { limits: budget.limits } as ResolvedOptions,
+      budget,
+      warnings: budget.warnings,
+      out,
+      path: 'archive/data.xml',
+      extractChild: async () => {},
+    });
+    expect(out.finish().blocks).toMatchObject([{ loc: { path: 'archive/data.xml/root/item' } }]);
+  });
   it('emits direct element text with stable sibling-indexed paths and skips attributes', async () => {
     const { doc } = await parse(
       '<root><child code="A"><name>Amber</name></child><child code="B"><name>Blue</name></child><note>line one &amp; line two</note></root>',
