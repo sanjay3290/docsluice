@@ -10,6 +10,12 @@ test('ESM entry loads', async () => {
   const mod = await import('../dist/index.js');
   assert.equal(typeof mod.resolveLimits, 'function');
   assert.equal(mod.DEFAULT_LIMITS.zipEntries, 10_000);
+  assert.equal(typeof mod.parseXml, 'function');
+  assert.equal(typeof mod.scanXml, 'function');
+  const warnings = new mod.WarningSink();
+  const budget = new mod.Budget(mod.DEFAULT_LIMITS, { warnings });
+  const tree = mod.parseXml('<root>text</root>', { budget, warnings });
+  assert.equal(tree?.children[0], 'text');
 });
 
 test('CJS entry loads', () => {
