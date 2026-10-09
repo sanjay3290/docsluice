@@ -1,0 +1,21 @@
+From: Private Sender <private.sender@example.test>
+To: Private Reader <private.reader@example.test>
+Cc: Private Copy <private.cc@example.test>
+Date: Tue, 06 Oct 2026 09:30:00 +0000
+Subject: Privacy and CID
+MIME-Version: 1.0
+Content-Type: multipart/related; boundary=rel
+
+--rel
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<p>INLINE CID MARKER <img src=3D"cid:tiny-image@example.test"></p>
+--rel
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-ID: <tiny-image@example.test>
+Content-Disposition: inline; filename="tiny.png"
+
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNQSFjwHwAD5AIgpNgczAAAAABJRU5ErkJggg==
+--rel--
