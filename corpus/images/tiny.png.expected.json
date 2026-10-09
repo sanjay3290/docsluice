@@ -1,0 +1,45 @@
+{
+  "format": "png",
+  "mimeType": "image/png",
+  "metadata": {
+    "custom": [
+      {
+        "name": "image.width",
+        "value": "1"
+      },
+      {
+        "name": "image.height",
+        "value": "1"
+      }
+    ]
+  },
+  "features": {
+    "hasMacros": false,
+    "hasExternalLinks": false,
+    "hasEmbeddedFiles": false,
+    "isEncrypted": false,
+    "hasJavaScript": false
+  },
+  "blocks": [
+    {
+      "kind": "image",
+      "mimeType": "image/png",
+      "width": 1,
+      "height": 1,
+      "loc": {
+        "offset": [
+          0,
+          0
+        ]
+      }
+    }
+  ],
+  "children": [],
+  "warnings": [],
+  "stats": {
+    "bytesRead": 69,
+    "durationMs": 0,
+    "truncated": false,
+    "needsOcr": false
+  }
+}

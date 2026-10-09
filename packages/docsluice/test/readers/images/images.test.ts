@@ -1,19 +1,21 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { AbortError } from '../../../src/core/errors.js';
+import { AbortError, LimitExceededError } from '../../../src/core/errors.js';
+import { extract as extractPublic } from '../../../src/core/extract.js';
 import { Budget } from '../../../src/core/budget.js';
 import { DocBuilder } from '../../../src/core/builder.js';
 import { DEFAULT_LIMITS, resolveLimits } from '../../../src/core/limits.js';
 import type { ResolvedOptions } from '../../../src/core/options.js';
 import type { ReadContext, Reader } from '../../../src/core/reader.js';
 import { WarningSink } from '../../../src/core/warnings.js';
+import { toJSON } from '../../../src/render/json.js';
 import { imageReaders } from '../../../src/readers/images/index.js';
 import { fuzzImage } from '../../../fuzz/images.fuzz.js';
 
 const fixture = (name: string) =>
   new Uint8Array(readFileSync(new URL(`../../../../../corpus/images/${name}`, import.meta.url)));
-
-type ImageTestOptions = ResolvedOptions & { imageGps?: boolean };
+const hostileFixture = (name: string) =>
+  new Uint8Array(readFileSync(new URL(`../../../../../hostile/images/${name}`, import.meta.url)));
 
 function context(
   reader: Reader,
@@ -25,11 +27,12 @@ function context(
     warnings,
     ...(options.signal ? { signal: options.signal } : {}),
   });
-  const resolved: ImageTestOptions = {
+  const resolved: ResolvedOptions = {
     limits: resolveLimits(),
     onLimit: 'throw',
     strict: false,
     metadata: options.metadata ?? true,
+    imageGps: options.imageGps ?? false,
     children: 'skip',
     childBytes: false,
     runs: false,
@@ -37,7 +40,6 @@ function context(
     includeHidden: false,
     formulas: false,
     ...(options.signal ? { signal: options.signal } : {}),
-    ...(options.imageGps !== undefined ? { imageGps: options.imageGps } : {}),
   };
   const out = new DocBuilder(reader.id, reader.mimeTypes[0] ?? 'application/octet-stream', budget, resolved);
   const ctx: ReadContext = {
@@ -85,6 +87,48 @@ function locateTiffTag(bytes: Uint8Array, ifd: number, tag: number, little: bool
 }
 
 describe('image readers', () => {
+  it('matches the reviewed public PNG golden', async () => {
+    const doc = await extractPublic(fixture('tiny.png'));
+    const expected = readFileSync(
+      new URL('../../../../../corpus/images/tiny.png.expected.json', import.meta.url),
+      'utf8',
+    );
+    expect(`${toJSON(doc, { stable: true, space: 2 })}\n`).toBe(expected);
+  });
+
+  it('dispatches public image formats through the lazy registry with privacy defaults', async () => {
+    const cases = [
+      ['tiny.png', 'png', 1, 1],
+      ['jpeg-exif-structure.jpg', 'jpeg', 5, 3],
+      ['tiny.gif', 'gif', 1, 1],
+      ['tiff-le-metadata.tif', 'tiff', 3, 2],
+      ['webp-vp8-snippet.webp', 'webp', 5, 3],
+    ] as const;
+    for (const [name, id, width, height] of cases) {
+      const doc = await extractPublic(fixture(name), { filename: name });
+      expect(doc.format).toBe(id);
+      expect(doc.blocks).toContainEqual(expect.objectContaining({ kind: 'image', width, height }));
+    }
+
+    const metadata = await extractPublic(fixture('tiff-le-metadata.tif'));
+    expect(metadata.metadata.created).toBe('2019-04-05T12:34:56');
+    expect(metadata.metadata.custom?.some(({ name }) => name.startsWith('image.gps.'))).toBe(false);
+    const gps = await extractPublic(fixture('tiff-le-metadata.tif'), { imageGps: true });
+    expect(gps.metadata.custom?.some(({ name }) => name.startsWith('image.gps.'))).toBe(true);
+    const privateMetadata = await extractPublic(fixture('tiff-le-metadata.tif'), {
+      metadata: false,
+      imageGps: true,
+    });
+    expect(privateMetadata.metadata.created).toBeUndefined();
+    expect(privateMetadata.metadata.custom).toBeUndefined();
+    expect(privateMetadata.blocks).toContainEqual(
+      expect.objectContaining({ kind: 'image', width: 3, height: 2 }),
+    );
+    await expect(extractPublic(fixture('tiny.png'), { limits: { inputBytes: 8 } })).rejects.toBeInstanceOf(
+      LimitExceededError,
+    );
+  });
+
   it.each([
     ['png', 'tiny.png', 1, 1],
     ['gif', 'tiny.gif', 1, 1],
@@ -174,17 +218,20 @@ describe('image readers', () => {
     }
   });
 
-  it.each([
-    'hostile/tiff-cyclic-ifd.tif',
-    'hostile/tiff-huge-count.tif',
-    'hostile/tiff-truncated-value-offset.tif',
-  ])('survives hostile TIFF structure %s without leaking bytes in warnings', async (name) => {
-    const doc = await extract('tiff', name);
-    expect(doc.blocks).toHaveLength(1);
-    expect(doc.blocks[0]).toMatchObject({ kind: 'image', mimeType: 'image/tiff' });
-    expect(doc.warnings.map(({ code }) => code)).toContain('UNREADABLE_PART');
-    expect(doc.warnings.every(({ message }) => !message.includes('Synthetic'))).toBe(true);
-  });
+  it.each(['tiff-cyclic-ifd.tif', 'tiff-huge-count.tif', 'tiff-truncated-value-offset.tif'])(
+    'survives hostile TIFF structure %s without leaking bytes in warnings',
+    async (name) => {
+      const hostile = hostileFixture(name);
+      const reader = byId.get('tiff')!;
+      const target = context(reader, hostile);
+      await reader.read(target.ctx);
+      const doc = target.finish();
+      expect(doc.blocks).toHaveLength(1);
+      expect(doc.blocks[0]).toMatchObject({ kind: 'image', mimeType: 'image/tiff' });
+      expect(doc.warnings.map(({ code }) => code)).toContain('UNREADABLE_PART');
+      expect(doc.warnings.every(({ message }) => !message.includes('Synthetic'))).toBe(true);
+    },
+  );
 
   it('bounds truncated and impossible chunk/marker offsets', async () => {
     const jpeg = new Uint8Array([0xff, 0xd8, 0xff, 0xe1, 0xff, 0xff, 0x45]);

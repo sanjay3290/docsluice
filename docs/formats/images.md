@@ -1,8 +1,7 @@
 # Images
 
-The format reader modules and direct reader tests are implemented. Registration
-with the document extraction pipeline and the shared public `imageGps` option
-remain pending core integration.
+The format readers are registered lazily in the document extraction pipeline.
+The public `imageGps` option defaults to `false` and can be enabled per call.
 
 Image readers report an `image` block with dimensions when the container header
 contains them, plus `metadata.custom` pairs named `image.width` and
@@ -31,6 +30,6 @@ pixel strips, the JPEG sample ends after APP1 and SOF, and the WebP samples omit
 complete compressed bitstreams. Those files are structural parser inputs, not
 complete decodable photos.
 
-`imageGps` is issue-authorized but still requires a shared public-option change
-before it can be exposed through `extract()`. The proposed option contract is
-recorded in the Package E integration file.
+The image reader implementation is shared across PNG, JPEG, GIF, TIFF, and
+WebP registrations. Formats with no registered reader (such as BMP and ICO)
+continue to produce empty documents through the core's existing fallback.

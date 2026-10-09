@@ -29,6 +29,7 @@ export function resolveOptions(options: ExtractOptions = {}): ResolvedOptions {
     strict: Array.isArray(options.strict) ? Object.freeze([...options.strict]) : (options.strict ?? false),
     onLimit: options.onLimit ?? 'truncate',
     metadata: options.metadata ?? true,
+    imageGps: options.imageGps ?? false,
     children: options.children ?? 'extract',
     childBytes: options.childBytes ?? false,
     runs: options.runs ?? false,
@@ -297,9 +298,8 @@ export function createExtractor(
         },
       };
 
-      if (!EMPTY_FORMATS.has(resolution.result.format)) {
-        const loading = activeRegistry.load(resolution.result.format);
-        if (!loading) throw new UnsupportedFormatError(resolution.result.format);
+      const loading = activeRegistry.load(resolution.result.format);
+      if (loading) {
         const reader = await loading;
         activeBudget.tick();
         try {
@@ -308,6 +308,8 @@ export function createExtractor(
           if (error instanceof DocsluiceError) throw error;
           throw new CorruptFileError(undefined, { cause: error });
         }
+      } else if (!EMPTY_FORMATS.has(resolution.result.format)) {
+        throw new UnsupportedFormatError(resolution.result.format);
       }
       for (const childWork of children) {
         activeBudget.tick();

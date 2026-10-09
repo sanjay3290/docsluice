@@ -244,6 +244,18 @@ function addBuiltins(registry: ReaderRegistry): void {
     mimeTypes: ['application/msword'],
     load: () => import('../readers/doc/index.js').then((module) => module.docReader),
   });
+  for (const id of ['png', 'jpeg', 'gif', 'tiff', 'webp'] as const) {
+    registry.add({
+      id,
+      mimeTypes: [`image/${id === 'jpeg' ? 'jpeg' : id}`],
+      load: () =>
+        import('../readers/images/index.js').then(({ imageReaders }) => {
+          const reader = imageReaders.find((candidate) => candidate.id === id);
+          if (!reader) throw new TypeError('The image reader is unavailable.');
+          return reader;
+        }),
+    });
+  }
 }
 
 /** Create an isolated registry that starts with the lazy built-in readers. */
