@@ -26,7 +26,7 @@ test('rejects dependencies that are missing from the ADR allow-list', () => {
   assert.throws(
     () =>
       validateRuntimeDependencies({
-        dependencies: { fflate: '0.8.2', unpdf: '1.0.0', surprise: '1.2.3' },
+        dependencies: { fflate: '0.8.3', unpdf: '1.0.0', surprise: '1.2.3' },
         allowlist: new Set(['fflate', 'unpdf']),
       }),
     /surprise.*not listed/i,
@@ -48,7 +48,7 @@ test('validates nonoptional peers and rejects disagreeing dependency specs', () 
   assert.throws(
     () =>
       validateRuntimeDependencies({
-        dependencies: { fflate: '0.8.2' },
+        dependencies: { fflate: '0.8.3' },
         peerDependencies: { fflate: '0.9.0', unpdf: '1.0.0', surprise: '1.2.3' },
         peerDependenciesMeta: { unpdf: { optional: true } },
         allowlist: new Set(['fflate', 'unpdf']),
@@ -80,16 +80,16 @@ test('ignores optional peers because npm does not install them by default', () =
 
 test('checks optional dependency and required peer lockfile specs and versions', () => {
   const args = {
-    optionalDependencies: { fflate: '0.8.2' },
+    optionalDependencies: { fflate: '0.8.3' },
     peerDependencies: { unpdf: '1.0.0' },
     allowlist: new Set(['fflate', 'unpdf']),
     lockfile: {
       packages: {
         'packages/docsluice': {
-          optionalDependencies: { fflate: '0.8.2' },
+          optionalDependencies: { fflate: '0.8.3' },
           peerDependencies: { unpdf: '1.0.0' },
         },
-        'node_modules/fflate': { version: '0.8.2' },
+        'node_modules/fflate': { version: '0.8.3' },
         'node_modules/unpdf': { version: '1.0.0' },
       },
     },
@@ -106,12 +106,12 @@ test('checks optional dependency and required peer lockfile specs and versions',
             ...args.lockfile.packages,
             'packages/docsluice': {
               ...args.lockfile.packages['packages/docsluice'],
-              optionalDependencies: { fflate: '0.8.3' },
+              optionalDependencies: { fflate: '0.8.2' },
             },
           },
         },
       }),
-    /fflate package-lock optionalDependencies spec 0.8.3 does not match 0.8.2/i,
+    /fflate package-lock optionalDependencies spec 0.8.2 does not match 0.8.3/i,
   );
 });
 
@@ -119,7 +119,7 @@ test('requires exact runtime versions rather than ranges', () => {
   assert.throws(
     () =>
       validateRuntimeDependencies({
-        dependencies: { fflate: '^0.8.2' },
+        dependencies: { fflate: '^0.8.3' },
         allowlist: new Set(['fflate']),
       }),
     /fflate.*exact version/i,
@@ -128,13 +128,13 @@ test('requires exact runtime versions rather than ranges', () => {
 
 test('resolves runtime lock versions from the workspace before hoisted dev packages', () => {
   const args = {
-    dependencies: { fflate: '0.8.2' },
+    dependencies: { fflate: '0.8.3' },
     allowlist: new Set(['fflate']),
     lockfile: {
       packages: {
-        'packages/docsluice': { dependencies: { fflate: '0.8.2' } },
-        'packages/docsluice/node_modules/fflate': { version: '0.8.2' },
-        'node_modules/fflate': { version: '0.8.3', dev: true },
+        'packages/docsluice': { dependencies: { fflate: '0.8.3' } },
+        'packages/docsluice/node_modules/fflate': { version: '0.8.3' },
+        'node_modules/fflate': { version: '0.8.2', dev: true },
       },
     },
   };
@@ -146,12 +146,12 @@ test('resolves runtime lock versions from the workspace before hoisted dev packa
         lockfile: {
           packages: {
             ...args.lockfile.packages,
-            'packages/docsluice/node_modules/fflate': { version: '0.8.3' },
-            'node_modules/fflate': { version: '0.8.2' },
+            'packages/docsluice/node_modules/fflate': { version: '0.8.2' },
+            'node_modules/fflate': { version: '0.8.3', dev: true },
           },
         },
       }),
-    /fflate package-lock version 0.8.3 does not match 0.8.2/i,
+    /fflate package-lock version 0.8.2 does not match 0.8.3/i,
   );
   assert.doesNotThrow(() =>
     validateRuntimeDependencies({
@@ -159,8 +159,8 @@ test('resolves runtime lock versions from the workspace before hoisted dev packa
       lockfile: {
         packages: {
           'packages/docsluice': args.lockfile.packages['packages/docsluice'],
-          'packages/node_modules/fflate': { version: '0.8.2' },
-          'node_modules/fflate': { version: '0.8.3', dev: true },
+          'packages/node_modules/fflate': { version: '0.8.3' },
+          'node_modules/fflate': { version: '0.8.2', dev: true },
         },
       },
     }),

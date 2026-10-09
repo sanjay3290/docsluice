@@ -445,6 +445,16 @@ describe('openZip', () => {
     expect(() => openZip(missingDisk, budget())).toThrow(CorruptFileError);
   });
 
+  it('rejects a ZIP64 compressed-size sentinel without its required extra field', () => {
+    const bytes = makeZip([{ name: 'a', data: new Uint8Array([1]) }]);
+    const central = bytes.findIndex(
+      (value, index) => value === 0x50 && bytes[index + 1] === 0x4b && bytes[index + 2] === 0x01,
+    );
+    new DataView(bytes.buffer).setUint32(central + 20, 0xffffffff, true);
+
+    expect(() => openZip(bytes, budget())).toThrow(CorruptFileError);
+  });
+
   it('lists entries with structurally invalid local headers as unreadable', async () => {
     const badSignature = makeZip([{ name: 'a', data: new Uint8Array([1]) }]);
     new DataView(badSignature.buffer).setUint32(0, 0, true);
