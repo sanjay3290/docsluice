@@ -27,7 +27,7 @@ flowchart LR
 | `core/builder.ts` | `DocBuilder`: readers emit blocks through it; it counts output characters, checks block depth, runs `transform` and `onBlock`. | SEC-8, SEC-12, EXT-2, EXT-3 |
 | `core/input.ts` | Turn `Uint8Array` / `ArrayBuffer` / `Blob` / web `ReadableStream` into bytes under the input limit. | IN-1 |
 | `core/registry.ts` | Reader registry: built-in readers by lazy `import()`, plugin readers by `registerFormat`. | RT-4, EXT-4, EXT-7 |
-| `core/extract.ts` | `extract()` and `extractChild()`: the pipeline. | section 6, section 11 |
+| `core/extract.ts`, `core/stream.ts` | `extract()`, `extractStream()` and `extractChild()`: the pipeline and bounded block channel. | section 6, section 11, EXT-2 |
 | `detect/` | `sniff.ts` (magic bytes), `zip-kind.ts` (DOCX vs XLSX vs ODT vs EPUB), `text-kind.ts` (JSON / XML / HTML / CSV / MD / TXT), `encoding.ts`, `detect.ts` (public `detect()`). | IN-4..IN-9 |
 | `zip/` | Own zip reader on fflate inflate. `openZip()`. | SEC-1..SEC-3, ADR 0005 |
 | `xml/` | Own XML tokenizer and small tree builder. `parseXml()`. | SEC-4, SEC-5, ADR 0008 |
@@ -165,6 +165,18 @@ the builder and assigns text offsets. Built-in readers use lazy imports. Missing
 readers produce `UnsupportedFormatError`; recognized image and media formats
 return empty documents. Detection passes an existing ZIP or CFB index to the
 reader, so the container entries are counted once.
+
+`extractStream(input, options)` uses the same pipeline and exposes emitted
+top-level blocks through a capacity-one async channel. Its `.result` promise
+resolves to the finished document. Readers that implement `readStream(ctx)` get
+an optional single-use `ctx.input` async byte source after a bounded detection
+prefix; they must await `ctx.out.flush()` after each emitted top-level block.
+Readers without `readStream` keep the whole-byte reader contract and are
+materialized under the same input budget. Their blocks are yielded after
+extraction finishes. Breaking from an incremental iterator aborts the private
+budget signal, cancels the input source and releases its reader lock. Format
+coverage and the reader extension are documented in
+[`docs/streaming.md`](streaming.md).
 
 Child work runs through a microtask queue rather than recursive file traversal.
 `children: 'skip'` omits children, while `'list'` records their names and sizes

@@ -3,6 +3,8 @@ export { toJSON } from './render/json.js';
 export type { ToJSONOptions } from './render/json.js';
 export type { ExtractOptions } from './core/options.js';
 export { extract } from './core/extract.js';
+export { extractStream } from './core/extract.js';
+export type { AsyncBlockStream } from './core/stream.js';
 export { detect } from './detect/detect.js';
 export type { Limits } from './core/limits.js';
 export { DEFAULT_LIMITS, resolveLimits } from './core/limits.js';

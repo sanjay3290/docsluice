@@ -1,4 +1,4 @@
-import type { DocsluiceDocument, SectionBlock } from '../core/model.js';
+import type { Block, DocsluiceDocument, SectionBlock } from '../core/model.js';
 import { Budget } from '../core/budget.js';
 import { resolveLimits } from '../core/limits.js';
 import { layout } from './layout.js';
@@ -40,4 +40,48 @@ export function assignOffsets(document: DocsluiceDocument, budget?: Budget): voi
       }
     }
   }
+}
+
+/** Assign final-document offsets to one streamed root block without revisiting earlier blocks. */
+export function assignBlockOffsets(
+  block: Block,
+  startOffset: number,
+  hasPreviousBlock: boolean,
+  budget?: Budget,
+): number {
+  const document: DocsluiceDocument = {
+    format: 'txt',
+    mimeType: 'text/plain',
+    metadata: {},
+    features: {
+      hasMacros: false,
+      hasExternalLinks: false,
+      hasEmbeddedFiles: false,
+      isEncrypted: false,
+      hasJavaScript: false,
+    },
+    blocks: [block],
+    children: [],
+    warnings: [],
+    stats: { bytesRead: 0, durationMs: 0, truncated: false, needsOcr: false },
+  };
+  const sectionStarts = new Map<SectionBlock, number>();
+  let offset = startOffset + (hasPreviousBlock ? 2 : 0);
+  for (const event of layout(document, {}, budget)) {
+    budget?.tick();
+    switch (event.type) {
+      case 'start-section':
+        sectionStarts.set(event.block, offset);
+        break;
+      case 'end-section':
+        event.block.loc.offset = [sectionStarts.get(event.block) ?? offset, offset];
+        break;
+      case 'text': {
+        if (event.block) event.block.loc.offset = [offset, offset + event.text.length];
+        offset += event.text.length;
+        break;
+      }
+    }
+  }
+  return offset;
 }
