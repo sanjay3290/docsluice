@@ -25,6 +25,8 @@ describe('Budget', () => {
     const child = budget.child();
     expect(child.inputBytes).toBe(2);
     expect(child.signal).toBeUndefined();
+    expect(Object.isFrozen(child.limits)).toBe(true);
+    expect(child.limits).toBe(budget.limits);
     expect(child.entries).toBe(3);
     expect(child.pages).toBe(4);
     expect(child.outputChars).toBe(5);
@@ -164,6 +166,7 @@ describe('Budget', () => {
     const limits = resolveLimits({ cells: 2 });
     const budget = new Budget(limits);
     limits.cells = 999;
+    expect(budget.limits.cells).toBe(2);
     for (const value of [-1, Number.NaN, Number.POSITIVE_INFINITY, 0.5]) {
       expect(() => budget.addCells(value)).toThrow(RangeError);
     }

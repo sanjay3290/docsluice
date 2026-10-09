@@ -65,6 +65,10 @@ export class Budget {
   get signal(): AbortSignal | undefined {
     return this.#state.signal;
   }
+  /** Frozen active limits for readers that can safely flatten or preflight work. */
+  get limits(): Readonly<Limits> {
+    return this.#state.limits;
+  }
   get inputBytes(): number {
     return this.#state.counters.get('inputBytes') ?? 0;
   }
