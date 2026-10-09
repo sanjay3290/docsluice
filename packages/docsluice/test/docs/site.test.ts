@@ -2,6 +2,7 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import type { Block, DocsluiceDocument } from '../../src/index.js';
+import { DEFAULT_LIMITS } from '../../src/index.js';
 import { ingestForSearch } from '../../examples/site/rag.js';
 import { extractUploadedFile } from '../../examples/site/upload.js';
 import { redactBlock } from '../../examples/site/redaction.js';
@@ -87,8 +88,7 @@ describe('documentation examples', () => {
 });
 
 describe('generated limits page', () => {
-  it('matches DEFAULT_LIMITS exported by the built public package', async () => {
-    const { DEFAULT_LIMITS } = await import('../../dist/index.js');
+  it('matches DEFAULT_LIMITS exported by the public API before build', async () => {
     const generated = await readFile(
       new URL('../../../../docs/site/reference/limits.md', import.meta.url),
       'utf8',
