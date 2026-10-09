@@ -27,3 +27,4 @@ export { toText } from './render/text.js';
 export type { TextOptions } from './render/layout.js';
 export { toMarkdown } from './render/markdown.js';
 export type { MarkdownOptions } from './render/markdown.js';
+export { detect } from './detect/detect.js';

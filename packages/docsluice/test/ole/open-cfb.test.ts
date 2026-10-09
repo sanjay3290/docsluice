@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { Budget } from '../../src/core/budget.js';
 import { resolveLimits } from '../../src/core/limits.js';
 import { AbortError, CorruptFileError, LimitExceededError } from '../../src/core/errors.js';
+import { resolveFormat } from '../../src/detect/detect.js';
 import { openCfb } from '../../src/ole/index.js';
 
 const FREE = 0xffff_ffff;
@@ -114,6 +115,20 @@ function makeCfb(options: FixtureOptions = {}): Uint8Array {
 }
 
 describe('openCfb', () => {
+  it('does not classify a nested WordDocument stream as a root DOC', async () => {
+    const result = await resolveFormat(makeCfb(), {}, new Budget(resolveLimits()));
+
+    expect(result.result.format).toBe('ole');
+  });
+
+  it('does not treat a nested EncryptedPackage stream as a root encrypted package', async () => {
+    const fixture = makeCfb();
+    renameDirectoryStream(fixture, 'WordDocument', 'EncryptedPackage');
+    const result = await resolveFormat(fixture, {}, new Budget(resolveLimits()));
+
+    expect(result.result.format).toBe('ole');
+  });
+
   it.each(['libreoffice.doc', 'libreoffice.xls', 'libreoffice.ppt', 'test_outlook_msg.msg'])(
     'opens the licensed %s fixture and reads every stream',
     (filename) => {
@@ -309,3 +324,31 @@ describe('openCfb', () => {
     expect(budget.totalUncompressedBytes).toBe(512);
   });
 });
+
+function renameDirectoryStream(bytes: Uint8Array, from: string, to: string): void {
+  const findName = (value: string): number => {
+    for (let offset = 0; offset + value.length * 2 <= bytes.length; offset += 1) {
+      let matches = true;
+      for (let index = 0; index < value.length; index += 1) {
+        if (bytes[offset + index * 2] !== value.charCodeAt(index) || bytes[offset + index * 2 + 1] !== 0) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches && bytes[offset + value.length * 2] === 0 && bytes[offset + value.length * 2 + 1] === 0)
+        return offset;
+    }
+    return -1;
+  };
+  const offset = findName(from);
+  if (offset < 0) throw new RangeError('Directory stream name was not found.');
+  const replacement = new Uint8Array(to.length * 2);
+  for (let index = 0; index < to.length; index += 1) replacement[index * 2] = to.charCodeAt(index);
+  bytes.fill(0, offset, offset + 64);
+  bytes.set(replacement, offset);
+  new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).setUint16(
+    offset + 64,
+    replacement.length + 2,
+    true,
+  );
+}

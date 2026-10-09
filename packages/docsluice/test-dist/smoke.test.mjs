@@ -33,6 +33,10 @@ test('ESM entry loads', async () => {
   assert.equal(typeof mod.scanXml, 'function');
   assert.equal(mod.toText(renderDoc), 'Title\n\na\tb');
   assert.equal(typeof mod.toJSON, 'function');
+  assert.equal(
+    (await mod.detect(Uint8Array.of(123, 34, 111, 107, 34, 58, 116, 114, 117, 101, 125))).format,
+    'json',
+  );
   const warnings = new mod.WarningSink();
   const budget = new mod.Budget(mod.DEFAULT_LIMITS, { warnings });
   const tree = mod.parseXml('<root>text</root>', { budget, warnings });
