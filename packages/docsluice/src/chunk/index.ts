@@ -61,7 +61,7 @@ const ROW_SPLIT_WARNING: ChunkWarning = {
 /**
  * Lazily split a document's default plain-text rendering into bounded pieces.
  * Traversal uses the same iterative layout and default limits as `toText`, but
- * only ticks the budget: chunking does not charge a second output-character budget.
+ * owns a standalone budget that enforces output, cell, depth, and time limits.
  */
 export function* chunk(document: DocsluiceDocument, options: ChunkOptions = {}): Generator<Chunk> {
   const strategy = options.strategy ?? 'section';
@@ -197,10 +197,10 @@ export function* chunk(document: DocsluiceDocument, options: ChunkOptions = {}):
     if (!current) current = makeState();
     while (rest.length > 0) {
       budget.tick();
-      const combined = current.text + rest;
-      if (measure(combined) <= maxSize) {
+      const fit = largestFittingPrefix(current.text, rest, maxSize, measure, budget);
+      if (fit === rest.length) {
         const chunkStart = current.text.length;
-        current.text = combined;
+        current.text += rest;
         addLocation(current, block, blockOffset + consumed, blockOffset + consumed + rest.length, chunkStart);
         if (rowSplit) addWarning(current);
         return;
@@ -218,7 +218,6 @@ export function* chunk(document: DocsluiceDocument, options: ChunkOptions = {}):
         continue;
       }
 
-      const fit = largestFittingPrefix(current.text, rest, maxSize, measure, budget);
       if (fit === 0) {
         if (current.text.length > 0) {
           const ready = emit(current);
@@ -266,7 +265,10 @@ export function* chunk(document: DocsluiceDocument, options: ChunkOptions = {}):
     if (event.type === 'start-section') {
       const section = event.block;
       const isPage = section.role === 'page' || section.role === 'slide' || section.role === 'sheet';
-      if (strategy === 'page' && isPage) {
+      if (
+        (strategy === 'page' && isPage) ||
+        (strategy === 'section' && (section.role === 'slide' || section.role === 'sheet'))
+      ) {
         const ready = current && emit(current);
         yield* release(ready, false);
         current = undefined;
@@ -281,6 +283,11 @@ export function* chunk(document: DocsluiceDocument, options: ChunkOptions = {}):
     if (event.type === 'end-section') {
       const section = event.block;
       if (section.role === 'slide' || section.role === 'sheet') {
+        if (strategy === 'section') {
+          const ready = current && emit(current);
+          yield* release(ready, false);
+          current = undefined;
+        }
         if (section.title) sectionTitles.pop();
         headings.splice(0, headings.length, ...(headingScopes.pop() ?? []));
       }
@@ -350,7 +357,15 @@ function largestFittingPrefix(
   budget: Budget,
 ): number {
   // A bounded window avoids rescanning the whole remaining document at every split.
-  const windowLength = Math.min(text.length, Math.max(2, Math.ceil(maxSize) * 4));
+  let windowLength = Math.min(text.length, Math.max(2, Math.ceil(maxSize) * 4));
+  while (true) {
+    budget.tick();
+    // Inspect the original string so a window cannot end between a surrogate pair.
+    if (windowLength < text.length && codePointLengthAt(text, windowLength - 1) === 2) windowLength++;
+    if (measure(current + text.slice(0, windowLength)) > maxSize) break;
+    if (windowLength === text.length) return text.length;
+    windowLength = Math.min(text.length, windowLength * 2);
+  }
   const boundaries = codePointBoundaries(text.slice(0, windowLength), () => budget.tick());
   let low = 0;
   let high = boundaries.length - 1;

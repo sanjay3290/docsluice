@@ -57,6 +57,75 @@ describe('chunk', () => {
     );
   });
 
+  it('preserves astral code points at custom-counter window boundaries', () => {
+    const text = 'aaaaaaa🙂' + 'b'.repeat(20);
+    for (const block of [
+      paragraph(text),
+      { kind: 'table' as const, rows: [[{ text }]], headerRows: 0, loc: {} },
+    ]) {
+      const counter = (value: string): number => Math.ceil(value.length / 10);
+      const pieces = Array.from(chunk(doc([block]), { maxSize: 2, overlap: 0, countTokens: counter }));
+      expect(pieces.map((piece) => piece.text).join('')).toBe(text);
+      for (const piece of pieces) {
+        expect([...piece.text].every((point) => !/^[\uD800-\uDFFF]$/.test(point))).toBe(true);
+        expect(counter(piece.text)).toBeLessThanOrEqual(2);
+      }
+    }
+  });
+
+  it('throws when no whole code point fits a custom counter', () => {
+    expect(() =>
+      Array.from(
+        chunk(doc([paragraph('🙂abc')]), {
+          maxSize: 1,
+          overlap: 0,
+          countTokens: (text) => text.length,
+        }),
+      ),
+    ).toThrow('A single Unicode code point exceeds maxSize under countTokens.');
+  });
+
+  it('bounds counter work before yielding and across a long paragraph', () => {
+    const text = 'a'.repeat(20_000);
+    let examined = 0;
+    let largestProbe = 0;
+    const countTokens = (value: string): number => {
+      examined += value.length;
+      largestProbe = Math.max(largestProbe, value.length);
+      return value.length;
+    };
+    const iterator = chunk(doc([paragraph(text)]), { maxSize: 20, overlap: 0, countTokens });
+    const first = iterator.next();
+    expect(first.done).toBe(false);
+    expect(largestProbe).toBeLessThanOrEqual(100);
+    if (first.done) throw new Error('Expected the first chunk.');
+    const pieces = [first.value, ...iterator];
+    expect(pieces.map((piece) => piece.text).join('')).toBe(text);
+    expect(examined).toBeLessThan(text.length * 20);
+  });
+
+  it('keeps default section chunks within their sheet or slide heading scope', () => {
+    for (const role of ['sheet', 'slide'] as const) {
+      const document = doc([
+        { kind: 'section', role, title: 'One', loc: {}, blocks: [paragraph('one')] },
+        { kind: 'section', role, title: 'Two', loc: {}, blocks: [paragraph('two')] },
+        { kind: 'section', role, loc: {}, blocks: [paragraph('untitled')] },
+        paragraph('outside'),
+      ]);
+      const pieces = Array.from(chunk(document, { maxSize: 50, overlap: 0, minSize: 40 }));
+      expect(pieces.map((piece) => piece.text).join('')).toBe(toText(document));
+      for (const [text, expectedPath] of [
+        ['one', ['One']],
+        ['two', ['Two']],
+        ['untitled', []],
+        ['outside', []],
+      ] as const) {
+        expect(pieces.find((piece) => piece.text.includes(text))?.headingPath).toEqual(expectedPath);
+      }
+      expect(pieces.every((piece) => !(piece.text.includes('one') && piece.text.includes('two')))).toBe(true);
+    }
+  });
+
   it('narrows source offsets to each emitted text span', () => {
     const pieces = Array.from(
       chunk(doc([paragraph('abcdefghijkl', 20)]), { strategy: 'size', maxSize: 5, overlap: 0 }),
