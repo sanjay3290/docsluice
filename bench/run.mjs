@@ -328,7 +328,7 @@ export function renderResults(report) {
     'See [ADR 0013](../adr/0013-benchmark-limits.md). The current accepted base has no DOCX, XLSX, or PDF reader, so its PERF-1 targets and PERF-2 memory behavior are not yet measured. No default limit changes are justified by these comparator timings alone.',
     '',
   );
-  return lines.join('\n');
+  return lines.join('\n').trimEnd();
 }
 
 async function sha256File(path) {
