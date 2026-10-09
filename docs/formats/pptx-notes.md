@@ -1,0 +1,7 @@
+# PowerPoint speaker notes
+
+Speaker-note extraction reads only `p:notes/p:cSld/p:spTree/p:sp` shapes whose direct nonvisual properties contain `p:ph type="body"`. It follows that shape's direct `p:txBody` and reads direct DrawingML paragraphs, runs and fields. Run/field text comes from direct `a:t` children; direct `a:br` elements add a line break. Each body placeholder yields one string, with nonempty paragraphs joined by `\n`. Slide-image, slide-number and other placeholders, unrelated namespaces, nested extension text and extension-injected shapes are ignored.
+
+The helper does not charge output characters while parsing. It preflights retained paragraph text cumulatively with `Budget.checkOutputChars`; the document builder charges when it emits notes. With truncation enabled, it returns only complete paragraphs that fit and marks the budget truncated. Notes source XML is walked iteratively and bounded at 50,000 source objects and 5,000,000 characters, including unused text, element names and attributes. The shared XML parser allocates the tree before this local cap is applied, so the archive and shared parser limits remain necessary.
+
+`slideIsHidden` recognizes only presentation-namespace `p:sld` roots with `show="0"` or `show="false"`. A missing, true, or invalid `show` value is not marked hidden. The slide reader can use this predicate to keep hidden slides in order and mark their section metadata.
