@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { decodeText, detectEncoding } from '../../src/detect/encoding.js';
-import { detectTextKind } from '../../src/detect/text-kind.js';
+import { detectTextKind, detectTextKindCandidates } from '../../src/detect/text-kind.js';
 import { fuzzDetection } from '../../fuzz/detection.fuzz.js';
 
 const utf8 = (text: string): Uint8Array => new TextEncoder().encode(text);
@@ -192,6 +192,13 @@ describe('encoding detection', () => {
 });
 
 describe('text kind detection', () => {
+  it('reports CSV and TSV as tied while preserving CSV as the default choice', () => {
+    const text = 'a,b\tc,d\n1,2\t3,4';
+
+    expect(detectTextKindCandidates(text)).toEqual(['csv', 'tsv']);
+    expect(detectTextKind(text)).toBe('csv');
+  });
+
   it('survives arbitrary malformed bytes through the fuzz entry point', () => {
     for (let seed = 0; seed < 256; seed += 1) {
       const bytes = new Uint8Array(seed);

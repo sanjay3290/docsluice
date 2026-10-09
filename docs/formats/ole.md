@@ -2,6 +2,8 @@
 
 `packages/docsluice/src/ole/index.ts` exposes a synchronous, low-level reader for the Microsoft Compound File Binary format. `openCfb(bytes, budget)` returns directory entries and a `read(path)` method for stream data; it does not interpret DOC, XLS, PPT, or MSG stream contents.
 
+Format detection indexes a CFB once and classifies legacy Word, Excel, PowerPoint and Outlook files from exact root stream names (`WordDocument`, `Workbook`/`Book`, `PowerPoint Document` and `__properties_version1.0`). Nested streams do not establish a document kind. Conflicting root identities remain generic `ole`. A root stream named `EncryptedPackage` stops detection with `EncryptedError`; nested streams with that name do not, and the detector does not read or decrypt the stream.
+
 The reader accepts version 3 files with 512-byte sectors and version 4 files with 4096-byte sectors. It follows header and chained DIFAT/FAT allocation, MiniFAT allocation, root mini-stream data, and directory red-black links iteratively. It checks every sector chain for repeated or out-of-file sector IDs and charges stream bytes to the caller's shared `Budget` as they are returned. A stream's reported size is bounded by the sectors reachable through its allocation chain, so file-provided sizes never control an allocation.
 
 Before allocating directory metadata, the reader charges the archive's physical directory slots (excluding the root slot) against the shared `zipEntries` allowance. This intentionally conservative count includes unused slots, shares the extraction allowance with ZIP archives and other CFB files, and returns a root-only archive when the allowance truncates.

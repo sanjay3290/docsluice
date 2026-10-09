@@ -3,13 +3,14 @@
 Safe, structured document extraction for every JavaScript runtime.
 
 ```ts
-import { extract, toMarkdown } from 'docsluice';
+import { extract, toJSON, toMarkdown } from 'docsluice';
 
 const doc = await extract(bytes, { filename: 'q3.xlsx' });
 console.log(toMarkdown(doc));
+console.log(toJSON(doc, { stable: true }));
 ```
 
-One call gives text, Markdown, tables, page/slide/sheet locations and metadata from office, PDF, web, email and archive files. Limits are on by default, so it is safe on files from strangers. No native code: it runs in Node.js 20+, Bun, Deno, browsers and edge workers.
+One call gives text, Markdown, tables, page/slide/sheet locations and metadata from office, PDF, web, email and archive files. `toJSON` uses stable model field order; `stable: true` sets the extraction duration to zero for snapshots and golden files. Raw child bytes are omitted unless `bytes: 'base64'` is requested. Limits are on by default, so it is safe on files from strangers. No native code: it runs in Node.js 20+, Bun, Deno, browsers and edge workers.
 
 > **Status: pre-alpha.** Nothing is published yet. See the [roadmap board](https://github.com/users/sanjay3290/projects/3) and [milestones](https://github.com/sanjay3290/docsluice/milestones).
 

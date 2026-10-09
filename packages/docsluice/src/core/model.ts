@@ -225,7 +225,7 @@ export interface Location {
   range?: string;
   /** XML path, zip entry, or child document path (NST-3). */
   path?: string;
-  /** Character offsets into the output of toText(). Filled by the text renderer. */
+  /** Character offsets into default `toText(document)` output. Rendering options can shift these spans. */
   offset?: [start: number, end: number];
 }
 
