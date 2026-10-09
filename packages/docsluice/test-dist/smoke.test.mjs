@@ -31,6 +31,9 @@ test('ESM entry loads', async () => {
   assert.equal(mod.DEFAULT_LIMITS.zipEntries, 10_000);
   assert.equal(typeof mod.parseXml, 'function');
   assert.equal(typeof mod.scanXml, 'function');
+  const image = await mod.extract(Uint8Array.of(137, 80, 78, 71, 13, 10, 26, 10));
+  assert.equal(image.format, 'png');
+  assert.deepEqual(image.blocks, []);
   assert.equal(mod.toText(renderDoc), 'Title\n\na\tb');
   assert.equal(typeof mod.toJSON, 'function');
   assert.equal(
@@ -53,4 +56,10 @@ test('CJS entry loads', () => {
 test('node entry loads', async () => {
   const mod = await import('../dist/node/index.js');
   assert.equal(typeof mod.DocsluiceError, 'function');
+});
+
+test('DOC reader subpath loads lazily', async () => {
+  const mod = await import('docsluice/doc');
+  assert.equal(mod.docReader.id, 'doc');
+  assert.equal(typeof mod.docReader.read, 'function');
 });
