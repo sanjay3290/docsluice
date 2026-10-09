@@ -18,6 +18,8 @@ npx vitest run --config packages/docsluice/test-runtime/browser/vitest.config.mj
 
 If a machine already has a system Chromium, `DOCSLUICE_PLAYWRIGHT_CHROMIUM_PATH=/path/to/chromium` runs the same case in that engine only. CI should install Playwright's pinned browser set and use the default three-engine configuration. The browser adapter uses Vitest 5's native browser mode, rather than a DOM emulator; see [Vitest Browser Mode](https://vitest.dev/guide/browser/) and [its Playwright provider](https://vitest.dev/config/browser/playwright).
 
+Before dynamically importing the shared runtime cases (which import the built package) the browser test installs a temporary throwing `globalThis.Buffer` getter. The trap stays active through those package and ZIP/XML calls and is restored in `finally`. A second browser test dynamically imports an intentional fixture that reads `globalThis.Buffer` and asserts that import fails under the same trap. This is an executable negative probe for the browser adapter; it covers module evaluation and the exercised contract, not every possible package code path.
+
 The Workers check starts Wrangler locally, sends an HTTP request to `127.0.0.1` on an ephemeral port, and tears down the server process group:
 
 ```sh
