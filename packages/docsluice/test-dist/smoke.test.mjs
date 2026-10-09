@@ -63,3 +63,10 @@ test('DOC reader subpath loads lazily', async () => {
   assert.equal(mod.docReader.id, 'doc');
   assert.equal(typeof mod.docReader.read, 'function');
 });
+
+test('TXT and Markdown reader subpaths load lazily', async () => {
+  const txt = await import('docsluice/txt');
+  assert.equal(txt.txtReader.id, 'txt');
+  const markdown = await import('docsluice/markdown');
+  assert.equal(markdown.markdownReader.id, 'markdown');
+});

@@ -148,5 +148,45 @@
     "maxMs": 2000,
     "maxHeapMB": 256,
     "requirement": "R2"
+  },
+  {
+    "file": "markdown/deep-blockquote-10000.md",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "markdown/deep-list-300.md",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "markdown/unclosed-inline-200k.md",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-7"
+  },
+  {
+    "file": "txt/blank-lines-200k.txt",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-9"
   }
 ]

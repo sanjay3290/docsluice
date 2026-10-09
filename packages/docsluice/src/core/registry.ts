@@ -46,3 +46,13 @@ defaultRegistry.add({
   mimeTypes: ['application/msword'],
   load: () => import('../readers/doc/index.js').then((module) => module.docReader),
 });
+defaultRegistry.add({
+  id: 'txt',
+  mimeTypes: ['text/plain'],
+  load: () => import('../readers/txt/index.js').then((module) => module.txtReader),
+});
+defaultRegistry.add({
+  id: 'markdown',
+  mimeTypes: ['text/markdown', 'text/x-markdown'],
+  load: () => import('../readers/markdown/index.js').then((module) => module.markdownReader),
+});

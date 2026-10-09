@@ -1,24 +1,16 @@
 import type { ReadContext, Reader } from '../../core/reader.js';
-import { decodeText, detectEncoding } from '../../detect/encoding.js';
+import { decodeTextInput } from '../text-input.js';
 
 /** Plain text reader. Blank lines separate paragraphs; line breaks within each paragraph are retained. */
-export const reader: Reader = {
+export const txtReader: Reader = {
   id: 'txt',
   mimeTypes: ['text/plain'],
   // The common reader contract is async so readers can extract nested documents.
   // eslint-disable-next-line @typescript-eslint/require-await
   async read(ctx: ReadContext): Promise<void> {
     ctx.budget.tick();
-    const detected = detectEncoding(ctx.bytes);
-    if (!detected.isText || detected.encoding === 'unsupported') return;
-    const text = decodeText(ctx.bytes, detected.encoding);
-    ctx.out.setEncoding(detected.encoding);
-    if (detected.warning) {
-      ctx.warnings.add({
-        code: detected.warning,
-        message: 'Text encoding was inferred from the byte sample.',
-      });
-    }
+    const text = decodeTextInput(ctx);
+    if (text === undefined) return;
     let lineStart = 0;
     let paragraph = '';
     for (let index = 0; index <= text.length; index++) {
@@ -59,5 +51,3 @@ function emitParagraph(ctx: ReadContext, text: string): boolean {
   }
   return ctx.out.paragraph(text, ctx.path ? { path: ctx.path } : {});
 }
-
-export default reader;

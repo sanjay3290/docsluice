@@ -5,3 +5,5 @@ The TXT reader detects UTF-8, UTF-16LE/BE and Windows-1252 using the shared boun
 Text is scanned with budget ticks, and output is capped by `outputChars`. If a paragraph crosses the remaining output allowance, the reader emits the fitting prefix, records `TRUNCATED`, and stops. Encoding fallback warnings contain no source text.
 
 The reader preserves ordinary text rather than interpreting markup. It does not infer titles, authors or other metadata.
+
+`extract()` loads this reader lazily for `txt` input. It is also available as the `docsluice/txt` subpath (`txtReader`).

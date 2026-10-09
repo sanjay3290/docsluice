@@ -1,6 +1,6 @@
 import type { Cell, ListItem, Run } from '../../core/model.js';
 import type { ReadContext, Reader } from '../../core/reader.js';
-import { decodeText, detectEncoding } from '../../detect/encoding.js';
+import { decodeTextInput } from '../text-input.js';
 
 interface Marker {
   indent: number;
@@ -426,22 +426,15 @@ function emitHeading(
 }
 
 /** Best-effort Markdown block reader with bounded scanning and no dependencies. */
-export const reader: Reader = {
+export const markdownReader: Reader = {
   id: 'markdown',
   mimeTypes: ['text/markdown', 'text/x-markdown'],
   // The common reader contract is async so readers can extract nested documents.
   // eslint-disable-next-line @typescript-eslint/require-await
   async read(ctx): Promise<void> {
     ctx.budget.tick();
-    const detected = detectEncoding(ctx.bytes);
-    if (!detected.isText || detected.encoding === 'unsupported') return;
-    const text = decodeText(ctx.bytes, detected.encoding);
-    ctx.out.setEncoding(detected.encoding);
-    if (detected.warning)
-      ctx.warnings.add({
-        code: detected.warning,
-        message: 'Text encoding was inferred from the byte sample.',
-      });
+    const text = decodeTextInput(ctx);
+    if (text === undefined) return;
     const lines = text.replace(/\r\n?/g, '\n').split('\n');
     const runs = ctx.options.runs;
     let depthWarned = false;
@@ -480,13 +473,14 @@ export const reader: Reader = {
         continue;
       }
       if (/^ {0,3}(?:`{3,}|~{3,})/.test(line)) {
-        const fence = line.trimStart()[0]!;
+        const opening = line.trimStart();
+        const fence = opening[0]!;
         let n = 0;
-        while (line.trimStart()[n] === fence) {
+        while (opening[n] === fence) {
           ctx.budget.tick();
           n++;
         }
-        const language = line.trimStart().slice(n).trim().split(/[ \t]/, 1)[0];
+        const language = opening.slice(n).trim().split(/[ \t]/, 1)[0];
         const content: string[] = [];
         const size = { chars: 0 };
         i++;
@@ -530,7 +524,7 @@ export const reader: Reader = {
       const firstMarker = marker(line, ctx.budget);
       if (firstMarker) {
         const roots: ListItem[] = [];
-        const stack: Array<{ indent: number; item: ListItem; ordered: boolean }> = [];
+        const stack: Array<{ indent: number; item: ListItem }> = [];
         const baseIndent = firstMarker.indent;
         const maxDepth = ctx.budget.limits.blockDepth;
         let stagedChars = 0;
@@ -541,8 +535,11 @@ export const reader: Reader = {
           if (!current) break;
           if (current.indent < baseIndent) break;
           if (current.indent === baseIndent && current.ordered !== firstMarker.ordered) break;
-          const level = Math.min(Math.floor((current.indent - baseIndent) / 2), maxDepth);
-          while (stack.length > level) stack.pop();
+          // The parent is the nearest item indented at least two columns less, so skipped levels leave no gaps.
+          while (stack.length > 0 && current.indent < stack.at(-1)!.indent + 2) {
+            ctx.budget.tick();
+            stack.pop();
+          }
           if (!ctx.budget.addCells(1)) {
             listTruncated = true;
             break;
@@ -559,16 +556,13 @@ export const reader: Reader = {
             marker: markerText,
           };
           stagedChars += parsed.text.length + markerText.length;
-          if (level === 0 || stack.length === 0) roots.push(item);
-          else {
-            const parent = stack[level - 1]?.item ?? stack.at(-1)!.item;
-            parent.items ??= [];
-            parent.items.push(item);
-          }
-          stack[level] = { indent: current.indent, item, ordered: current.ordered };
-          if (Math.floor(current.indent / 2) > maxDepth && !ctx.budget.truncated) {
-            noteDepth();
-          }
+          // Items deeper than `blockDepth` attach to the deepest allowed parent.
+          const depth = stack.length + 1;
+          if (depth > maxDepth) noteDepth();
+          const parent = stack[Math.min(depth, maxDepth) - 2];
+          if (parent) (parent.item.items ??= []).push(item);
+          else roots.push(item);
+          stack.push({ indent: current.indent, item });
           i++;
           if (
             parsed.truncated ||
@@ -688,5 +682,3 @@ export const reader: Reader = {
     }
   },
 };
-
-export default reader;

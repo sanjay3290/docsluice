@@ -21,6 +21,12 @@
       ],
       "doc": [
         "dist/doc.d.ts"
+      ],
+      "txt": [
+        "dist/txt.d.ts"
+      ],
+      "markdown": [
+        "dist/markdown.d.ts"
       ]
     }
   },
@@ -36,6 +42,14 @@
     "./doc": {
       "import": "./dist/doc.js",
       "require": "./dist/doc.cjs"
+    },
+    "./txt": {
+      "import": "./dist/txt.js",
+      "require": "./dist/txt.cjs"
+    },
+    "./markdown": {
+      "import": "./dist/markdown.js",
+      "require": "./dist/markdown.cjs"
     },
     "./package.json": "./package.json"
   },

@@ -1,9 +1,10 @@
+import { AbortError, LimitExceededError, TimeoutError } from '../src/core/errors.js';
 import { Budget } from '../src/core/budget.js';
 import { DocBuilder } from '../src/core/builder.js';
 import { DEFAULT_LIMITS } from '../src/core/limits.js';
 import type { ReadContext } from '../src/core/reader.js';
 import { WarningSink } from '../src/core/warnings.js';
-import reader from '../src/readers/txt/index.js';
+import { txtReader as reader } from '../src/readers/txt/index.js';
 import type { ResolvedOptions } from '../src/core/options.js';
 
 /** Fuzz arbitrary byte sequences through the production TXT reader and builder. */
@@ -23,6 +24,12 @@ export async function fuzzTxt(bytes: Uint8Array): Promise<void> {
     path: '',
     extractChild: async () => {},
   } as ReadContext;
-  await reader.read(ctx);
-  out.finish();
+  try {
+    await reader.read(ctx);
+    out.finish();
+  } catch (error) {
+    if (error instanceof AbortError || error instanceof LimitExceededError || error instanceof TimeoutError)
+      return;
+    throw error;
+  }
 }

@@ -205,6 +205,25 @@ describe('extraction pipeline', () => {
     }
   });
 
+  it('extracts TXT and Markdown through the public pipeline', async () => {
+    const txt = await extract(bytes('first line\nsecond line\n\nnext paragraph'));
+    expect(txt).toMatchObject({ format: 'txt', mimeType: 'text/plain', encoding: 'utf-8' });
+    expect(txt.blocks.map((block) => block.kind)).toEqual(['paragraph', 'paragraph']);
+    const markdown = await extract(bytes('# Title\n\n- one\n- two\n'), { filename: 'notes.md' });
+    expect(markdown.format).toBe('markdown');
+    expect(markdown.blocks.map((block) => block.kind)).toEqual(['heading', 'list']);
+    expect(toText(markdown)).toContain('Title');
+  });
+
+  it('reports a guessed TXT or Markdown encoding once, with or without a forced format', async () => {
+    const latin = new Uint8Array([0x63, 0x61, 0x66, 0xe9]);
+    for (const options of [{}, { format: 'txt' as const }, { format: 'markdown' as const }]) {
+      const doc = await extract(latin, options);
+      expect(doc.encoding).toBe('windows-1252');
+      expect(doc.warnings.map(({ code }) => code)).toEqual(['ENCODING_GUESSED']);
+    }
+  });
+
   it('passes the already-indexed ZIP to a selected lazy reader without charging entries again', async () => {
     const fixture = new Uint8Array(
       readFileSync(new URL('../../../../corpus/doc/doc-legacy.docx', import.meta.url)),

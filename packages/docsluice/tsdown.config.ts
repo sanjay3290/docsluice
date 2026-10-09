@@ -5,6 +5,8 @@ export default defineConfig({
     index: 'src/index.ts',
     'node/index': 'src/node/index.ts',
     doc: 'src/readers/doc/index.ts',
+    txt: 'src/readers/txt/index.ts',
+    markdown: 'src/readers/markdown/index.ts',
   },
   format: ['esm', 'cjs'],
   platform: 'neutral',

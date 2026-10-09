@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import markdownReader from '../../../src/readers/markdown/index.js';
+import { markdownReader } from '../../../src/readers/markdown/index.js';
 import { Budget } from '../../../src/core/budget.js';
 import { DocBuilder } from '../../../src/core/builder.js';
 import { resolveLimits } from '../../../src/core/limits.js';
@@ -8,7 +8,7 @@ import { WarningSink } from '../../../src/core/warnings.js';
 import type { ReadContext } from '../../../src/core/reader.js';
 import type { ResolvedOptions } from '../../../src/core/options.js';
 import { AbortError } from '../../../src/core/errors.js';
-import reader from '../../../src/readers/txt/index.js';
+import { txtReader as reader } from '../../../src/readers/txt/index.js';
 
 async function parse(
   source: Uint8Array | string,

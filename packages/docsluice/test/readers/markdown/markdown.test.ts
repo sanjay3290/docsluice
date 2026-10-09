@@ -5,7 +5,9 @@ import { resolveLimits } from '../../../src/core/limits.js';
 import { WarningSink } from '../../../src/core/warnings.js';
 import type { ReadContext } from '../../../src/core/reader.js';
 import type { ResolvedOptions } from '../../../src/core/options.js';
-import reader from '../../../src/readers/markdown/index.js';
+import { markdownReader as reader } from '../../../src/readers/markdown/index.js';
+import { fuzzMarkdown } from '../../../fuzz/markdown.fuzz.js';
+import { fuzzTxt } from '../../../fuzz/txt.fuzz.js';
 
 async function parse(source: string, runs = false, limits: Record<string, number> = {}, path = '') {
   const bytes = new TextEncoder().encode(source);
@@ -199,6 +201,27 @@ describe('Markdown reader', () => {
     ]);
   });
 
+  it('nests list items under the nearest parent when indentation skips levels', async () => {
+    const { doc } = await parse('- a\n      - b\n      - c\n  - d\n - e');
+    expect(doc.blocks[0]).toMatchObject({
+      kind: 'list',
+      items: [{ text: 'a', items: [{ text: 'b' }, { text: 'c' }, { text: 'd' }] }, { text: 'e' }],
+    });
+  });
+
+  it('caps a thousand nested list levels at blockDepth', async () => {
+    const source = Array.from({ length: 1_000 }, (_, level) => `${'  '.repeat(level)}- item`).join('\n');
+    const { doc, warnings } = await parse(source, false, { blockDepth: 8 });
+    let depth = 0;
+    let items = doc.blocks[0]?.kind === 'list' ? doc.blocks[0].items : [];
+    while (items.length > 0) {
+      depth++;
+      items = items.at(-1)?.items ?? [];
+    }
+    expect(depth).toBe(8);
+    expect(warnings.filter(({ code }) => code === 'DEPTH_LIMIT')).toHaveLength(1);
+  });
+
   it('retains nested mixed-list markers when the block model has only one ordered flag', async () => {
     const { doc } = await parse('* parent\n  1. ordered child\n    - nested bullet');
     expect(doc.blocks[0]).toMatchObject({
@@ -257,5 +280,46 @@ describe('Markdown reader', () => {
   it('removes the indentation and nested quote markers from blockquote lines', async () => {
     const { doc } = await parse('  > > nested quote\n > second line');
     expect(doc.blocks[0]).toMatchObject({ kind: 'paragraph', text: 'nested quote\nsecond line' });
+  });
+});
+
+describe('Markdown and TXT fuzz entry points', () => {
+  const tokens = [
+    '- ',
+    '* ',
+    '1. ',
+    '  ',
+    '      ',
+    '> ',
+    '# ',
+    '```',
+    '~~~',
+    '|',
+    '---',
+    '[',
+    '](',
+    ')',
+    '`',
+    '\\',
+    '<',
+    '>',
+    'x',
+    '\n',
+    '\r\n',
+    '\t',
+    '=',
+  ];
+  it('survive seeded mixes of Markdown block and inline syntax', async () => {
+    for (let seed = 1; seed <= 300; seed++) {
+      let state = seed;
+      let source = '';
+      for (let step = 0; step < 120; step++) {
+        state = (state * 1_103_515_245 + 12_345) % 2_147_483_648;
+        source += tokens[state % tokens.length];
+      }
+      const bytes = new TextEncoder().encode(source);
+      await expect(fuzzMarkdown(bytes)).resolves.toBeUndefined();
+      await expect(fuzzTxt(bytes)).resolves.toBeUndefined();
+    }
   });
 });
