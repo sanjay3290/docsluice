@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice with LibreOfficeDev 26.8 from scripts/corpus/src/zip-fixture/hello.fodt
 Notes: exercises a real LibreOffice OpenDocument ZIP reader path.
+Requirements: QA-1

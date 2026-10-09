@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice with LibreOfficeDev 26.8.0.0.alpha0 using scripts/corpus/make-ole-fixtures.py
 Notes: synthetic text, spreadsheet and presentation content authored for this test corpus.
+Requirements: QA-1

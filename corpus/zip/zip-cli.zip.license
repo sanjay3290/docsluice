@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice using Info-ZIP zip 3.0 from scripts/corpus/src/zip-fixture/hello.fodt
 Notes: exercises an archive made by the system ZIP command.
+Requirements: QA-1
