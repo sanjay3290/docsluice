@@ -128,5 +128,25 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-1"
+  },
+  {
+    "file": "zip/content-types-50mb.zip",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "IN-5"
+  },
+  {
+    "file": "doc/encrypted.doc",
+    "expect": {
+      "error": "ENCRYPTED"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "R2"
   }
 ]
