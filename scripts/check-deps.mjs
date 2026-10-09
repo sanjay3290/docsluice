@@ -76,7 +76,16 @@ export function validateRuntimeDependencies({
       }
 
       for (const [name, version] of declared) {
-        const installed = lockfile.packages?.[`node_modules/${name}`];
+        // Node resolves from the workspace upward; a hoisted dev dependency can
+        // legitimately have a different version from the workspace's runtime pin.
+        const candidates = [
+          `packages/docsluice/node_modules/${name}`,
+          `packages/node_modules/${name}`,
+          `node_modules/${name}`,
+        ];
+        const installed = candidates
+          .map((location) => lockfile.packages?.[location])
+          .find((entry) => entry !== undefined);
         if (!installed || installed.version !== version) {
           errors.push(
             `${name} package-lock version ${String(installed?.version)} does not match ${version}.`,

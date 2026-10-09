@@ -126,6 +126,47 @@ test('requires exact runtime versions rather than ranges', () => {
   );
 });
 
+test('resolves runtime lock versions from the workspace before hoisted dev packages', () => {
+  const args = {
+    dependencies: { fflate: '0.8.2' },
+    allowlist: new Set(['fflate']),
+    lockfile: {
+      packages: {
+        'packages/docsluice': { dependencies: { fflate: '0.8.2' } },
+        'packages/docsluice/node_modules/fflate': { version: '0.8.2' },
+        'node_modules/fflate': { version: '0.8.3', dev: true },
+      },
+    },
+  };
+  assert.doesNotThrow(() => validateRuntimeDependencies(args));
+  assert.throws(
+    () =>
+      validateRuntimeDependencies({
+        ...args,
+        lockfile: {
+          packages: {
+            ...args.lockfile.packages,
+            'packages/docsluice/node_modules/fflate': { version: '0.8.3' },
+            'node_modules/fflate': { version: '0.8.2' },
+          },
+        },
+      }),
+    /fflate package-lock version 0.8.3 does not match 0.8.2/i,
+  );
+  assert.doesNotThrow(() =>
+    validateRuntimeDependencies({
+      ...args,
+      lockfile: {
+        packages: {
+          'packages/docsluice': args.lockfile.packages['packages/docsluice'],
+          'packages/node_modules/fflate': { version: '0.8.2' },
+          'node_modules/fflate': { version: '0.8.3', dev: true },
+        },
+      },
+    }),
+  );
+});
+
 test('finds install lifecycle scripts in nested and scoped packages', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'docsluice-check-deps-'));
   try {
