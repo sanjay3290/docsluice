@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "file": "xml/xxe-file.xml",
+    "expect": { "warnings": ["DTD_IGNORED", "UNKNOWN_ENTITY"] },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-4"
+  },
+  {
+    "file": "xml/xxe-url.xml",
+    "expect": { "warnings": ["DTD_IGNORED", "UNKNOWN_ENTITY"] },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-4"
+  },
+  {
+    "file": "xml/billion-laughs.xml",
+    "expect": { "warnings": ["DTD_IGNORED", "UNKNOWN_ENTITY"] },
+    "maxMs": 100,
+    "maxHeapMB": 256,
+    "requirement": "SEC-5"
+  },
+  {
+    "file": "xml/deep-10000.xml",
+    "expect": { "warnings": ["TRUNCATED"] },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-8"
+  }
+]
