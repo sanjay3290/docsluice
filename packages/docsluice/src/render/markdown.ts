@@ -645,11 +645,101 @@ function renderList(block: Extract<Block, { kind: 'list' }>, context: RenderCont
   return output.join('\n');
 }
 
+function addressedColumn(address: string | undefined, context: RenderContext): number | undefined {
+  if (!address) return undefined;
+  let coordinateStart = 0;
+  for (let index = 0; index < address.length; index++) {
+    tick(context);
+    if (address[index] === '!') coordinateStart = index + 1;
+  }
+
+  let index = coordinateStart;
+  if (address[index] === '$') index++;
+  let column = 0;
+  let letters = 0;
+  while (index < address.length) {
+    tick(context);
+    const code = address.charCodeAt(index);
+    const upper = code >= 0x61 && code <= 0x7a ? code - 0x20 : code;
+    if (upper < 0x41 || upper > 0x5a) break;
+    column = column * 26 + upper - 0x40;
+    if (!Number.isSafeInteger(column)) return undefined;
+    letters++;
+    index++;
+  }
+  if (letters === 0) return undefined;
+  if (address[index] === '$') index++;
+  let digits = 0;
+  while (index < address.length) {
+    tick(context);
+    const code = address.charCodeAt(index);
+    if (code < 0x30 || code > 0x39) break;
+    digits++;
+    index++;
+  }
+  return digits > 0 && index === address.length ? column - 1 : undefined;
+}
+
+function cellColumn(cell: Cell, arrayIndex: number, context: RenderContext): number {
+  return addressedColumn(cell.address, context) ?? arrayIndex;
+}
+
+interface PositionedCell {
+  cell: Cell;
+  column: number;
+  sourceIndex: number;
+}
+
+function positionedCells(row: Cell[], visibleColumns: number, context: RenderContext): PositionedCell[] {
+  const positioned: PositionedCell[] = [];
+  for (let index = 0; index < row.length; index++) {
+    tick(context);
+    const cell = row[index]!;
+    const column = cellColumn(cell, index, context);
+    if (column < visibleColumns) positioned.push({ cell, column, sourceIndex: index });
+  }
+  positioned.sort((left, right) => {
+    tick(context);
+    return left.column - right.column || left.sourceIndex - right.sourceIndex;
+  });
+
+  const occupied = new Set<number>();
+  const unique: PositionedCell[] = [];
+  for (const entry of positioned) {
+    tick(context);
+    let column = entry.column;
+    if (occupied.has(column)) {
+      // Repeated addresses cannot describe two physical cells. Fall back to the source
+      // position for the later entry so its text is kept without shifting an earlier address.
+      column = entry.sourceIndex;
+      while (column < visibleColumns && occupied.has(column)) {
+        tick(context);
+        column++;
+      }
+    }
+    if (column >= visibleColumns) continue;
+    occupied.add(column);
+    unique.push({ ...entry, column });
+  }
+  unique.sort((left, right) => {
+    tick(context);
+    return left.column - right.column || left.sourceIndex - right.sourceIndex;
+  });
+  return unique;
+}
+
 function tableWidth(table: TableBlock, context: RenderContext): number {
   let width = 0;
   for (const row of table.rows) {
     tick(context);
     if (row.length > width) width = row.length;
+    for (let index = 0; index < row.length; index++) {
+      tick(context);
+      const cell = row[index]!;
+      const column = cellColumn(cell, index, context);
+      const span = normalizedSpan(cell.colSpan, Number.MAX_SAFE_INTEGER - column);
+      width = Math.max(width, column + span);
+    }
   }
   return width;
 }
@@ -664,12 +754,18 @@ function tableNeedsHtml(
   for (let rowIndex = 0; rowIndex < visibleRows; rowIndex++) {
     tick(context);
     const row = table.rows[rowIndex]!;
-    for (let index = 0; index < Math.min(row.length, visibleColumns); index++) {
+    for (let index = 0; index < row.length; index++) {
       tick(context);
-      context.budget.addCells(1);
       const cell = row[index]!;
+      const column = cellColumn(cell, index, context);
+      if (column >= visibleColumns) continue;
+      context.budget.addCells(1);
       context.budget.checkOutputChars(context.pendingOutputChars + cell.text.length);
-      if ((cell.rowSpan ?? 1) > 1 || (cell.colSpan ?? 1) > 1 || containsLineBreak(cell.text, context))
+      if (
+        normalizedSpan(cell.rowSpan, visibleRows - rowIndex) > 1 ||
+        normalizedSpan(cell.colSpan, visibleColumns - column) > 1 ||
+        containsLineBreak(cell.text, context)
+      )
         needsHtml = true;
     }
   }
@@ -728,10 +824,9 @@ function flattenRows(
       tick(context);
       values.push('');
     }
-    for (let column = 0; column < Math.min(row.length, visibleColumns); column++) {
+    for (const { cell, column } of positionedCells(row, visibleColumns, context)) {
       tick(context);
       if ((coveredUntil[column] ?? -1) >= rowIndex) continue;
-      const cell = row[column]!;
       values[column] = cellText(cell, false, context);
       const colSpan = normalizedSpan(cell.colSpan, visibleColumns - column);
       const rowSpan = normalizedSpan(cell.rowSpan, table.rows.length - rowIndex);
@@ -813,10 +908,22 @@ function htmlTable(
     tick(context);
     const cells: string[] = [];
     const row = table.rows[rowIndex]!;
-    for (let column = 0; column < Math.min(row.length, visibleColumns); column++) {
+    let nextColumn = 0;
+    for (const { cell, column } of positionedCells(row, visibleColumns, context)) {
       tick(context);
-      if ((coveredUntil[column] ?? -1) >= rowIndex) continue;
-      const cell = row[column]!;
+      while (nextColumn < column) {
+        tick(context);
+        if ((coveredUntil[nextColumn] ?? -1) < rowIndex) {
+          const emptyTag = rowIndex < headerCount ? 'th' : 'td';
+          reserve(context, emptyTag.length * 2 + 5);
+          cells.push(`<${emptyTag}></${emptyTag}>`);
+        }
+        nextColumn++;
+      }
+      if ((coveredUntil[column] ?? -1) >= rowIndex) {
+        nextColumn = Math.max(nextColumn, column + 1);
+        continue;
+      }
       const colSpan = normalizedSpan(cell.colSpan, visibleColumns - column);
       const rowSpan = normalizedSpan(cell.rowSpan, visibleRows - rowIndex);
       for (let covered = column; covered < column + colSpan; covered++) {
@@ -829,6 +936,7 @@ function htmlTable(
       const attrs = `${rowSpan > 1 ? ` rowspan="${rowSpan}"` : ''}${colSpan > 1 ? ` colspan="${colSpan}"` : ''}`;
       reserve(context, tag.length * 2 + 5 + attrs.length);
       cells.push(`<${tag}${attrs}>${cellText(cell, true, context)}</${tag}>`);
+      nextColumn = Math.max(nextColumn, column + colSpan);
     }
     reserve(context, 9);
     output.push(`<tr>${cells.join('')}</tr>`);
