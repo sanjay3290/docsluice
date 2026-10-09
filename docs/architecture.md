@@ -74,6 +74,20 @@ Rules for every reader:
 - Never allocate from sizes written in the file. Grow as you read, under the budget.
 - Every location carries `path` from `ctx.path` when inside a child (NST-3).
 
+`DocBuilder` is the only writer for the document model. It normalizes emitted text
+to NFC and LF, removes C0 controls other than tab and line feed, trims trailing
+horizontal whitespace on each line, and keeps at most one blank line in a run.
+The transform hook sees each retained block once, including blocks inside
+sections; `onBlock` sees completed top-level blocks in output order. The builder
+preflights text as it is staged inside open sections, then charges each completed
+top-level tree once against the shared output-character budget. If output is
+truncated, finishing unwinds open sections and returns accepted partial content.
+If a section or nested list exceeds `blockDepth`, it flattens that
+container while retaining its content and emits one `DEPTH_LIMIT` warning. This
+structural flattening does not mark output as truncated. With `metadata: false`,
+the builder removes authors, custom properties, note authors, and the same
+personal fields from extracted child documents.
+
 ## The budget
 
 One `Budget` object per top-level `extract()` call. Children get the same object, with depth + 1.
@@ -85,7 +99,8 @@ One `Budget` object per top-level `extract()` call. Children get the same object
 | ratio per entry above `compressionRatioMinBytes` | `compressionRatio` | always throw |
 | zip entries | `zipEntries` | `onLimit` |
 | child depth | `childDepth` | list, do not open, `DEPTH_LIMIT` warning |
-| XML depth / block depth | `xmlDepth` / `blockDepth` | `onLimit` |
+| XML depth | `xmlDepth` | `onLimit` |
+| block depth | `blockDepth` | builder flattens nested sections and lists with `DEPTH_LIMIT` |
 | output characters | `outputChars` | `onLimit` |
 | cells | `cells` | `onLimit` |
 | PDF pages | `pdfPages` | `onLimit` |
