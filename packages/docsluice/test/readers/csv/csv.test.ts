@@ -5,12 +5,34 @@ import { resolveLimits } from '../../../src/core/limits.js';
 import type { ReadContext } from '../../../src/core/reader.js';
 import type { ResolvedOptions } from '../../../src/core/options.js';
 import { WarningSink } from '../../../src/core/warnings.js';
-import csvReader, {
-  parseDelimitedByteChunks,
-  parseDelimitedChunks,
-  IncrementalDelimitedParser,
-  tsvReader,
-} from '../../../src/readers/csv/index.js';
+import { extract } from '../../../src/core/extract.js';
+import { csvReader, tsvReader } from '../../../src/readers/csv/index.js';
+import { IncrementalDelimitedParser } from '../../../src/readers/csv/parser.js';
+
+/** Parse text chunks with delimiter state preserved across arbitrary chunk edges. */
+function parseDelimitedChunks(chunks: Iterable<string>, delimiter: string): string[][] {
+  const rows: string[][] = [];
+  const parser = new IncrementalDelimitedParser(delimiter, (row) => {
+    rows.push(row);
+  });
+  for (const chunk of chunks) {
+    parser.write(chunk);
+  }
+  parser.write('', true);
+  return rows;
+}
+
+/** Parse UTF-8 byte chunks while preserving decoder state across split code points. */
+function parseDelimitedByteChunks(chunks: Iterable<Uint8Array>, delimiter: string): string[][] {
+  const rows: string[][] = [];
+  const parser = new IncrementalDelimitedParser(delimiter, (row) => {
+    rows.push(row);
+  });
+  const decoder = new TextDecoder('utf-8');
+  for (const chunk of chunks) parser.write(decoder.decode(chunk, { stream: true }));
+  parser.write(decoder.decode(), true);
+  return rows;
+}
 
 async function parse(reader: typeof csvReader, source: string, limits: Record<string, number> = {}) {
   const bytes = new TextEncoder().encode(source);
@@ -115,6 +137,31 @@ describe('CSV and TSV readers', () => {
     expect(doc.blocks).toHaveLength(1);
     expect(warnings.map((warning) => warning.code)).toContain('UNREADABLE_PART');
     expect(JSON.stringify(warnings)).not.toContain('broken');
+  });
+
+  it('closes a runaway quote at the next line break after the quoted-length limit', async () => {
+    const { doc, warnings } = await parse(csvReader, `a,b\n"${'x'.repeat(1_000_001)}\nnext,row\n`);
+    const rows = doc.blocks[0]?.kind === 'table' ? doc.blocks[0].rows : [];
+    expect(rows.map((row) => row.map((cell) => cell.text.length))).toEqual([
+      [1, 1],
+      [1_000_002, 0],
+      [4, 3],
+    ]);
+    expect(rows[2]?.map((cell) => cell.text)).toEqual(['next', 'row']);
+    expect(warnings.map((warning) => warning.code)).toEqual(['UNREADABLE_PART']);
+  });
+
+  it('stops a 100 MB CSV quickly at cells: 1000', async () => {
+    const line = new TextEncoder().encode('alpha,beta,gamma,delta\n');
+    const bytes = new Uint8Array(100_000_000);
+    bytes.set(line);
+    for (let filled = line.length; filled < bytes.length; filled *= 2) bytes.copyWithin(filled, 0, filled);
+    const started = performance.now();
+    const doc = await extract(bytes, { format: 'csv', limits: { cells: 1_000 } });
+    expect(performance.now() - started).toBeLessThan(2_000);
+    expect(doc.stats.truncated).toBe(true);
+    expect(doc.blocks[0]?.kind === 'table' && doc.blocks[0].rows.flat().length).toBeLessThanOrEqual(1_000);
+    expect(doc.warnings.filter((warning) => warning.code === 'TRUNCATED').length).toBeGreaterThan(0);
   });
 
   it('stops on cell budget and bounds the partially emitted table', async () => {

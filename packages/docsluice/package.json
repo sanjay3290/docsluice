@@ -27,6 +27,12 @@
       ],
       "markdown": [
         "dist/markdown.d.ts"
+      ],
+      "csv": [
+        "dist/csv.d.ts"
+      ],
+      "tsv": [
+        "dist/tsv.d.ts"
       ]
     }
   },
@@ -50,6 +56,14 @@
     "./markdown": {
       "import": "./dist/markdown.js",
       "require": "./dist/markdown.cjs"
+    },
+    "./csv": {
+      "import": "./dist/csv.js",
+      "require": "./dist/csv.cjs"
+    },
+    "./tsv": {
+      "import": "./dist/tsv.js",
+      "require": "./dist/tsv.cjs"
     },
     "./package.json": "./package.json"
   },

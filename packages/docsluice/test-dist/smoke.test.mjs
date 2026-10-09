@@ -70,3 +70,10 @@ test('TXT and Markdown reader subpaths load lazily', async () => {
   const markdown = await import('docsluice/markdown');
   assert.equal(markdown.markdownReader.id, 'markdown');
 });
+
+test('CSV and TSV reader subpaths load lazily', async () => {
+  const csv = await import('docsluice/csv');
+  assert.equal(csv.csvReader.id, 'csv');
+  const tsv = await import('docsluice/tsv');
+  assert.equal(tsv.tsvReader.id, 'tsv');
+});

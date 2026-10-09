@@ -1,177 +1,12 @@
 import type { Cell, FormatId } from '../../core/model.js';
 import type { ReadContext, Reader } from '../../core/reader.js';
-import { decodeText, detectEncoding } from '../../detect/encoding.js';
+import { decodeText } from '../../detect/encoding.js';
+import { detectTextInput } from '../text-input.js';
+import { IncrementalDelimitedParser } from './parser.js';
 
-const MAX_COLUMNS = 16_384;
-const MAX_QUOTED_CHARS = 1_000_000;
 const SNIFF_BYTES = 8 * 1024;
 const DECODE_CHUNK_BYTES = 64 * 1024;
 const DELIMITERS = [',', ';', '\t', '|'] as const;
-
-type RowHandler = (row: string[]) => boolean | void;
-
-/** Incremental CSV tokenizer. State, including a pending CR, survives write() boundaries. */
-export class IncrementalDelimitedParser {
-  readonly #delimiter: string;
-  readonly #onRow: RowHandler;
-  #fieldParts: string[] = [];
-  #row: string[] = [];
-  #recordPresent = false;
-  #fieldLength = 0;
-  #inQuotes = false;
-  #afterQuote = false;
-  #pendingCr = false;
-  #stopped = false;
-  malformed = false;
-  limited = false;
-
-  constructor(delimiter: string, onRow: RowHandler, maxFieldChars = Number.MAX_SAFE_INTEGER) {
-    if (delimiter.length !== 1) throw new RangeError('Delimiter must be one character.');
-    this.#delimiter = delimiter;
-    this.#onRow = onRow;
-    this.#maxFieldChars = maxFieldChars;
-  }
-
-  readonly #maxFieldChars: number;
-
-  write(chunk: string, final = false, tick: () => void = () => {}): boolean {
-    if (this.#stopped) return false;
-    for (let index = 0; index < chunk.length; index += 1) {
-      tick();
-      const character = chunk[index]!;
-      if (this.#pendingCr) {
-        this.#pendingCr = false;
-        if (character === '\n') continue;
-      }
-      if (this.#inQuotes) {
-        if (this.#afterQuote) {
-          if (character === '"') {
-            this.#append('"');
-            this.#afterQuote = false;
-            if (this.limited) {
-              this.#endRow();
-              this.#stopped = true;
-              break;
-            }
-            continue;
-          }
-          this.#inQuotes = false;
-          this.#afterQuote = false;
-          if (character === this.#delimiter) {
-            this.#endField();
-            continue;
-          }
-          if (character === '\r' || character === '\n') {
-            this.#endRow();
-            if (character === '\r') this.#pendingCr = true;
-            if (this.#stopped) break;
-            continue;
-          }
-          // A quote followed by ordinary text is malformed. Treat it as a closing
-          // quote and resume at the current character to avoid swallowing rows.
-          this.malformed = true;
-        } else if (character === '"') {
-          this.#afterQuote = true;
-          continue;
-        } else {
-          this.#append(character);
-          if (this.limited) {
-            this.#endRow();
-            this.#stopped = true;
-            break;
-          }
-          if (this.#fieldLength > MAX_QUOTED_CHARS && (character === '\n' || character === '\r')) {
-            this.#inQuotes = false;
-            this.malformed = true;
-            this.#endRow();
-            if (this.#stopped) break;
-          }
-          continue;
-        }
-      }
-      if (character === this.#delimiter) {
-        this.#recordPresent = true;
-        this.#endField();
-        continue;
-      }
-      if (character === '\r' || character === '\n') {
-        this.#endRow();
-        if (character === '\r') this.#pendingCr = true;
-        if (this.#stopped) break;
-        continue;
-      }
-      if (character === '"' && this.#fieldLength === 0 && this.#fieldParts.length === 0) {
-        this.#inQuotes = true;
-        this.#recordPresent = true;
-        continue;
-      }
-      this.#append(character);
-      if (this.limited) {
-        this.#endRow();
-        this.#stopped = true;
-        break;
-      }
-    }
-    if (final) {
-      if (this.#inQuotes) {
-        if (!this.#afterQuote) this.malformed = true;
-        this.#inQuotes = false;
-        this.#afterQuote = false;
-      }
-      if (this.#recordPresent || this.#fieldLength > 0 || this.#fieldParts.length > 0 || this.#row.length > 0)
-        this.#endRow();
-    }
-    return !this.#stopped;
-  }
-
-  #append(character: string): void {
-    this.#recordPresent = true;
-    this.#fieldParts.push(character);
-    this.#fieldLength += character.length;
-    if (this.#fieldLength > this.#maxFieldChars) this.limited = true;
-  }
-
-  #endField(): void {
-    if (this.#row.length < MAX_COLUMNS) this.#row.push(this.#fieldParts.join(''));
-    else this.malformed = true;
-    this.#fieldParts = [];
-    this.#fieldLength = 0;
-  }
-
-  #endRow(): void {
-    this.#endField();
-    if (this.#recordPresent) {
-      if (this.#onRow(this.#row) === false) this.#stopped = true;
-    }
-    this.#row = [];
-    this.#recordPresent = false;
-  }
-}
-
-/** Parse text chunks with delimiter state preserved across arbitrary chunk edges. */
-export function parseDelimitedChunks(chunks: Iterable<string>, delimiter: string): string[][] {
-  const rows: string[][] = [];
-  const parser = new IncrementalDelimitedParser(delimiter, (row) => {
-    rows.push(row);
-  });
-  for (const chunk of chunks) {
-    parser.write(chunk);
-  }
-  parser.write('', true);
-  return rows;
-}
-
-/** Parse UTF-8 byte chunks while preserving decoder state across split code points. */
-export function parseDelimitedByteChunks(chunks: Iterable<Uint8Array>, delimiter: string): string[][] {
-  const rows: string[][] = [];
-  const parser = new IncrementalDelimitedParser(delimiter, (row) => {
-    rows.push(row);
-  });
-  const decoder = new TextDecoder('utf-8');
-  for (const chunk of chunks) parser.write(decoder.decode(chunk, { stream: true }));
-  parser.write(decoder.decode(), true);
-  return rows;
-}
 
 function sniffDelimiter(text: string, tick: () => void): string {
   const lines: number[][] = [];
@@ -245,15 +80,9 @@ function columnName(column: number): string {
 
 function readCsv(ctx: ReadContext, delimiter?: string): void {
   ctx.budget.tick();
-  const encoding = detectEncoding(ctx.bytes);
-  if (!encoding.isText || encoding.encoding === 'unsupported') return;
-  ctx.out.setEncoding(encoding.encoding);
-  if (encoding.warning)
-    ctx.warnings.add({
-      code: encoding.warning,
-      message: 'Text encoding was inferred from the byte sample.',
-    });
-  const sample = decodeText(ctx.bytes.subarray(0, SNIFF_BYTES), encoding.encoding);
+  const encoding = detectTextInput(ctx);
+  if (encoding === undefined) return;
+  const sample = decodeText(ctx.bytes.subarray(0, SNIFF_BYTES), encoding);
   const sniffText = sample.charCodeAt(0) === 0xfeff ? sample.slice(1) : sample;
   const chosen = delimiter ?? sniffDelimiter(sniffText, () => ctx.budget.tick());
   const rows: string[][] = [];
@@ -286,7 +115,7 @@ function readCsv(ctx: ReadContext, delimiter?: string): void {
     },
     Math.max(0, ctx.budget.limits.outputChars - ctx.budget.outputChars),
   );
-  const decoder = new TextDecoder(encoding.encoding);
+  const decoder = new TextDecoder(encoding);
   let completed = true;
   for (let offset = 0; offset < ctx.bytes.length; offset += DECODE_CHUNK_BYTES) {
     ctx.budget.tick();
@@ -335,7 +164,7 @@ function readCsv(ctx: ReadContext, delimiter?: string): void {
   if (parseTruncated || stopped) {
     ctx.warnings.add({
       code: 'TRUNCATED',
-      message: `CSV stopped after ${cells.length} rows; additional rows may have been skipped.`,
+      message: `CSV kept ${cells.length} rows; the remaining rows were not read.`,
     });
   }
 }
@@ -351,9 +180,6 @@ function createReader(id: FormatId, delimiter?: string): Reader {
 }
 
 /** CSV reader with bounded delimiter sniffing and RFC 4180 field handling. */
-export const reader = createReader('csv');
-export const csvReader = reader;
+export const csvReader = createReader('csv');
 /** TSV reader that always uses a tab delimiter. */
 export const tsvReader = createReader('tsv', '\t');
-
-export default reader;
