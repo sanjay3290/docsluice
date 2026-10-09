@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { Budget } from '../../../src/core/budget.js';
 import { DocBuilder } from '../../../src/core/builder.js';
 import { resolveLimits } from '../../../src/core/limits.js';
@@ -97,6 +98,22 @@ describe('HTML reader', () => {
       { kind: 'paragraph', text: 'Hello world.' },
     ]);
   });
+  it('selects expected text on ten authored saved pages', () => {
+    const cases = JSON.parse(
+      readFileSync(
+        new URL('../../../../../corpus/html/main-content/expectations.json', import.meta.url),
+        'utf8',
+      ),
+    ) as Array<{ file: string; expectedMainText: string[]; expectedExcludedText: string[] }>;
+    for (const page of cases) {
+      const html = readFileSync(new URL('../../../../../corpus/' + page.file, import.meta.url), 'utf8');
+      const ctx = context('');
+      emitHtml(ctx, html, true);
+      const output = JSON.stringify(ctx.out.finish().blocks);
+      for (const text of page.expectedMainText) expect(output, page.file).toContain(text);
+      for (const text of page.expectedExcludedText) expect(output, page.file).not.toContain(text);
+    }
+  });
   it('keeps structured visible content and drops executable and hidden content', async () => {
     const ctx = context(
       '<h1>Title</h1><p>One &amp; two.</p><script>SECRET</script><style>STYLE</style><noscript>HIDDEN</noscript><template>TEMPLATE</template><!-- COMMENT --><ul><li>A<li>B</ul><pre><code>x &lt; 2</code></pre><img alt="Diagram">',
@@ -169,6 +186,14 @@ describe('HTML reader', () => {
     await readHtml(small);
     expect(small.out.finish().stats.truncated).toBe(true);
   });
+  it('selects semantic main content through the isolated helper', () => {
+    const ctx = context('');
+    emitHtml(ctx, '<nav>MENU</nav><main><h1>Story</h1><p>Visible</p></main><footer>FOOTER</footer>', true);
+    expect(ctx.out.finish().blocks).toMatchObject([
+      { kind: 'heading', text: 'Story' },
+      { kind: 'paragraph', text: 'Visible' },
+    ]);
+  });
   it('preserves child location and responds to an already aborted signal', async () => {
     const ctx = { ...context('<p>Child</p>'), path: 'mail/body.html' };
     await readHtml(ctx);
@@ -195,6 +220,7 @@ describe('HTML reader', () => {
     emitHtml(
       ctx,
       '<p>Look <img alt="Diagram" src="cid:picture"></p>',
+      false,
       new Map([['picture', 'mail/diagram.png']]),
     );
     expect(ctx.out.finish().blocks).toMatchObject([

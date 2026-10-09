@@ -431,6 +431,69 @@ function inlineRuns(node: HtmlNode, ctx: ReadContext): Run[] {
   return runs;
 }
 
+function isChrome(node: HtmlNode): boolean {
+  const hint = ((node.attrs.get('class') ?? '') + ' ' + (node.attrs.get('id') ?? '')).toLowerCase();
+  return (
+    node.tag === 'nav' ||
+    node.tag === 'aside' ||
+    node.tag === 'footer' ||
+    node.tag === 'header' ||
+    ['nav', 'footer', 'sidebar', 'comment', 'ad-banner'].some((term) => hint.includes(term))
+  );
+}
+
+/** Deterministic linear scoring, with main/role landmarks preferred over article. */
+export function selectMainContent(root: HtmlNode, ctx: ReadContext): HtmlNode {
+  const order: HtmlNode[] = [];
+  const pending = [root];
+  let article: HtmlNode | undefined;
+  while (pending.length) {
+    ctx.budget.tick();
+    const node = pending.pop()!;
+    if (isChrome(node)) continue;
+    if (node.tag === 'main' || node.attrs.get('role') === 'main') return node;
+    if (!article && node.tag === 'article') article = node;
+    order.push(node);
+    for (let i = node.children.length - 1; i >= 0; i--) {
+      ctx.budget.tick();
+      const child = node.children[i]!;
+      if (typeof child !== 'string') pending.push(child);
+    }
+  }
+  if (article) return article;
+  const counts = new Map<HtmlNode, { text: number; linked: number }>();
+  let best = root;
+  let bestScore = -1;
+  for (let i = order.length - 1; i >= 0; i--) {
+    ctx.budget.tick();
+    const node = order[i]!;
+    let text = 0;
+    let linked = 0;
+    for (const child of node.children) {
+      ctx.budget.tick();
+      if (typeof child === 'string') text += child.trim().length;
+      else {
+        const count = counts.get(child);
+        if (count) {
+          text += count.text;
+          linked += count.linked;
+        }
+      }
+    }
+    if (node.tag === 'a') linked = text;
+    counts.set(node, { text, linked });
+    if (node.tag === 'div' || node.tag === 'section') {
+      const hint = ((node.attrs.get('class') ?? '') + ' ' + (node.attrs.get('id') ?? '')).toLowerCase();
+      const score = text - linked * 2 + (hint.includes('content') || hint.includes('primary') ? 100 : 0);
+      if (score >= bestScore) {
+        best = node;
+        bestScore = score;
+      }
+    }
+  }
+  return best;
+}
+
 function imageBlock(ctx: ReadContext, node: HtmlNode, cidReferences?: ReadonlyMap<string, string>): boolean {
   const alt = node.attrs.get('alt');
   const src = decodeEntities(node.attrs.get('src') ?? '', ctx).trim();
@@ -467,13 +530,19 @@ function inlineImages(
 }
 
 /** Build blocks from bounded HTML, reusable by EML/EPUB without changing encoding metadata. */
-export function emitHtml(ctx: ReadContext, html: string, cidReferences?: ReadonlyMap<string, string>): void {
+export function emitHtml(
+  ctx: ReadContext,
+  html: string,
+  mainContent = false,
+  cidReferences?: ReadonlyMap<string, string>,
+): void {
   const root = parseHtml(html, ctx);
   const loc = ctx.path ? { path: ctx.path } : {};
-  const pending: Array<HtmlNode | string> = [root];
+  const pending: Array<HtmlNode | string> = [mainContent ? selectMainContent(root, ctx) : root];
   while (pending.length) {
     ctx.budget.tick();
     const node = pending.pop()!;
+    if (typeof node !== 'string' && mainContent && isChrome(node)) continue;
     if (typeof node === 'string') {
       const text = node.trim();
       if (text && !ctx.out.paragraph(text, loc)) return;

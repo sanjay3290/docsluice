@@ -8,6 +8,8 @@ Character-set priority is BOM, actual meta declaration in the first 1024 bytes, 
 
 Every file scan checks the budget. Tag nesting uses balanced block-depth accounting, output staging uses the shared character allowance, and table cells use the shared cell allowance. Attributes are capped at 256 per tag, names at 128 characters, and the staged visible tree at 100,000 nodes. The node cap reports `UNREADABLE_PART` and skips later content. This is a parser safety cap; it does not currently set the core truncated statistic. The tokenizer is intentionally smaller than a browser's full HTML parsing algorithm: malformed adoption-agency formatting, CSS visibility/layout, form controls and complex nested tables are approximate.
 
+Main-content selection is available as `emitHtml(ctx, html, true)`. It first looks for main/role=main, then the first eligible article, otherwise scores div/section candidates by visible text minus twice linked text with a 100-point content/primary class/id bonus. Nav/header/footer/aside and class/id hints for navigation, sidebars, comments and ad banners are excluded. Ties favor the earliest outer candidate. Counts are computed once, so scoring is linear. Ten licensed authored pages exercise this helper. Wiring `mainContent` into the public options and reader remains with the integration lead because that option is absent from the supplied foundation.
+
 Reader registration, public exports, public-extraction goldens, hostile manifest integration and the cross-runtime runner remain separate integration checks.
 
 Specification references: [WHATWG parsing](https://html.spec.whatwg.org/multipage/parsing.html), [named references](https://html.spec.whatwg.org/entities.json).

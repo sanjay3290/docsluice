@@ -1,0 +1,119 @@
+[
+  {
+    "file": "html/main-content/01-semantic-main.html",
+    "expectedMainText": [
+      "MAIN_01",
+      "Semantic main contains the complete article text."
+    ],
+    "expectedExcludedText": [
+      "HEADER_01",
+      "NAV_01",
+      "FOOTER_01"
+    ],
+    "case": "semantic main"
+  },
+  {
+    "file": "html/main-content/02-article.html",
+    "expectedMainText": [
+      "MAIN_02",
+      "An article element identifies this readable story."
+    ],
+    "expectedExcludedText": [
+      "NAV_02",
+      "SIDEBAR_02"
+    ],
+    "case": "article landmark"
+  },
+  {
+    "file": "html/main-content/03-role-main.html",
+    "expectedMainText": [
+      "MAIN_03",
+      "ARIA main landmark carries the principal explanation."
+    ],
+    "expectedExcludedText": [
+      "NAV_03"
+    ],
+    "case": "role=main landmark"
+  },
+  {
+    "file": "html/main-content/04-text-density.html",
+    "expectedMainText": [
+      "MAIN_04",
+      "This paragraph has many words and very little linked text"
+    ],
+    "expectedExcludedText": [
+      "NAV_04"
+    ],
+    "case": "text density fallback"
+  },
+  {
+    "file": "html/main-content/05-link-density.html",
+    "expectedMainText": [
+      "MAIN_05",
+      "A short but useful report stays readable as ordinary prose."
+    ],
+    "expectedExcludedText": [
+      "LINKS_05"
+    ],
+    "case": "link density fallback"
+  },
+  {
+    "file": "html/main-content/06-class-hints.html",
+    "expectedMainText": [
+      "MAIN_06",
+      "Class and id hints point toward the actual content."
+    ],
+    "expectedExcludedText": [
+      "SIDEBAR_06",
+      "FOOTER_06"
+    ],
+    "case": "class/id hints"
+  },
+  {
+    "file": "html/main-content/07-multiple-articles.html",
+    "expectedMainText": [
+      "MAIN_07A",
+      "The lead article contains the longest uninterrupted body passage"
+    ],
+    "expectedExcludedText": [
+      "NAV_07"
+    ],
+    "case": "multiple article candidates; preserve lead"
+  },
+  {
+    "file": "html/main-content/08-body-fallback.html",
+    "expectedMainText": [
+      "MAIN_08",
+      "When no landmark exists, a dense text region is a reasonable content candidate."
+    ],
+    "expectedExcludedText": [
+      "NAV_08",
+      "FOOTER_08"
+    ],
+    "case": "body/scoring fallback"
+  },
+  {
+    "file": "html/main-content/09-comments-vs-story.html",
+    "expectedMainText": [
+      "MAIN_09",
+      "The report is the article that should remain"
+    ],
+    "expectedExcludedText": [
+      "COMMENTS_09",
+      "NAV_09"
+    ],
+    "case": "semantic content excludes comments"
+  },
+  {
+    "file": "html/main-content/10-semantic-over-score.html",
+    "expectedMainText": [
+      "MAIN_10",
+      "Explicit semantic main should take priority"
+    ],
+    "expectedExcludedText": [
+      "NAV_10",
+      "FOOTER_10"
+    ],
+    "case": "landmark overrides navigation-heavy score"
+  }
+]
