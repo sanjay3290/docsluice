@@ -1,0 +1,4 @@
+First paragraph keeps an internal
+line break.
+
+Second paragraph has café and a final line.
