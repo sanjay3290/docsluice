@@ -1,0 +1,3 @@
+name = "docsluice-runtime-smoke"
+main = "worker.mjs"
+compatibility_date = "2026-08-03"
