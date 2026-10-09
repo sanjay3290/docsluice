@@ -26,6 +26,12 @@ interface SharedState {
 }
 
 const CLOCK_INTERVAL = 1024;
+const warningContexts = new WeakMap<Budget, WarningSink>();
+
+/** Internal pipeline hook; the shared counters retain a document-scoped warning destination. */
+export function setBudgetWarnings(budget: Budget, warnings: WarningSink): void {
+  warningContexts.set(budget, warnings);
+}
 
 /** One extraction's limits and counters; child instances share all resource allowances. */
 export class Budget {
@@ -59,7 +65,7 @@ export class Budget {
     return this.#state.truncated;
   }
   get warnings(): WarningSink {
-    return this.#state.warnings;
+    return warningContexts.get(this) ?? this.#state.warnings;
   }
   /** The caller signal, exposed read-only so pending stream reads can subscribe to cancellation. */
   get signal(): AbortSignal | undefined {
@@ -93,6 +99,7 @@ export class Budget {
     const child = new Budget(this.#state.limits);
     child.#state = this.#state;
     child.#baseDepth = this.depth + 1;
+    setBudgetWarnings(child, this.warnings);
     child.#checkDepth('child', child.depth);
     return child;
   }
@@ -196,7 +203,7 @@ export class Budget {
     const state = this.#state;
     if (state.warned.has(limit)) return;
     state.warned.add(limit);
-    state.warnings.add({
+    this.warnings.add({
       code,
       message: `Limit "${limit}" is ${state.maxima.get(limit)!}; observed ${count}. Further work was skipped.`,
     });

@@ -5,6 +5,25 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
+const renderDoc = {
+  format: 'txt',
+  mimeType: 'text/plain',
+  metadata: {},
+  features: {
+    hasMacros: false,
+    hasExternalLinks: false,
+    hasEmbeddedFiles: false,
+    isEncrypted: false,
+    hasJavaScript: false,
+  },
+  blocks: [
+    { kind: 'heading', level: 1, text: 'Title', loc: {} },
+    { kind: 'table', rows: [[{ text: 'a' }, { text: 'b' }]], headerRows: 1, loc: {} },
+  ],
+  children: [],
+  warnings: [],
+  stats: { bytesRead: 0, durationMs: 0, truncated: false, needsOcr: false },
+};
 
 test('ESM entry loads', async () => {
   const mod = await import('../dist/index.js');
@@ -12,6 +31,15 @@ test('ESM entry loads', async () => {
   assert.equal(mod.DEFAULT_LIMITS.zipEntries, 10_000);
   assert.equal(typeof mod.parseXml, 'function');
   assert.equal(typeof mod.scanXml, 'function');
+  const image = await mod.extract(Uint8Array.of(137, 80, 78, 71, 13, 10, 26, 10));
+  assert.equal(image.format, 'png');
+  assert.deepEqual(image.blocks, []);
+  assert.equal(mod.toText(renderDoc), 'Title\n\na\tb');
+  assert.equal(typeof mod.toJSON, 'function');
+  assert.equal(
+    (await mod.detect(Uint8Array.of(123, 34, 111, 107, 34, 58, 116, 114, 117, 101, 125))).format,
+    'json',
+  );
   const warnings = new mod.WarningSink();
   const budget = new mod.Budget(mod.DEFAULT_LIMITS, { warnings });
   const tree = mod.parseXml('<root>text</root>', { budget, warnings });
@@ -21,9 +49,17 @@ test('ESM entry loads', async () => {
 test('CJS entry loads', () => {
   const mod = require('../dist/index.cjs');
   assert.equal(typeof mod.resolveLimits, 'function');
+  assert.equal(mod.toText(renderDoc), 'Title\n\na\tb');
+  assert.equal(typeof mod.toJSON, 'function');
 });
 
 test('node entry loads', async () => {
   const mod = await import('../dist/node/index.js');
   assert.equal(typeof mod.DocsluiceError, 'function');
+});
+
+test('DOC reader subpath loads lazily', async () => {
+  const mod = await import('docsluice/doc');
+  assert.equal(mod.docReader.id, 'doc');
+  assert.equal(typeof mod.docReader.read, 'function');
 });
