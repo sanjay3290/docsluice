@@ -51,4 +51,5 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
+      - run: npm ci --omit=dev --ignore-scripts
       - run: node --test packages/docsluice/test-dist/smoke.test.mjs
