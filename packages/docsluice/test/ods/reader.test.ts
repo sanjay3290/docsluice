@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { Budget } from '../../src/core/budget.js';
 import { DocBuilder } from '../../src/core/builder.js';
+import { resolveOptions } from '../../src/core/extract.js';
 import { EncryptedError, LimitExceededError, AbortError } from '../../src/core/errors.js';
 import { DEFAULT_LIMITS } from '../../src/core/limits.js';
-import type { Limits } from '../../src/core/limits.js';
-import type { ResolvedOptions } from '../../src/core/options.js';
+import type { ExtractOptions } from '../../src/core/options.js';
 import { WarningSink } from '../../src/core/warnings.js';
 import { makeZip } from '../helpers/zip.js';
 import { reader } from '../../src/readers/ods/index.js';
@@ -20,7 +20,7 @@ function document(body: string): string {
 
 async function readContent(
   content: string,
-  overrides: Omit<Partial<ResolvedOptions>, 'limits'> & { limits?: Partial<Limits> } = {},
+  overrides: ExtractOptions = {},
   extras: Array<{ name: string; data: string }> = [],
 ) {
   const bytes = makeZip([
@@ -30,11 +30,7 @@ async function readContent(
   return readBytes(bytes, overrides);
 }
 
-async function readBytes(
-  bytes: Uint8Array,
-  overrides: Omit<Partial<ResolvedOptions>, 'limits'> & { limits?: Partial<Limits> } = {},
-  path = '',
-) {
+async function readBytes(bytes: Uint8Array, overrides: ExtractOptions = {}, path = '') {
   const warnings = new WarningSink();
   const { limits: limitOverrides, ...optionOverrides } = overrides;
   const limits = { ...DEFAULT_LIMITS, ...(limitOverrides ?? {}) };
@@ -43,19 +39,7 @@ async function readBytes(
     onLimit: overrides.onLimit ?? 'truncate',
     signal: overrides.signal,
   });
-  const options: ResolvedOptions = {
-    limits,
-    onLimit: 'truncate',
-    strict: false,
-    metadata: true,
-    children: 'skip',
-    childBytes: false,
-    runs: false,
-    revisions: 'accept',
-    includeHidden: false,
-    formulas: false,
-    ...optionOverrides,
-  };
+  const options = resolveOptions({ children: 'skip', ...optionOverrides, limits });
   const ctx = {
     bytes,
     options,
@@ -234,18 +218,7 @@ describe('ODS reader', () => {
       { name: 'content.xml', data: new TextEncoder().encode(document('')) },
       { name: 'content.xml', data: new TextEncoder().encode(document('')) },
     ]);
-    const options: ResolvedOptions = {
-      limits: DEFAULT_LIMITS,
-      onLimit: 'truncate',
-      strict: false,
-      metadata: true,
-      children: 'skip',
-      childBytes: false,
-      runs: false,
-      revisions: 'accept',
-      includeHidden: false,
-      formulas: false,
-    };
+    const options = resolveOptions({ children: 'skip', limits: DEFAULT_LIMITS });
     const out = new DocBuilder('ods', 'application/vnd.oasis.opendocument.spreadsheet', budget, options);
     await expect(
       reader.read({ bytes, options, budget, warnings, out, path: '', async extractChild() {} }),

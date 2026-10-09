@@ -1,7 +1,7 @@
 import { Budget } from '../src/core/budget.js';
 import { DocBuilder } from '../src/core/builder.js';
+import { resolveOptions } from '../src/core/extract.js';
 import { DEFAULT_LIMITS } from '../src/core/limits.js';
-import type { ResolvedOptions } from '../src/core/options.js';
 import { WarningSink } from '../src/core/warnings.js';
 import { reader } from '../src/readers/ods/index.js';
 import { openZip } from '../src/zip/index.js';
@@ -14,18 +14,7 @@ export async function fuzzOds(input: Uint8Array): Promise<void> {
     { ...DEFAULT_LIMITS, xmlDepth: 64, outputChars: 65_536, cells: 1_000, timeMs: 1_000 },
     { warnings, onLimit: 'truncate' },
   );
-  const options: ResolvedOptions = {
-    limits: budget.limits,
-    onLimit: 'truncate',
-    strict: false,
-    metadata: true,
-    children: 'skip',
-    childBytes: false,
-    runs: false,
-    revisions: 'accept',
-    includeHidden: false,
-    formulas: false,
-  };
+  const options = resolveOptions({ children: 'skip', limits: budget.limits });
   try {
     const zip = openZip(input, budget);
     const out = new DocBuilder('ods', 'application/vnd.oasis.opendocument.spreadsheet', budget, options);
