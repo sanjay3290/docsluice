@@ -124,6 +124,10 @@ shared output allowance without charging it. XML scanners use a local cumulative
 text count for this check; only the builder charges characters when it emits
 blocks. Failed preflights follow the same truncation, warning and throw policy.
 
+`checkUncompressed(amount)` similarly checks a planned archive-part read without
+charging a declared size. Detection can reject oversized marker parts before
+reading them; only real produced bytes increment the shared uncompressed counter.
+
 Children share counters, warnings, the start time, the signal and the clock-sampling
 counter, while XML and block depths are tracked independently in each document.
 `tick()` checks the clock on its first call and then once every 1024 calls; it checks

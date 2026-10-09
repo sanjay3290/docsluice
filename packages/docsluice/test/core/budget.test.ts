@@ -84,6 +84,21 @@ describe('Budget', () => {
     expect(blocked.checkOutputChars(0)).toBe(false);
   });
 
+  it('rejects oversized archive reads before allocation without charging declared sizes', () => {
+    const budget = new Budget(resolveLimits({ totalUncompressedBytes: 5 }));
+    budget.addUncompressed(2);
+    expect(budget.child().checkUncompressed(3)).toBe(true);
+    expect(budget.checkUncompressed(4)).toBe(false);
+    expect(budget.totalUncompressedBytes).toBe(2);
+    expect(budget.truncated).toBe(true);
+    expect(budget.warnings.warnings[0]?.message).toContain('totalUncompressedBytes');
+    const throwing = new Budget(resolveLimits({ totalUncompressedBytes: 0 }), { onLimit: 'throw' });
+    expect(() => throwing.checkUncompressed(1)).toThrow(LimitExceededError);
+    expect(() => budget.checkUncompressed(Number.NaN)).toThrow(RangeError);
+    const blocked = new Budget(resolveLimits({ childDepth: 0 })).child();
+    expect(blocked.checkUncompressed(1)).toBe(false);
+  });
+
   it('uses one allowance for parent, children and siblings', () => {
     const budget = new Budget(resolveLimits({ totalUncompressedBytes: 10 }));
     expect(budget.addUncompressed(7)).toBe(true);

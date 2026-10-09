@@ -103,6 +103,12 @@ export class Budget {
   addUncompressed(amount: number): boolean {
     return this.#add('totalUncompressedBytes', amount);
   }
+  /** Reject an oversized planned archive read without charging untrusted declared sizes. */
+  checkUncompressed(amount: number): boolean {
+    this.#validateAmount(amount);
+    if (!this.canRead) return false;
+    return this.#check('totalUncompressedBytes', this.totalUncompressedBytes + amount);
+  }
   addEntries(amount: number): boolean {
     return this.#add('zipEntries', amount);
   }
