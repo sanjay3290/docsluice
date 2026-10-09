@@ -53,6 +53,14 @@ test('CJS entry loads', () => {
   assert.equal(typeof mod.toJSON, 'function');
 });
 
+test('JSON Schema package export loads', () => {
+  const packageVersion = require('../package.json').version;
+  const schema = require('docsluice/schema.json');
+  assert.equal(schema.$schema, 'https://json-schema.org/draft/2020-12/schema');
+  assert.equal(schema.$id, `https://github.com/sanjay3290/docsluice/schema/v${packageVersion.split('.')[0]}`);
+  assert.equal(schema.$ref, '#/$defs/DocsluiceDocument');
+});
+
 test('node entry loads', async () => {
   const mod = await import('../dist/node/index.js');
   assert.equal(typeof mod.DocsluiceError, 'function');
