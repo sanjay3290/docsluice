@@ -2,7 +2,10 @@
 
 `extractStream(input, options)` returns an async iterable of top-level blocks. Its
 `result` promise resolves to the completed document, including metadata, warnings,
-statistics and child documents.
+statistics and child documents. When iteration drives an incremental reader, emitted
+root blocks are not retained in the result (`result.blocks` is empty); use the yielded
+blocks for content. Reading `result` before starting iteration follows ordinary
+extraction and retains the complete `blocks` array.
 
 ```ts
 const stream = extractStream(file.stream(), { filename: 'records.csv' });
@@ -18,7 +21,9 @@ They emit a top-level block and `await ctx.out.flush()` before continuing. The
 iterator has at most one queued block; a reader that exceeds that bound without
 flushing fails with a generic reader error. Breaking out of the loop aborts the
 private extraction scope, cancels a pending input read and releases its stream
-lock. The result promise rejects with `AbortError` after early termination.
+lock. The result promise rejects with `AbortError` after early termination. An open
+section is assembled until its closing call, and a table is assembled as one block;
+readers should keep those structures bounded or emit smaller top-level blocks.
 
 Readers may provide `readStream(ctx)` when their format can be parsed
 incrementally. The current built-in DOC reader uses the whole-byte `read(ctx)`

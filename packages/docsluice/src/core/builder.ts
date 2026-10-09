@@ -369,6 +369,7 @@ export class DocBuilder {
   #streamFlush: (() => Promise<void>) | undefined;
   #streamOffset = 0;
   #streamHasBlock = false;
+  #maxRetainedRootBlocks = 0;
 
   /**
    * @param format Detected or forced document format.
@@ -392,6 +393,11 @@ export class DocBuilder {
   setStreamSink(sink: (block: Block) => void, flush: () => Promise<void>): void {
     this.#streamSink = sink;
     this.#streamFlush = flush;
+  }
+
+  /** @internal Peak number of root blocks retained by the builder during extraction. */
+  get maxRetainedRootBlocks(): number {
+    return this.#maxRetainedRootBlocks;
   }
 
   /**
@@ -650,13 +656,17 @@ export class DocBuilder {
           );
           this.#streamHasBlock = true;
           this.#streamSink(streamed);
+        } else {
+          target.push(retained);
+          this.#maxRetainedRootBlocks = Math.max(this.#maxRetainedRootBlocks, target.length);
         }
         this.#options.onBlock?.(cloneValue(retained, this.#budget));
       }
-    }
-    for (const retained of forest) {
-      this.#budget.tick();
-      target.push(retained);
+    } else {
+      for (const retained of forest) {
+        this.#budget.tick();
+        target.push(retained);
+      }
     }
     return true;
   }

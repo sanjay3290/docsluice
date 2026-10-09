@@ -40,7 +40,7 @@ function rows(text: string, pieceSize = 32): ReadableStream<Uint8Array> {
   });
 }
 
-async function readLines(ctx: ReadContext): Promise<void> {
+async function readLines(ctx: ReadContext, observeRetained?: (count: number) => void): Promise<void> {
   const decoder = new TextDecoder();
   let pending = '';
   for await (const chunk of ctx.input!.chunks()) {
@@ -50,6 +50,7 @@ async function readLines(ctx: ReadContext): Promise<void> {
       const line = pending.slice(0, newline).replace(/\r$/u, '');
       if (line) {
         ctx.out.paragraph(line);
+        observeRetained?.(ctx.out.maxRetainedRootBlocks);
         await ctx.out.flush();
       }
       pending = pending.slice(newline + 1);
@@ -59,6 +60,7 @@ async function readLines(ctx: ReadContext): Promise<void> {
   pending += decoder.decode();
   if (pending) {
     ctx.out.paragraph(pending.replace(/\r$/u, ''));
+    observeRetained?.(ctx.out.maxRetainedRootBlocks);
     await ctx.out.flush();
   }
 }
@@ -75,13 +77,15 @@ describe('extractStream', () => {
     for await (const block of stream) actual.push(block);
     const result = await stream.result;
     expect(actual).toEqual(expected.blocks);
-    expect(result.blocks).toEqual(expected.blocks);
+    expect(result.blocks).toEqual([]);
   });
 
   it('stops an incremental reader and cancels its pending input after the first block', async () => {
     const content = Array.from({ length: 50_000 }, (_, index) => `row${index},value${index}\n`).join('');
     let pulled = 0;
     let cancelled = false;
+    let maxRetained = 0;
+    let observedOut: ReadContext['out'] | undefined;
     const bytes = new TextEncoder().encode(content);
     let offset = 0;
     const input = new ReadableStream<Uint8Array>({
@@ -99,7 +103,16 @@ describe('extractStream', () => {
         cancelled = true;
       },
     });
-    const stream = createStreamExtractor(registry(textReader(readLines)))(input, { format: 'csv' });
+    const stream = createStreamExtractor(
+      registry(
+        textReader(async (ctx) => {
+          observedOut = ctx.out;
+          await readLines(ctx, (count) => {
+            maxRetained = Math.max(maxRetained, count);
+          });
+        }),
+      ),
+    )(input, { format: 'csv' });
     for await (const block of stream) {
       expect(block.kind).toBe('paragraph');
       break;
@@ -108,12 +121,15 @@ describe('extractStream', () => {
     expect(cancelled).toBe(true);
     expect(input.locked).toBe(false);
     expect(pulled).toBeLessThan(bytes.byteLength / 32);
+    expect(maxRetained).toBe(0);
+    expect(observedOut!.maxRetainedRootBlocks).toBe(0);
   });
 
   it('keeps a slow-consumer large CSV reader to one outstanding block', async () => {
     const content = Array.from({ length: 5_000 }, (_, index) => `row${index},${index}\n`).join('');
     let outstanding = 0;
     let maxOutstanding = 0;
+    let maxRetained = 0;
     const reader = textReader(async (ctx) => {
       const decoder = new TextDecoder();
       let pending = '';
@@ -125,6 +141,7 @@ describe('extractStream', () => {
           const line = pending.slice(0, newline);
           if (line) {
             ctx.out.paragraph(line);
+            maxRetained = Math.max(maxRetained, ctx.out.maxRetainedRootBlocks);
             outstanding += 1;
             maxOutstanding = Math.max(maxOutstanding, outstanding);
             await ctx.out.flush();
@@ -137,6 +154,7 @@ describe('extractStream', () => {
       pending += decoder.decode();
       if (pending) {
         ctx.out.paragraph(pending);
+        maxRetained = Math.max(maxRetained, ctx.out.maxRetainedRootBlocks);
         outstanding += 1;
         maxOutstanding = Math.max(maxOutstanding, outstanding);
         await ctx.out.flush();
@@ -152,7 +170,8 @@ describe('extractStream', () => {
     }
     const document = await stream.result;
     expect(count).toBe(5_000);
-    expect(document.blocks).toHaveLength(5_000);
+    expect(document.blocks).toEqual([]);
+    expect(maxRetained).toBe(0);
     expect(maxOutstanding).toBe(1);
   });
 
@@ -167,6 +186,15 @@ describe('extractStream', () => {
       'three',
     ]);
     await expect(stream.result).resolves.toHaveProperty('blocks', blocks);
+  });
+
+  it('keeps the complete document when result is requested before iteration', async () => {
+    const stream = createStreamExtractor(registry(textReader()))(rows('one\ntwo\n'), { format: 'csv' });
+    const document = await stream.result;
+    expect(document.blocks).toHaveLength(2);
+    const streamed = [];
+    for await (const block of stream) streamed.push(block);
+    expect(streamed).toEqual(document.blocks);
   });
 
   it('propagates a reader timeout and cancels the source', async () => {

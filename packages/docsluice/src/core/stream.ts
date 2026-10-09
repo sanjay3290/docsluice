@@ -2,7 +2,11 @@ import type { Block, DocsluiceDocument } from './model.js';
 import type { ExtractOptions } from './options.js';
 import { BlockQueue } from './block-queue.js';
 
-/** The result promise is available alongside the block iterator. */
+/**
+ * The result promise is available alongside the block iterator. When iteration drives an
+ * incremental reader, already-yielded root blocks are omitted from `result.blocks` to keep
+ * retained memory bounded. Reading `result` first follows ordinary extraction and retains them.
+ */
 export interface AsyncBlockStream extends AsyncIterable<Block> {
   readonly result: Promise<DocsluiceDocument>;
 }
