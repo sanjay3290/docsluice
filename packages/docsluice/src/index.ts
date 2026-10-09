@@ -34,3 +34,5 @@ export { toText } from './render/text.js';
 export type { TextOptions } from './render/layout.js';
 export { toMarkdown } from './render/markdown.js';
 export type { MarkdownOptions } from './render/markdown.js';
+export { chunk } from './chunk/index.js';
+export type { Chunk, ChunkOptions, ChunkStrategy, ChunkWarning } from './chunk/index.js';
