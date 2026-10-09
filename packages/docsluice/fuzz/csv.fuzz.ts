@@ -1,3 +1,4 @@
+import { AbortError, LimitExceededError, TimeoutError } from '../src/core/errors.js';
 import { Budget } from '../src/core/budget.js';
 import { DocBuilder } from '../src/core/builder.js';
 import { DEFAULT_LIMITS } from '../src/core/limits.js';
@@ -28,8 +29,11 @@ export async function fuzzCsv(input: Uint8Array): Promise<void> {
     try {
       await reader.read(ctx);
       out.finish();
-    } catch {
-      // Invalid text, aborts and expected budget errors are normal fuzz outcomes.
+    } catch (error) {
+      // Aborts and budget errors are normal fuzz outcomes; anything else is a finding.
+      if (error instanceof AbortError || error instanceof LimitExceededError || error instanceof TimeoutError)
+        continue;
+      throw error;
     }
   }
 }

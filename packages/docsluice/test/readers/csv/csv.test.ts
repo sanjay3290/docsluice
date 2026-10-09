@@ -7,6 +7,7 @@ import type { ResolvedOptions } from '../../../src/core/options.js';
 import { WarningSink } from '../../../src/core/warnings.js';
 import { extract } from '../../../src/core/extract.js';
 import { csvReader, tsvReader } from '../../../src/readers/csv/index.js';
+import { fuzzCsv } from '../../../fuzz/csv.fuzz.js';
 import { IncrementalDelimitedParser } from '../../../src/readers/csv/parser.js';
 
 /** Parse text chunks with delimiter state preserved across arbitrary chunk edges. */
@@ -253,5 +254,20 @@ describe('CSV and TSV readers', () => {
       extractChild: async () => {},
     } as ReadContext;
     await expect(csvReader.read(ctx)).rejects.toThrow();
+  });
+});
+
+describe('CSV fuzz entry point', () => {
+  const tokens = [',', ';', '\t', '|', '"', '""', '\r', '\n', '\r\n', 'x', ' ', '\uFEFF', 'é'];
+  it('survives seeded mixes of delimiters, quotes and line breaks', async () => {
+    for (let seed = 1; seed <= 300; seed++) {
+      let state = seed;
+      let source = '';
+      for (let step = 0; step < 150; step++) {
+        state = (state * 1_103_515_245 + 12_345) % 2_147_483_648;
+        source += tokens[state % tokens.length];
+      }
+      await expect(fuzzCsv(new TextEncoder().encode(source))).resolves.toBeUndefined();
+    }
   });
 });
