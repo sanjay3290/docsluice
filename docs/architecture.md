@@ -112,6 +112,12 @@ One `Budget` object per top-level `extract()` call. Children get the same object
 Readers call `budget.tick()` inside long loops. `tick()` checks time and the abort signal cheaply (time is read at most every N calls).
 
 `Budget` keeps shared resource counters private and exposes read-only count getters.
+
+The `toJSON()` renderer uses its own throw-mode budget, with the default limits
+for block depth (64), child depth (3), table cells (2,000,000) and rendered
+output (20,000,000 characters). It does not reuse or charge the extraction's
+budget. Exceeding a renderer cap throws `LIMIT_EXCEEDED` rather than returning
+truncated or invalid JSON.
 Every counter method accepts a nonnegative safe integer and returns whether work
 may continue. Counts include the increment that crossed the limit. The configured
 limits are copied when the root budget is created, so later caller mutations do
