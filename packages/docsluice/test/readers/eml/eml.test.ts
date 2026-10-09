@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { reader } from '../../../src/readers/eml/index.js';
+import { readEml, reader } from '../../../src/readers/eml/index.js';
 import { Budget } from '../../../src/core/budget.js';
 import { DocBuilder } from '../../../src/core/builder.js';
 import { DEFAULT_LIMITS } from '../../../src/core/limits.js';
@@ -30,6 +30,7 @@ async function readEmail(
   source: string | Uint8Array,
   includeMetadata = true,
   limits: Partial<Limits> = {},
+  quotedReplies: 'keep' | 'drop' = 'keep',
   onLimit: 'truncate' | 'throw' = 'truncate',
 ) {
   const budget = new Budget({ ...DEFAULT_LIMITS, ...limits }, { onLimit });
@@ -56,7 +57,8 @@ async function readEmail(
         });
       }),
   };
-  await reader.read(ctx);
+  if (quotedReplies === 'keep') await reader.read(ctx);
+  else await readEml(ctx, quotedReplies);
   return { document: out.finish(), children };
 }
 
@@ -124,9 +126,32 @@ describe('EML reader', () => {
     const result = await readEmail(input, true, { outputChars: 10 });
     expect(result.document.blocks).toMatchObject([{ kind: 'paragraph', text: '1234567890' }]);
     expect(result.document.stats.truncated).toBe(false);
-    await expect(readEmail(input, true, { outputChars: 10 }, 'throw')).resolves.toMatchObject({
+    await expect(readEmail(input, true, { outputChars: 10 }, 'keep', 'throw')).resolves.toMatchObject({
       document: { stats: { truncated: false } },
     });
+  });
+
+  it('keeps quoted history by default and drops common reply separators when explicitly requested', async () => {
+    const gmail =
+      'Content-Type: text/plain; charset=utf-8\r\n\r\nNewest note.\r\n\r\nOn Tue, Alice wrote:\r\n> old note\r\n';
+    const kept = await readEmail(gmail);
+    const dropped = await readEmail(gmail, true, {}, 'drop');
+    expect(JSON.stringify(kept.document.blocks)).toContain('On Tue, Alice wrote:');
+    expect(JSON.stringify(dropped.document.blocks)).toContain('Newest note.');
+    expect(JSON.stringify(dropped.document.blocks)).not.toContain('On Tue, Alice wrote:');
+
+    for (const separator of [
+      'From: Alice <alice@example.test>\nSent: Tuesday\nTo: Bob\nSubject: Old message',
+      'On 9 Oct 2026, Alice wrote:\n> old message',
+    ]) {
+      const value = await readEmail(
+        `Content-Type: text/plain\r\n\r\nFresh content\n\n${separator}\n`,
+        true,
+        {},
+        'drop',
+      );
+      expect(JSON.stringify(value.document.blocks)).not.toContain(separator.slice(0, 14));
+    }
   });
 
   it('preserves mixed body order and lists image attachments while redacting inline addresses', async () => {

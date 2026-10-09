@@ -2,6 +2,7 @@ import type { Cell } from '../../core/model.js';
 import type { ReadContext, Reader } from '../../core/reader.js';
 import { decodeMimeText, parseContentType, parseMime, type MimePart } from '../../mime/index.js';
 import { emitHtml } from '../html/index.js';
+import { dropQuotedReplies } from './replies.js';
 
 function cleanHeader(value: string | undefined): string | undefined {
   return value?.replace(/[\r\n\t ]+/g, ' ').trim() || undefined;
@@ -105,7 +106,12 @@ function emitPlain(ctx: ReadContext, text: string): void {
   }
 }
 
-function emitParts(ctx: ReadContext, parts: MimePart[], cidReferences: ReadonlyMap<string, string>): void {
+function emitParts(
+  ctx: ReadContext,
+  parts: MimePart[],
+  cidReferences: ReadonlyMap<string, string>,
+  quotedReplies: 'keep' | 'drop',
+): void {
   for (const part of parts) {
     ctx.budget.tick();
     if (part.contentType.value === 'text/html') {
@@ -119,13 +125,13 @@ function emitParts(ctx: ReadContext, parts: MimePart[], cidReferences: ReadonlyM
         ctx.budget.checkOutputChars(remaining + 1);
         text = text.slice(0, remaining);
       }
-      emitPlain(ctx, text);
+      emitPlain(ctx, quotedReplies === 'drop' ? dropQuotedReplies(text, ctx.budget) : text);
     }
   }
 }
 
 /** Read a MIME email while keeping all attachment expansion on the parent's child pipeline. */
-export async function readEml(ctx: ReadContext): Promise<void> {
+export async function readEml(ctx: ReadContext, quotedReplies: 'keep' | 'drop' = 'keep'): Promise<void> {
   ctx.budget.tick();
   const message = parseMime(ctx.bytes, ctx.budget);
   const from = cleanHeader(message.headers.get('from'));
@@ -171,7 +177,7 @@ export async function readEml(ctx: ReadContext): Promise<void> {
   let bodyParts = topLevelParts(message.parts, ctx.budget);
   const alt = parseContentType(message.headers.get('content-type'));
   if (alt.value === 'multipart/alternative') bodyParts = topLevelParts(message.parts, ctx.budget);
-  emitParts(ctx, bodyParts, cidReferences);
+  emitParts(ctx, bodyParts, cidReferences, quotedReplies);
 }
 
 export const reader: Reader = {
@@ -182,4 +188,5 @@ export const reader: Reader = {
   },
 };
 
+export { dropQuotedReplies } from './replies.js';
 export default reader;
