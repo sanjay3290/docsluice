@@ -70,53 +70,58 @@ function cloneValue<T>(input: T, budget: Budget): T {
     return cloneBytes(input, budget) as T;
   }
   const root = Array.isArray(input) ? [] : {};
-  const active = new WeakSet<object>();
-  const stack: Array<{ source: object; target: object; keys: PropertyKey[]; index: number }> = [];
+  const active = new Set<object>();
+  // Arrays are walked by index (`keys` undefined); objects by their enumerable own string keys.
+  const stack: Array<{
+    source: Record<string, unknown>;
+    target: Record<string, unknown>;
+    keys: string[] | undefined;
+    index: number;
+  }> = [];
   const begin = (source: object, target: object): void => {
     active.add(source);
-    stack.push({ source, target, keys: Reflect.ownKeys(source), index: 0 });
+    stack.push({
+      source: source as Record<string, unknown>,
+      target: target as Record<string, unknown>,
+      keys: Array.isArray(source) ? undefined : Object.keys(source),
+      index: 0,
+    });
   };
   begin(input, root);
   while (stack.length > 0) {
     budget.tick();
     const frame = stack[stack.length - 1]!;
-    if (frame.index >= frame.keys.length) {
+    const elements = frame.keys ? undefined : (frame.source as unknown as unknown[]);
+    if (frame.index >= (elements ? elements.length : frame.keys!.length)) {
       active.delete(frame.source);
       stack.pop();
       continue;
     }
-    const key = frame.keys[frame.index++]!;
-    if (Array.isArray(frame.source) && key === 'length') continue;
-    const value = Reflect.get(frame.source, key) as unknown;
+    const position = frame.index++;
+    if (elements && !Object.hasOwn(elements, position)) continue;
+    const keys = frame.keys;
+    const key = keys ? keys[position] : undefined;
+    const value: unknown = key === undefined ? elements![position] : Reflect.get(frame.source, key);
     let copied = value;
     if (value !== null && typeof value === 'object') {
       if (active.has(value)) throw new TypeError('Block data must not contain cycles.');
-      if (value instanceof Uint8Array) {
-        copied = cloneBytes(value, budget);
-        Object.defineProperty(frame.target, key, {
-          value: copied,
-          configurable: true,
-          enumerable: true,
-          writable: true,
-        });
-        continue;
-      }
-      copied = Array.isArray(value) ? [] : {};
+      copied = value instanceof Uint8Array ? cloneBytes(value, budget) : Array.isArray(value) ? [] : {};
+    }
+    if (key === undefined) {
+      // Index assignment keeps arrays dense; it cannot reach `__proto__` or other named setters.
+      (frame.target as unknown as unknown[])[position] = copied;
+    } else if (key === '__proto__') {
+      // A plain set would invoke the prototype setter; define it as an own data property (SEC-6).
       Object.defineProperty(frame.target, key, {
         value: copied,
         configurable: true,
         enumerable: true,
         writable: true,
       });
-      begin(value, copied as object);
-      continue;
+    } else {
+      Reflect.set(frame.target, key, copied);
     }
-    Object.defineProperty(frame.target, key, {
-      value: copied,
-      configurable: true,
-      enumerable: true,
-      writable: true,
-    });
+    if (copied !== value && !(copied instanceof Uint8Array)) begin(value as object, copied as object);
   }
   return root as T;
 }
@@ -570,14 +575,17 @@ export class DocBuilder {
     if (this.#stopped && pendingStart === undefined) return false;
     let candidate = cloneValue(block, this.#budget);
     normalizeBlockStrings(candidate, this.#options.metadata === false, this.#budget);
-    const transformed = this.#options.transform ? this.#options.transform(candidate) : candidate;
-    if (transformed === null) {
-      if (pendingStart !== undefined) this.#pendingOutputChars = pendingStart;
-      return true;
+    if (this.#options.transform) {
+      const transformed = this.#options.transform(candidate);
+      if (transformed === null) {
+        if (pendingStart !== undefined) this.#pendingOutputChars = pendingStart;
+        return true;
+      }
+      if (transformed === undefined) throw new TypeError('transform must return a block or null.');
+      // The transform may keep or mutate what it returns, so retain a fresh normalized copy.
+      candidate = cloneValue(transformed, this.#budget);
+      normalizeBlockStrings(candidate, this.#options.metadata === false, this.#budget);
     }
-    if (transformed === undefined) throw new TypeError('transform must return a block or null.');
-    candidate = cloneValue(transformed, this.#budget);
-    normalizeBlockStrings(candidate, this.#options.metadata === false, this.#budget);
     const forest = this.#flattenToDepth(candidate);
     let textLength = 0;
     for (const retained of forest) {

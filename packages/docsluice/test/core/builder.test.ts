@@ -199,6 +199,34 @@ describe('DocBuilder', () => {
     expect(doc.metadata).toEqual({ authors: ['A'], custom: [{ name: 'x', value: 'y' }] });
   });
 
+  it('copies a 640,000-cell table quickly as dense arrays', () => {
+    const { builder } = createBuilder();
+    const rows = Array.from({ length: 10_000 }, (_, row) =>
+      Array.from({ length: 64 }, (__, column) => ({ text: column === 0 ? `r${row}` : '' })),
+    );
+    const started = performance.now();
+    builder.table(rows, 0, {});
+    const doc = builder.finish();
+    expect(performance.now() - started).toBeLessThan(3_000);
+    const table = doc.blocks[0];
+    expect(table?.kind === 'table' && table.rows.length).toBe(10_000);
+    expect(table?.kind === 'table' && table.rows[9_999]![0]!.text).toBe('r9999');
+  });
+
+  it('copies prototype-named metadata keys as own data properties', () => {
+    const { builder } = createBuilder();
+    const custom = JSON.parse('[{"name":"__proto__","value":"x","__proto__":{"polluted":true}}]') as Array<{
+      name: string;
+      value: string;
+    }>;
+    builder.setMetadata({ custom });
+    const doc = builder.finish();
+    const copied = doc.metadata.custom![0]!;
+    expect(Object.getPrototypeOf(copied)).toBe(Object.prototype);
+    expect(Object.hasOwn(copied, '__proto__')).toBe(true);
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+  });
+
   it('removes personal metadata and note authors when metadata is disabled', () => {
     const { builder } = createBuilder(
       {},
