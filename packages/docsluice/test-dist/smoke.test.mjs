@@ -32,6 +32,7 @@ test('ESM entry loads', async () => {
   assert.equal(typeof mod.parseXml, 'function');
   assert.equal(typeof mod.scanXml, 'function');
   assert.equal(mod.toText(renderDoc), 'Title\n\na\tb');
+  assert.equal(typeof mod.toJSON, 'function');
   const warnings = new mod.WarningSink();
   const budget = new mod.Budget(mod.DEFAULT_LIMITS, { warnings });
   const tree = mod.parseXml('<root>text</root>', { budget, warnings });
@@ -42,6 +43,7 @@ test('CJS entry loads', () => {
   const mod = require('../dist/index.cjs');
   assert.equal(typeof mod.resolveLimits, 'function');
   assert.equal(mod.toText(renderDoc), 'Title\n\na\tb');
+  assert.equal(typeof mod.toJSON, 'function');
 });
 
 test('node entry loads', async () => {
