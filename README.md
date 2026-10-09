@@ -11,7 +11,7 @@ console.log(toMarkdown(doc));
 
 One call gives text, Markdown, tables, page/slide/sheet locations and metadata from office, PDF, web, email and archive files. Limits are on by default, so it is safe on files from strangers. No native code: it runs in Node.js 20+, Bun, Deno, browsers and edge workers.
 
-> **Status: pre-alpha.** Nothing is published yet. See the [project board](https://github.com/users/sanjay3290/projects) and [milestones](../../milestones).
+> **Status: pre-alpha.** Nothing is published yet. See the [roadmap board](https://github.com/users/sanjay3290/projects/3) and [milestones](https://github.com/sanjay3290/docsluice/milestones).
 
 ## Docs
 

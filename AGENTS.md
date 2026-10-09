@@ -18,6 +18,8 @@ This file is for coding agents (Claude Code, Codex, Copilot, Cursor, Jules and o
 
 You get one GitHub issue. Finish it end to end. Small or large, use the same loop.
 
+Pick work from the [roadmap board](https://github.com/users/sanjay3290/projects/3): issues in **Ready** have no open blockers. Epics (`type:epic`) only track milestones; never work an epic directly.
+
 1. **Read.** Read the issue, every requirement ID it cites in `docs/prd.md`, the ADRs it names, and `docs/architecture.md`. Read the code the issue names.
 2. **Check blockers.** The issue lists "Blocked by". Run `gh issue view <n>` for each. If one is still open, stop and comment on your issue: "Blocked by #x". Do not build a workaround for another issue's scope.
 3. **Branch.** `git switch -c issue-<n>-<short-slug>` from an up-to-date `main`.
