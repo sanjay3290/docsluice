@@ -80,6 +80,7 @@ function stripInline(
   let text = '';
   const resultRuns: Run[] = [];
   let truncated = false;
+  let imageAltPending = false;
   const add = (value: string, href?: string): void => {
     if (text.length + value.length > maximum) {
       const part = value.slice(0, Math.max(0, maximum - text.length));
@@ -112,10 +113,13 @@ function stripInline(
       continue;
     }
     if (source[i] === '!' && source[i + 1] === '[') {
+      imageAltPending = true;
       i++;
       continue;
     }
     if (source[i] === '[') {
+      const imageAlt = imageAltPending;
+      imageAltPending = false;
       let labelEnd = i + 1;
       while (labelEnd < rangeEnd && source[labelEnd] !== ']' && source[labelEnd] !== '[') {
         budget.tick();
@@ -154,7 +158,7 @@ function stripInline(
             }
             target = source.slice(labelEnd + 2, targetEnd);
           }
-          addRange(i + 1, labelEnd, target);
+          addRange(i + 1, labelEnd, imageAlt ? undefined : target);
           i = closeParen;
           continue;
         }
@@ -536,6 +540,7 @@ export const reader: Reader = {
           const current = marker(lines[i]!, ctx.budget);
           if (!current) break;
           if (current.indent < baseIndent) break;
+          if (current.indent === baseIndent && current.ordered !== firstMarker.ordered) break;
           const level = Math.min(Math.floor((current.indent - baseIndent) / 2), maxDepth);
           while (stack.length > level) stack.pop();
           if (!ctx.budget.addCells(1)) {

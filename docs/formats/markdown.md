@@ -4,4 +4,6 @@ The dependency-free Markdown reader recognizes ATX and setext headings, paragrap
 
 Scanning and emitted text are bounded by the shared time, block-depth, and output-character budgets. Excessive list/blockquote depth is flattened and reported with `DEPTH_LIMIT`. Truncation never includes source text in warnings.
 
+Nested list items retain their marker strings, but the output model has one ordered flag per list block, so nested ordered and unordered semantics are not represented independently.
+
 This is a small best-effort block parser, not a full CommonMark implementation. It does not resolve references, parse raw HTML, preserve heading/list inline runs, or implement all delimiter and continuation rules. Table alignment markers are ignored; the first row is the table header. URLs are never fetched.

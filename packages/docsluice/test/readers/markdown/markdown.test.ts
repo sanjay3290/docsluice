@@ -146,4 +146,116 @@ describe('Markdown reader', () => {
       Array(doc.blocks.length).fill('bundle/notes.md'),
     );
   });
+
+  it('handles CommonMark inline escapes, images, nested link targets, autolinks, and closing heading markers', async () => {
+    const { doc } = await parse(
+      '# Heading ###\n\nEscaped \\*marks\\*, ~~strike~~, ![alt](https://img.example/x), [label](https://host.test/a(b)c "title"), <https://link.test>, and <tag>.\n\n[[nested]] [unfinished](target',
+      true,
+    );
+    expect(doc.blocks[0]).toMatchObject({ kind: 'heading', level: 1, text: 'Heading' });
+    expect(doc.blocks[1]).toMatchObject({
+      kind: 'paragraph',
+      text: 'Escaped *marks*, strike, alt, label, , and <tag>.',
+    });
+    if (doc.blocks[1]?.kind === 'paragraph') {
+      expect(doc.blocks[1].runs).toContainEqual({ text: 'label', href: 'https://host.test/a(b)c' });
+      expect(doc.blocks[1].runs).toContainEqual({ text: 'alt' });
+      expect(doc.blocks[1].runs?.some(({ href }) => href === 'https://img.example/x')).toBe(false);
+    }
+    expect(doc.blocks[2]).toMatchObject({ kind: 'paragraph', text: '[[nested]] [unfinished](target' });
+  });
+
+  it('keeps a link after an escaped literal exclamation mark', async () => {
+    const { doc } = await parse(String.raw`\![label](https://link.invalid)`, true);
+    expect(doc.blocks[0]).toMatchObject({ kind: 'paragraph', text: '!label' });
+    if (doc.blocks[0]?.kind === 'paragraph')
+      expect(doc.blocks[0].runs).toContainEqual({ text: 'label', href: 'https://link.invalid' });
+  });
+
+  it('accepts ordered list markers, flattens overdeep items, and reports excessive quote nesting', async () => {
+    const { doc, warnings } = await parse(
+      '3) first\n4. second\n                  5. buried\n\n> > > quoted',
+      false,
+      { blockDepth: 1 },
+    );
+    expect(doc.blocks[0]).toMatchObject({
+      kind: 'list',
+      ordered: true,
+      items: [
+        { text: 'first', marker: '3)' },
+        { text: 'second', marker: '4.' },
+        { text: 'buried', marker: '5.' },
+      ],
+    });
+    expect(doc.blocks.some((block) => block.kind === 'paragraph' && block.text === 'quoted')).toBe(true);
+    expect(warnings.map(({ code }) => code)).toContain('DEPTH_LIMIT');
+  });
+
+  it('starts a new top-level list block when the marker type changes', async () => {
+    const { doc } = await parse('* unordered one\n* unordered two\n1. ordered one\n2. ordered two');
+    expect(doc.blocks).toMatchObject([
+      { kind: 'list', ordered: false, items: [{ text: 'unordered one' }, { text: 'unordered two' }] },
+      { kind: 'list', ordered: true, items: [{ text: 'ordered one' }, { text: 'ordered two' }] },
+    ]);
+  });
+
+  it('retains nested mixed-list markers when the block model has only one ordered flag', async () => {
+    const { doc } = await parse('* parent\n  1. ordered child\n    - nested bullet');
+    expect(doc.blocks[0]).toMatchObject({
+      kind: 'list',
+      ordered: false,
+      items: [
+        {
+          text: 'parent',
+          marker: '*',
+          items: [{ text: 'ordered child', marker: '1.', items: [{ text: 'nested bullet', marker: '-' }] }],
+        },
+      ],
+    });
+  });
+
+  it('handles tilde and unclosed code fences, truncating code within the output budget', async () => {
+    const normal = await parse('~~~json extra\n{"ok":true}\n~~~\n');
+    expect(normal.doc.blocks[0]).toMatchObject({ kind: 'code', language: 'json', text: '{"ok":true}' });
+    const bounded = await parse('```text\nfirst line\nsecond line\n', false, { outputChars: 10 });
+    expect(bounded.doc.blocks[0]).toMatchObject({ kind: 'code', text: 'first line' });
+    expect(bounded.warnings.map(({ code }) => code)).toContain('TRUNCATED');
+  });
+
+  it('splits escaped table pipes, pads unclosed rows, and leaves invalid separators as prose', async () => {
+    const { doc } = await parse('left \\| right | tail\n:---|---:\na\\|b|c\nlast|row');
+    expect(doc.blocks[0]).toMatchObject({
+      kind: 'table',
+      rows: [
+        [{ text: 'left | right' }, { text: 'tail' }],
+        [{ text: 'a|b' }, { text: 'c' }],
+        [{ text: 'last' }, { text: 'row' }],
+      ],
+    });
+    const invalid = await parse('A | B\n--- | --\nnot a table');
+    expect(invalid.doc.blocks.every((block) => block.kind !== 'table')).toBe(true);
+  });
+
+  it('clips headings and inline runs without exceeding the output character limit', async () => {
+    const { doc, warnings } = await parse('# Heading\n\n[label](https://example.test)', true, {
+      outputChars: 8,
+    });
+    expect(doc.blocks[0]).toMatchObject({ kind: 'heading', text: 'Heading' });
+    expect(doc.blocks[1]).toMatchObject({ kind: 'paragraph', text: '[' });
+    expect(warnings.map(({ code }) => code)).toContain('TRUNCATED');
+  });
+
+  it('bounds a truncated list and clips the following paragraph line at its separator', async () => {
+    const list = await parse('- first\n- second', false, { outputChars: 3 });
+    expect(list.doc.blocks[0]).toMatchObject({ kind: 'list', items: [{ text: 'fi' }] });
+    expect(list.warnings.map(({ code }) => code)).toContain('TRUNCATED');
+    const paragraph = await parse('first\nsecond', false, { outputChars: 8 });
+    expect(paragraph.doc.blocks[0]).toMatchObject({ kind: 'paragraph', text: 'first\nse' });
+    expect(paragraph.warnings.map(({ code }) => code)).toContain('TRUNCATED');
+  });
+
+  it('removes the indentation and nested quote markers from blockquote lines', async () => {
+    const { doc } = await parse('  > > nested quote\n > second line');
+    expect(doc.blocks[0]).toMatchObject({ kind: 'paragraph', text: 'nested quote\nsecond line' });
+  });
 });
