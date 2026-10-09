@@ -7,6 +7,8 @@ export default defineConfig({
     doc: 'src/readers/doc/index.ts',
     txt: 'src/readers/txt/index.ts',
     markdown: 'src/readers/markdown/index.ts',
+    csv: 'src/readers/csv/index.ts',
+    tsv: 'src/readers/tsv/index.ts',
   },
   format: ['esm', 'cjs'],
   platform: 'neutral',

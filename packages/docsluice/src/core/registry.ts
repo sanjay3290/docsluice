@@ -56,3 +56,13 @@ defaultRegistry.add({
   mimeTypes: ['text/markdown', 'text/x-markdown'],
   load: () => import('../readers/markdown/index.js').then((module) => module.markdownReader),
 });
+defaultRegistry.add({
+  id: 'csv',
+  mimeTypes: ['text/csv', 'text/comma-separated-values'],
+  load: () => import('../readers/csv/index.js').then((module) => module.csvReader),
+});
+defaultRegistry.add({
+  id: 'tsv',
+  mimeTypes: ['text/tab-separated-values'],
+  load: () => import('../readers/tsv/index.js').then((module) => module.tsvReader),
+});
