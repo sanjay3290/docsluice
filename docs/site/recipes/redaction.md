@@ -1,0 +1,5 @@
+# Redaction
+
+Use `transform` to remove sensitive text before it reaches renderers or downstream services. The [tested transform](https://github.com/sanjay3290/docsluice/blob/fix/package-a-docs-site/packages/docsluice/examples/site/redaction.ts) handles paragraph/heading/code/note text, section titles and contents, list labels, image alt text, table captions and displayed cell text. It intentionally removes paragraph runs and table raw/formula values because those may contain unrendered sensitive values.
+
+The sample scans linearly for a conservative ASCII email shape and masks US SSN-shaped `NNN-NN-NNNN` identifiers. The [tested module](https://github.com/sanjay3290/docsluice/blob/fix/package-a-docs-site/packages/docsluice/examples/site/redaction.ts) is applied by the [RAG ingestion example](https://github.com/sanjay3290/docsluice/blob/fix/package-a-docs-site/packages/docsluice/examples/site/rag.ts) and its behavior is covered by the recipe test. Real policies need domain-specific identifiers, Unicode/email edge cases, metadata review, and legal validation. This example is not a compliance guarantee.

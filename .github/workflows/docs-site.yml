@@ -1,0 +1,33 @@
+name: Documentation site
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    name: Verify and build docs (Node 24)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run verify
+      - name: Install isolated documentation tools
+        run: npm install --prefix /tmp/docsluice-docsite-tools --ignore-scripts --no-save --package-lock=false vitepress@1.6.4 typedoc@0.28.20 typescript@6.0.3
+      - name: Check generated limits and build the static site and API reference
+        run: node scripts/docs-site/build.mjs
+        env:
+          DOCS_SITE_TOOLS: /tmp/docsluice-docsite-tools/node_modules
+      - uses: actions/upload-artifact@v7
+        with:
+          name: docsluice-documentation-site
+          path: docs/.vitepress/dist
+          retention-days: 7
