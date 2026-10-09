@@ -26,6 +26,7 @@ function context(
     onLimit: 'truncate',
     strict: false,
     metadata: true,
+    imageGps: false,
     childBytes: false,
     runs: false,
     revisions: 'accept',

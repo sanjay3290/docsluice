@@ -16,7 +16,7 @@ for (const reader of imageReaders) {
 const extractRegistered = createExtractor(registry);
 
 type ImageOptions = ExtractOptions & { imageGps?: boolean };
-const imageOptions = (options: ImageOptions = {}) => options as ExtractOptions;
+const imageOptions = (options: ImageOptions = {}): ExtractOptions => options;
 
 describe('image pipeline dispatch regression (standalone integration evidence)', () => {
   it.each([

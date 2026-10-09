@@ -27,6 +27,7 @@ export async function fuzzReaderZip(input: Uint8Array): Promise<void> {
     onLimit: 'truncate',
     strict: false,
     metadata: true,
+    imageGps: false,
     childBytes: false,
     runs: false,
     revisions: 'accept',
