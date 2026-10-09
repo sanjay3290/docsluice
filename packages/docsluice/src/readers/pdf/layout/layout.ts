@@ -108,6 +108,79 @@ function rotatePoint(x: number, y: number, page: LayoutPage): [number, number] {
   }
 }
 
+function itemOrientation(item: TextItem, budget: Budget): LayoutPage['rotation'] | undefined {
+  budget.tick();
+  if (item === null || typeof item !== 'object') return undefined;
+  if (typeof item.text !== 'string' || item.text.length > MAX_ITEM_TEXT || item.text.trim().length === 0)
+    return undefined;
+  const transform = item.transform;
+  if (!Array.isArray(transform) || transform.length !== 6 || !transform.every(Number.isFinite))
+    return undefined;
+  const [a, b, c, d] = transform;
+  const u = Math.hypot(a, b);
+  const v = Math.hypot(c, d);
+  if (u <= 0 || v <= 0) return undefined;
+  const ux = a / u;
+  const uy = b / u;
+  const vx = c / v;
+  const vy = d / v;
+  // Only canonical quarter-turn text frames are safe to analyze geometrically.
+  if (Math.abs(ux * vx + uy * vy) > 0.02 || vx * -uy + vy * ux < 0.98) return undefined;
+  if (Math.abs(uy) <= 0.02 && ux > 0.98) return 0;
+  if (Math.abs(ux) <= 0.02 && uy > 0.98) return 90;
+  if (Math.abs(uy) <= 0.02 && ux < -0.98) return 180;
+  if (Math.abs(ux) <= 0.02 && uy < -0.98) return 270;
+  return undefined;
+}
+
+function analysisRotation(items: readonly TextItem[], budget: Budget): LayoutPage['rotation'] | undefined {
+  let orientation: LayoutPage['rotation'] | undefined;
+  for (const item of items) {
+    budget.tick();
+    if (
+      item !== null &&
+      typeof item === 'object' &&
+      typeof item.text === 'string' &&
+      item.text.length <= MAX_ITEM_TEXT &&
+      item.text.trim().length === 0
+    )
+      continue;
+    const candidate = itemOrientation(item, budget);
+    if (candidate === undefined) return undefined;
+    if (orientation !== undefined && candidate !== orientation) return undefined;
+    orientation = candidate;
+  }
+  return orientation;
+}
+
+function remapLine(
+  line: LayoutLine,
+  analysisPage: LayoutPage,
+  delta: LayoutPage['rotation'],
+  budget: Budget,
+): LayoutLine {
+  if (delta === 0) return line;
+  const corners: Array<[number, number]> = [
+    [line.x, line.y - line.height],
+    [line.x + line.width, line.y - line.height],
+    [line.x, line.y],
+    [line.x + line.width, line.y],
+  ];
+  let x0 = Number.POSITIVE_INFINITY;
+  let x1 = Number.NEGATIVE_INFINITY;
+  let y0 = Number.POSITIVE_INFINITY;
+  let y1 = Number.NEGATIVE_INFINITY;
+  for (const [x, y] of corners) {
+    budget.tick();
+    const [mappedX, mappedY] = rotatePoint(x, y, { ...analysisPage, rotation: delta });
+    x0 = Math.min(x0, mappedX);
+    x1 = Math.max(x1, mappedX);
+    y0 = Math.min(y0, mappedY);
+    y1 = Math.max(y1, mappedY);
+  }
+  return { ...line, x: round(x0), y: round(y1), width: round(x1 - x0), height: round(y1 - y0) };
+}
+
 function normalizeItem(
   item: TextItem,
   page: LayoutPage,
@@ -317,6 +390,12 @@ function makeLines(boxes: Box[], pageWidth: number, budget: Budget): LayoutLine[
       budget.tick();
       const gap = box.x0 - groupX1;
       const maximumGap = round(Math.max(pageWidth * 0.1, Math.max(groupFont, box.fontSize) * 4));
+      if (box.text.trim().length === 0 && box.x1 - box.x0 > maximumGap) {
+        // PDF.js can encode a full column gutter as one whitespace text item.
+        // Do not let that empty box bridge the two neighboring text columns.
+        flush();
+        continue;
+      }
       if (group.length > 0 && gap > maximumGap) flush();
       group.push(box);
       groupX1 = Math.max(groupX1, box.x1);
@@ -362,7 +441,7 @@ function orderZone(lines: LayoutLine[], pageWidth: number, budget: Budget): Layo
   let priorX: number | undefined;
   for (const line of byX) {
     budget.tick();
-    if (priorX !== undefined && line.x - priorX >= threshold) {
+    if (priorX !== undefined && Math.abs(line.x - priorX) >= threshold) {
       groups.push(group);
       group = [];
     }
@@ -522,7 +601,15 @@ export function layoutPage(
     return { page: { width: 0, height: 0 }, lines: [], paragraphs: [], unsupportedDirectionItems: 0 };
   if (!budget.canRead || resourceTruncated)
     return { page: dimensions, lines: [], paragraphs: [], unsupportedDirectionItems: 0 };
-  const geometryPage = { ...page, width: round(page.width), height: round(page.height) };
+  const orientation = analysisRotation(items, budget);
+  const hasCanonicalFrame = orientation !== undefined;
+  const analysisPage = {
+    ...page,
+    width: round(page.width),
+    height: round(page.height),
+    rotation: hasCanonicalFrame ? orientation : page.rotation,
+  };
+  const analysisDimensions = pageDimensions(analysisPage)!;
   const boxes: Box[] = [];
   const stagedText: TextStage = { used: 0 };
   let unsupportedDirectionItems = 0;
@@ -533,7 +620,7 @@ export function layoutPage(
       unsupportedDirectionItems += 1;
       continue;
     }
-    const box = normalizeItem(input, geometryPage, budget, index);
+    const box = normalizeItem(input, analysisPage, budget, index);
     if (!box) continue;
     const candidate = stagedText.used + box.text.length + 1;
     if (!budget.checkOutputChars(candidate)) {
@@ -549,16 +636,73 @@ export function layoutPage(
     stagedText.used += box.text.length + 1;
     boxes.push(box);
   }
-  const nonemptyLines: LayoutLine[] = [];
-  for (const line of makeLines(boxes, dimensions.width, budget)) {
-    budget.tick();
-    if (line.text.length > 0) nonemptyLines.push(line);
+  let lines: LayoutLine[];
+  let analyzedLines: LayoutLine[] | undefined;
+  if (!hasCanonicalFrame) {
+    // Mixed or non-quarter-turn text frames do not have a safe shared baseline.
+    // Keep each text item intact and in source order rather than merging it by guesswork.
+    lines = [];
+    const orderedBoxes = [...boxes];
+    orderedBoxes.sort((a, b) => {
+      budget.tick();
+      return a.sourceIndex - b.sourceIndex || a.stableIndex - b.stableIndex;
+    });
+    for (const box of orderedBoxes) {
+      budget.tick();
+      const line = makeLine({ boxes: [box], baseline: box.baseline }, budget);
+      if (line.text.length > 0) lines.push(line);
+    }
+  } else {
+    const nonemptyLines: LayoutLine[] = [];
+    for (const line of makeLines(boxes, analysisDimensions.width, budget)) {
+      budget.tick();
+      if (line.text.length > 0) nonemptyLines.push(line);
+    }
+    analyzedLines = readingOrder(nonemptyLines, analysisDimensions.width, analysisDimensions.height, budget);
+    const delta = ((page.rotation - analysisPage.rotation + 360) % 360) as LayoutPage['rotation'];
+    const analysisFrame: LayoutPage = {
+      width: analysisDimensions.width,
+      height: analysisDimensions.height,
+      rotation: 0,
+    };
+    lines = analyzedLines.map((line) => {
+      budget.tick();
+      return remapLine(line, analysisFrame, delta, budget);
+    });
   }
-  const lines = readingOrder(nonemptyLines, dimensions.width, dimensions.height, budget);
+  let paragraphs: LayoutParagraph[];
+  if (hasCanonicalFrame) {
+    const analyzedParagraphs = toParagraphs(analyzedLines!, options.outlinePresent === true, budget);
+    const lineMap = new Map<LayoutLine, LayoutLine>();
+    for (let index = 0; index < analyzedLines!.length; index += 1) {
+      budget.tick();
+      lineMap.set(analyzedLines![index]!, lines[index]!);
+    }
+    paragraphs = [];
+    for (const paragraph of analyzedParagraphs) {
+      budget.tick();
+      const paragraphLines: LayoutLine[] = [];
+      for (const line of paragraph.lines) {
+        budget.tick();
+        const mapped = lineMap.get(line);
+        if (mapped) paragraphLines.push(mapped);
+      }
+      paragraphs.push({ ...paragraph, lines: paragraphLines });
+    }
+  } else {
+    paragraphs = [];
+    for (const line of lines) {
+      budget.tick();
+      for (const paragraph of toParagraphs([line], options.outlinePresent === true, budget)) {
+        budget.tick();
+        paragraphs.push(paragraph);
+      }
+    }
+  }
   return {
     page: dimensions,
     lines,
-    paragraphs: toParagraphs(lines, options.outlinePresent === true, budget),
+    paragraphs,
     unsupportedDirectionItems,
   };
 }
