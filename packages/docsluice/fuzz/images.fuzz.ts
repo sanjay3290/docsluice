@@ -12,18 +12,7 @@ export async function fuzzImage(input: Uint8Array): Promise<void> {
   for (const reader of imageReaders) {
     const warnings = new WarningSink();
     const budget = new Budget({ ...DEFAULT_LIMITS, timeMs: 1000 }, { warnings });
-    const options: ResolvedOptions = {
-      limits: budget.limits,
-      onLimit: 'truncate',
-      strict: false,
-      metadata: true,
-      children: 'skip',
-      childBytes: false,
-      runs: false,
-      revisions: 'accept',
-      includeHidden: false,
-      formulas: false,
-    };
+    const options = { metadata: true, imageGps: false } as ResolvedOptions;
     const out = new DocBuilder(reader.id, reader.mimeTypes[0]!, budget, options);
     const ctx: ReadContext = {
       bytes,

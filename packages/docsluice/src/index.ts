@@ -20,9 +20,12 @@ export {
   LimitExceededError,
   TimeoutError,
   AbortError,
+  PluginContractError,
   StrictModeError,
 } from './core/errors.js';
 export type { ErrorCode } from './core/errors.js';
+export { createRegistry, registerFormat, READER_CONTRACT_VERSION } from './core/registry.js';
+export type { FormatPlugin } from './core/registry.js';
 export { parseXml, scanXml } from './xml/index.js';
 export type { XmlContext, XmlElement, XmlElementInfo, XmlHandler } from './xml/index.js';
 export { toText } from './render/text.js';

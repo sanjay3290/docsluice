@@ -15,8 +15,8 @@ import type { ReadContext } from './reader.js';
 import { defaultRegistry } from './registry.js';
 import type { ReaderRegistry } from './registry.js';
 import { WarningSink } from './warnings.js';
-import { resolveFormat } from '../detect/detect.js';
 import { assignOffsets } from '../render/text.js';
+import { resolveFormatWithRegistry } from './resolve-reader.js';
 
 const EMPTY_FORMATS = new Set(['png', 'jpeg', 'gif', 'tiff', 'webp', 'bmp', 'ico', 'audio', 'video']);
 const MAX_TIMER_DELAY = 2_147_483_647;
@@ -29,6 +29,7 @@ export function resolveOptions(options: ExtractOptions = {}): ResolvedOptions {
     strict: Array.isArray(options.strict) ? Object.freeze([...options.strict]) : (options.strict ?? false),
     onLimit: options.onLimit ?? 'truncate',
     metadata: options.metadata ?? true,
+    imageGps: options.imageGps ?? false,
     children: options.children ?? 'extract',
     childBytes: options.childBytes ?? false,
     runs: options.runs ?? false,
@@ -214,7 +215,8 @@ export function createExtractor(
       activeBudget.tick();
       const readerWarnings = job.warnings;
       setBudgetWarnings(activeBudget, readerWarnings);
-      const resolution = await resolveFormat(bytes, activeOptions, activeBudget);
+      const activeRegistry = activeOptions.registry ?? registry;
+      const resolution = await resolveFormatWithRegistry(bytes, activeOptions, activeBudget, activeRegistry);
       const out = new DocBuilder(
         resolution.result.format,
         resolution.result.mimeType,
@@ -296,9 +298,8 @@ export function createExtractor(
         },
       };
 
-      if (!EMPTY_FORMATS.has(resolution.result.format)) {
-        const loading = registry.load(resolution.result.format);
-        if (!loading) throw new UnsupportedFormatError(resolution.result.format);
+      const loading = activeRegistry.load(resolution.result.format);
+      if (loading) {
         const reader = await loading;
         activeBudget.tick();
         try {
@@ -307,6 +308,8 @@ export function createExtractor(
           if (error instanceof DocsluiceError) throw error;
           throw new CorruptFileError(undefined, { cause: error });
         }
+      } else if (!EMPTY_FORMATS.has(resolution.result.format)) {
+        throw new UnsupportedFormatError(resolution.result.format);
       }
       for (const childWork of children) {
         activeBudget.tick();
