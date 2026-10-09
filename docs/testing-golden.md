@@ -1,6 +1,6 @@
 # Golden corpus runner
 
-`node scripts/golden-run.mjs` scans the complete `corpus/` tree recursively by default. Use `node scripts/golden-run.mjs --corpus-root corpus/package-a` to scope a local run. Discovery rejects a symlink corpus root and any symlink inside the corpus before filtering metadata. It ignores only the explicit repository metadata names `README`, `README.md`, `.gitkeep`, `.gitattributes`, the `.native.txt` LibreOffice comparison sidecar, plus `.license`, `.expected.json`, `.expected.md`, `.meta.json`, and `.metadata.json` sidecars. Every other regular file is an input; unknown types are not silently filtered.
+`node scripts/golden-run.mjs` scans the complete `corpus/` tree recursively by default. Use `node scripts/golden-run.mjs --corpus-root corpus/package-a` to scope a local run. Discovery rejects a symlink corpus root and any symlink inside the corpus before filtering metadata. It ignores only the explicit repository metadata names `README`, `README.md`, `.gitkeep`, `.gitattributes`, the `.native.txt` LibreOffice comparison sidecar, plus `.license`, `.expected.json`, `.expected.md`, `.meta.json`, `.metadata.json`, and `.truth.md` quality sidecars. Ordinary Markdown documents remain inputs. Every other regular file is an input; unknown types are not silently filtered.
 
 Every input needs a sibling `<filename>.license` with exactly one non-empty, single-line `SPDX-License-Identifier:` field and exactly one non-empty, single-line `Source:` field. Duplicate identity fields, missing values, and empty values fail validation.
 

@@ -90,6 +90,25 @@ test('defaults to the complete corpus and accepts a scoped corpus root option', 
   });
 });
 
+test('excludes quality truth sidecars without ignoring ordinary Markdown inputs', async () => {
+  await withCorpus(async (root) => {
+    await addInput(root, 'text/document.md', 'document', {
+      expectedJson: '{"stats":{"durationMs":0},"text":"document"}\n',
+      expectedMarkdown: 'document',
+    });
+    await writeFile(path.join(root, 'text/document.md.truth.md'), 'independent quality truth');
+    const pipeline = fakePipeline();
+    assert.deepEqual(await runGoldenCorpus({ corpusRoot: root, ...pipeline }), {
+      files: 1,
+      updated: 0,
+    });
+    assert.deepEqual(
+      pipeline.calls.extract.map(({ options }) => options.filename),
+      ['document.md'],
+    );
+  });
+});
+
 test('ignores only explicitly named repository metadata files', async () => {
   await withCorpus(async (root) => {
     await addInput(root, 'text/valid.txt', 'valid', {

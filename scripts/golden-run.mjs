@@ -18,7 +18,8 @@ function isSidecar(name) {
     name.endsWith('.expected.md') ||
     name.endsWith('.meta.json') ||
     name.endsWith('.metadata.json') ||
-    name.endsWith('.native.txt')
+    name.endsWith('.native.txt') ||
+    name.endsWith('.truth.md')
   );
 }
 
