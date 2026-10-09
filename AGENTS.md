@@ -69,7 +69,7 @@ These are not style preferences. A PR that breaks one is rejected.
 2. **Runtime-neutral core (RT-2).** Code outside `src/node/` uses only web-standard APIs: `Uint8Array`, `DataView`, `TextDecoder`, `TextEncoder`, `ReadableStream`, `Blob`, `AbortSignal`. No `node:` imports, no `Buffer`, no `process`. ESLint and the core tsconfig (no Node types) enforce this.
 3. **No native code, no WebAssembly in the core, no child processes, no network.** docsluice never fetches anything (SEC-10).
 4. **Never run content (SEC-11).** No `eval`, no `new Function`, no formula evaluation, no PDF JavaScript, no macros. Report presence only.
-5. **No plain objects keyed by file data (SEC-6).** Use `Map`, `Set` or `Object.create(null)`. Key/value data in output is an array of pairs.
+5. **No plain objects keyed by file data (SEC-6).** Use `Map`, `Set` or `Object.create(null)`. Key/value data in output is an array of pairs. The typed [no-computed-object-key ESLint rule](tools/eslint-rules/no-computed-object-key.js) enforces this in source code.
 6. **No recursion over file data (SEC-8).** Walk trees with an explicit stack. Check `budget.depth` on every level.
 7. **No super-linear regular expressions on file data (SEC-7).** Prefer hand-written scanners for hot paths. `eslint-plugin-regexp` must pass.
 8. **Every loop over file data checks the budget.** Bytes, entries, cells, output characters and time all go through `Budget` (see architecture). A child document shares its parent's budget (NST-1).
