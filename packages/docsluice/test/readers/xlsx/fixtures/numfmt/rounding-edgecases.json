@@ -1,0 +1,33 @@
+{
+  "source": {
+    "application": "LibreOfficeDev 26.8.0.0.alpha0 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5",
+    "input": "rounding-edgecases.xlsx (self-authored; exact decimal strings retained in worksheet XML)",
+    "csv_filter": "Text - txt - csv (StarCalc):44,34,UTF8,1,,0,false,false,true,false",
+    "command_options": [
+      "--headless",
+      "--convert-to csv:<filter>",
+      "Save cell contents as shown enabled",
+      "formula export disabled"
+    ],
+    "environment": {
+      "LANG": "en_US.UTF-8",
+      "LC_ALL": "en_US.UTF-8",
+      "SAL_USE_VCLPLUGIN": "gen"
+    },
+    "provenance": "Direct LibreOfficeDev CSV display capture; this is a separate rounding edge-case fixture and does not modify the 421-row reference set."
+  },
+  "cases": [
+    {
+      "cell": "A1",
+      "value": "1.2349999999999998",
+      "format_code": "0.00",
+      "display": "1.24"
+    },
+    {
+      "cell": "A2",
+      "value": "0.9949999999999999",
+      "format_code": "0.00",
+      "display": "1.00"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "source": {
+    "application": "LibreOfficeDev 26.8.0.0.alpha0 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5",
+    "input": "rendering-edgecases.xlsx (self-authored, formula-free XLSX)",
+    "csv_filter": "Text - txt - csv (StarCalc):44,34,UTF8,1,,0,false,false,true,false",
+    "command_options": [
+      "--headless",
+      "--convert-to csv:<filter>",
+      "Save cell contents as shown enabled",
+      "formula export disabled"
+    ],
+    "environment": {
+      "LANG": "en_US.UTF-8",
+      "LC_ALL": "en_US.UTF-8",
+      "SAL_USE_VCLPLUGIN": "gen"
+    },
+    "provenance": "Direct LibreOfficeDev CSV display capture in a separate edge-case fixture; it does not modify the 421-row reference set."
+  },
+  "cases": [
+    {
+      "cell": "A1",
+      "value": "0.2",
+      "format_code": "# ?/10",
+      "display": " 2/10"
+    },
+    {
+      "cell": "A2",
+      "value": "0.2",
+      "format_code": "# ?/100",
+      "display": " 20/100"
+    },
+    {
+      "cell": "A3",
+      "value": "-2",
+      "format_code": "0\"-\"",
+      "display": "-2-"
+    },
+    {
+      "cell": "A4",
+      "value": "-2",
+      "format_code": "(0)",
+      "display": "-(2)"
+    },
+    {
+      "cell": "A5",
+      "value": "-2",
+      "format_code": "\"pre\"0\"post\"",
+      "display": "-pre2post"
+    },
+    {
+      "cell": "A6",
+      "value": "1234",
+      "format_code": "\"$\"0.00E+00",
+      "display": "$1.23E+03"
+    },
+    {
+      "cell": "A7",
+      "value": "-1234",
+      "format_code": "\"$\"0.00E+00;(\"$\"0.00E+00)\" kg\"",
+      "display": "($1.23E+03) kg"
+    }
+  ]
+}
