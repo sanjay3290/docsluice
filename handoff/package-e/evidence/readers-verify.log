@@ -1,0 +1,179 @@
+
+> verify
+> npm run lint && npm run typecheck && npm run test && npm run build && npm run check:package && npm run test:dist
+
+
+> lint
+> eslint . && prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+> typecheck
+> npm run typecheck --workspaces --if-present
+
+
+> docsluice@0.0.0 typecheck
+> tsc -p tsconfig.json && tsc -p src/node/tsconfig.json
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+> test
+> npm run test --workspaces --if-present
+
+
+> docsluice@0.0.0 test
+> vitest run
+
+
+ RUN  v5.0.3 /workspace/docsluice-package-e/packages/docsluice
+
+
+ Test Files  18 passed (18)
+      Tests  351 passed (351)
+   Start at  16:17:43
+   Duration  5.28s (tests 74%, import 15%, transform 10%, worker 1%)
+
+    Isolate  18 workers spawned · ~124ms startup each (spawn + environment, per file)
+             at least ~620ms faster with isolate: false — reuses workers across files instead of one per file
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+> build
+> npm run build --workspaces --if-present
+
+
+> docsluice@0.0.0 build
+> tsdown
+
+ℹ tsdown v0.23.0 powered by rolldown v1.2.13
+ℹ config file: /workspace/docsluice-package-e/packages/docsluice/tsdown.config.ts 
+ℹ entry: src/index.ts, src/node/index.ts
+ℹ target: es2022
+ℹ tsconfig: tsconfig.json
+ℹ Build start
+ℹ [CJS] dist/node/index.cjs         0.87 kB │ gzip:  0.33 kB
+ℹ [CJS] dist/index.cjs              0.87 kB │ gzip:  0.33 kB
+ℹ [CJS] dist/src-B6TqsLRP.cjs.map  87.59 kB │ gzip: 21.20 kB
+ℹ [CJS] dist/src-B6TqsLRP.cjs      45.95 kB │ gzip: 11.62 kB
+ℹ [CJS] 4 files, total: 135.29 kB
+ℹ [CJS] dist/node/index.d.cts       1.78 kB │ gzip: 0.70 kB
+ℹ [CJS] dist/index.d.cts            1.78 kB │ gzip: 0.70 kB
+ℹ [CJS] dist/index-CQhx2ohr.d.cts  15.71 kB │ gzip: 5.46 kB
+ℹ [CJS] 3 files, total: 19.27 kB
+✔ Build complete in 832ms
+ℹ [ESM] dist/node/index.js         0.33 kB │ gzip:  0.23 kB
+ℹ [ESM] dist/index.js              0.33 kB │ gzip:  0.23 kB
+ℹ [ESM] dist/src-BFhsGcJb.js.map  87.58 kB │ gzip: 21.19 kB
+ℹ [ESM] dist/src-BFhsGcJb.js      44.48 kB │ gzip: 11.52 kB
+ℹ [ESM] dist/node/index.d.ts       1.78 kB │ gzip:  0.70 kB
+ℹ [ESM] dist/index.d.ts            1.78 kB │ gzip:  0.70 kB
+ℹ [ESM] dist/index-CQhx2ohr.d.ts  15.70 kB │ gzip:  5.46 kB
+ℹ [ESM] 7 files, total: 151.97 kB
+✔ Build complete in 837ms
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+> check:package
+> npm run check:package --workspace packages/docsluice
+
+
+> docsluice@0.0.0 check:package
+> node ../../scripts/check-deps.test.mjs && node ../../scripts/check-deps.mjs && publint . && attw --pack . && size-limit
+
+✔ parses runtime packages from the ADR dependency table (2.617487ms)
+✔ rejects dependencies that are missing from the ADR allow-list (1.016296ms)
+✔ rejects unlisted optional dependencies (0.198019ms)
+✔ validates nonoptional peers and rejects disagreeing dependency specs (0.209672ms)
+✔ rejects nonoptional peer dependencies outside the ADR allow-list (0.17533ms)
+✔ ignores optional peers because npm does not install them by default (0.235704ms)
+✔ checks optional dependency and required peer lockfile specs and versions (0.35027ms)
+✔ requires exact runtime versions rather than ranges (0.212688ms)
+✔ resolves runtime lock versions from the workspace before hoisted dev packages (0.508109ms)
+✔ finds install lifecycle scripts in nested and scoped packages (10.619963ms)
+✔ finds packages that trigger npm’s implicit node-gyp install (2.606392ms)
+✔ finds binding.gyp and respects gypfile false (3.748174ms)
+✔ fails closed when node_modules is missing (0.832935ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 29.235857
+Runtime dependencies match ADR 0011 (1 declared).
+No installed package defines an install lifecycle script or triggers node-gyp.
+Running publint v0.3.25 for docsluice...
+Packing files with `npm pack`...
+file:///workspace/docsluice-package-e/node_modules/@publint/pack/src/node/pack.js:58
+      throw new Error(
+            ^
+
+Error: Failed to find packed tarball file in /tmp/publint-pack-QBRutB. Command output:
+{
+  "stderr": "npm warn tarball tarball data for file:/workspace/docsluice-package-e/packages/docsluice (null) seems to be corrupted. Trying again.\nnpm warn tarball tarball data for file:/workspace/docsluice-package-e/packages/docsluice (null) seems to be corrupted. Trying again.\nnpm error code ENOENT\nnpm error syscall mkdir\nnpm error path /home/agent/.npm/_cacache\nnpm error errno -2\nnpm error enoent ENOENT: no such file or directory, mkdir '/home/agent/.npm/_cacache'\nnpm error enoent This is related to npm not being able to find a file.\nnpm error enoent\nnpm error Log files were not written due to an error writing to the directory: /home/agent/.npm/_logs\nnpm error You can rerun the command with `--loglevel=verbose` to see the logs in your terminal\n",
+  "stdout": "",
+  "exitCode": 254
+}
+    at pack (file:///workspace/docsluice-package-e/node_modules/@publint/pack/src/node/pack.js:58:13)
+    at async packAsListWithPack (file:///workspace/docsluice-package-e/node_modules/@publint/pack/src/node/pack-as-list.js:51:23)
+    at async packAsList (file:///workspace/docsluice-package-e/node_modules/@publint/pack/src/node/pack-as-list.js:15:12)
+    at async getPackedFiles (file:///workspace/docsluice-package-e/node_modules/publint/src/index-node.js:118:16)
+    at async publint (file:///workspace/docsluice-package-e/node_modules/publint/src/index-node.js:48:21)
+    at async file:///workspace/docsluice-package-e/node_modules/publint/src/cli.js:71:31
+
+Node.js v24.19.0
+npm error Lifecycle script `check:package` failed with error:
+npm error code 1
+npm error path /workspace/docsluice-package-e/packages/docsluice
+npm error workspace docsluice@0.0.0
+npm error location /workspace/docsluice-package-e/packages/docsluice
+npm error command failed
+npm error command sh -c node ../../scripts/check-deps.test.mjs && node ../../scripts/check-deps.mjs && publint . && attw --pack . && size-limit
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

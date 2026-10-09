@@ -1,0 +1,179 @@
+
+> verify
+> npm run lint && npm run typecheck && npm run test && npm run build && npm run check:package && npm run test:dist
+
+
+> lint
+> eslint . && prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> typecheck
+> npm run typecheck --workspaces --if-present
+
+
+> docsluice@0.0.0 typecheck
+> tsc -p tsconfig.json && tsc -p src/node/tsconfig.json
+
+
+> test
+> npm run test --workspaces --if-present
+
+
+> docsluice@0.0.0 test
+> vitest run
+
+
+ RUN  v5.0.3 /workspace/docsluice-package-e-46/packages/docsluice
+
+
+ Test Files  15 passed (15)
+      Tests  312 passed (312)
+   Start at  16:56:30
+   Duration  5.81s (tests 77%, import 14%, transform 8%, worker 1%)
+
+    Isolate  15 workers spawned · ~141ms startup each (spawn + environment, per file)
+             at least ~564ms faster with isolate: false — reuses workers across files instead of one per file
+
+
+> build
+> npm run build --workspaces --if-present
+
+
+> docsluice@0.0.0 build
+> tsdown
+
+ℹ tsdown v0.23.0 powered by rolldown v1.2.13
+ℹ config file: /workspace/docsluice-package-e-46/packages/docsluice/tsdown.config.ts 
+ℹ entry: src/index.ts, src/node/index.ts
+ℹ target: es2022
+ℹ tsconfig: tsconfig.json
+ℹ Build start
+ℹ Cleaning 15 files
+ℹ [CJS] dist/node/index.cjs         0.87 kB │ gzip:  0.33 kB
+ℹ [CJS] dist/index.cjs              0.87 kB │ gzip:  0.33 kB
+ℹ [CJS] dist/src-B6TqsLRP.cjs.map  87.59 kB │ gzip: 21.20 kB
+ℹ [CJS] dist/src-B6TqsLRP.cjs      45.95 kB │ gzip: 11.62 kB
+ℹ [CJS] 4 files, total: 135.29 kB
+ℹ [CJS] dist/node/index.d.cts       1.78 kB │ gzip: 0.70 kB
+ℹ [CJS] dist/index.d.cts            1.78 kB │ gzip: 0.70 kB
+ℹ [CJS] dist/index-CQhx2ohr.d.cts  15.71 kB │ gzip: 5.46 kB
+ℹ [CJS] 3 files, total: 19.27 kB
+✔ Build complete in 1114ms
+ℹ [ESM] dist/node/index.js         0.33 kB │ gzip:  0.23 kB
+ℹ [ESM] dist/index.js              0.33 kB │ gzip:  0.23 kB
+ℹ [ESM] dist/src-BFhsGcJb.js.map  87.58 kB │ gzip: 21.19 kB
+ℹ [ESM] dist/src-BFhsGcJb.js      44.48 kB │ gzip: 11.52 kB
+ℹ [ESM] dist/node/index.d.ts       1.78 kB │ gzip:  0.70 kB
+ℹ [ESM] dist/index.d.ts            1.78 kB │ gzip:  0.70 kB
+ℹ [ESM] dist/index-CQhx2ohr.d.ts  15.70 kB │ gzip:  5.46 kB
+ℹ [ESM] 7 files, total: 151.97 kB
+✔ Build complete in 1117ms
+
+> check:package
+> npm run check:package --workspace packages/docsluice
+
+
+> docsluice@0.0.0 check:package
+> node ../../scripts/check-deps.test.mjs && node ../../scripts/check-deps.mjs && publint . && attw --pack . && size-limit
+
+✔ parses runtime packages from the ADR dependency table (3.466367ms)
+✔ rejects dependencies that are missing from the ADR allow-list (1.376052ms)
+✔ rejects unlisted optional dependencies (0.231044ms)
+✔ validates nonoptional peers and rejects disagreeing dependency specs (0.286163ms)
+✔ rejects nonoptional peer dependencies outside the ADR allow-list (0.203949ms)
+✔ ignores optional peers because npm does not install them by default (0.194017ms)
+✔ checks optional dependency and required peer lockfile specs and versions (0.519977ms)
+✔ requires exact runtime versions rather than ranges (0.269661ms)
+✔ resolves runtime lock versions from the workspace before hoisted dev packages (0.656404ms)
+✔ finds install lifecycle scripts in nested and scoped packages (12.062361ms)
+✔ finds packages that trigger npm’s implicit node-gyp install (3.172671ms)
+✔ finds binding.gyp and respects gypfile false (4.479954ms)
+✔ fails closed when node_modules is missing (0.983218ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34.85668
+Runtime dependencies match ADR 0011 (1 declared).
+No installed package defines an install lifecycle script or triggers node-gyp.
+Running publint v0.3.25 for docsluice...
+Packing files with `npm pack`...
+Linting...
+All good!
+
+docsluice v0.0.0
+
+ No problems found 🌟
+
+
+[90m┌───────────────────[39m[90m┬─────────────[39m[90m┬──────────────────[39m[90m┬──────────────────────────┐[39m
+[90m│[39m[31m                   [39m[90m│[39m[31m "docsluice" [39m[90m│[39m[31m "docsluice/node" [39m[90m│[39m[31m "docsluice/package.json" [39m[90m│[39m
+[90m├───────────────────[39m[90m┼─────────────[39m[90m┼──────────────────[39m[90m┼──────────────────────────┤[39m
+[90m│[39m node10            [90m│[39m 🟢          [90m│[39m 🟢               [90m│[39m 🟢 (JSON)                [90m│[39m
+[90m├───────────────────[39m[90m┼─────────────[39m[90m┼──────────────────[39m[90m┼──────────────────────────┤[39m
+[90m│[39m node16 (from CJS) [90m│[39m 🟢 (CJS)    [90m│[39m 🟢 (CJS)         [90m│[39m 🟢 (JSON)                [90m│[39m
+[90m├───────────────────[39m[90m┼─────────────[39m[90m┼──────────────────[39m[90m┼──────────────────────────┤[39m
+[90m│[39m node16 (from ESM) [90m│[39m 🟢 (ESM)    [90m│[39m 🟢 (ESM)         [90m│[39m 🟢 (JSON)                [90m│[39m
+[90m├───────────────────[39m[90m┼─────────────[39m[90m┼──────────────────[39m[90m┼──────────────────────────┤[39m
+[90m│[39m bundler           [90m│[39m 🟢          [90m│[39m 🟢               [90m│[39m 🟢 (JSON)                [90m│[39m
+[90m└───────────────────[39m[90m┴─────────────[39m[90m┴──────────────────[39m[90m┴──────────────────────────┘[39m
+- Adding to empty rolldown project
+✔ Adding to empty rolldown project
+  
+  Size limit: 50 kB
+  Size:       9.75 kB with all dependencies, minified and gzipped
+  
+
+> test:dist
+> npm run build && node --test packages/*/test-dist/*.test.mjs
+
+
+> build
+> npm run build --workspaces --if-present
+
+
+> docsluice@0.0.0 build
+> tsdown
+
+ℹ tsdown v0.23.0 powered by rolldown v1.2.13
+ℹ config file: /workspace/docsluice-package-e-46/packages/docsluice/tsdown.config.ts 
+ℹ entry: src/index.ts, src/node/index.ts
+ℹ target: es2022
+ℹ tsconfig: tsconfig.json
+ℹ Build start
+ℹ Cleaning 15 files
+ℹ [CJS] dist/node/index.cjs         0.87 kB │ gzip:  0.33 kB
+ℹ [CJS] dist/index.cjs              0.87 kB │ gzip:  0.33 kB
+ℹ [CJS] dist/src-B6TqsLRP.cjs.map  87.59 kB │ gzip: 21.20 kB
+ℹ [CJS] dist/src-B6TqsLRP.cjs      45.95 kB │ gzip: 11.62 kB
+ℹ [CJS] 4 files, total: 135.29 kB
+ℹ [ESM] dist/node/index.js         0.33 kB │ gzip:  0.23 kB
+ℹ [ESM] dist/index.js              0.33 kB │ gzip:  0.23 kB
+ℹ [ESM] dist/src-BFhsGcJb.js.map  87.58 kB │ gzip: 21.19 kB
+ℹ [ESM] dist/src-BFhsGcJb.js      44.48 kB │ gzip: 11.52 kB
+ℹ [ESM] dist/node/index.d.ts       1.78 kB │ gzip:  0.70 kB
+ℹ [ESM] dist/index.d.ts            1.78 kB │ gzip:  0.70 kB
+ℹ [ESM] dist/index-CQhx2ohr.d.ts  15.70 kB │ gzip:  5.46 kB
+ℹ [ESM] 7 files, total: 151.97 kB
+✔ Build complete in 922ms
+ℹ [CJS] dist/node/index.d.cts       1.78 kB │ gzip: 0.70 kB
+ℹ [CJS] dist/index.d.cts            1.78 kB │ gzip: 0.70 kB
+ℹ [CJS] dist/index-CQhx2ohr.d.cts  15.71 kB │ gzip: 5.46 kB
+ℹ [CJS] 3 files, total: 19.27 kB
+✔ Build complete in 925ms
+✔ ESM entry loads (16.316848ms)
+✔ CJS entry loads (8.822538ms)
+✔ node entry loads (0.881759ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 96.168739

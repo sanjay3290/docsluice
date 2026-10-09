@@ -1,0 +1,69 @@
+
+> docsluice@0.0.0 test
+> vitest run test/readers/pdf/layout
+
+
+ RUN  v5.0.3 /workspace/docsluice-package-e-46/packages/docsluice
+
+ ❯ test/readers/pdf/layout/layout.test.ts (25 tests | 2 failed) 64ms
+   ❯ PDF private layout helpers (25)
+     × preserves explicit edge spaces at zero geometry gap without adding duplicates 17ms
+     × counts existing output once when staged items still fit 3ms
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 23 passed (25)
+   Start at  16:44:32
+   Duration  473ms (transform 52%, tests 25%, import 20%, worker 3%)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/readers/pdf/layout/layout.test.ts > PDF private layout helpers > preserves explicit edge spaces at zero geometry gap without adding duplicates
+AssertionError: expected 'Helloworld' to be 'Hello world' // Object.is equality
+
+Expected: "Hello world"
+Received: "Helloworld"
+
+ ❯ test/readers/pdf/layout/layout.test.ts:66:35
+     64|       item('world', 70, 40, 30, { sourceIndex: 2 }),
+     65|     ]);
+     66|     expect(result.lines[0]?.text).toBe('Hello world');
+       |                                   ^
+     67|     expect(result.lines[0]?.sourceIndices).toEqual([0, 1, 2]);
+     68|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/readers/pdf/layout/layout.test.ts > PDF private layout helpers > counts existing output once when staged items still fit
+AssertionError: expected [ 'hello' ] to deeply equal [ 'hello x' ]
+
+- Expected
++ Received
+
+  [
+-   "hello x",
++   "hello",
+  ]
+
+ ❯ test/readers/pdf/layout/layout.test.ts:263:55
+    261|       limited,
+    262|     );
+    263|     expect(result.paragraphs.map(({ text }) => text)).toEqual(['hello …
+       |                                                       ^
+    264|     expect(limited.truncated).toBe(false);
+    265|     expect(limited.outputChars).toBe(4);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /workspace/docsluice-package-e-46/packages/docsluice
+npm error workspace docsluice@0.0.0
+npm error location /workspace/docsluice-package-e-46/packages/docsluice
+npm error command failed
+npm error command sh -c vitest run test/readers/pdf/layout
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

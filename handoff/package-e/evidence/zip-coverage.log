@@ -1,0 +1,33 @@
+
+> docsluice@0.0.0 test
+> vitest run test/readers/zip --coverage --coverage.include=src/readers/zip/index.ts --coverage.reportsDirectory=/tmp/package-e-zip-coverage
+
+
+ RUN  v5.0.3 /workspace/docsluice-package-e/packages/docsluice
+      Coverage enabled with v8
+
+
+ Test Files  1 passed (1)
+      Tests  15 passed (15)
+   Start at  16:14:19
+   Duration  622ms (tests 53%, transform 36%, import 8%, worker 4%)
+
+ % Coverage report from v8
+----------|---------|----------|---------|---------|-------------------
+File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+----------|---------|----------|---------|---------|-------------------
+All files |   98.38 |       95 |     100 |     100 |                   
+ index.ts |   98.38 |       95 |     100 |     100 | 15,110            
+----------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 98.38% ( 61/62 )
+Branches     : 95% ( 38/40 )
+Functions    : 100% ( 5/5 )
+Lines        : 100% ( 56/56 )
+================================================================================
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

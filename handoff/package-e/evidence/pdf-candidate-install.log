@@ -1,0 +1,6 @@
+npm warn deprecated @yuku-codegen/binding-linux-x64-musl@0.10.2: yuku-codegen is pure JavaScript since 0.14
+npm warn deprecated @yuku-codegen/binding-linux-x64-gnu@0.10.2: yuku-codegen is pure JavaScript since 0.14
+npm warn deprecated @yuku-parser/binding-linux-x64-musl@0.10.2: yuku-parser runs on yuku-core since 0.14
+npm warn deprecated @yuku-parser/binding-linux-x64-gnu@0.10.2: yuku-parser runs on yuku-core since 0.14
+
+added 252 packages in 3s

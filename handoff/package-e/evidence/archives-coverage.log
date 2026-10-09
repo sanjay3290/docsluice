@@ -1,0 +1,36 @@
+
+> docsluice@0.0.0 test
+> vitest run test/readers/gzip test/readers/tar --coverage --coverage.include=src/readers/gzip/index.ts --coverage.include=src/readers/tar/index.ts --coverage.reportsDirectory=/tmp/package-e-archives-coverage
+
+
+ RUN  v5.0.3 /workspace/docsluice-package-e/packages/docsluice
+      Coverage enabled with v8
+
+
+ Test Files  2 passed (2)
+      Tests  25 passed (25)
+   Start at  16:17:33
+   Duration  951ms (tests 42%, transform 39%, import 14%, worker 5%)
+
+ % Coverage report from v8
+-----------|---------|----------|---------|---------|---------------------------
+File       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s         
+-----------|---------|----------|---------|---------|---------------------------
+All files  |   87.01 |    79.83 |   96.55 |   93.27 |                           
+ gzip      |   86.55 |    79.36 |    92.3 |   92.99 |                           
+  index.ts |   86.55 |    79.36 |    92.3 |   92.99 | ...5-67,87-89,107-108,198 
+ tar       |   87.35 |    80.08 |     100 |   93.48 |                           
+  index.ts |   87.35 |    80.08 |     100 |   93.48 | ...38-139,182,188,244,276 
+-----------|---------|----------|---------|---------|---------------------------
+
+=============================== Coverage summary ===============================
+Statements   : 87.01% ( 382/439 )
+Branches     : 79.83% ( 285/357 )
+Functions    : 96.55% ( 28/29 )
+Lines        : 93.27% ( 347/372 )
+================================================================================
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

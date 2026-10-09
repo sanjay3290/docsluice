@@ -1,0 +1,271 @@
+﻿2026-10-09T16:20:19.7147281Z Current runner version: '2.337.0'
+2026-10-09T16:20:19.7165368Z ##[group]Runner Image Provisioner
+2026-10-09T16:20:19.7166031Z Hosted Compute Agent
+2026-10-09T16:20:19.7166408Z Version: 20261002.596
+2026-10-09T16:20:19.7166818Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+2026-10-09T16:20:19.7167315Z Build Date: 2026-10-02T22:28:27Z
+2026-10-09T16:20:19.7167739Z Worker ID: {9bc7b9ae-0b38-4316-9447-fa5b2e10b3f5}
+2026-10-09T16:20:19.7168236Z Region: centralus
+2026-10-09T16:20:19.7168601Z Cloud: Azure
+2026-10-09T16:20:19.7168941Z ##[endgroup]
+2026-10-09T16:20:19.7169842Z ##[group]Operating System
+2026-10-09T16:20:19.7170219Z Ubuntu
+2026-10-09T16:20:19.7170588Z 24.04.5
+2026-10-09T16:20:19.7170969Z LTS
+2026-10-09T16:20:19.7171325Z ##[endgroup]
+2026-10-09T16:20:19.7171703Z ##[group]Runner Image
+2026-10-09T16:20:19.7172118Z Image: ubuntu-24.04
+2026-10-09T16:20:19.7172464Z Version: 20261004.327.1
+2026-10-09T16:20:19.7173292Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-09T16:20:19.7174468Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+2026-10-09T16:20:19.7175087Z ##[endgroup]
+2026-10-09T16:20:19.7175782Z ##[group]GITHUB_TOKEN Permissions
+2026-10-09T16:20:19.7177051Z Contents: read
+2026-10-09T16:20:19.7177396Z Metadata: read
+2026-10-09T16:20:19.7177809Z ##[endgroup]
+2026-10-09T16:20:19.7179176Z Secret source: Actions
+2026-10-09T16:20:19.7179808Z Cache mode: write
+2026-10-09T16:20:19.7180235Z Prepare workflow directory
+2026-10-09T16:20:19.7393313Z Prepare all required actions
+2026-10-09T16:20:19.7425743Z Getting action download info
+2026-10-09T16:20:20.0092497Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-09T16:20:20.0996884Z Download action repository 'actions/download-artifact@v8' (SHA:9000827ccba6bdab643e8b6fd33ac0654aef8333)
+2026-10-09T16:20:20.5630589Z Download action repository 'actions/setup-node@v7' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-10-09T16:20:21.2076199Z Complete job name: Built package on Node 24
+2026-10-09T16:20:21.2603687Z ##[group]Run actions/checkout@v7
+2026-10-09T16:20:21.2604283Z with:
+2026-10-09T16:20:21.2604629Z   repository: sanjay3290/docsluice
+2026-10-09T16:20:21.2609948Z   token: ***
+2026-10-09T16:20:21.2610274Z   ssh-strict: true
+2026-10-09T16:20:21.2610610Z   ssh-user: git
+2026-10-09T16:20:21.2610966Z   persist-credentials: true
+2026-10-09T16:20:21.2611366Z   clean: true
+2026-10-09T16:20:21.2611722Z   sparse-checkout-cone-mode: true
+2026-10-09T16:20:21.2612171Z   fetch-depth: 1
+2026-10-09T16:20:21.2612511Z   fetch-tags: false
+2026-10-09T16:20:21.2612860Z   show-progress: true
+2026-10-09T16:20:21.2613213Z   lfs: false
+2026-10-09T16:20:21.2613631Z   submodules: false
+2026-10-09T16:20:21.2613996Z   set-safe-directory: true
+2026-10-09T16:20:21.2614429Z   allow-unsafe-pr-checkout: false
+2026-10-09T16:20:21.2614953Z ##[endgroup]
+2026-10-09T16:20:21.3313060Z Syncing repository: sanjay3290/docsluice
+2026-10-09T16:20:21.3315564Z ##[group]Getting Git version info
+2026-10-09T16:20:21.3316599Z Working directory is '/home/runner/work/docsluice/docsluice'
+2026-10-09T16:20:21.3318100Z [command]/usr/bin/git version
+2026-10-09T16:20:21.3356371Z git version 2.55.0
+2026-10-09T16:20:21.3372217Z ##[endgroup]
+2026-10-09T16:20:21.3384247Z Temporarily overriding HOME='/home/runner/work/_temp/e21dba44-44b6-45ec-a839-7daca22a6cf8' before making global git config changes
+2026-10-09T16:20:21.3386884Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-09T16:20:21.3390561Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/docsluice/docsluice
+2026-10-09T16:20:21.3439335Z Deleting the contents of '/home/runner/work/docsluice/docsluice'
+2026-10-09T16:20:21.3442046Z ##[group]Determining repository object format
+2026-10-09T16:20:21.3443310Z ##[endgroup]
+2026-10-09T16:20:21.3444414Z ##[group]Initializing the repository
+2026-10-09T16:20:21.3447061Z [command]/usr/bin/git init /home/runner/work/docsluice/docsluice
+2026-10-09T16:20:21.3528885Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-09T16:20:21.3530541Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-09T16:20:21.3531456Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-09T16:20:21.3532150Z hint: call:
+2026-10-09T16:20:21.3532441Z hint:
+2026-10-09T16:20:21.3532872Z hint: 	git config --global init.defaultBranch <name>
+2026-10-09T16:20:21.3533845Z hint:
+2026-10-09T16:20:21.3534599Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-09T16:20:21.3535955Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-09T16:20:21.3537043Z hint:
+2026-10-09T16:20:21.3537503Z hint: 	git branch -m <name>
+2026-10-09T16:20:21.3538069Z hint:
+2026-10-09T16:20:21.3538909Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-09T16:20:21.3540546Z Initialized empty Git repository in /home/runner/work/docsluice/docsluice/.git/
+2026-10-09T16:20:21.3547201Z [command]/usr/bin/git remote add origin https://github.com/sanjay3290/docsluice
+2026-10-09T16:20:21.3593844Z ##[endgroup]
+2026-10-09T16:20:21.3594818Z ##[group]Disabling automatic garbage collection
+2026-10-09T16:20:21.3596526Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-09T16:20:21.3626388Z ##[endgroup]
+2026-10-09T16:20:21.3627243Z ##[group]Setting up auth
+2026-10-09T16:20:21.3627883Z Removing SSH command configuration
+2026-10-09T16:20:21.3645263Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-09T16:20:21.3675667Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-09T16:20:21.3963480Z Removing HTTP extra header
+2026-10-09T16:20:21.3967758Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-09T16:20:21.3999704Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-09T16:20:21.4181244Z Removing includeIf entries pointing to credentials config files
+2026-10-09T16:20:21.4185590Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-09T16:20:21.4225689Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-09T16:20:21.4415255Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-28cd3d45-e464-48a6-9883-b783f45f1f0e.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-09T16:20:21.4450956Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/docsluice/docsluice/.git.path /home/runner/work/_temp/git-credentials-28cd3d45-e464-48a6-9883-b783f45f1f0e.config
+2026-10-09T16:20:21.4523276Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/docsluice/docsluice/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-28cd3d45-e464-48a6-9883-b783f45f1f0e.config
+2026-10-09T16:20:21.4554619Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-28cd3d45-e464-48a6-9883-b783f45f1f0e.config
+2026-10-09T16:20:21.4583997Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-28cd3d45-e464-48a6-9883-b783f45f1f0e.config
+2026-10-09T16:20:21.4610452Z ##[endgroup]
+2026-10-09T16:20:21.4611317Z ##[group]Fetching the repository
+2026-10-09T16:20:21.4616003Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +f824672d9007104358eca50cf064662b63bc8f54:refs/remotes/pull/105/merge
+2026-10-09T16:20:21.8455955Z From https://github.com/sanjay3290/docsluice
+2026-10-09T16:20:21.8457841Z  * [new ref]         f824672d9007104358eca50cf064662b63bc8f54 -> pull/105/merge
+2026-10-09T16:20:21.8460758Z ##[endgroup]
+2026-10-09T16:20:21.8461966Z ##[group]Determining the checkout info
+2026-10-09T16:20:21.8463474Z ##[endgroup]
+2026-10-09T16:20:21.8466015Z [command]/usr/bin/git sparse-checkout disable
+2026-10-09T16:20:21.8511726Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-09T16:20:21.8541910Z ##[group]Checking out the ref
+2026-10-09T16:20:21.8544647Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/105/merge
+2026-10-09T16:20:21.8666652Z Note: switching to 'refs/remotes/pull/105/merge'.
+2026-10-09T16:20:21.8667357Z 
+2026-10-09T16:20:21.8667857Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-09T16:20:21.8669121Z changes and commit them, and you can discard any commits you make in this
+2026-10-09T16:20:21.8670255Z state without impacting any branches by switching back to a branch.
+2026-10-09T16:20:21.8670986Z 
+2026-10-09T16:20:21.8671484Z If you want to create a new branch to retain commits you create, you may
+2026-10-09T16:20:21.8672642Z do so (now or later) by using -c with the switch command. Example:
+2026-10-09T16:20:21.8673291Z 
+2026-10-09T16:20:21.8673829Z   git switch -c <new-branch-name>
+2026-10-09T16:20:21.8674322Z 
+2026-10-09T16:20:21.8674662Z Or undo this operation with:
+2026-10-09T16:20:21.8675131Z 
+2026-10-09T16:20:21.8675454Z   git switch -
+2026-10-09T16:20:21.8675858Z 
+2026-10-09T16:20:21.8676436Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-09T16:20:21.8677218Z 
+2026-10-09T16:20:21.8678065Z HEAD is now at f824672 Merge 1e7ccc7cb9a4e37d28a71ec26cf153236c2c4e83 into 10ae4985a425842f965bccbb9c86a7e6018c5412
+2026-10-09T16:20:21.8688730Z ##[endgroup]
+2026-10-09T16:20:21.8728411Z [command]/usr/bin/git log -1 --format=%H
+2026-10-09T16:20:21.8752546Z f824672d9007104358eca50cf064662b63bc8f54
+2026-10-09T16:20:21.9054850Z ##[group]Run actions/download-artifact@v8
+2026-10-09T16:20:21.9055587Z with:
+2026-10-09T16:20:21.9056113Z   name: dist
+2026-10-09T16:20:21.9056680Z   path: packages/docsluice/dist
+2026-10-09T16:20:21.9057352Z   merge-multiple: false
+2026-10-09T16:20:21.9057969Z   repository: sanjay3290/docsluice
+2026-10-09T16:20:21.9058615Z   run-id: 37958302965
+2026-10-09T16:20:21.9059184Z   skip-decompress: false
+2026-10-09T16:20:21.9059783Z   digest-mismatch: error
+2026-10-09T16:20:21.9060373Z ##[endgroup]
+2026-10-09T16:20:22.0049216Z Downloading single artifact
+2026-10-09T16:20:22.1802589Z Preparing to download the following artifacts:
+2026-10-09T16:20:22.1813126Z - dist (ID: 11631095447, Size: 81823, Expected Digest: sha256:2867c80ce3fbb149d9d90d40e1f5a32289573dbfee07b5deb8ef30af915298b4)
+2026-10-09T16:20:22.4996714Z Redirecting to blob download url: https://productionresultssa8.blob.core.windows.net/actions-results/7317030a-e80d-88a5-ba01-e863b9c105be/workflow-job-run-b5f09160-6667-5a5a-8752-299feb34a65f/artifacts/bcae0416621b3db43d8cba1e4454a792c7af9e4b7287e51056efc5a215d95839.zip
+2026-10-09T16:20:22.4998811Z Starting download of artifact to: /home/runner/work/docsluice/docsluice/packages/docsluice/dist
+2026-10-09T16:20:22.6355855Z (node:2084) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+2026-10-09T16:20:22.6357520Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-09T16:20:22.6970303Z SHA256 digest of downloaded artifact is 2867c80ce3fbb149d9d90d40e1f5a32289573dbfee07b5deb8ef30af915298b4
+2026-10-09T16:20:22.6971623Z Artifact download completed successfully.
+2026-10-09T16:20:22.6972533Z Total of 1 artifact(s) downloaded
+2026-10-09T16:20:22.6973494Z Download artifact has finished successfully
+2026-10-09T16:20:22.7151189Z ##[group]Run actions/setup-node@v7
+2026-10-09T16:20:22.7151693Z with:
+2026-10-09T16:20:22.7152124Z   node-version: 24
+2026-10-09T16:20:22.7152700Z   check-latest: false
+2026-10-09T16:20:22.7154897Z   token: ***
+2026-10-09T16:20:22.7155347Z   package-manager-cache: true
+2026-10-09T16:20:22.7155828Z ##[endgroup]
+2026-10-09T16:20:22.8036315Z Found in cache @ /opt/hostedtoolcache/node/24.21.0/x64
+2026-10-09T16:20:22.8612635Z ##[group]Environment details
+2026-10-09T16:20:23.0967837Z node: v24.21.0
+2026-10-09T16:20:23.0968279Z npm: 11.19.0
+2026-10-09T16:20:23.0969083Z yarn: 1.22.22
+2026-10-09T16:20:23.0969824Z ##[endgroup]
+2026-10-09T16:20:23.1100817Z ##[group]Run node --test packages/docsluice/test-dist/smoke.test.mjs
+2026-10-09T16:20:23.1101200Z [36;1mnode --test packages/docsluice/test-dist/smoke.test.mjs[0m
+2026-10-09T16:20:23.1388683Z shell: /usr/bin/bash -e {0}
+2026-10-09T16:20:23.1389254Z ##[endgroup]
+2026-10-09T16:20:23.2276342Z ✖ ESM entry loads (2.717638ms)
+2026-10-09T16:20:23.2279631Z ✖ CJS entry loads (1.305659ms)
+2026-10-09T16:20:23.2287267Z ✖ node entry loads (0.719635ms)
+2026-10-09T16:20:23.2360577Z ℹ tests 3
+2026-10-09T16:20:23.2360992Z ℹ suites 0
+2026-10-09T16:20:23.2361296Z ℹ pass 0
+2026-10-09T16:20:23.2361613Z ℹ fail 3
+2026-10-09T16:20:23.2361944Z ℹ cancelled 0
+2026-10-09T16:20:23.2364354Z ℹ skipped 0
+2026-10-09T16:20:23.2374064Z ℹ todo 0
+2026-10-09T16:20:23.2374409Z ℹ duration_ms 51.67236
+2026-10-09T16:20:23.2375202Z 
+2026-10-09T16:20:23.2375352Z ✖ failing tests:
+2026-10-09T16:20:23.2375516Z 
+2026-10-09T16:20:23.2375833Z test at packages/docsluice/test-dist/smoke.test.mjs:9:1
+2026-10-09T16:20:23.2376396Z ✖ ESM entry loads (2.717638ms)
+2026-10-09T16:20:23.2377205Z   Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'fflate' imported from /home/runner/work/docsluice/docsluice/packages/docsluice/dist/src-BFhsGcJb.js
+2026-10-09T16:20:23.2378086Z       at Object.getPackageJSONURL (node:internal/modules/package_json_reader:331:9)
+2026-10-09T16:20:23.2378683Z       at packageResolve (node:internal/modules/esm/resolve:784:25)
+2026-10-09T16:20:23.2379096Z       at moduleResolve (node:internal/modules/esm/resolve:873:18)
+2026-10-09T16:20:23.2379498Z       at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+2026-10-09T16:20:23.2379919Z       at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+2026-10-09T16:20:23.2380438Z       at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+2026-10-09T16:20:23.2381147Z       at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+2026-10-09T16:20:23.2381548Z       at #resolve (node:internal/modules/esm/loader:687:17)
+2026-10-09T16:20:23.2382092Z       at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+2026-10-09T16:20:23.2382782Z       at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33) {
+2026-10-09T16:20:23.2383143Z     code: 'ERR_MODULE_NOT_FOUND'
+2026-10-09T16:20:23.2383533Z   }
+2026-10-09T16:20:23.2383631Z 
+2026-10-09T16:20:23.2383827Z test at packages/docsluice/test-dist/smoke.test.mjs:21:1
+2026-10-09T16:20:23.2384156Z ✖ CJS entry loads (1.305659ms)
+2026-10-09T16:20:23.2384404Z   Error: Cannot find module 'fflate'
+2026-10-09T16:20:23.2384633Z   Require stack:
+2026-10-09T16:20:23.2384971Z   - /home/runner/work/docsluice/docsluice/packages/docsluice/dist/src-B6TqsLRP.cjs
+2026-10-09T16:20:23.2385395Z   - /home/runner/work/docsluice/docsluice/packages/docsluice/dist/index.cjs
+2026-10-09T16:20:23.2385839Z   - /home/runner/work/docsluice/docsluice/packages/docsluice/test-dist/smoke.test.mjs
+2026-10-09T16:20:23.2386263Z       at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+2026-10-09T16:20:23.2386653Z       at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+2026-10-09T16:20:23.2387092Z       at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+2026-10-09T16:20:23.2387514Z       at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+2026-10-09T16:20:23.2387890Z       at Module._load (node:internal/modules/cjs/loader:1341:5)
+2026-10-09T16:20:23.2388254Z       at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+2026-10-09T16:20:23.2388943Z       at Module.require (node:internal/modules/cjs/loader:1674:12)
+2026-10-09T16:20:23.2389286Z       at require (node:internal/modules/helpers:157:16)
+2026-10-09T16:20:23.2389806Z       at Object.<anonymous> (/home/runner/work/docsluice/docsluice/packages/docsluice/dist/src-B6TqsLRP.cjs:1:14)
+2026-10-09T16:20:23.2390272Z       at Module._compile (node:internal/modules/cjs/loader:1929:14) {
+2026-10-09T16:20:23.2390640Z     code: 'MODULE_NOT_FOUND',
+2026-10-09T16:20:23.2391673Z     requireStack: [ '/home/runner/work/docsluice/docsluice/packages/docsluice/dist/src-B6TqsLRP.cjs', '/home/runner/work/docsluice/docsluice/packages/docsluice/dist/index.cjs', '/home/runner/work/docsluice/docsluice/packages/docsluice/test-dist/smoke.test.mjs' ]
+2026-10-09T16:20:23.2392360Z   }
+2026-10-09T16:20:23.2392469Z 
+2026-10-09T16:20:23.2392652Z test at packages/docsluice/test-dist/smoke.test.mjs:26:1
+2026-10-09T16:20:23.2392985Z ✖ node entry loads (0.719635ms)
+2026-10-09T16:20:23.2393807Z   Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'fflate' imported from /home/runner/work/docsluice/docsluice/packages/docsluice/dist/src-BFhsGcJb.js
+2026-10-09T16:20:23.2394498Z       at Object.getPackageJSONURL (node:internal/modules/package_json_reader:331:9)
+2026-10-09T16:20:23.2394913Z       at packageResolve (node:internal/modules/esm/resolve:784:25)
+2026-10-09T16:20:23.2395295Z       at moduleResolve (node:internal/modules/esm/resolve:873:18)
+2026-10-09T16:20:23.2395667Z       at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+2026-10-09T16:20:23.2396054Z       at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+2026-10-09T16:20:23.2396497Z       at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+2026-10-09T16:20:23.2396946Z       at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+2026-10-09T16:20:23.2397319Z       at #resolve (node:internal/modules/esm/loader:687:17)
+2026-10-09T16:20:23.2397730Z       at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+2026-10-09T16:20:23.2398178Z       at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33) {
+2026-10-09T16:20:23.2398509Z     code: 'ERR_MODULE_NOT_FOUND'
+2026-10-09T16:20:23.2398714Z   }
+2026-10-09T16:20:23.2440970Z ##[error]Process completed with exit code 1.
+2026-10-09T16:20:23.2542977Z Post job cleanup.
+2026-10-09T16:20:23.3121320Z [command]/usr/bin/git version
+2026-10-09T16:20:23.3158406Z git version 2.55.0
+2026-10-09T16:20:23.3181207Z Temporarily overriding HOME='/home/runner/work/_temp/d2a8477d-f216-4f82-a9f4-ac65c8538f1a' before making global git config changes
+2026-10-09T16:20:23.3182112Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-09T16:20:23.3185197Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/docsluice/docsluice
+2026-10-09T16:20:23.3211379Z Removing SSH command configuration
+2026-10-09T16:20:23.3215866Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-09T16:20:23.3276464Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-09T16:20:23.3458053Z Removing HTTP extra header
+2026-10-09T16:20:23.3464289Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-09T16:20:23.3496282Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-09T16:20:23.3712920Z Removing includeIf entries pointing to credentials config files
+2026-10-09T16:20:23.3713623Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-09T16:20:23.3740388Z includeif.gitdir:/home/runner/work/docsluice/docsluice/.git.path
+2026-10-09T16:20:23.3740834Z includeif.gitdir:/home/runner/work/docsluice/docsluice/.git/worktrees/*.path
+2026-10-09T16:20:23.3741430Z includeif.gitdir:/github/workspace/.git.path
+2026-10-09T16:20:23.3741747Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-09T16:20:23.3748013Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/docsluice/docsluice/.git.path
+2026-10-09T16:20:23.3770772Z /home/runner/work/_temp/git-credentials-28cd3d45-e464-48a6-9883-b783f45f1f0e.config
+2026-10-09T16:20:23.3778190Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/docsluice/docsluice/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-28cd3d45\-e464\-48a6\-9883\-b783f45f1f0e\.config
+2026-10-09T16:20:23.3812185Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/docsluice/docsluice/.git/worktrees/*.path
+2026-10-09T16:20:23.3834446Z /home/runner/work/_temp/git-credentials-28cd3d45-e464-48a6-9883-b783f45f1f0e.config
+2026-10-09T16:20:23.3846498Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/docsluice/docsluice/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-28cd3d45\-e464\-48a6\-9883\-b783f45f1f0e\.config
+2026-10-09T16:20:23.3876816Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-09T16:20:23.3898600Z /github/runner_temp/git-credentials-28cd3d45-e464-48a6-9883-b783f45f1f0e.config
+2026-10-09T16:20:23.3903481Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-28cd3d45\-e464\-48a6\-9883\-b783f45f1f0e\.config
+2026-10-09T16:20:23.3932926Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-09T16:20:23.3954158Z /github/runner_temp/git-credentials-28cd3d45-e464-48a6-9883-b783f45f1f0e.config
+2026-10-09T16:20:23.3975592Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-28cd3d45\-e464\-48a6\-9883\-b783f45f1f0e\.config
+2026-10-09T16:20:23.3992071Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-09T16:20:23.4173570Z Removing credentials config '/home/runner/work/_temp/git-credentials-28cd3d45-e464-48a6-9883-b783f45f1f0e.config'
+2026-10-09T16:20:23.4326450Z Cleaning up orphan processes
+

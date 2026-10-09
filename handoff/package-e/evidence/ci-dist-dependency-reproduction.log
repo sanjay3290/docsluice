@@ -1,0 +1,80 @@
+Downloaded-artifact-style isolated dist without dependencies: exit 1
+✖ ESM entry loads (11.523809ms)
+✖ CJS entry loads (4.098704ms)
+✖ node entry loads (1.318528ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 200.244746
+
+✖ failing tests:
+
+test at packages/docsluice/test-dist/smoke.test.mjs:9:1
+✖ ESM entry loads (11.523809ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'fflate' imported from /tmp/package-e-dist-repro-bcpkaqn9/packages/docsluice/dist/src-BFhsGcJb.js
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:859:18)
+      at defaultResolve (node:internal/modules/esm/resolve:992:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+      at #resolve (node:internal/modules/esm/loader:683:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }
+
+test at packages/docsluice/test-dist/smoke.test.mjs:21:1
+✖ CJS entry loads (4.098704ms)
+  Error: Cannot find module 'fflate'
+  Require stack:
+  - /tmp/package-e-dist-repro-bcpkaqn9/packages/docsluice/dist/src-B6TqsLRP.cjs
+  - /tmp/package-e-dist-repro-bcpkaqn9/packages/docsluice/dist/index.cjs
+  - /tmp/package-e-dist-repro-bcpkaqn9/packages/docsluice/test-dist/smoke.test.mjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)
+      at Module._load (node:internal/modules/cjs/loader:1294:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+      at Module.require (node:internal/modules/cjs/loader:1617:12)
+      at require (node:internal/modules/helpers:153:16)
+      at Object.<anonymous> (/tmp/package-e-dist-repro-bcpkaqn9/packages/docsluice/dist/src-B6TqsLRP.cjs:1:14)
+      at Module._compile (node:internal/modules/cjs/loader:1872:14) {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/tmp/package-e-dist-repro-bcpkaqn9/packages/docsluice/dist/src-B6TqsLRP.cjs', '/tmp/package-e-dist-repro-bcpkaqn9/packages/docsluice/dist/index.cjs', '/tmp/package-e-dist-repro-bcpkaqn9/packages/docsluice/test-dist/smoke.test.mjs' ]
+  }
+
+test at packages/docsluice/test-dist/smoke.test.mjs:26:1
+✖ node entry loads (1.318528ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'fflate' imported from /tmp/package-e-dist-repro-bcpkaqn9/packages/docsluice/dist/src-BFhsGcJb.js
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:859:18)
+      at defaultResolve (node:internal/modules/esm/resolve:992:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+      at #resolve (node:internal/modules/esm/loader:683:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }
+
+Same dist with declared fflate 0.8.2 installed: exit 0
+✔ ESM entry loads (29.50532ms)
+✔ CJS entry loads (18.824812ms)
+✔ node entry loads (1.055844ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 267.15572

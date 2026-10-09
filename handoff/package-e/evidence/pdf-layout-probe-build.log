@@ -1,0 +1,13 @@
+ℹ tsdown v0.23.0 powered by rolldown v1.2.13
+ℹ entry: ../package-e-preparation/pdf/spike/layout-probe.mts
+ℹ target: es2022
+ℹ Build start
+ℹ Cleaning 2 files
+ℹ Hint: consider adding deps.onlyBundle option to avoid unintended bundling of dependencies, or set deps.onlyBundle: false to disable this hint.
+See more at https://tsdown.dev/options/dependencies#deps-onlybundle
+Detected dependencies in bundle:
+- unpdf
+ℹ ../package-e-preparation/pdf/spike/layout-probe-build/layout-probe.mjs    32.67 kB │ gzip: 9.10 kB
+ℹ ../package-e-preparation/pdf/spike/layout-probe-build/pdfjs-BlsZ7xTQ.mjs   2.07 MB
+ℹ 2 files, total: 2.10 MB
+✔ Build complete in 352ms

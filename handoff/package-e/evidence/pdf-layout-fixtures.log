@@ -1,0 +1,9 @@
+test_deterministic_generation_and_cc0_sidecar (test_fixtures.LayoutPdfFixtures.test_deterministic_generation_and_cc0_sidecar) ... ok
+test_manifest_is_proposal_not_extraction_verified (test_fixtures.LayoutPdfFixtures.test_manifest_is_proposal_not_extraction_verified) ... ok
+test_optional_poppler_independent_rendered_text_order_facts (test_fixtures.LayoutPdfFixtures.test_optional_poppler_independent_rendered_text_order_facts) ... ok
+test_pdf_structure_geometry_text_operators_and_source_facts (test_fixtures.LayoutPdfFixtures.test_pdf_structure_geometry_text_operators_and_source_facts) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.079s
+
+OK

@@ -1,0 +1,2 @@
+Warning: Cannot load "@napi-rs/canvas" package: "NotCapable: Requires env access to "NAPI_RS_NATIVE_LIBRARY_PATH", run again with the --allow-env flag".
+Warning: Cannot polyfill `Path2D`, rendering may be broken.

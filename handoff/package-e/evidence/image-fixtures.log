@@ -1,0 +1,11 @@
+test_generator_is_deterministic (test_fixtures.FixtureTests.test_generator_is_deterministic) ... ok
+test_hostile_tiff_shapes_are_intentional (test_fixtures.FixtureTests.test_hostile_tiff_shapes_are_intentional) ... ok
+test_jpeg_is_labeled_as_metadata_structure_not_complete_photo (test_fixtures.FixtureTests.test_jpeg_is_labeled_as_metadata_structure_not_complete_photo) ... ok
+test_png_and_gif_are_small_complete_images (test_fixtures.FixtureTests.test_png_and_gif_are_small_complete_images) ... ok
+test_tiff_endianness_and_metadata_fields (test_fixtures.FixtureTests.test_tiff_endianness_and_metadata_fields) ... ok
+test_webp_chunk_headers_and_exif_flag (test_fixtures.FixtureTests.test_webp_chunk_headers_and_exif_flag) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.007s
+
+OK

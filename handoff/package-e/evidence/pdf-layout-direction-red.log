@@ -1,0 +1,53 @@
+
+> docsluice@0.0.0 test
+> vitest run test/readers/pdf/layout
+
+
+ RUN  v5.0.3 /workspace/docsluice-package-e-46/packages/docsluice
+
+ ❯ test/readers/pdf/layout/layout.test.ts (27 tests | 1 failed) 52ms
+   ❯ PDF private layout helpers (27)
+     × reports unsupported directions so the adapter can warn instead of silently dropping text 11ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 26 passed (27)
+   Start at  16:55:10
+   Duration  494ms (transform 69%, tests 18%, import 8%, worker 4%)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/readers/pdf/layout/layout.test.ts > PDF private layout helpers > reports unsupported directions so the adapter can warn instead of silently dropping text
+AssertionError: expected { …(4) } to match object { unsupportedDirectionItems: 1 }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "unsupportedDirectionItems": 1,
++   "unsupportedDirectionItems": 0,
+  }
+
+ ❯ test/readers/pdf/layout/layout.test.ts:277:20
+    275|     const result = layoutPage([vertical, item('horizontal', 10, 50, 70…
+    276|     expect(result.lines.map(({ text }) => text)).toEqual(['horizontal'…
+    277|     expect(result).toMatchObject({ unsupportedDirectionItems: 1 });
+       |                    ^
+    278|   });
+    279|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /workspace/docsluice-package-e-46/packages/docsluice
+npm error workspace docsluice@0.0.0
+npm error location /workspace/docsluice-package-e-46/packages/docsluice
+npm error command failed
+npm error command sh -c vitest run test/readers/pdf/layout
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

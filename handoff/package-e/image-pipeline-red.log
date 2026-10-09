@@ -1,0 +1,116 @@
+
+ RUN  v5.0.3 /workspace/docsluice-package-e-images-integration/packages/docsluice
+
+ ❯ test/image-pipeline-regression.test.ts (18 tests | 9 failed) 27ms
+   ❯ image pipeline dispatch regression (standalone integration evidence) (18)
+     × dispatches registered reader for tiny.png 8ms
+     × dispatches registered reader for jpeg-exif-structure.jpg 1ms
+     × dispatches registered reader for tiny.gif 1ms
+     × dispatches registered reader for tiff-le-metadata.tif 1ms
+     × dispatches registered reader for tiff-be-metadata.tif 6ms
+     × dispatches registered reader for webp-vp8-snippet.webp 1ms
+     × dispatches registered reader for webp-vp8l-snippet.webp 1ms
+     × dispatches registered reader for webp-vp8x-exif-snippet.webp 1ms
+     × routes metadata and GPS privacy options through extract() 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/image-pipeline-regression.test.ts > image pipeline dispatch regression (standalone integration evidence) > dispatches registered reader for tiny.png
+ FAIL  test/image-pipeline-regression.test.ts > image pipeline dispatch regression (standalone integration evidence) > dispatches registered reader for tiny.gif
+AssertionError: expected [] to deep equally contain ObjectContaining{…}
+
+- Expected:
+ObjectContaining {
+  "height": 1,
+  "kind": "image",
+  "width": 1,
+}
+
++ Received:
+[]
+
+ ❯ test/image-pipeline-regression.test.ts:49:24
+     47|     expect(doc.format).toBe(format);
+     48|     expect(doc.mimeType).toBe(mimeType);
+     49|     expect(doc.blocks).toContainEqual(expect.objectContaining({ kind: …
+       |                        ^
+     50|     expect(doc.blocks.some((block) => block.kind === 'paragraph')).toB…
+     51|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  test/image-pipeline-regression.test.ts > image pipeline dispatch regression (standalone integration evidence) > dispatches registered reader for jpeg-exif-structure.jpg
+ FAIL  test/image-pipeline-regression.test.ts > image pipeline dispatch regression (standalone integration evidence) > dispatches registered reader for webp-vp8-snippet.webp
+ FAIL  test/image-pipeline-regression.test.ts > image pipeline dispatch regression (standalone integration evidence) > dispatches registered reader for webp-vp8l-snippet.webp
+ FAIL  test/image-pipeline-regression.test.ts > image pipeline dispatch regression (standalone integration evidence) > dispatches registered reader for webp-vp8x-exif-snippet.webp
+AssertionError: expected [] to deep equally contain ObjectContaining{…}
+
+- Expected:
+ObjectContaining {
+  "height": 3,
+  "kind": "image",
+  "width": 5,
+}
+
++ Received:
+[]
+
+ ❯ test/image-pipeline-regression.test.ts:49:24
+     47|     expect(doc.format).toBe(format);
+     48|     expect(doc.mimeType).toBe(mimeType);
+     49|     expect(doc.blocks).toContainEqual(expect.objectContaining({ kind: …
+       |                        ^
+     50|     expect(doc.blocks.some((block) => block.kind === 'paragraph')).toB…
+     51|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  test/image-pipeline-regression.test.ts > image pipeline dispatch regression (standalone integration evidence) > dispatches registered reader for tiff-le-metadata.tif
+ FAIL  test/image-pipeline-regression.test.ts > image pipeline dispatch regression (standalone integration evidence) > dispatches registered reader for tiff-be-metadata.tif
+AssertionError: expected [] to deep equally contain ObjectContaining{…}
+
+- Expected:
+ObjectContaining {
+  "height": 2,
+  "kind": "image",
+  "width": 3,
+}
+
++ Received:
+[]
+
+ ❯ test/image-pipeline-regression.test.ts:49:24
+     47|     expect(doc.format).toBe(format);
+     48|     expect(doc.mimeType).toBe(mimeType);
+     49|     expect(doc.blocks).toContainEqual(expect.objectContaining({ kind: …
+       |                        ^
+     50|     expect(doc.blocks.some((block) => block.kind === 'paragraph')).toB…
+     51|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  test/image-pipeline-regression.test.ts > image pipeline dispatch regression (standalone integration evidence) > routes metadata and GPS privacy options through extract()
+AssertionError: expected undefined to be '2019-04-05T12:34:56' // Object.is equality
+
+- Expected:
+"2019-04-05T12:34:56"
+
++ Received:
+undefined
+
+ ❯ test/image-pipeline-regression.test.ts:56:37
+     54|     const bytes = fixture('tiff-le-metadata.tif');
+     55|     const normal = await extractRegistered(bytes);
+     56|     expect(normal.metadata.created).toBe('2019-04-05T12:34:56');
+       |                                     ^
+     57|     expect(normal.metadata.custom?.some(({ name }) => name.startsWith(…
+     58|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  9 failed | 9 passed (18)
+   Start at  16:51:23
+   Duration  390ms (transform 74%, import 14%, tests 10%, worker 1%)
+

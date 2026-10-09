@@ -1,0 +1,6 @@
+test_generator_creates_independently_readable_and_deterministic_pdfs (test_fixtures.PdfFixtures.test_generator_creates_independently_readable_and_deterministic_pdfs) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.179s
+
+OK

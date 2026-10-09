@@ -1,0 +1,14 @@
+test_generator_creates_independently_readable_and_deterministic_pdfs (test_fixtures.PdfFixtures.test_generator_creates_independently_readable_and_deterministic_pdfs) ... FAIL
+
+======================================================================
+FAIL: test_generator_creates_independently_readable_and_deterministic_pdfs (test_fixtures.PdfFixtures.test_generator_creates_independently_readable_and_deterministic_pdfs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/package-e-preparation/pdf-fixtures/test_fixtures.py", line 22, in test_generator_creates_independently_readable_and_deterministic_pdfs
+    self.assertIn("source_file", entry, "proposal must identify the actual source fixture")
+AssertionError: 'source_file' not found in {'file': 'pdf/actions.pdf', 'expect': {'warnings': []}, 'maxMs': 2000, 'maxHeapMB': 256, 'requirement': 'PDF-10', 'note': 'Feature/no-execution/no-network assertions required; empty warning list alone is insufficient.'} : proposal must identify the actual source fixture
+
+----------------------------------------------------------------------
+Ran 1 test in 0.059s
+
+FAILED (failures=1)

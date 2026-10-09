@@ -1,0 +1,9 @@
+
+ RUN  v5.0.3 /workspace/docsluice-package-e-images-integration/packages/docsluice
+
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  16:51:30
+   Duration  567ms (transform 73%, import 16%, tests 10%, worker 1%)
+

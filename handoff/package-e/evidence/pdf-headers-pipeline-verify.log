@@ -1,0 +1,227 @@
+
+> verify
+> npm run lint && npm run typecheck && npm run test && npm run build && npm run check:package && npm run test:dist
+
+
+> lint
+> eslint . && prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> typecheck
+> npm run typecheck --workspaces --if-present
+
+
+> docsluice@0.0.0 typecheck
+> tsc -p tsconfig.json && tsc -p src/node/tsconfig.json
+
+
+> test
+> npm run test --workspaces --if-present
+
+
+> docsluice@0.0.0 test
+> vitest run
+
+
+ RUN  v5.0.3 /workspace/docsluice-package-e-48/packages/docsluice
+
+
+ Test Files  24 passed (24)
+      Tests  513 passed (513)
+   Start at  17:09:15
+   Duration  14.86s (tests 86%, import 7%, transform 6%)
+
+    Isolate  24 workers spawned · ~257ms startup each (spawn + environment, per file)
+             at least ~1.80s faster with isolate: false — reuses workers across files instead of one per file
+
+
+> build
+> npm run build --workspaces --if-present
+
+
+> docsluice@0.0.0 build
+> tsdown
+
+ℹ tsdown v0.23.0 powered by rolldown v1.2.13
+ℹ config file: /workspace/docsluice-package-e-48/packages/docsluice/tsdown.config.ts 
+ℹ entry: src/index.ts, src/node/index.ts, src/readers/doc/index.ts
+ℹ target: es2022
+ℹ tsconfig: tsconfig.json
+ℹ Build start
+ℹ [CJS] dist/doc.cjs                14.29 kB │ gzip:  4.04 kB
+ℹ [CJS] dist/node/index.cjs          1.12 kB │ gzip:  0.39 kB
+ℹ [CJS] dist/index.cjs               1.12 kB │ gzip:  0.39 kB
+ℹ [CJS] dist/src-C3t2b5fT.cjs.map  310.16 kB │ gzip: 70.69 kB
+ℹ [CJS] dist/src-C3t2b5fT.cjs      159.35 kB │ gzip: 38.65 kB
+ℹ [CJS] dist/doc.cjs.map            27.56 kB │ gzip:  7.14 kB
+ℹ [CJS] dist/ole-BjSbMuL5.cjs.map   26.99 kB │ gzip:  7.16 kB
+ℹ [CJS] dist/ole-BjSbMuL5.cjs       15.60 kB │ gzip:  4.09 kB
+ℹ [CJS] 8 files, total: 556.20 kB
+ℹ [CJS] dist/doc.d.cts              4.69 kB │ gzip: 1.87 kB
+ℹ [CJS] dist/node/index.d.cts       2.06 kB │ gzip: 0.77 kB
+ℹ [CJS] dist/index.d.cts            2.05 kB │ gzip: 0.77 kB
+ℹ [CJS] dist/index-BGCEEynh.d.cts  13.48 kB │ gzip: 4.79 kB
+ℹ [CJS] dist/index-DdCGonpt.d.cts   6.00 kB │ gzip: 2.23 kB
+ℹ [CJS] 5 files, total: 28.28 kB
+✔ Build complete in 1796ms
+ℹ [ESM] dist/doc.js                14.18 kB │ gzip:  4.01 kB
+ℹ [ESM] dist/node/index.js          0.71 kB │ gzip:  0.34 kB
+ℹ [ESM] dist/index.js               0.71 kB │ gzip:  0.33 kB
+ℹ [ESM] dist/src-D3bDeFBs.js.map  309.57 kB │ gzip: 70.55 kB
+ℹ [ESM] dist/src-D3bDeFBs.js      157.91 kB │ gzip: 38.60 kB
+ℹ [ESM] dist/doc.js.map            27.45 kB │ gzip:  7.11 kB
+ℹ [ESM] dist/ole-vKk0oVWW.js.map   26.99 kB │ gzip:  7.16 kB
+ℹ [ESM] dist/ole-vKk0oVWW.js       14.71 kB │ gzip:  4.01 kB
+ℹ [ESM] dist/doc.d.ts               4.69 kB │ gzip:  1.87 kB
+ℹ [ESM] dist/node/index.d.ts        2.05 kB │ gzip:  0.77 kB
+ℹ [ESM] dist/index.d.ts             2.05 kB │ gzip:  0.77 kB
+ℹ [ESM] dist/index-BGCEEynh.d.ts   13.48 kB │ gzip:  4.79 kB
+ℹ [ESM] dist/index-CC3Exwrf.d.ts    6.00 kB │ gzip:  2.23 kB
+ℹ [ESM] 13 files, total: 580.50 kB
+✔ Build complete in 1805ms
+
+> check:package
+> npm run check:package --workspace packages/docsluice
+
+
+> docsluice@0.0.0 check:package
+> node ../../scripts/check-deps.test.mjs && node ../../scripts/check-deps.mjs && publint . && attw --pack . && size-limit
+
+✔ parses runtime packages from the ADR dependency table (3.142782ms)
+✔ rejects dependencies that are missing from the ADR allow-list (1.300713ms)
+✔ rejects unlisted optional dependencies (0.401597ms)
+✔ validates nonoptional peers and rejects disagreeing dependency specs (0.282095ms)
+✔ rejects nonoptional peer dependencies outside the ADR allow-list (0.231284ms)
+✔ ignores optional peers because npm does not install them by default (0.42622ms)
+✔ checks optional dependency and required peer lockfile specs and versions (0.482225ms)
+✔ requires exact runtime versions rather than ranges (0.401107ms)
+✔ resolves runtime lock versions from the workspace before hoisted dev packages (0.450321ms)
+✔ finds install lifecycle scripts in nested and scoped packages (14.603712ms)
+✔ finds packages that trigger npm’s implicit node-gyp install (3.351783ms)
+✔ finds binding.gyp and respects gypfile false (5.276224ms)
+✔ fails closed when node_modules is missing (1.007852ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 37.814271
+Runtime dependencies match ADR 0011 (1 declared).
+No installed package defines an install lifecycle script or triggers node-gyp.
+Running publint v0.3.25 for docsluice...
+Packing files with `npm pack`...
+Linting...
+All good!
+
+docsluice v0.0.0
+
+ No problems found 🌟
+
+
+"docsluice"
+
+node10: 🟢 
+node16 (from CJS): 🟢 (CJS)
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+
+***********************************
+
+"docsluice/node"
+
+node10: 🟢 
+node16 (from CJS): 🟢 (CJS)
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+
+***********************************
+
+"docsluice/doc"
+
+node10: 🟢 
+node16 (from CJS): 🟢 (CJS)
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+
+***********************************
+
+"docsluice/package.json"
+
+node10: 🟢 (JSON)
+node16 (from CJS): 🟢 (JSON)
+node16 (from ESM): 🟢 (JSON)
+bundler: 🟢 (JSON)
+
+***********************************
+- Adding to empty rolldown project
+✔ Adding to empty rolldown project
+  
+  Size limit: 50 kB
+  Size:       32.19 kB with all dependencies, minified and gzipped
+  
+
+> test:dist
+> npm run build && node --test packages/*/test-dist/*.test.mjs
+
+
+> build
+> npm run build --workspaces --if-present
+
+
+> docsluice@0.0.0 build
+> tsdown
+
+ℹ tsdown v0.23.0 powered by rolldown v1.2.13
+ℹ config file: /workspace/docsluice-package-e-48/packages/docsluice/tsdown.config.ts 
+ℹ entry: src/index.ts, src/node/index.ts, src/readers/doc/index.ts
+ℹ target: es2022
+ℹ tsconfig: tsconfig.json
+ℹ Build start
+ℹ Cleaning 27 files
+ℹ [CJS] dist/doc.cjs                14.29 kB │ gzip:  4.04 kB
+ℹ [CJS] dist/node/index.cjs          1.12 kB │ gzip:  0.39 kB
+ℹ [CJS] dist/index.cjs               1.12 kB │ gzip:  0.39 kB
+ℹ [CJS] dist/src-C3t2b5fT.cjs.map  310.16 kB │ gzip: 70.69 kB
+ℹ [CJS] dist/src-C3t2b5fT.cjs      159.35 kB │ gzip: 38.65 kB
+ℹ [CJS] dist/doc.cjs.map            27.56 kB │ gzip:  7.14 kB
+ℹ [CJS] dist/ole-BjSbMuL5.cjs.map   26.99 kB │ gzip:  7.16 kB
+ℹ [CJS] dist/ole-BjSbMuL5.cjs       15.60 kB │ gzip:  4.09 kB
+ℹ [CJS] 8 files, total: 556.20 kB
+ℹ [CJS] dist/doc.d.cts              4.69 kB │ gzip: 1.87 kB
+ℹ [CJS] dist/node/index.d.cts       2.06 kB │ gzip: 0.77 kB
+ℹ [CJS] dist/index.d.cts            2.05 kB │ gzip: 0.77 kB
+ℹ [CJS] dist/index-BGCEEynh.d.cts  13.48 kB │ gzip: 4.79 kB
+ℹ [CJS] dist/index-DdCGonpt.d.cts   6.00 kB │ gzip: 2.23 kB
+ℹ [CJS] 5 files, total: 28.28 kB
+✔ Build complete in 1628ms
+ℹ [ESM] dist/doc.js                14.18 kB │ gzip:  4.01 kB
+ℹ [ESM] dist/node/index.js          0.71 kB │ gzip:  0.34 kB
+ℹ [ESM] dist/index.js               0.71 kB │ gzip:  0.33 kB
+ℹ [ESM] dist/src-D3bDeFBs.js.map  309.57 kB │ gzip: 70.55 kB
+ℹ [ESM] dist/src-D3bDeFBs.js      157.91 kB │ gzip: 38.60 kB
+ℹ [ESM] dist/doc.js.map            27.45 kB │ gzip:  7.11 kB
+ℹ [ESM] dist/ole-vKk0oVWW.js.map   26.99 kB │ gzip:  7.16 kB
+ℹ [ESM] dist/ole-vKk0oVWW.js       14.71 kB │ gzip:  4.01 kB
+ℹ [ESM] dist/doc.d.ts               4.69 kB │ gzip:  1.87 kB
+ℹ [ESM] dist/node/index.d.ts        2.05 kB │ gzip:  0.77 kB
+ℹ [ESM] dist/index.d.ts             2.05 kB │ gzip:  0.77 kB
+ℹ [ESM] dist/index-BGCEEynh.d.ts   13.48 kB │ gzip:  4.79 kB
+ℹ [ESM] dist/index-CC3Exwrf.d.ts    6.00 kB │ gzip:  2.23 kB
+ℹ [ESM] 13 files, total: 580.50 kB
+✔ Build complete in 1665ms
+✔ ESM entry loads (22.476033ms)
+✔ CJS entry loads (13.834147ms)
+✔ node entry loads (1.301172ms)
+✔ DOC reader subpath loads lazily (1.556588ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 130.450646

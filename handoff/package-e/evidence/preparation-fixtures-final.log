@@ -1,0 +1,19 @@
+wrote 15 fixtures to /tmp/tmp6mz3h1nd/fixtures
+......E.
+======================================================================
+ERROR: test_fixtures (unittest.loader._FailedTest.test_fixtures)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_fixtures
+Traceback (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/package-e-preparation/images/test_fixtures.py", line 13, in <module>
+    import generate_fixtures
+ModuleNotFoundError: No module named 'generate_fixtures'
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.642s
+
+FAILED (errors=1)

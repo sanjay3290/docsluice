@@ -1,0 +1,29 @@
+
+ RUN  v5.0.3 /workspace/docsluice-package-e-46/packages/docsluice
+      Coverage enabled with v8
+
+
+ Test Files  1 passed (1)
+      Tests  36 passed (36)
+   Start at  17:50:51
+   Duration  476ms (transform 58%, tests 18%, import 15%, worker 9%)
+
+ % Coverage report from v8
+-----------|---------|----------|---------|---------|-------------------
+File       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-----------|---------|----------|---------|---------|-------------------
+All files  |    96.5 |    88.85 |     100 |   98.96 |                   
+ layout.ts |    96.5 |    88.85 |     100 |   98.96 | 115,133,342-343   
+-----------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 96.5% ( 414/429 )
+Branches     : 88.85% ( 255/287 )
+Functions    : 100% ( 32/32 )
+Lines        : 98.96% ( 383/387 )
+================================================================================
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

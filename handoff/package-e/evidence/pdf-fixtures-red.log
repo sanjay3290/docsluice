@@ -1,0 +1,14 @@
+test_generator_creates_independently_readable_and_deterministic_pdfs (test_fixtures.PdfFixtures.test_generator_creates_independently_readable_and_deterministic_pdfs) ... FAIL
+
+======================================================================
+FAIL: test_generator_creates_independently_readable_and_deterministic_pdfs (test_fixtures.PdfFixtures.test_generator_creates_independently_readable_and_deterministic_pdfs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/package-e-preparation/pdf-fixtures/test_fixtures.py", line 15, in test_generator_creates_independently_readable_and_deterministic_pdfs
+    self.assertTrue(script.is_file(), "PDF fixture generator is missing")
+AssertionError: False is not true : PDF fixture generator is missing
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

@@ -1,0 +1,257 @@
+
+> verify
+> npm run lint && npm run typecheck && npm run test && npm run build && npm run check:package && npm run test:dist
+
+
+> lint
+> eslint . && prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> typecheck
+> npm run typecheck --workspaces --if-present
+
+
+> docsluice@0.0.0 typecheck
+> tsc -p tsconfig.json && tsc -p src/node/tsconfig.json
+
+
+> test
+> npm run test --workspaces --if-present
+
+
+> docsluice@0.0.0 test
+> npm run schema:generate && vitest run
+
+
+> docsluice@0.0.0 schema:generate
+> node scripts/generate-schema.mjs
+
+
+ RUN  v5.0.3 /workspace/docsluice-package-e-combined-check/packages/docsluice
+
+
+ Test Files  38 passed (38)
+      Tests  732 passed (732)
+   Start at  18:00:51
+   Duration  12.68s (tests 85%, import 9%, transform 6%, worker 1%)
+
+    Isolate  38 workers spawned · ~139ms startup each (spawn + environment, per file)
+             at least ~1.62s faster with isolate: false — reuses workers across files instead of one per file
+
+
+> build
+> npm run build --workspaces --if-present
+
+
+> docsluice@0.0.0 build
+> npm run schema:generate && tsdown
+
+
+> docsluice@0.0.0 schema:generate
+> node scripts/generate-schema.mjs
+
+ℹ tsdown v0.23.0 powered by rolldown v1.2.13
+ℹ config file: /workspace/docsluice-package-e-combined-check/packages/docsluice/tsdown.config.ts 
+ℹ entry: src/index.ts, src/node/index.ts, src/readers/doc/index.ts
+ℹ target: es2022
+ℹ tsconfig: tsconfig.json
+ℹ Build start
+ℹ [CJS] dist/doc.cjs                   14.29 kB │ gzip:  4.05 kB
+ℹ [CJS] dist/node/index.cjs             1.36 kB │ gzip:  0.46 kB
+ℹ [CJS] dist/index.cjs                  1.36 kB │ gzip:  0.46 kB
+ℹ [CJS] dist/src-McVOuHV1.cjs.map     331.38 kB │ gzip: 75.31 kB
+ℹ [CJS] dist/src-McVOuHV1.cjs         170.48 kB │ gzip: 41.25 kB
+ℹ [CJS] dist/images-BsQKIYtT.cjs.map   36.57 kB │ gzip:  8.46 kB
+ℹ [CJS] dist/doc.cjs.map               27.56 kB │ gzip:  7.14 kB
+ℹ [CJS] dist/ole-DuPv0MNg.cjs.map      27.37 kB │ gzip:  7.27 kB
+ℹ [CJS] dist/images-BsQKIYtT.cjs       18.03 kB │ gzip:  4.48 kB
+ℹ [CJS] dist/ole-DuPv0MNg.cjs          15.99 kB │ gzip:  4.18 kB
+ℹ [CJS] 10 files, total: 644.38 kB
+ℹ [CJS] dist/node/index.d.cts         2.27 kB │ gzip: 0.86 kB
+ℹ [CJS] dist/index.d.cts              2.27 kB │ gzip: 0.86 kB
+ℹ [CJS] dist/doc.d.cts                0.24 kB │ gzip: 0.20 kB
+ℹ [CJS] dist/options-DctmQZv7.d.cts  20.52 kB │ gzip: 6.78 kB
+ℹ [CJS] dist/index-CmS5-ApM.d.cts     6.21 kB │ gzip: 2.32 kB
+ℹ [CJS] 5 files, total: 31.51 kB
+✔ Build complete in 979ms
+ℹ [ESM] dist/doc.js                   14.18 kB │ gzip:  4.00 kB
+ℹ [ESM] dist/node/index.js             0.89 kB │ gzip:  0.40 kB
+ℹ [ESM] dist/index.js                  0.88 kB │ gzip:  0.40 kB
+ℹ [ESM] dist/src-Bbt1aE9P.js.map     330.72 kB │ gzip: 75.14 kB
+ℹ [ESM] dist/src-Bbt1aE9P.js         168.72 kB │ gzip: 41.19 kB
+ℹ [ESM] dist/images-Vdu3m8mj.js.map   36.57 kB │ gzip:  8.46 kB
+ℹ [ESM] dist/doc.js.map               27.45 kB │ gzip:  7.11 kB
+ℹ [ESM] dist/ole-BPia7moB.js.map      27.36 kB │ gzip:  7.26 kB
+ℹ [ESM] dist/images-Vdu3m8mj.js       18.01 kB │ gzip:  4.48 kB
+ℹ [ESM] dist/ole-BPia7moB.js          14.99 kB │ gzip:  4.10 kB
+ℹ [ESM] dist/node/index.d.ts           2.27 kB │ gzip:  0.86 kB
+ℹ [ESM] dist/index.d.ts                2.27 kB │ gzip:  0.86 kB
+ℹ [ESM] dist/doc.d.ts                  0.24 kB │ gzip:  0.20 kB
+ℹ [ESM] dist/options-DctmQZv7.d.ts    20.52 kB │ gzip:  6.78 kB
+ℹ [ESM] dist/index-BITLqgml.d.ts       6.21 kB │ gzip:  2.31 kB
+ℹ [ESM] 15 files, total: 671.28 kB
+✔ Build complete in 1030ms
+
+> check:package
+> npm run check:package --workspace packages/docsluice
+
+
+> docsluice@0.0.0 check:package
+> node ../../scripts/check-deps.test.mjs && node ../../scripts/check-deps.mjs && publint . && attw --pack . && size-limit
+
+✔ parses runtime packages from the ADR dependency table (2.868739ms)
+✔ rejects dependencies that are missing from the ADR allow-list (1.054117ms)
+✔ rejects unlisted optional dependencies (0.358278ms)
+✔ validates nonoptional peers and rejects disagreeing dependency specs (0.312978ms)
+✔ rejects nonoptional peer dependencies outside the ADR allow-list (0.209075ms)
+✔ ignores optional peers because npm does not install them by default (0.195129ms)
+✔ checks optional dependency and required peer lockfile specs and versions (0.430261ms)
+✔ requires exact runtime versions rather than ranges (0.240646ms)
+✔ resolves runtime lock versions from the workspace before hoisted dev packages (0.443909ms)
+✔ finds install lifecycle scripts in nested and scoped packages (14.162314ms)
+✔ finds packages that trigger npm’s implicit node-gyp install (3.307899ms)
+✔ finds binding.gyp and respects gypfile false (4.609005ms)
+✔ fails closed when node_modules is missing (0.872903ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 36.043141
+Runtime dependencies match ADR 0011 (1 declared).
+No installed package defines an install lifecycle script or triggers node-gyp.
+Running publint v0.3.25 for docsluice...
+Packing files with `npm pack`...
+Linting...
+All good!
+
+docsluice v0.0.0
+
+ No problems found 🌟
+
+
+"docsluice"
+
+node10: 🟢 
+node16 (from CJS): 🟢 (CJS)
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+
+***********************************
+
+"docsluice/node"
+
+node10: 🟢 
+node16 (from CJS): 🟢 (CJS)
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+
+***********************************
+
+"docsluice/doc"
+
+node10: 🟢 
+node16 (from CJS): 🟢 (CJS)
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+
+***********************************
+
+"docsluice/schema.json"
+
+node10: 🟢 (JSON)
+node16 (from CJS): 🟢 (JSON)
+node16 (from ESM): 🟢 (JSON)
+bundler: 🟢 (JSON)
+
+***********************************
+
+"docsluice/package.json"
+
+node10: 🟢 (JSON)
+node16 (from CJS): 🟢 (JSON)
+node16 (from ESM): 🟢 (JSON)
+bundler: 🟢 (JSON)
+
+***********************************
+- Adding to empty rolldown project
+✔ Adding to empty rolldown project
+  
+  Size limit: 50 kB
+  Size:       37.23 kB with all dependencies, minified and gzipped
+  
+
+> test:dist
+> npm run build && node --test packages/*/test-dist/*.test.mjs
+
+
+> build
+> npm run build --workspaces --if-present
+
+
+> docsluice@0.0.0 build
+> npm run schema:generate && tsdown
+
+
+> docsluice@0.0.0 schema:generate
+> node scripts/generate-schema.mjs
+
+ℹ tsdown v0.23.0 powered by rolldown v1.2.13
+ℹ config file: /workspace/docsluice-package-e-combined-check/packages/docsluice/tsdown.config.ts 
+ℹ entry: src/index.ts, src/node/index.ts, src/readers/doc/index.ts
+ℹ target: es2022
+ℹ tsconfig: tsconfig.json
+ℹ Build start
+ℹ Cleaning 31 files
+ℹ [CJS] dist/doc.cjs                   14.29 kB │ gzip:  4.05 kB
+ℹ [CJS] dist/node/index.cjs             1.36 kB │ gzip:  0.46 kB
+ℹ [CJS] dist/index.cjs                  1.36 kB │ gzip:  0.46 kB
+ℹ [CJS] dist/src-McVOuHV1.cjs.map     331.38 kB │ gzip: 75.31 kB
+ℹ [CJS] dist/src-McVOuHV1.cjs         170.48 kB │ gzip: 41.25 kB
+ℹ [CJS] dist/images-BsQKIYtT.cjs.map   36.57 kB │ gzip:  8.46 kB
+ℹ [CJS] dist/doc.cjs.map               27.56 kB │ gzip:  7.14 kB
+ℹ [CJS] dist/ole-DuPv0MNg.cjs.map      27.37 kB │ gzip:  7.27 kB
+ℹ [CJS] dist/images-BsQKIYtT.cjs       18.03 kB │ gzip:  4.48 kB
+ℹ [CJS] dist/ole-DuPv0MNg.cjs          15.99 kB │ gzip:  4.18 kB
+ℹ [CJS] 10 files, total: 644.38 kB
+ℹ [CJS] dist/node/index.d.cts         2.27 kB │ gzip: 0.86 kB
+ℹ [CJS] dist/index.d.cts              2.27 kB │ gzip: 0.86 kB
+ℹ [CJS] dist/doc.d.cts                0.24 kB │ gzip: 0.20 kB
+ℹ [CJS] dist/options-DctmQZv7.d.cts  20.52 kB │ gzip: 6.78 kB
+ℹ [CJS] dist/index-CmS5-ApM.d.cts     6.21 kB │ gzip: 2.32 kB
+ℹ [CJS] 5 files, total: 31.51 kB
+✔ Build complete in 1102ms
+ℹ [ESM] dist/doc.js                   14.18 kB │ gzip:  4.00 kB
+ℹ [ESM] dist/node/index.js             0.89 kB │ gzip:  0.40 kB
+ℹ [ESM] dist/index.js                  0.88 kB │ gzip:  0.40 kB
+ℹ [ESM] dist/src-Bbt1aE9P.js.map     330.72 kB │ gzip: 75.14 kB
+ℹ [ESM] dist/src-Bbt1aE9P.js         168.72 kB │ gzip: 41.19 kB
+ℹ [ESM] dist/images-Vdu3m8mj.js.map   36.57 kB │ gzip:  8.46 kB
+ℹ [ESM] dist/doc.js.map               27.45 kB │ gzip:  7.11 kB
+ℹ [ESM] dist/ole-BPia7moB.js.map      27.36 kB │ gzip:  7.26 kB
+ℹ [ESM] dist/images-Vdu3m8mj.js       18.01 kB │ gzip:  4.48 kB
+ℹ [ESM] dist/ole-BPia7moB.js          14.99 kB │ gzip:  4.10 kB
+ℹ [ESM] dist/node/index.d.ts           2.27 kB │ gzip:  0.86 kB
+ℹ [ESM] dist/index.d.ts                2.27 kB │ gzip:  0.86 kB
+ℹ [ESM] dist/doc.d.ts                  0.24 kB │ gzip:  0.20 kB
+ℹ [ESM] dist/options-DctmQZv7.d.ts    20.52 kB │ gzip:  6.78 kB
+ℹ [ESM] dist/index-BITLqgml.d.ts       6.21 kB │ gzip:  2.31 kB
+ℹ [ESM] 15 files, total: 671.28 kB
+✔ Build complete in 1128ms
+✔ ESM entry loads (23.621026ms)
+✔ CJS entry loads (11.618719ms)
+✔ JSON Schema package export loads (0.730511ms)
+✔ node entry loads (1.069864ms)
+✔ DOC reader subpath loads lazily (1.156027ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 111.125344

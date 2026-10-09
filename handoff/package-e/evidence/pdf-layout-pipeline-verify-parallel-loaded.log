@@ -1,0 +1,64 @@
+
+> verify
+> npm run lint && npm run typecheck && npm run test && npm run build && npm run check:package && npm run test:dist
+
+
+> lint
+> eslint . && prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> typecheck
+> npm run typecheck --workspaces --if-present
+
+
+> docsluice@0.0.0 typecheck
+> tsc -p tsconfig.json && tsc -p src/node/tsconfig.json
+
+
+> test
+> npm run test --workspaces --if-present
+
+
+> docsluice@0.0.0 test
+> vitest run
+
+
+ RUN  v5.0.3 /workspace/docsluice-package-e-46/packages/docsluice
+
+ ❯ test/zip/open-zip.test.ts (30 tests | 1 failed) 19702ms
+   ❯ openZip (30)
+     × reads a 1 MiB incompressible DEFLATE member within the ZIP throughput guard 12027ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/zip/open-zip.test.ts > openZip > reads a 1 MiB incompressible DEFLATE member within the ZIP throughput guard
+Error: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ test/zip/open-zip.test.ts:50:3
+     48|   });
+     49|
+     50|   it('reads a 1 MiB incompressible DEFLATE member within the ZIP throu…
+       |   ^
+     51|     const data = new Uint8Array(1024 * 1024);
+     52|     let state = 0x12345678;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 22 passed (23)
+      Tests  1 failed | 493 passed (494)
+   Start at  16:59:44
+   Duration  33.19s (tests 91%, import 5%, transform 4%)
+
+    Isolate  23 workers spawned · ~366ms startup each (spawn + environment, per file)
+             at least ~2.44s faster with isolate: false — reuses workers across files instead of one per file
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /workspace/docsluice-package-e-46/packages/docsluice
+npm error workspace docsluice@0.0.0
+npm error location /workspace/docsluice-package-e-46/packages/docsluice
+npm error command failed
+npm error command sh -c vitest run

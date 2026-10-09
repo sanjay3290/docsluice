@@ -1,0 +1,12 @@
+wrote 15 fixtures to /tmp/tmp_epf5me8/fixtures
+test_all_fixtures_are_below_cap_and_have_cc0_provenance (test_fixtures.ArchiveFixtureTests.test_all_fixtures_are_below_cap_and_have_cc0_provenance) ... ok
+test_generation_is_byte_deterministic (test_fixtures.ArchiveFixtureTests.test_generation_is_byte_deterministic) ... ok
+test_gzip_single_multi_member_and_optional_header_cases (test_fixtures.ArchiveFixtureTests.test_gzip_single_multi_member_and_optional_header_cases) ... ok
+test_mixed_zip_preserves_order_and_contains_required_entries (test_fixtures.ArchiveFixtureTests.test_mixed_zip_preserves_order_and_contains_required_entries) ... ok
+test_tar_variants_and_malformed_structures (test_fixtures.ArchiveFixtureTests.test_tar_variants_and_malformed_structures) ... ok
+test_zip_security_and_scale_shapes (test_fixtures.ArchiveFixtureTests.test_zip_security_and_scale_shapes) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.289s
+
+OK

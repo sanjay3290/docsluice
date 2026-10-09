@@ -1,0 +1,21 @@
+
+> docsluice@0.0.0 test
+> vitest run --exclude test/readers/**
+
+
+ RUN  v5.0.3 /workspace/docsluice-package-e/packages/docsluice
+
+
+ Test Files  14 passed (14)
+      Tests  285 passed (285)
+   Start at  16:06:17
+   Duration  5.44s (tests 69%, import 18%, transform 12%, worker 1%)
+
+    Isolate  14 workers spawned · ~157ms startup each (spawn + environment, per file)
+             at least ~575ms faster with isolate: false — reuses workers across files instead of one per file
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

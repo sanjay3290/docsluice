@@ -1,0 +1,81 @@
+
+Suite: archive
+wrote 15 fixtures to /tmp/tmp4tio12rs/fixtures
+test_all_fixtures_are_below_cap_and_have_cc0_provenance (test_fixtures.ArchiveFixtureTests.test_all_fixtures_are_below_cap_and_have_cc0_provenance) ... ok
+test_generation_is_byte_deterministic (test_fixtures.ArchiveFixtureTests.test_generation_is_byte_deterministic) ... ok
+test_gzip_single_multi_member_and_optional_header_cases (test_fixtures.ArchiveFixtureTests.test_gzip_single_multi_member_and_optional_header_cases) ... ok
+test_mixed_zip_preserves_order_and_contains_required_entries (test_fixtures.ArchiveFixtureTests.test_mixed_zip_preserves_order_and_contains_required_entries) ... ok
+test_tar_variants_and_malformed_structures (test_fixtures.ArchiveFixtureTests.test_tar_variants_and_malformed_structures) ... ok
+test_zip_security_and_scale_shapes (test_fixtures.ArchiveFixtureTests.test_zip_security_and_scale_shapes) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.337s
+
+OK
+
+Suite: images
+test_generator_is_deterministic (test_fixtures.FixtureTests.test_generator_is_deterministic) ... ok
+test_hostile_tiff_shapes_are_intentional (test_fixtures.FixtureTests.test_hostile_tiff_shapes_are_intentional) ... ok
+test_jpeg_is_labeled_as_metadata_structure_not_complete_photo (test_fixtures.FixtureTests.test_jpeg_is_labeled_as_metadata_structure_not_complete_photo) ... ok
+test_png_and_gif_are_small_complete_images (test_fixtures.FixtureTests.test_png_and_gif_are_small_complete_images) ... ok
+test_tiff_endianness_and_metadata_fields (test_fixtures.FixtureTests.test_tiff_endianness_and_metadata_fields) ... ok
+test_webp_chunk_headers_and_exif_flag (test_fixtures.FixtureTests.test_webp_chunk_headers_and_exif_flag) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.005s
+
+OK
+
+Suite: pdf-fixtures
+test_generator_creates_independently_readable_and_deterministic_pdfs (test_fixtures.PdfFixtures.test_generator_creates_independently_readable_and_deterministic_pdfs) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.370s
+
+OK
+
+Suite: pdf-fixtures/advanced
+test_advanced_fixture_source_facts (test_fixtures.AdvancedPdfFixtureTests.test_advanced_fixture_source_facts) ... ok
+test_poppler_passwords_and_extracted_text (test_fixtures.AdvancedPdfFixtureTests.test_poppler_passwords_and_extracted_text) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.205s
+
+OK
+
+Suite: pdf-fixtures/layout
+test_deterministic_generation_and_cc0_sidecar (test_fixtures.LayoutPdfFixtures.test_deterministic_generation_and_cc0_sidecar) ... ok
+test_manifest_is_proposal_not_extraction_verified (test_fixtures.LayoutPdfFixtures.test_manifest_is_proposal_not_extraction_verified) ... ok
+test_optional_poppler_independent_rendered_text_order_facts (test_fixtures.LayoutPdfFixtures.test_optional_poppler_independent_rendered_text_order_facts) ... ok
+test_pdf_structure_geometry_text_operators_and_source_facts (test_fixtures.LayoutPdfFixtures.test_pdf_structure_geometry_text_operators_and_source_facts) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.024s
+
+OK
+
+Suite: vsdx
+test_baseline_zip_integrity_and_required_parts (test_fixtures.FixtureStructureTests.test_baseline_zip_integrity_and_required_parts) ... ok
+test_duplicate_id_and_bounded_malformed_xml_are_present (test_fixtures.FixtureStructureTests.test_duplicate_id_and_bounded_malformed_xml_are_present) ... ok
+test_hash_index_matches_zip_members_and_archives (test_fixtures.FixtureStructureTests.test_hash_index_matches_zip_members_and_archives) ... ok
+test_hostile_entity_candidate_is_inspected_as_bytes_only (test_fixtures.FixtureStructureTests.test_hostile_entity_candidate_is_inspected_as_bytes_only) ... ok
+test_missing_relationship_and_traversal_are_explicit_inputs (test_fixtures.FixtureStructureTests.test_missing_relationship_and_traversal_are_explicit_inputs) ... ok
+test_nested_shapes_multiline_unicode_and_connector_facts (test_fixtures.FixtureStructureTests.test_nested_shapes_multiline_unicode_and_connector_facts) ... ok
+test_pages_order_resolves_through_relationships_not_zip_order (test_fixtures.FixtureStructureTests.test_pages_order_resolves_through_relationships_not_zip_order) ... ok
+test_regeneration_is_byte_deterministic (test_fixtures.FixtureStructureTests.test_regeneration_is_byte_deterministic) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.007s
+
+OK
+
+Suite: pdf/advanced-probe
+test_expected_sourcefacts_and_attachment_structure (test_attachments.AttachmentFixtureTests.test_expected_sourcefacts_and_attachment_structure) ... ok
+test_generator_repeats_identical_pdf_and_nested_zip (test_attachments.AttachmentFixtureTests.test_generator_repeats_identical_pdf_and_nested_zip) ... ok
+test_pypdf_can_read_embedded_payloads (test_attachments.AttachmentFixtureTests.test_pypdf_can_read_embedded_payloads) ... ok
+test_xref_entries_point_at_their_indirect_objects (test_attachments.AttachmentFixtureTests.test_xref_entries_point_at_their_indirect_objects) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.268s
+
+OK
