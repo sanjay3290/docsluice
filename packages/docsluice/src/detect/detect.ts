@@ -1,0 +1,240 @@
+import { Budget } from '../core/budget.js';
+import { EncryptedError } from '../core/errors.js';
+import { readInput } from '../core/input.js';
+import { resolveLimits } from '../core/limits.js';
+import type { DetectResult, FormatId } from '../core/model.js';
+import type { ExtractOptions } from '../core/options.js';
+import { WarningSink } from '../core/warnings.js';
+import { openCfb } from '../ole/index.js';
+import type { CfbArchive } from '../ole/index.js';
+import type { ZipArchive } from '../zip/index.js';
+import { decodeText, detectEncoding } from './encoding.js';
+import type { TextEncoding } from './encoding.js';
+import { formatForFilename, formatForMimeType, mimeTypeForFormat } from './mime.js';
+import { sniffMagic } from './sniff.js';
+import { detectTextKindCandidates } from './text-kind.js';
+import { detectZipKind } from './zip-kind.js';
+
+const TEXT_SAMPLE_BYTES = 8 * 1024;
+
+export interface FormatResolution {
+  readonly result: DetectResult;
+  readonly zip?: ZipArchive;
+  readonly cfb?: CfbArchive;
+}
+
+type FormatHints = Pick<ExtractOptions, 'filename' | 'mimeType' | 'format'>;
+
+/**
+ * Detect a format without parsing its document contents.
+ *
+ * Blob and stream inputs are normalized to bytes under the input-byte limit.
+ * Format probes inspect only bounded prefixes plus ZIP/CFB structural indexes
+ * and small ZIP markers.
+ */
+export async function detect(input: unknown, options: ExtractOptions = {}): Promise<DetectResult> {
+  const warnings = new WarningSink({ strict: options.strict });
+  const budget = new Budget(resolveLimits(options.limits), {
+    onLimit: options.onLimit,
+    signal: options.signal,
+    warnings,
+  });
+  const bytes = await readInput(input, budget);
+  const resolved = await resolveFormat(bytes, options, budget);
+  return resolved.result;
+}
+
+/** Resolve an already-read byte array; the caller's Budget already includes input bytes. */
+export async function resolveFormat(
+  bytes: Uint8Array,
+  options: FormatHints,
+  budget: Budget,
+): Promise<FormatResolution> {
+  budget.tick();
+
+  if (options.format !== undefined) {
+    return {
+      result: {
+        format: options.format,
+        mimeType: mimeTypeForFormat(options.format),
+        confidence: 1,
+      },
+    };
+  }
+
+  const magic = hasTextBom(bytes) ? { kind: null, mimeType: null, confidence: 0 } : sniffMagic(bytes);
+  if (magic.kind === 'zip') {
+    const archive = await detectZipKind(bytes, budget);
+    const result = makeResult(archive.format, magic.confidence);
+    warnIfMismatched(result.format, options, budget);
+    return { result, zip: archive.zip };
+  }
+
+  if (magic.kind === 'ole') {
+    const archive = openCfb(bytes, budget);
+    const format = classifyCfb(archive.entries, budget);
+    const result =
+      format === 'ole' ? makeResult(format, magic.confidence, magic.mimeType) : makeResult(format, 0.98);
+    warnIfMismatched(result.format, options, budget);
+    return { result, cfb: archive };
+  }
+
+  if (magic.kind !== null) {
+    const result = makeResult(magic.kind, magic.confidence, magic.mimeType);
+    warnIfMismatched(result.format, options, budget);
+    return { result };
+  }
+
+  const encoding = detectEncoding(bytes);
+  if (!encoding.isText || encoding.encoding === 'unsupported') {
+    const result = { format: 'unknown', mimeType: mimeTypeForFormat('unknown'), confidence: 0 } as const;
+    warnIfMismatched(result.format, options, budget);
+    return { result };
+  }
+
+  if (encoding.warning) {
+    budget.warnings.add({
+      code: encoding.warning,
+      message: 'The text encoding was inferred as Windows-1252 because the sample is not valid UTF-8.',
+    });
+  }
+  const text = decodeText(getTextPrefix(bytes, encoding.encoding), encoding.encoding);
+  const candidates = detectTextKindCandidates(text);
+  let format = candidates[0] ?? 'txt';
+  const filenameHint = formatForFilename(options.filename);
+  const mimeHint = formatForMimeType(options.mimeType);
+  let selectedByTie = false;
+  let tiedFormats: ReadonlySet<FormatId> | undefined;
+  if (
+    candidates.length === 1 &&
+    format === 'txt' &&
+    (filenameHint === 'markdown' || mimeHint === 'markdown') &&
+    (filenameHint === undefined || filenameHint === 'txt' || filenameHint === 'markdown') &&
+    (mimeHint === undefined || mimeHint === 'txt' || mimeHint === 'markdown')
+  ) {
+    format = 'markdown';
+    selectedByTie = true;
+    tiedFormats = new Set(['txt', 'markdown']);
+  } else if (
+    candidates.length > 1 &&
+    candidates.every((candidate) => candidate === 'csv' || candidate === 'tsv') &&
+    (filenameHint === undefined || candidates.includes(filenameHint)) &&
+    (mimeHint === undefined || candidates.includes(mimeHint))
+  ) {
+    const hints = new Set([filenameHint, mimeHint].filter((hint): hint is FormatId => hint !== undefined));
+    if (hints.size === 1) {
+      format = hints.values().next().value ?? format;
+      selectedByTie = true;
+      tiedFormats = new Set(candidates);
+    }
+  }
+
+  const result: DetectResult = {
+    format,
+    mimeType: mimeTypeForFormat(format),
+    confidence: format === 'txt' ? 0.65 : selectedByTie ? 0.55 : 0.9,
+    encoding: encoding.encoding,
+  };
+  warnIfMismatched(result.format, options, budget, tiedFormats);
+  return { result };
+}
+
+function makeResult(format: FormatId, confidence: number, sniffedMimeType?: string | null): DetectResult {
+  return {
+    format,
+    mimeType: sniffedMimeType ?? mimeTypeForFormat(format),
+    confidence,
+  };
+}
+
+function hasTextBom(bytes: Uint8Array): boolean {
+  return (
+    (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) ||
+    (bytes[0] === 0xff && bytes[1] === 0xfe) ||
+    (bytes[0] === 0xfe && bytes[1] === 0xff)
+  );
+}
+
+function getTextPrefix(bytes: Uint8Array, encoding: TextEncoding): Uint8Array {
+  let end = Math.min(bytes.length, TEXT_SAMPLE_BYTES);
+  if (encoding === 'utf-8') {
+    let sequenceStart = end - 1;
+    while (sequenceStart >= Math.max(0, end - 4) && isUtf8Continuation(bytes[sequenceStart] ?? 0)) {
+      sequenceStart -= 1;
+    }
+    const lead = bytes[sequenceStart] ?? 0;
+    const expectedLength = utf8SequenceLength(lead);
+    const presentLength = end - sequenceStart;
+    if (expectedLength > presentLength) {
+      end = Math.min(bytes.length, end + expectedLength - presentLength);
+    }
+  } else if (encoding === 'utf-16le' || encoding === 'utf-16be') {
+    end -= end % 2;
+    if (end >= 2 && bytes.length - end >= 2) {
+      const last = readUtf16Unit(bytes, end - 2, encoding);
+      const next = readUtf16Unit(bytes, end, encoding);
+      if (last >= 0xd800 && last <= 0xdbff && next >= 0xdc00 && next <= 0xdfff) end += 2;
+    }
+  }
+  return bytes.subarray(0, end);
+}
+
+function isUtf8Continuation(byte: number): boolean {
+  return (byte & 0xc0) === 0x80;
+}
+
+function utf8SequenceLength(lead: number): number {
+  if (lead >= 0xc2 && lead <= 0xdf) return 2;
+  if (lead >= 0xe0 && lead <= 0xef) return 3;
+  if (lead >= 0xf0 && lead <= 0xf4) return 4;
+  return 1;
+}
+
+function readUtf16Unit(bytes: Uint8Array, offset: number, encoding: 'utf-16le' | 'utf-16be'): number {
+  const first = bytes[offset] ?? 0;
+  const second = bytes[offset + 1] ?? 0;
+  return encoding === 'utf-16le' ? first | (second << 8) : (first << 8) | second;
+}
+
+function classifyCfb(entries: CfbArchive['entries'], budget: Budget): FormatId {
+  const identities = new Set<FormatId>();
+  let hasEncryptedPackage = false;
+
+  for (const entry of entries) {
+    budget.tick();
+    if (entry.type !== 'stream' || entry.path.includes('/')) continue;
+    if (entry.path === 'EncryptedPackage') hasEncryptedPackage = true;
+    else if (entry.path === 'WordDocument') identities.add('doc');
+    else if (entry.path === 'Workbook' || entry.path === 'Book') identities.add('xls');
+    else if (entry.path === 'PowerPoint Document') identities.add('ppt');
+    else if (entry.path === '__properties_version1.0') identities.add('msg');
+  }
+
+  if (hasEncryptedPackage) throw new EncryptedError('unsupported-encryption');
+  if (identities.size !== 1) return 'ole';
+  return identities.values().next().value ?? 'ole';
+}
+
+function warnIfMismatched(
+  detected: FormatId,
+  options: FormatHints,
+  budget: Budget,
+  tiedFormats?: ReadonlySet<FormatId>,
+): void {
+  const filenameHint = formatForFilename(options.filename);
+  const mimeHint = formatForMimeType(options.mimeType);
+  const differs = (hint: FormatId | undefined): boolean => {
+    if (hint === undefined || hint === detected) return false;
+    if (tiedFormats?.has(hint)) return false;
+    return true;
+  };
+  const mismatches: string[] = [];
+  if (differs(filenameHint)) mismatches.push(`filename format "${filenameHint}"`);
+  if (differs(mimeHint)) mismatches.push(`MIME type format "${mimeHint}"`);
+  if (mismatches.length === 0) return;
+
+  budget.warnings.add({
+    code: 'FORMAT_MISMATCH',
+    message: `Detected format "${detected}" disagrees with ${mismatches.join(' and ')}.`,
+  });
+}
