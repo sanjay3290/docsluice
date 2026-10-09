@@ -1,0 +1,117 @@
+{
+  "format": "ppt",
+  "mimeType": "application/vnd.ms-powerpoint",
+  "metadata": {},
+  "features": {
+    "hasMacros": false,
+    "hasExternalLinks": false,
+    "hasEmbeddedFiles": false,
+    "isEncrypted": false,
+    "hasJavaScript": false
+  },
+  "blocks": [
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "heading",
+          "level": 1,
+          "text": "TEN FIRST",
+          "loc": {
+            "slide": 1
+          }
+        },
+        {
+          "kind": "paragraph",
+          "text": "Slide one body: Alpha",
+          "loc": {
+            "slide": 1
+          }
+        },
+        {
+          "kind": "note",
+          "role": "speaker-notes",
+          "text": "Speaker note one: note ten",
+          "loc": {
+            "slide": 1
+          }
+        }
+      ],
+      "loc": {
+        "slide": 1
+      },
+      "title": "TEN FIRST"
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "TWO SECOND",
+          "loc": {
+            "slide": 2
+          }
+        },
+        {
+          "kind": "paragraph",
+          "text": "Slide two body: café Ω 中",
+          "loc": {
+            "slide": 2
+          }
+        },
+        {
+          "kind": "note",
+          "role": "speaker-notes",
+          "text": "Speaker note two: note two",
+          "loc": {
+            "slide": 2
+          }
+        }
+      ],
+      "loc": {
+        "slide": 2
+      }
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "ONE LAST",
+          "loc": {
+            "slide": 3
+          }
+        },
+        {
+          "kind": "paragraph",
+          "text": "Slide three body: Omega",
+          "loc": {
+            "slide": 3
+          }
+        },
+        {
+          "kind": "note",
+          "role": "speaker-notes",
+          "text": "Speaker note three: note one",
+          "loc": {
+            "slide": 3
+          }
+        }
+      ],
+      "loc": {
+        "slide": 3
+      }
+    }
+  ],
+  "children": [],
+  "warnings": [],
+  "stats": {
+    "bytesRead": 611840,
+    "durationMs": 0,
+    "truncated": false,
+    "needsOcr": false
+  }
+}

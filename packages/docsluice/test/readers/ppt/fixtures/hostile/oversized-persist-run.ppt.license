@@ -1,0 +1,3 @@
+SPDX-License-Identifier: CC0-1.0
+Source: deterministic mutation of the self-authored LibreOffice order-title-notes.ppt by ../build_hostile.py.
+Notes: issue #85; hostile PPT oversized-persist-run; contains no private or third-party content.
