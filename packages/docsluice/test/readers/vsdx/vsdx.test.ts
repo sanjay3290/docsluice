@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { AbortError, LimitExceededError } from '../../../src/core/errors.js';
 import { Budget } from '../../../src/core/budget.js';
 import { DocBuilder } from '../../../src/core/builder.js';
-import { createExtractor } from '../../../src/core/extract.js';
+import { createExtractor, resolveOptions } from '../../../src/core/extract.js';
 import { resolveLimits } from '../../../src/core/limits.js';
 import type { DEFAULT_LIMITS } from '../../../src/core/limits.js';
 import type { ExtractOptions, ResolvedOptions } from '../../../src/core/options.js';
@@ -43,6 +43,7 @@ function directContext(
   const warnings = new WarningSink();
   const budget = new Budget(resolveLimits(limits), { onLimit, warnings });
   const options: ResolvedOptions = {
+    ...resolveOptions(),
     limits: budget.limits,
     onLimit,
     strict: false,
