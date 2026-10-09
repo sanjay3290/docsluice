@@ -77,8 +77,12 @@ major version throws `PluginContractError` with code `PLUGIN_INCOMPATIBLE`.
 Invalid descriptors and invalid probe results fail with generic errors that do
 not quote plugin-provided values.
 
-If a plugin reader throws, extraction raises `CorruptFileError` and preserves
-the original error as `cause`. The public error message does not include that
-cause's message. Plugin readers should throw only when they cannot produce a
-useful result; when part of a file can be read, emit it and add an
-`UNREADABLE_PART` warning instead.
+If a plugin reader throws an ordinary error, extraction raises
+`CorruptFileError` and preserves the original error as `cause`. The public
+error message does not include that cause's message. docsluice structural
+errors such as `LimitExceededError`, `StrictModeError`, `TimeoutError`, and
+`AbortError` keep their original codes so callers can handle limits,
+cancellation, and strict mode consistently for built-in and plugin readers.
+Plugin readers should throw only when they cannot produce a useful result;
+when part of a file can be read, emit it and add an `UNREADABLE_PART` warning
+instead.

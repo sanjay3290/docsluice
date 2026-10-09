@@ -305,9 +305,6 @@ export function createExtractor(
         try {
           await reader.read(ctx);
         } catch (error) {
-          if (activeRegistry.isPlugin(resolution.result.format)) {
-            throw new CorruptFileError(undefined, { cause: error });
-          }
           if (error instanceof DocsluiceError) throw error;
           throw new CorruptFileError(undefined, { cause: error });
         }

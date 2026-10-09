@@ -211,10 +211,6 @@ export class ReaderRegistry {
     );
   }
 
-  isPlugin(id: FormatId): boolean {
-    return this.#registrations.get(id)?.plugin === true;
-  }
-
   load(id: FormatId): Promise<Reader> | undefined {
     const registration = this.#registrations.get(id);
     if (!registration) return undefined;

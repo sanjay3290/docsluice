@@ -1,5 +1,13 @@
 import { expect, it, vi } from 'vitest';
-import { CorruptFileError, PluginContractError, extract, registerFormat } from '../../src/index.js';
+import {
+  CorruptFileError,
+  LimitExceededError,
+  PluginContractError,
+  StrictModeError,
+  TimeoutError,
+  extract,
+  registerFormat,
+} from '../../src/index.js';
 import type { FormatPlugin } from '../../src/core/registry.js';
 import { createRegistry } from '../../src/core/registry.js';
 import { toText } from '../../src/render/text.js';
@@ -164,6 +172,64 @@ it('wraps plugin reader failures as content-safe corrupt-file errors and preserv
       !error.message.includes('private document text')
     );
   });
+});
+
+it('preserves output budget errors raised by a plugin reader', async () => {
+  const registry = createRegistry();
+  registry.registerFormat(
+    markerPlugin({
+      read(ctx) {
+        ctx.out.paragraph('over the output limit');
+        return Promise.resolve();
+      },
+    }),
+  );
+
+  await expect(
+    extract(bytes(0xfa, 0x01), { registry, onLimit: 'throw', limits: { outputChars: 3 } }),
+  ).rejects.toBeInstanceOf(LimitExceededError);
+});
+
+it('preserves strict warning errors raised by a plugin reader', async () => {
+  const registry = createRegistry();
+  registry.registerFormat(
+    markerPlugin({
+      read(ctx) {
+        ctx.warnings.add({ code: 'UNREADABLE_PART', message: 'A part was skipped.' });
+        return Promise.resolve();
+      },
+    }),
+  );
+
+  await expect(extract(bytes(0xfa, 0x01), { registry, strict: ['UNREADABLE_PART'] })).rejects.toBeInstanceOf(
+    StrictModeError,
+  );
+});
+
+it('preserves timeouts raised by a plugin reader budget tick', async () => {
+  let readerEntered = false;
+  let now = 0;
+  const clock = vi.spyOn(performance, 'now').mockImplementation(() => now);
+  try {
+    const registry = createRegistry();
+    registry.registerFormat(
+      markerPlugin({
+        read(ctx) {
+          readerEntered = true;
+          now = 200;
+          for (let index = 0; index < 2_048; index += 1) ctx.budget.tick();
+          return Promise.resolve();
+        },
+      }),
+    );
+
+    await expect(extract(bytes(0xfa, 0x01), { registry, limits: { timeMs: 100 } })).rejects.toBeInstanceOf(
+      TimeoutError,
+    );
+    expect(readerEntered).toBe(true);
+  } finally {
+    clock.mockRestore();
+  }
 });
 
 it('rejects malformed plugin descriptors without quoting plugin-supplied values', () => {
