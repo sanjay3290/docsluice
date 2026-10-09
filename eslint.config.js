@@ -2,6 +2,7 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import regexp from 'eslint-plugin-regexp';
+import noComputedObjectKey from './tools/eslint-rules/no-computed-object-key.js';
 
 const NODE_GLOBALS = [
   'Buffer',
@@ -42,7 +43,12 @@ export default tseslint.config(
     // RT-2: the core uses only web-standard APIs. Node-only code lives in src/node.
     files: ['packages/docsluice/src/**/*.ts'],
     ignores: ['packages/docsluice/src/node/**'],
+    plugins: {
+      docsluice: { rules: { 'no-computed-object-key': noComputedObjectKey } },
+    },
     rules: {
+      // SEC-6: file data must never be used as a plain-object key.
+      'docsluice/no-computed-object-key': 'error',
       'no-restricted-globals': ['error', ...NODE_GLOBALS],
       'no-restricted-imports': [
         'error',
