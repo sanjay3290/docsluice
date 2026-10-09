@@ -1,0 +1,19 @@
+From sender@example.test Tue Oct  6 09:30:00 2026
+From: Sender One <one@example.test>
+To: Reader <reader@example.test>
+Subject: MBOX first
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+
+MBOX MESSAGE ONE
+>From one escaped separator
+>>From two escaped separators
+From sender2@example.test Tue Oct  6 09:31:00 2026
+From: Sender Two <two@example.test>
+To: Reader <reader@example.test>
+Subject: MBOX second
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+
+MBOX MESSAGE TWO
+Fromage ordinary body line
