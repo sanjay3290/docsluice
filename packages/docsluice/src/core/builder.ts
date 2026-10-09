@@ -436,13 +436,19 @@ export class DocBuilder {
   }
 
   /** Open a section; sections exceeding `blockDepth` are flattened into their parent. */
-  openSection(role: SectionRole, loc: Location = {}, title?: string): boolean {
+  openSection(
+    role: SectionRole,
+    loc: Location = {},
+    title?: string,
+    attributes?: Pick<SectionBlock, 'hidden'>,
+  ): boolean {
     if (this.#stopped) return false;
     const parentTarget = this.#target();
     const canNest = this.#sectionDepth + 1 <= this.#budget.limits.blockDepth;
     if (canNest && this.#budget.enterDepth('block')) {
       try {
         const section: SectionBlock = { kind: 'section', role, blocks: [], loc };
+        if (attributes?.hidden !== undefined) section.hidden = attributes.hidden;
         if (title !== undefined) section.title = normalizeText(title, this.#budget);
         const pendingStart = this.#pendingOutputChars;
         const pending = pendingStart + (section.title?.length ?? 0);

@@ -1,0 +1,155 @@
+{
+  "format": "pdf",
+  "mimeType": "application/pdf",
+  "metadata": {
+    "title": "Schema sample",
+    "authors": [
+      "Ada"
+    ],
+    "custom": [
+      {
+        "name": "department",
+        "value": "Research"
+      }
+    ]
+  },
+  "features": {
+    "hasMacros": false,
+    "hasExternalLinks": true,
+    "hasEmbeddedFiles": false,
+    "isEncrypted": false,
+    "hasJavaScript": false
+  },
+  "blocks": [
+    {
+      "kind": "heading",
+      "level": 1,
+      "text": "Title",
+      "loc": {
+        "page": 1,
+        "offset": [
+          0,
+          5
+        ]
+      }
+    },
+    {
+      "kind": "paragraph",
+      "text": "Body",
+      "runs": [
+        {
+          "text": "Body",
+          "bold": true
+        }
+      ],
+      "loc": {}
+    },
+    {
+      "kind": "list",
+      "ordered": true,
+      "items": [
+        {
+          "text": "First",
+          "marker": "1.",
+          "items": [
+            {
+              "text": "Nested"
+            }
+          ]
+        }
+      ],
+      "loc": {}
+    },
+    {
+      "kind": "table",
+      "rows": [
+        [
+          {
+            "text": "text",
+            "raw": "text"
+          },
+          {
+            "text": "number",
+            "raw": 3
+          },
+          {
+            "text": "boolean",
+            "raw": true
+          },
+          {
+            "text": "null",
+            "raw": null
+          }
+        ]
+      ],
+      "headerRows": 1,
+      "caption": "Values",
+      "loc": {}
+    },
+    {
+      "kind": "code",
+      "language": "ts",
+      "text": "const value = 1;",
+      "loc": {}
+    },
+    {
+      "kind": "image",
+      "alt": "Chart",
+      "mimeType": "image/png",
+      "ref": "child/image.png",
+      "width": 100,
+      "height": 50,
+      "loc": {}
+    },
+    {
+      "kind": "note",
+      "role": "comment",
+      "text": "Review",
+      "author": "Ada",
+      "loc": {}
+    },
+    {
+      "kind": "header",
+      "text": "Header",
+      "loc": {}
+    },
+    {
+      "kind": "footer",
+      "text": "Footer",
+      "loc": {}
+    },
+    {
+      "kind": "section",
+      "role": "sheet",
+      "title": "Sheet 1",
+      "hidden": "very",
+      "blocks": [],
+      "loc": {
+        "sheet": "Sheet 1"
+      }
+    }
+  ],
+  "children": [
+    {
+      "path": "archive/entry.txt",
+      "name": "entry.txt",
+      "status": "listed",
+      "sizeBytes": 0
+    }
+  ],
+  "warnings": [
+    {
+      "code": "FORMAT_MISMATCH",
+      "message": "Name and contents differ.",
+      "loc": {
+        "path": "archive/entry.txt"
+      }
+    }
+  ],
+  "stats": {
+    "bytesRead": 0,
+    "durationMs": 0,
+    "truncated": false,
+    "needsOcr": false
+  }
+}

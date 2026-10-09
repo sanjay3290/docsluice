@@ -1,0 +1,326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sanjay3290/docsluice/schema/v0",
+  "title": "docsluice JSON document",
+  "description": "The serialized document model returned by docsluice toJSON().",
+  "$ref": "#/$defs/DocsluiceDocument",
+  "$defs": {
+    "FormatId": { "type": "string" },
+    "DocsluiceDocument": {
+      "type": "object",
+      "properties": {
+        "format": { "$ref": "#/$defs/FormatId" },
+        "mimeType": { "type": "string" },
+        "encoding": { "type": "string" },
+        "metadata": { "$ref": "#/$defs/Metadata" },
+        "features": { "$ref": "#/$defs/Features" },
+        "blocks": { "type": "array", "items": { "$ref": "#/$defs/Block" } },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/ChildDocument" } },
+        "warnings": { "type": "array", "items": { "$ref": "#/$defs/Warning" } },
+        "stats": { "$ref": "#/$defs/Stats" }
+      },
+      "additionalProperties": false,
+      "required": ["format", "mimeType", "metadata", "features", "blocks", "children", "warnings", "stats"]
+    },
+    "Stats": {
+      "type": "object",
+      "properties": {
+        "bytesRead": { "type": "number" },
+        "durationMs": { "type": "number" },
+        "truncated": { "type": "boolean" },
+        "needsOcr": { "type": "boolean" }
+      },
+      "additionalProperties": false,
+      "required": ["bytesRead", "durationMs", "truncated", "needsOcr"]
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "authors": { "type": "array", "items": { "type": "string" } },
+        "created": { "type": "string" },
+        "modified": { "type": "string" },
+        "pageCount": { "type": "number" },
+        "language": { "type": "string" },
+        "custom": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": { "name": { "type": "string" }, "value": { "type": "string" } },
+            "additionalProperties": false,
+            "required": ["name", "value"]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Features": {
+      "type": "object",
+      "properties": {
+        "hasMacros": { "type": "boolean" },
+        "hasExternalLinks": { "type": "boolean" },
+        "hasEmbeddedFiles": { "type": "boolean" },
+        "isEncrypted": { "type": "boolean" },
+        "hasJavaScript": { "type": "boolean" }
+      },
+      "additionalProperties": false,
+      "required": ["hasMacros", "hasExternalLinks", "hasEmbeddedFiles", "isEncrypted", "hasJavaScript"]
+    },
+    "Block": {
+      "anyOf": [
+        { "$ref": "#/$defs/HeadingBlock" },
+        { "$ref": "#/$defs/ParagraphBlock" },
+        { "$ref": "#/$defs/ListBlock" },
+        { "$ref": "#/$defs/TableBlock" },
+        { "$ref": "#/$defs/CodeBlock" },
+        { "$ref": "#/$defs/ImageBlock" },
+        { "$ref": "#/$defs/NoteBlock" },
+        { "$ref": "#/$defs/HeaderFooterBlock" },
+        { "$ref": "#/$defs/SectionBlock" }
+      ]
+    },
+    "BlockKind": {
+      "anyOf": [
+        { "const": "heading" },
+        { "const": "paragraph" },
+        { "const": "list" },
+        { "const": "table" },
+        { "const": "code" },
+        { "const": "image" },
+        { "const": "note" },
+        { "anyOf": [{ "const": "header" }, { "const": "footer" }] },
+        { "const": "section" }
+      ]
+    },
+    "HeadingBlock": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "heading" },
+        "level": {
+          "anyOf": [
+            { "const": 1 },
+            { "const": 2 },
+            { "const": 3 },
+            { "const": 4 },
+            { "const": 5 },
+            { "const": 6 }
+          ]
+        },
+        "text": { "type": "string" },
+        "loc": { "$ref": "#/$defs/Location" }
+      },
+      "additionalProperties": false,
+      "required": ["kind", "level", "text", "loc"]
+    },
+    "ParagraphBlock": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "paragraph" },
+        "text": { "type": "string" },
+        "runs": { "type": "array", "items": { "$ref": "#/$defs/Run" } },
+        "loc": { "$ref": "#/$defs/Location" }
+      },
+      "additionalProperties": false,
+      "required": ["kind", "text", "loc"]
+    },
+    "ListBlock": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "list" },
+        "ordered": { "type": "boolean" },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/ListItem" } },
+        "loc": { "$ref": "#/$defs/Location" }
+      },
+      "additionalProperties": false,
+      "required": ["kind", "ordered", "items", "loc"]
+    },
+    "ListItem": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "marker": { "type": "string" },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/ListItem" } }
+      },
+      "additionalProperties": false,
+      "required": ["text"]
+    },
+    "TableBlock": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "table" },
+        "rows": { "type": "array", "items": { "type": "array", "items": { "$ref": "#/$defs/Cell" } } },
+        "headerRows": { "type": "number" },
+        "caption": { "type": "string" },
+        "loc": { "$ref": "#/$defs/Location" }
+      },
+      "additionalProperties": false,
+      "required": ["kind", "rows", "headerRows", "loc"]
+    },
+    "Cell": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "raw": {
+          "anyOf": [{ "type": "string" }, { "type": "number" }, { "type": "boolean" }, { "type": "null" }]
+        },
+        "formula": { "type": "string" },
+        "rowSpan": { "type": "number" },
+        "colSpan": { "type": "number" },
+        "address": { "type": "string" },
+        "hidden": { "type": "boolean" }
+      },
+      "additionalProperties": false,
+      "required": ["text"]
+    },
+    "CodeBlock": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "code" },
+        "language": { "type": "string" },
+        "text": { "type": "string" },
+        "loc": { "$ref": "#/$defs/Location" }
+      },
+      "additionalProperties": false,
+      "required": ["kind", "text", "loc"]
+    },
+    "ImageBlock": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "image" },
+        "alt": { "type": "string" },
+        "mimeType": { "type": "string" },
+        "ref": { "type": "string" },
+        "width": { "type": "number" },
+        "height": { "type": "number" },
+        "loc": { "$ref": "#/$defs/Location" }
+      },
+      "additionalProperties": false,
+      "required": ["kind", "loc"]
+    },
+    "NoteBlock": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "note" },
+        "role": {
+          "anyOf": [
+            { "const": "footnote" },
+            { "const": "endnote" },
+            { "const": "comment" },
+            { "const": "speaker-notes" },
+            { "const": "annotation" }
+          ]
+        },
+        "text": { "type": "string" },
+        "author": { "type": "string" },
+        "loc": { "$ref": "#/$defs/Location" }
+      },
+      "additionalProperties": false,
+      "required": ["kind", "role", "text", "loc"]
+    },
+    "HeaderFooterBlock": {
+      "type": "object",
+      "properties": {
+        "kind": { "anyOf": [{ "const": "header" }, { "const": "footer" }] },
+        "text": { "type": "string" },
+        "loc": { "$ref": "#/$defs/Location" }
+      },
+      "additionalProperties": false,
+      "required": ["kind", "text", "loc"]
+    },
+    "SectionBlock": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "section" },
+        "role": {
+          "anyOf": [{ "const": "page" }, { "const": "slide" }, { "const": "sheet" }, { "const": "part" }]
+        },
+        "title": { "type": "string" },
+        "hidden": { "anyOf": [{ "type": "boolean" }, { "const": "very" }] },
+        "needsOcr": { "type": "boolean" },
+        "blocks": { "type": "array", "items": { "$ref": "#/$defs/Block" } },
+        "loc": { "$ref": "#/$defs/Location" }
+      },
+      "additionalProperties": false,
+      "required": ["kind", "role", "blocks", "loc"]
+    },
+    "Run": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "bold": { "type": "boolean" },
+        "italic": { "type": "boolean" },
+        "code": { "type": "boolean" },
+        "href": { "type": "string" }
+      },
+      "additionalProperties": false,
+      "required": ["text"]
+    },
+    "Location": {
+      "type": "object",
+      "properties": {
+        "page": { "type": "number" },
+        "pageLabel": { "type": "string" },
+        "slide": { "type": "number" },
+        "sheet": { "type": "string" },
+        "range": { "type": "string" },
+        "path": { "type": "string" },
+        "offset": {
+          "type": "array",
+          "prefixItems": [{ "type": "number" }, { "type": "number" }],
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "additionalProperties": false
+    },
+    "ChildDocument": {
+      "type": "object",
+      "properties": {
+        "path": { "type": "string" },
+        "name": { "type": "string" },
+        "status": {
+          "anyOf": [
+            { "const": "extracted" },
+            { "const": "listed" },
+            { "const": "skipped" },
+            { "const": "failed" }
+          ]
+        },
+        "sizeBytes": { "type": "number" },
+        "mimeType": { "type": "string" },
+        "document": { "$ref": "#/$defs/DocsluiceDocument" },
+        "bytes": { "type": "string", "contentEncoding": "base64" },
+        "error": {
+          "type": "object",
+          "properties": { "code": { "type": "string" }, "message": { "type": "string" } },
+          "additionalProperties": false,
+          "required": ["code", "message"]
+        }
+      },
+      "additionalProperties": false,
+      "required": ["path", "name", "status"]
+    },
+    "WarningCode": { "type": "string" },
+    "Warning": {
+      "type": "object",
+      "properties": {
+        "code": { "$ref": "#/$defs/WarningCode" },
+        "message": { "type": "string" },
+        "loc": { "$ref": "#/$defs/Location" }
+      },
+      "additionalProperties": false,
+      "required": ["code", "message"]
+    },
+    "DetectResult": {
+      "type": "object",
+      "properties": {
+        "format": { "$ref": "#/$defs/FormatId" },
+        "mimeType": { "type": "string" },
+        "confidence": { "type": "number" },
+        "encoding": { "type": "string" }
+      },
+      "additionalProperties": false,
+      "required": ["format", "mimeType", "confidence"]
+    }
+  }
+}

@@ -91,6 +91,12 @@ personal fields from extracted child documents.
 
 ## The budget
 
+Readers can preserve sheet and slide visibility with
+`out.openSection(role, loc, title, { hidden: true })`, or `hidden: 'very'` for
+Excel's very-hidden sheets. The builder snapshots this existing model attribute
+when the section opens. Readers decide whether to emit hidden sections from
+`options.includeHidden`; setting the attribute does not change that policy.
+
 One root `Budget` per top-level `extract()` call. Each child gets a budget view with depth + 1 and the same resource counters, clock and cancellation scope.
 
 | Counter | Limit | On limit |
