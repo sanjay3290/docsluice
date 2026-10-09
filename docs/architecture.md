@@ -96,6 +96,30 @@ One `Budget` object per top-level `extract()` call. Children get the same object
 
 Readers call `budget.tick()` inside long loops. `tick()` checks time and the abort signal cheaply (time is read at most every N calls).
 
+`Budget` keeps shared resource counters private and exposes read-only count getters.
+Every counter method accepts a nonnegative safe integer and returns whether work
+may continue. Counts include the increment that crossed the limit. The configured
+limits are copied when the root budget is created, so later caller mutations do
+not change an active extraction's limits. `LimitExceededError.value` is the
+configured maximum; truncation warnings report both that maximum and the observed
+count, once per limit across the whole extraction.
+
+Children share counters, warnings, the start time, the signal and the clock-sampling
+counter, while XML and block depths are tracked independently in each document.
+`tick()` checks the clock on its first call and then once every 1024 calls; it checks
+abort on every call. Readers should call it before starting and within their loops.
+Each `enterDepth(kind)` must be balanced by `exitDepth(kind)`, including an enter
+that returned false. Child depth cannot be decreased below a child's inherent
+depth. A child exceeding `childDepth` has `canRead: false`, reports `DEPTH_LIMIT`,
+and rejects further counter work, even with `onLimit: 'throw'`: the pipeline lists
+such a child without opening it. Other depth limits obey `onLimit`.
+
+`WarningSink` stores warnings in emission order. Supply `new WarningSink({ strict })`
+as `BudgetOptions.warnings` to apply the caller's strict policy to all parent and
+child warnings. Selected warnings throw `StrictModeError` before being stored.
+This error has public code `STRICT_WARNING` and a `warningCode` field; its message
+does not include the warning's message or document content.
+
 ## Determinism
 
 Output JSON has a fixed key order: the order of fields in `model.ts`. `render/json.ts` writes keys in that order and omits `undefined` fields.

@@ -10,5 +10,6 @@ export {
   LimitExceededError,
   TimeoutError,
   AbortError,
+  StrictModeError,
 } from './core/errors.js';
 export type { ErrorCode } from './core/errors.js';
