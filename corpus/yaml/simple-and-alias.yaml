@@ -1,0 +1,7 @@
+title: Safe sample
+owner:
+  name: Ada
+  role: editor
+source: &origin handbook
+copy: *origin
+__proto__: literal key
