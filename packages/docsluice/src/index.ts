@@ -6,6 +6,8 @@ export { Budget } from './core/budget.js';
 export type { BudgetOptions, DepthKind } from './core/budget.js';
 export { WarningSink } from './core/warnings.js';
 export type { WarningSinkOptions } from './core/warnings.js';
+export { openZip } from './zip/index.js';
+export type { ZipArchive, ZipEntry } from './zip/index.js';
 export {
   DocsluiceError,
   UnsupportedFormatError,

@@ -81,5 +81,52 @@
     "maxMs": 2000,
     "maxHeapMB": 256,
     "requirement": "SEC-9"
+  },
+  {
+    "file": "zip/bomb-42k.zip",
+    "expect": {
+      "error": "LIMIT_EXCEEDED"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "zip/nested-4gib.zip",
+    "expect": {
+      "error": "LIMIT_EXCEEDED"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "zip/many-entries.zip",
+    "expect": {
+      "error": "LIMIT_EXCEEDED"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-2"
+  },
+  {
+    "file": "zip/path-traversal.zip",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-3"
+  },
+  {
+    "file": "zip/overlap.zip",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-1"
   }
 ]
