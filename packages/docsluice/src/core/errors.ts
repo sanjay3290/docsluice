@@ -3,8 +3,16 @@
  * Rule: a message never includes document content. Callers log these messages.
  */
 
+import type { WarningCode } from './model.js';
+
 export type ErrorCode =
-  'UNSUPPORTED_FORMAT' | 'ENCRYPTED' | 'CORRUPT_FILE' | 'LIMIT_EXCEEDED' | 'TIMEOUT' | 'ABORTED';
+  | 'UNSUPPORTED_FORMAT'
+  | 'ENCRYPTED'
+  | 'CORRUPT_FILE'
+  | 'LIMIT_EXCEEDED'
+  | 'TIMEOUT'
+  | 'ABORTED'
+  | 'STRICT_WARNING';
 
 export class DocsluiceError extends Error {
   readonly code: ErrorCode;
@@ -63,5 +71,15 @@ export class TimeoutError extends DocsluiceError {
 export class AbortError extends DocsluiceError {
   constructor(options?: { cause?: unknown }) {
     super('ABORTED', 'Extraction was aborted by the caller.', options);
+  }
+}
+
+/** A warning selected by the caller's strict policy stopped extraction. */
+export class StrictModeError extends DocsluiceError {
+  readonly warningCode: WarningCode;
+
+  constructor(warningCode: WarningCode) {
+    super('STRICT_WARNING', `Warning "${warningCode}" is forbidden by strict mode.`);
+    this.warningCode = warningCode;
   }
 }
