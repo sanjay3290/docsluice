@@ -47,6 +47,23 @@ function addTextReader(registry: ReaderRegistry, read: (ctx: ReadContext) => voi
 afterEach(() => vi.useRealTimers());
 
 describe('extraction pipeline', () => {
+  it('retains mixed skipped and extracted child order when readers await child work', async () => {
+    const { registry: readers } = registry(async (ctx) => {
+      await ctx.extractChild('first.txt', bytes('first'));
+      ctx.out.addChild({ path: 'directory/', name: 'directory/', status: 'skipped', sizeBytes: 0 });
+      await ctx.extractChild('last.txt', bytes('last'));
+    });
+    addTextReader(readers, (ctx) => {
+      ctx.out.paragraph(new TextDecoder().decode(ctx.bytes));
+    });
+    const doc = await createExtractor(readers)(bytes('container'), { format: 'fake' });
+    expect(doc.children.map((child) => [child.path, child.status])).toEqual([
+      ['first.txt', 'extracted'],
+      ['directory/', 'skipped'],
+      ['last.txt', 'extracted'],
+    ]);
+  });
+
   it('keeps warnings isolated between concurrent siblings and forwards them to the parent', async () => {
     let releaseFirst!: () => void;
     const secondWarning = new Promise<void>((resolve) => {

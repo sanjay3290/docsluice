@@ -272,6 +272,96 @@ describe('toMarkdown', () => {
     expect(toMarkdown(doc)).toBe('| Merged |  | Tail |\n| --- | --- | --- |');
   });
 
+  it('uses spreadsheet addresses to preserve compact cells after horizontal merges', () => {
+    const doc = document([
+      {
+        kind: 'table',
+        headerRows: 1,
+        rows: [
+          [
+            { text: 'Merged', rowSpan: 2, colSpan: 2, address: 'Merged!A1' },
+            { text: 'C header', address: 'Merged!C1' },
+          ],
+          [{ text: 'C value', address: 'Merged!C2' }],
+        ],
+        loc: {},
+      },
+    ]);
+
+    expect(toMarkdown(doc)).toBe('| Merged |  | C header |\n| --- | --- | --- |\n|  |  | C value |');
+    expect(toMarkdown(doc, { tables: 'html' })).toBe(
+      '<table>\n<tbody>\n<tr><th rowspan="2" colspan="2">Merged</th><th>C header</th></tr>\n<tr><td>C value</td></tr>\n</tbody>\n</table>',
+    );
+  });
+
+  it('preserves address gaps in HTML table rows', () => {
+    const doc = document([
+      {
+        kind: 'table',
+        headerRows: 1,
+        rows: [[{ text: 'A', address: 'Sheet!A1' }], [{ text: 'C\nvalue', address: 'Sheet!C2' }]],
+        loc: {},
+      },
+    ]);
+
+    expect(toMarkdown(doc, { tables: 'html' })).toBe(
+      '<table>\n<tbody>\n<tr><th>A</th></tr>\n<tr><td></td><td></td><td>C<br>value</td></tr>\n</tbody>\n</table>',
+    );
+  });
+
+  it('orders HTML table cells by physical spreadsheet column', () => {
+    const doc = document([
+      {
+        kind: 'table',
+        headerRows: 0,
+        rows: [
+          [
+            { text: 'C\ncell', address: 'S!C1' },
+            { text: 'A', address: 'S!A1' },
+          ],
+        ],
+        loc: {},
+      },
+    ]);
+
+    expect(toMarkdown(doc, { tables: 'html' })).toBe(
+      '<table>\n<tbody>\n<tr><td>A</td><td></td><td>C<br>cell</td></tr>\n</tbody>\n</table>',
+    );
+  });
+
+  it('keeps repeated spreadsheet addresses within the table row width', () => {
+    const doc = document([
+      {
+        kind: 'table',
+        headerRows: 0,
+        rows: [
+          [
+            { text: 'C1\nvalue', address: 'S!C1' },
+            { text: 'duplicate', address: 'S!C1' },
+          ],
+        ],
+        loc: {},
+      },
+    ]);
+
+    expect(toMarkdown(doc, { tables: 'html' })).toBe(
+      '<table>\n<tbody>\n<tr><td></td><td>duplicate</td><td>C1<br>value</td></tr>\n</tbody>\n</table>',
+    );
+  });
+
+  it('keeps dense covered placeholders blank while preserving the following cell', () => {
+    const doc = document([
+      {
+        kind: 'table',
+        headerRows: 1,
+        rows: [[{ text: 'Merged', colSpan: 2 }, { text: '' }, { text: 'Next' }]],
+        loc: {},
+      },
+    ]);
+
+    expect(toMarkdown(doc)).toBe('| Merged |  | Next |\n| --- | --- | --- |');
+  });
+
   it('does not count simple tables twice when HTML output is requested', () => {
     const rows: Array<Array<{ text: string }>> = [];
     for (let index = 0; index < 335_000; index++) rows.push([{ text: '' }, { text: '' }]);

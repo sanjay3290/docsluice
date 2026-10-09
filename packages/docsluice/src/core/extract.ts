@@ -222,7 +222,7 @@ export function createExtractor(
         activeOptions,
       );
       if (resolution.result.encoding) out.setEncoding(resolution.result.encoding);
-      const children: Array<Promise<ChildDocument | undefined>> = [];
+      const children: Array<Promise<void>> = [];
       let ancestorHash: number | undefined;
 
       const ctx: ReadContext = {
@@ -283,8 +283,12 @@ export function createExtractor(
               return child;
             }
           })();
-          children.push(work);
-          const done = work.then(() => undefined);
+          const previous = children[children.length - 1];
+          const ordered = previous ? previous.then(() => work) : work;
+          const done = ordered.then((child) => {
+            if (child) out.addChild(child);
+          });
+          children.push(done);
           // Readers should await child work; handle fire-and-forget cancellation as well.
           void done.catch(() => undefined);
           void work.catch(() => undefined);
@@ -306,8 +310,7 @@ export function createExtractor(
       }
       for (const childWork of children) {
         activeBudget.tick();
-        const child = await childWork;
-        if (child) out.addChild(child);
+        await childWork;
       }
       activeBudget.tick();
       const document = out.finish();
