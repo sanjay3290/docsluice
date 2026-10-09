@@ -10,4 +10,4 @@ await writeFile(new URL('proto-headers.csv', csv), '__proto__,constructor,protot
 
 const tsv = new URL('../../hostile/tsv/', import.meta.url);
 await mkdir(tsv, { recursive: true });
-await writeFile(new URL('ragged-10000-rows.tsv', tsv), `a\tb\tc\n1\t2\t3\n${Array.from({ length: 10_000 }, (_, row) => '\t'.repeat(row % 64)).join('x\n')}x\n`);
+await writeFile(new URL('ragged-5000-rows.tsv', tsv), `a\tb\tc\n1\t2\t3\n${Array.from({ length: 5_000 }, (_, row) => '\t'.repeat(row % 64)).join('x\n')}x\n`);

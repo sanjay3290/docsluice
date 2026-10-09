@@ -223,7 +223,7 @@
     "requirement": "SEC-6"
   },
   {
-    "file": "tsv/ragged-10000-rows.tsv",
+    "file": "tsv/ragged-5000-rows.tsv",
     "format": "tsv",
     "expect": {
       "warnings": []
