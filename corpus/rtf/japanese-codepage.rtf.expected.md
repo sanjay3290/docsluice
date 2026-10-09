@@ -1,0 +1,1 @@
+Japanese code-page bytes: あ
