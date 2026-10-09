@@ -1,0 +1,31 @@
+From: Sender <sender@example.test>
+To: Reader <reader@example.test>
+Cc: Copy <copy@example.test>
+Date: Tue, 06 Oct 2026 09:30:00 +0000
+Subject: Mixed ordered parts
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary=parts
+
+--parts
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+MIXED BODY PART ONE
+--parts
+Content-Type: application/zip
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="bundle.zip"
+
+UEsDBBQAAAAIAAAAIVCVH/wdJwAAACUAAAAJAAAAaGVsbG8udHh0i/IMUHD28PRxsVJISS1JLcrNzMssLslMVkgsKUlMzshNzSvR4wIAUEsBAhQDFAAAAAgAAAAhUJUf/B0nAAAAJQAAAAkAAAAAAAAAAAAAAKSBAAAAAGhlbGxvLnR4dFBLBQYAAAAAAQABADcAAABOAAAAAAA=
+--parts
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+MIXED BODY PART TWO
+--parts
+Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="note.docx"
+
+UEsDBBQAAAAIAAAAIVDmdcR+0gAAAIsBAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbH2QvVLDMAzHX8XnlasVGBh6SToAKzD0BXSOkvjw11luad++Sls6cIVR+n/8ZLebQ/BqT4Vdip1+NI3e9O32mImVKJE7Pdea1wBsZwrIJmWKooypBKwylgky2i+cCJ6a5hlsipViXdWlQ/ftK42481W9HWR9oRTyrNXLxbiwOo05e2exig77OPyirK4EI8mzh2eX+UEMGu4SFuVvwDX3Ic8ubiD1iaW+YxAXfKcywJDsLkjS/F9z5840js7SLb+05ZIsMbs4BW9uSkAXf+6H83f3J1BLAwQUAAAACAAAACFQXzOVUpUAAAAHAQAACwAAAF9yZWxzLy5yZWxzjc87DsIwDAbgq0Q+QJ0yMKCmXVi6Ii4QJW5T0TzkhNftycBAEQOjf//6LHfDw6/iRpyXGBS0jYSh70606lKD7JaURW2ErMCVkg6I2TjyOjcxUaibKbLXpY48Y9LmomfCnZR75E8DtqYYrQIebQvi/Ez0jx2naTF0jObqKZQfJ74aVdY8U1Fwj2zRvuOmsoB9h5sX+xdQSwMEFAAAAAgAAAAhUF4Adu2bAAAAzAAAABEAAAB3b3JkL2RvY3VtZW50LnhtbEWOvQ7CMBCDXyXKAzSFgSHqz1AGkJBYWUMS2khNLro7KLw9TRlYPsuyZbnp33EWL48UILVyV9Wy75pFO7DP6BOLNU6kl1ZOzFkrRXby0VAF2ac1ewBGw6vFUS2ALiNYTxTSGGe1r+uDiiYkWSbv4D5FcwEWcHe8DjcxnM6XoxbOs8cYUiAOVhhmY6dyoWpUqRbixrzxN6f+V7svUEsBAhQDFAAAAAgAAAAhUOZ1xH7SAAAAiwEAABMAAAAAAAAAAAAAAKSBAAAAAFtDb250ZW50X1R5cGVzXS54bWxQSwECFAMUAAAACAAAACFQXzOVUpUAAAAHAQAACwAAAAAAAAAAAAAApIEDAQAAX3JlbHMvLnJlbHNQSwECFAMUAAAACAAAACFQXgB27ZsAAADMAAAAEQAAAAAAAAAAAAAApIHBAQAAd29yZC9kb2N1bWVudC54bWxQSwUGAAAAAAMAAwC5AAAAiwIAAAAA
+--parts--
