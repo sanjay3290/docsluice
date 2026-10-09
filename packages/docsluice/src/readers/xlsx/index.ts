@@ -98,7 +98,12 @@ function emitWorkbook(parsed: ParsedXlsxWorkbook, ctx: ReadContext): void {
         loc,
       });
     }
-    const opened = ctx.out.openSection('sheet', loc, sheet.name);
+    const opened =
+      sheet.state === 'visible'
+        ? ctx.out.openSection('sheet', loc, sheet.name)
+        : ctx.out.openSection('sheet', loc, sheet.name, {
+            hidden: sheet.state === 'very' ? 'very' : true,
+          });
     let stopped = false;
     try {
       if (opened) {

@@ -178,12 +178,11 @@ describe('xlsx sparse sheets and strings', () => {
     const sections = result.blocks.filter((block) => block.kind === 'section');
     expect(sections.map((section) => section.loc.sheet)).toEqual(['Main', 'Hidden', 'Secret', '__proto__']);
     expect(warnings.warnings.filter((warning) => warning.code === 'HIDDEN_CONTENT')).toHaveLength(2);
-    // The builder currently has no hidden-state setter; the parsed representation preserves it.
     expect(
       (await parseXlsx(createContext(fixture('basics_order_states_strings_types_merges.xlsx')).ctx)).sheets[2]
         ?.state,
     ).toBe('very');
-    expect(sections.every((section) => !section.hidden)).toBe(true);
+    expect(sections.map((section) => section.hidden)).toEqual([undefined, true, 'very', undefined]);
   });
 
   it('splits contiguous column regions and charges hostile cells', () => {
