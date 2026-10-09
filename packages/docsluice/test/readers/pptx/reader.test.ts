@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { Budget } from '../../../src/core/budget.js';
 import { DocBuilder } from '../../../src/core/builder.js';
-import { LimitExceededError } from '../../../src/core/errors.js';
+import { AbortError, LimitExceededError, StrictModeError } from '../../../src/core/errors.js';
 import { resolveLimits } from '../../../src/core/limits.js';
 import type { ReadContext } from '../../../src/core/reader.js';
 import { WarningSink } from '../../../src/core/warnings.js';
@@ -29,9 +29,11 @@ async function readBytes(
   onLimit: 'truncate' | 'throw' = 'truncate',
   path = '',
   prepareOut?: (out: DocBuilder, budget: Budget) => void,
+  signal?: AbortSignal,
+  strict = false,
 ) {
-  const warnings = new WarningSink();
-  const budget = new Budget(resolveLimits(limits), { warnings, onLimit });
+  const warnings = new WarningSink({ strict });
+  const budget = new Budget(resolveLimits(limits), { warnings, onLimit, signal });
   const out = new DocBuilder('pptx', MIME, budget);
   prepareOut?.(out, budget);
   const context = {
@@ -57,6 +59,42 @@ async function readBytes(
   } as ReadContext;
   await pptxReader.read(context);
   return { document: out.finish(), budget };
+}
+
+function chartDeck(chartXml: string, options: { external?: boolean; referenced?: boolean } = {}): Uint8Array {
+  const relNs = 'http://schemas.openxmlformats.org/package/2006/relationships';
+  const presentationNs = 'http://schemas.openxmlformats.org/presentationml/2006/main';
+  const drawingNs = 'http://schemas.openxmlformats.org/drawingml/2006/main';
+  const officeRelNs = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  const chartNs = 'http://schemas.openxmlformats.org/drawingml/2006/chart';
+  const slide =
+    options.referenced === false
+      ? `<p:sld xmlns:p="${presentationNs}"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr/><p:sp><p:nvSpPr><p:cNvPr id="2" name="unused"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm xmlns:a="${drawingNs}"><a:off x="0" y="0"/><a:ext cx="100" cy="100"/></a:xfrm></p:spPr></p:sp></p:spTree></p:cSld></p:sld>`
+      : `<p:sld xmlns:p="${presentationNs}" xmlns:a="${drawingNs}" xmlns:rel="${officeRelNs}"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr/><p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id="2" name="Chart"/><p:cNvGraphicFramePr/><p:nvPr/></p:nvGraphicFramePr><p:xfrm><a:off x="100" y="200"/><a:ext cx="300" cy="400"/></p:xfrm><a:graphic><a:graphicData uri="${chartNs}"><c:chart xmlns:c="${chartNs}" xmlns:r="${officeRelNs}" rel:id="chart1"/></a:graphicData></a:graphic></p:graphicFrame></p:spTree></p:cSld></p:sld>`;
+  const relationshipTarget = options.external ? 'https://example.test/chart.xml' : '../charts/chart1.xml';
+  const chartRelationship = `<Relationship Id="chart1" Type="${officeRelNs}/chart" Target="${relationshipTarget}"${options.external ? ' TargetMode="External"' : ''}/>`;
+  const files = [
+    {
+      name: '_rels/.rels',
+      data: `<Relationships xmlns="${relNs}"><Relationship Id="root" Type="${officeRelNs}/officeDocument" Target="ppt/presentation.xml"/></Relationships>`,
+    },
+    {
+      name: 'ppt/presentation.xml',
+      data: `<p:presentation xmlns:p="${presentationNs}" xmlns:r="${officeRelNs}"><p:sldIdLst><p:sldId id="1" r:id="slide1"/></p:sldIdLst></p:presentation>`,
+    },
+    {
+      name: 'ppt/_rels/presentation.xml.rels',
+      data: `<Relationships xmlns="${relNs}"><Relationship Id="slide1" Type="${officeRelNs}/slide" Target="slides/slide1.xml"/></Relationships>`,
+    },
+    { name: 'ppt/slides/slide1.xml', data: slide },
+    {
+      name: 'ppt/slides/_rels/slide1.xml.rels',
+      data: `<Relationships xmlns="${relNs}">${chartRelationship}</Relationships>`,
+    },
+  ];
+  if (!options.external && options.referenced !== false)
+    files.push({ name: 'ppt/charts/chart1.xml', data: chartXml });
+  return makeZip(files.map((file) => ({ name: file.name, data: new TextEncoder().encode(file.data) })));
 }
 
 describe('PPTX reader', () => {
@@ -171,14 +209,14 @@ describe('PPTX reader', () => {
   });
 
   it('charges retained table cells and emits only the permitted table prefix when truncating', async () => {
-    const { document, budget } = await readFixture('pptx-edge-cases.pptx', { cells: 1 });
+    const { document, budget } = await readFixture('pptx-edge-cases.pptx', { cells: 25 });
     const slides = document.blocks.filter((block) => block.kind === 'section');
     const table = slides[1]?.blocks.find((block) => block.kind === 'table');
     expect(table?.kind).toBe('table');
     if (table?.kind === 'table') {
       expect(table.rows).toEqual([[{ text: 'Header A' }]]);
     }
-    expect(budget.cells).toBe(2);
+    expect(budget.cells).toBe(26);
     expect(budget.truncated).toBe(true);
     expect(document.warnings.some((warning) => warning.code === 'TRUNCATED')).toBe(true);
   });
@@ -310,6 +348,41 @@ describe('PPTX reader', () => {
       Array.from({ length: 12 }, (_, index) => index + 1),
     );
     expect(slides[0]).toMatchObject({ title: 'SmartArt and chart slide' });
+    expect(slides[0]?.blocks.filter((block) => block.kind === 'table')).toEqual([
+      {
+        kind: 'table',
+        rows: [
+          [{ text: 'Category' }, { text: 'Bar series' }],
+          [{ text: 'Alpha' }, { text: '10', raw: 10 }],
+          [{ text: '' }, { text: '' }],
+          [{ text: 'Gamma' }, { text: '30', raw: 30 }],
+        ],
+        headerRows: 1,
+        loc: { slide: 1, path: 'ppt/slides/slide1.xml' },
+      },
+      {
+        kind: 'table',
+        rows: [
+          [{ text: 'Category' }, { text: 'Line series' }],
+          [{ text: 'Alpha' }, { text: '10', raw: 10 }],
+          [{ text: '' }, { text: '' }],
+          [{ text: 'Gamma' }, { text: '30', raw: 30 }],
+        ],
+        headerRows: 1,
+        loc: { slide: 1, path: 'ppt/slides/slide1.xml' },
+      },
+      {
+        kind: 'table',
+        rows: [
+          [{ text: 'Category' }, { text: 'Pie series' }],
+          [{ text: 'Alpha' }, { text: '10', raw: 10 }],
+          [{ text: '' }, { text: '' }],
+          [{ text: 'Gamma' }, { text: '30', raw: 30 }],
+        ],
+        headerRows: 1,
+        loc: { slide: 1, path: 'ppt/slides/slide1.xml' },
+      },
+    ]);
     expect(slides[1]).toMatchObject({ title: 'Order and layout fixture' });
     expect(slides[2]?.blocks).toContainEqual(
       expect.objectContaining({ kind: 'paragraph', text: 'Slide 1 content' }),
@@ -319,5 +392,64 @@ describe('PPTX reader', () => {
     );
     const expected = JSON.parse(new TextDecoder().decode(expectedBytes)) as unknown;
     expect(document).toEqual(expected);
+  });
+
+  it('charges a referenced cached chart once across parser and builder output limits', async () => {
+    const chartXml = `<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart><c:plotArea><c:barChart><c:ser><c:tx><c:v>S</c:v></c:tx><c:cat><c:strRef><c:strCache><c:pt idx="0"><c:v>A</c:v></c:pt></c:strCache></c:strRef></c:cat><c:val><c:numRef><c:numCache><c:pt idx="0"><c:v>1</c:v></c:pt></c:numCache></c:numRef></c:val></c:ser></c:barChart></c:plotArea></c:chart></c:chartSpace>`;
+    const { document, budget } = await readBytes(
+      chartDeck(chartXml),
+      { cells: 4, outputChars: 11 },
+      'truncate',
+      'outer.docx/embedded.pptx',
+    );
+    const slide = document.blocks.find((block) => block.kind === 'section');
+    expect(slide?.kind).toBe('section');
+    if (slide?.kind !== 'section') throw new Error('Expected a slide section.');
+    expect(slide.blocks).toContainEqual({
+      kind: 'table',
+      rows: [
+        [{ text: 'Category' }, { text: 'S' }],
+        [{ text: 'A' }, { text: '1', raw: 1 }],
+      ],
+      headerRows: 1,
+      loc: { slide: 1, path: 'outer.docx/embedded.pptx/ppt/slides/slide1.xml' },
+    });
+    expect(budget.cells).toBe(4);
+    expect(budget.outputChars).toBe(11);
+    expect(document.stats.truncated).toBe(false);
+  });
+
+  it('ignores external and unreferenced chart relationships', async () => {
+    const chartXml = '<broken';
+    const external = await readBytes(chartDeck(chartXml, { external: true }));
+    const unreferenced = await readBytes(chartDeck(chartXml, { referenced: false }));
+    expect(external.document.blocks.some((block) => block.kind === 'table')).toBe(false);
+    expect(unreferenced.document.blocks.some((block) => block.kind === 'table')).toBe(false);
+    expect(external.document.warnings.filter((warning) => warning.code === 'UNREADABLE_PART')).toEqual([]);
+    expect(unreferenced.document.warnings.filter((warning) => warning.code === 'UNREADABLE_PART')).toEqual(
+      [],
+    );
+  });
+
+  it('recovers a malformed optional chart with one static warning but propagates typed limits', async () => {
+    const malformed = await readBytes(chartDeck('<broken'), {}, 'truncate', 'outer.pptx');
+    const warnings = malformed.document.warnings.filter((warning) => warning.code === 'UNREADABLE_PART');
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]?.message).not.toContain('broken');
+    expect(warnings[0]?.loc?.path).toContain('chart1.xml');
+
+    const chartXml = `<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart><c:plotArea><c:barChart><c:ser><c:tx><c:v>S</c:v></c:tx><c:cat><c:strRef><c:strCache><c:pt idx="0"><c:v>A</c:v></c:pt></c:strCache></c:strRef></c:cat><c:val><c:numRef><c:numCache><c:pt idx="0"><c:v>1</c:v></c:pt></c:numCache></c:numRef></c:val></c:ser></c:barChart></c:plotArea></c:chart></c:chartSpace>`;
+    await expect(readBytes(chartDeck(chartXml), { outputChars: 1 }, 'throw')).rejects.toBeInstanceOf(
+      LimitExceededError,
+    );
+
+    const controller = new AbortController();
+    controller.abort();
+    await expect(
+      readBytes(chartDeck(chartXml), {}, 'throw', '', undefined, controller.signal),
+    ).rejects.toBeInstanceOf(AbortError);
+    await expect(
+      readBytes(chartDeck(chartXml), { outputChars: 1 }, 'truncate', '', undefined, undefined, true),
+    ).rejects.toBeInstanceOf(StrictModeError);
   });
 });

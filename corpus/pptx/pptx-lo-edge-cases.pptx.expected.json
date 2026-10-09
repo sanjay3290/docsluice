@@ -24,6 +24,138 @@
             "slide": 1,
             "path": "ppt/slides/slide1.xml"
           }
+        },
+        {
+          "kind": "table",
+          "rows": [
+            [
+              {
+                "text": "Category"
+              },
+              {
+                "text": "Bar series"
+              }
+            ],
+            [
+              {
+                "text": "Alpha"
+              },
+              {
+                "text": "10",
+                "raw": 10
+              }
+            ],
+            [
+              {
+                "text": ""
+              },
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": "Gamma"
+              },
+              {
+                "text": "30",
+                "raw": 30
+              }
+            ]
+          ],
+          "headerRows": 1,
+          "loc": {
+            "slide": 1,
+            "path": "ppt/slides/slide1.xml"
+          }
+        },
+        {
+          "kind": "table",
+          "rows": [
+            [
+              {
+                "text": "Category"
+              },
+              {
+                "text": "Line series"
+              }
+            ],
+            [
+              {
+                "text": "Alpha"
+              },
+              {
+                "text": "10",
+                "raw": 10
+              }
+            ],
+            [
+              {
+                "text": ""
+              },
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": "Gamma"
+              },
+              {
+                "text": "30",
+                "raw": 30
+              }
+            ]
+          ],
+          "headerRows": 1,
+          "loc": {
+            "slide": 1,
+            "path": "ppt/slides/slide1.xml"
+          }
+        },
+        {
+          "kind": "table",
+          "rows": [
+            [
+              {
+                "text": "Category"
+              },
+              {
+                "text": "Pie series"
+              }
+            ],
+            [
+              {
+                "text": "Alpha"
+              },
+              {
+                "text": "10",
+                "raw": 10
+              }
+            ],
+            [
+              {
+                "text": ""
+              },
+              {
+                "text": ""
+              }
+            ],
+            [
+              {
+                "text": "Gamma"
+              },
+              {
+                "text": "30",
+                "raw": 30
+              }
+            ]
+          ],
+          "headerRows": 1,
+          "loc": {
+            "slide": 1,
+            "path": "ppt/slides/slide1.xml"
+          }
         }
       ],
       "loc": {

@@ -4,6 +4,7 @@ import type { Cell } from '../../core/model.js';
 import { CorruptFileError, LimitExceededError } from '../../core/errors.js';
 import type { OoxmlParts } from '../../ooxml/parts.js';
 import { readRelationships } from '../../ooxml/rels.js';
+import type { OoxmlRelationship } from '../../ooxml/rels.js';
 import { scanXml } from '../../xml/index.js';
 import type { XmlElement, XmlElementInfo } from '../../xml/index.js';
 import {
@@ -28,9 +29,11 @@ import {
   type TextStage,
 } from './text.js';
 import { parseSpeakerNotes, slideIsHidden } from './notes.js';
+import { parseChart } from './charts.js';
 
 const DIAGRAM_NS = 'http://schemas.openxmlformats.org/drawingml/2006/diagram';
 const OFFICE_REL_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+const CHART_NS = 'http://schemas.openxmlformats.org/drawingml/2006/chart';
 const MAX_RETAINED = 50_000;
 const MAX_XML_OBJECTS = 500_000;
 const MAX_XML_SOURCE_WORK = 20_000_000;
@@ -529,6 +532,66 @@ async function emitSpeakerNotes(
   }
 }
 
+/** Read chart cached values only for an internal chart part directly referenced by a shape. */
+async function readChartTables(
+  shape: XmlElement,
+  rels: Map<string, OoxmlRelationship>,
+  relationshipIds: Map<XmlElement, Map<string, string>>,
+  part: string,
+  slideNumber: number,
+  parts: OoxmlParts,
+  ctx: ReadContext,
+): Promise<ReturnType<typeof parseChart> | undefined> {
+  const graphic = directChild(shape, DRAWING_NS, 'graphic', ctx.budget);
+  const data = graphic ? directChild(graphic, DRAWING_NS, 'graphicData', ctx.budget) : undefined;
+  if (!data || data.attrs.get('uri') !== CHART_NS) return undefined;
+  const chartReference = directChild(data, CHART_NS, 'chart', ctx.budget);
+  const id = chartReference ? relationshipIds.get(chartReference)?.get('id') : undefined;
+  const relationship = id ? rels.get(id) : undefined;
+  if (relationship?.external) return [];
+  if (!chartReference || !relationship?.part || relationship.type !== `${OFFICE_REL_NS}/chart`) {
+    warnUnreadableChart(ctx, part, slideNumber);
+    return [];
+  }
+
+  const chartPath = partPath(ctx, relationship.part);
+  const warningCount = ctx.warnings.warnings.length;
+  let root: XmlElement | undefined;
+  try {
+    root = await xmlPart(parts, relationship.part, ctx);
+  } catch (error) {
+    if (!(error instanceof CorruptFileError)) throw error;
+  }
+  const partWarning = hasUnreadableWarningSince(ctx, warningCount);
+  if (!root || partWarning || root.namespaceURI !== CHART_NS || root.localName !== 'chartSpace') {
+    if (!partWarning) warnUnreadableChart(ctx, part, slideNumber, chartPath);
+    return [];
+  }
+  return parseChart(root, ctx.budget);
+}
+
+function hasUnreadableWarningSince(ctx: ReadContext, start: number): boolean {
+  const warnings = ctx.warnings.warnings;
+  for (let index = start; index < warnings.length; index += 1) {
+    ctx.budget.tick();
+    if (warnings[index]?.code === 'UNREADABLE_PART') return true;
+  }
+  return false;
+}
+
+function warnUnreadableChart(
+  ctx: ReadContext,
+  slidePart: string,
+  slideNumber: number,
+  chartPath?: string,
+): void {
+  ctx.warnings.add({
+    code: 'UNREADABLE_PART',
+    message: 'A PowerPoint chart part could not be read.',
+    loc: { slide: slideNumber, path: chartPath ?? partPath(ctx, slidePart) },
+  });
+}
+
 async function parseSlide(
   part: string,
   slideNumber: number,
@@ -627,11 +690,30 @@ async function parseSlide(
       if (stage.blocked) break;
       if (shape.element.localName === 'graphicFrame') {
         const table = parseTable(shape.element, ctx, stage);
-        if (table) ctx.out.table(table.rows, table.headerRows, loc);
-        else await emitSmartArt(shape.element, rels, relationshipIds, part, slideNumber, parts, ctx, stage);
+        if (table) {
+          if (!ctx.out.table(table.rows, table.headerRows, loc)) return false;
+        } else {
+          const chartTables = await readChartTables(
+            shape.element,
+            rels,
+            relationshipIds,
+            part,
+            slideNumber,
+            parts,
+            ctx,
+          );
+          if (chartTables !== undefined) {
+            for (const chartTable of chartTables) {
+              ctx.budget.tick();
+              if (!ctx.out.table(chartTable.rows, chartTable.headerRows, loc)) return false;
+            }
+          } else
+            await emitSmartArt(shape.element, rels, relationshipIds, part, slideNumber, parts, ctx, stage);
+        }
       } else {
         emitTextShape(shape, part, slideNumber, ctx, stage);
       }
+      if (ctx.budget.truncated) return false;
     }
     if (!ctx.budget.truncated) await emitSpeakerNotes(rels, slideNumber, parts, ctx);
   } finally {
