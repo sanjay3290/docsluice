@@ -14,6 +14,13 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "node": [
+        "dist/node/index.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -30,8 +37,16 @@
     "typecheck": "tsc -p tsconfig.json && tsc -p src/node/tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "check:package": "node ../../scripts/check-deps.test.mjs && node ../../scripts/check-deps.mjs && publint . && attw --pack . && size-limit"
   },
+  "size-limit": [
+    {
+      "path": "dist/index.js",
+      "limit": "50 KB",
+      "gzip": true
+    }
+  ],
   "keywords": [
     "document",
     "extraction",
