@@ -12,7 +12,7 @@ import type {
   SectionBlock,
   Warning,
 } from './model.js';
-import type { ExtractOptions } from './options.js';
+import type { ExtractOptions, ResolvedOptions } from './options.js';
 import type { Budget } from './budget.js';
 
 type SectionRole = SectionBlock['role'];
@@ -352,7 +352,7 @@ export class DocBuilder {
   readonly #format: FormatId;
   readonly #mimeType: string;
   readonly #budget: Budget;
-  readonly #options: ExtractOptions;
+  readonly #options: ExtractOptions | ResolvedOptions;
   readonly #blocks: Block[] = [];
   readonly #sections: SectionFrame[] = [];
   readonly #metadata: Metadata = {};
@@ -371,7 +371,12 @@ export class DocBuilder {
    * @param budget Shared extraction budget and warning collector.
    * @param options Effective extraction options, including transform and onBlock hooks.
    */
-  constructor(format: FormatId, mimeType: string, budget: Budget, options: ExtractOptions = {}) {
+  constructor(
+    format: FormatId,
+    mimeType: string,
+    budget: Budget,
+    options: ExtractOptions | ResolvedOptions = {},
+  ) {
     this.#format = format;
     this.#mimeType = mimeType;
     this.#budget = budget;

@@ -4,6 +4,7 @@ import type { FormatId } from './model.js';
 import type { ResolvedOptions } from './options.js';
 import type { WarningSink } from './warnings.js';
 import type { ZipArchive } from '../zip/index.js';
+import type { CfbArchive } from '../ole/index.js';
 
 /** A format reader loaded only when that format is requested. */
 export interface Reader {
@@ -27,4 +28,6 @@ export interface ReadContext {
   extractChild(name: string, bytes: Uint8Array, hint?: { mimeType?: string }): Promise<void>;
   /** Reuse the archive index opened by format detection. */
   readonly zip?: ZipArchive;
+  /** Reuse the compound-file index opened by legacy-format detection. */
+  readonly cfb?: CfbArchive;
 }
