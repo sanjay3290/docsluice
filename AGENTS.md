@@ -18,7 +18,7 @@ This file is for coding agents (Claude Code, Codex, Copilot, Cursor, Jules and o
 
 You get one GitHub issue. Finish it end to end. Small or large, use the same loop.
 
-Pick work from the [roadmap board](https://github.com/users/sanjay3290/projects/3): issues in **Ready** have no open blockers. Epics (`type:epic`) only track milestones; never work an epic directly.
+Pick work from the [roadmap board](https://github.com/users/sanjay3290/projects/3), or run `node scripts/board.mjs next` for the next issue in work order. Ready means no open blockers. Epics (`type:epic`) only track milestones; never work an epic directly. Skip issues labelled `needs-human` or `needs-decision`.
 
 1. **Read.** Read the issue, every requirement ID it cites in `docs/prd.md`, the ADRs it names, and `docs/architecture.md`. Read the code the issue names.
 2. **Check blockers.** The issue lists "Blocked by". Run `gh issue view <n>` for each. If one is still open, stop and comment on your issue: "Blocked by #x". Do not build a workaround for another issue's scope.
@@ -27,7 +27,21 @@ Pick work from the [roadmap board](https://github.com/users/sanjay3290/projects/
 5. **Test first.** Write failing tests that encode each acceptance criterion. Then write the code that makes them pass. Add hostile tests for every reader and every parser of file data.
 6. **Verify.** `npm run verify` must pass. It runs lint, typecheck, unit tests, build and the built-package smoke test.
 7. **Document.** Update `docs/` when behaviour, options or limits change. Format support changes go in `docs/formats/<format>.md`.
-8. **Finish.** Tick every checklist item in the PR body. Fill in the "Decisions" section. Mark the PR ready for review. Do not merge it yourself unless the issue says so.
+8. **Review.** Read your whole diff against the issue, the acceptance criteria and the hard rules below. In Claude Code, run `/code-review` and fix what it finds.
+9. **Finish.** Tick every checklist item in the PR body. Fill in the "Decisions" section. Mark the PR ready, then merge it with `gh pr merge --squash --auto --delete-branch`. The `main` ruleset merges it only when CI is green. Then run `node scripts/board.mjs sync` to move newly unblocked issues to Ready.
+
+**Do not merge** — leave the PR open for the owner, label the issue `needs-human`, and move on — when the PR does one of these: changes the public contract beyond what the issue authorizes, adds a runtime dependency, weakens a security default, or touches release or publishing.
+
+### Continuous mode (working the whole board)
+
+When asked to work all issues (in Claude Code: `/work-board`), repeat until `node scripts/board.mjs next` exits with code 3:
+
+1. `n=$(node scripts/board.mjs next)`.
+2. `node scripts/board.mjs status $n "In progress"`. Work issue `$n` with the loop above, to a merged PR.
+3. `git switch main && git pull --ff-only`, then `node scripts/board.mjs sync`.
+4. If CI fails on `main` after a merge, fix `main` first (new issue labelled `discovered`, fix PR) before the next issue.
+
+When `next` reports no ready issue, stop and report: what merged, what waits on the owner, and why.
 
 ### Long issues (days or weeks)
 
@@ -96,3 +110,4 @@ An issue is done when all of these are true:
 - [ ] Public API changes have TSDoc comments and an entry in the docs.
 - [ ] No new runtime dependency without an accepted ADR.
 - [ ] The PR body lists decisions made and anything left out, with links to follow-up issues.
+- [ ] The PR is merged (or left open on purpose under "Do not merge", with the issue labelled `needs-human`).

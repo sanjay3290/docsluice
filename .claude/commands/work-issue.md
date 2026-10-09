@@ -11,6 +11,6 @@ Work GitHub issue #$ARGUMENTS in this repository to completion. Treat it as a go
 4. If a branch `issue-$ARGUMENTS-*` or a PR for this issue already exists, resume from it: read the PR body, `git log --oneline main..HEAD` and the test results first.
 5. Otherwise branch, write failing tests from the acceptance criteria, implement, and open a draft PR after the first commit.
 6. Run `npm run verify` before every push. Keep the PR checklist and "Next step" line current.
-7. When every acceptance criterion passes and CI is green, fill in "Decisions", mark the PR ready, and report the PR link.
+7. Review the diff (`/code-review`), fill in "Decisions", mark the PR ready, and merge with `gh pr merge --squash --auto --delete-branch` unless AGENTS.md says "Do not merge" for this change. Report the PR link.
 
 Stop and ask only for the cases listed under "Decide, do not stall" in AGENTS.md.
