@@ -33,6 +33,24 @@ function item(
   };
 }
 
+function pdfJsItem(
+  text: string,
+  transform: TextItem['transform'],
+  width: number,
+  height: number,
+  sourceIndex: number,
+): TextItem {
+  return {
+    text,
+    transform,
+    width,
+    height,
+    fontSize: Math.hypot(transform[0], transform[1]),
+    dir: 'ltr',
+    sourceIndex,
+  };
+}
+
 function run(items: TextItem[], p = page(), outlinePresent = false) {
   return layoutPage(items, p, budget(), { outlinePresent });
 }
@@ -85,6 +103,147 @@ describe('PDF private layout helpers', () => {
       item('C2', 410, 60, 30, { sourceIndex: 5 }),
     ]);
     expect(three.lines.map(({ text }) => text)).toEqual(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']);
+  });
+
+  it('does not let PDF.js intercolumn whitespace bridge adjacent columns', () => {
+    const two = run(
+      [
+        pdfJsItem('Left column first line', [12, 0, 0, 12, 48, 675], 106.704, 12, 5),
+        pdfJsItem(' ', [12, 0, 0, 12, 154.704, 675], 175.296, 0, 6),
+        pdfJsItem('Right column first line', [12, 0, 0, 12, 330, 675], 114.696, 12, 7),
+        pdfJsItem('Left column second line', [12, 0, 0, 12, 48, 655], 126.06, 12, 8),
+        pdfJsItem(' ', [12, 0, 0, 12, 174.06, 655], 155.94, 0, 9),
+        pdfJsItem('Right column second line', [12, 0, 0, 12, 330, 655], 134.052, 12, 10),
+      ],
+      page(612, 792),
+    );
+    expect(two.lines.map(({ text }) => text)).toEqual([
+      'Left column first line',
+      'Left column second line',
+      'Right column first line',
+      'Right column second line',
+    ]);
+    expect(two.lines.map(({ column }) => column)).toEqual([0, 0, 1, 1]);
+
+    const three = run(
+      [
+        pdfJsItem('Column A row one', [11, 0, 0, 11, 48, 670], 90.475, 11, 5),
+        pdfJsItem(' ', [11, 0, 0, 11, 138.475, 670], 91.525, 0, 6),
+        pdfJsItem('Column B row one', [11, 0, 0, 11, 230, 670], 90.475, 11, 7),
+        pdfJsItem(' ', [11, 0, 0, 11, 320.475, 670], 91.525, 0, 8),
+        pdfJsItem('Column C row one', [11, 0, 0, 11, 412, 670], 91.08, 11, 9),
+        pdfJsItem('Column A row two', [11, 0, 0, 11, 48, 650], 89.243, 11, 10),
+        pdfJsItem(' ', [11, 0, 0, 11, 137.243, 650], 92.757, 0, 11),
+        pdfJsItem('Column B row two', [11, 0, 0, 11, 230, 650], 89.243, 11, 12),
+        pdfJsItem(' ', [11, 0, 0, 11, 319.243, 650], 92.757, 0, 13),
+        pdfJsItem('Column C row two', [11, 0, 0, 11, 412, 650], 89.848, 11, 14),
+      ],
+      page(612, 792),
+    );
+    expect(three.lines.map(({ text }) => text)).toEqual([
+      'Column A row one',
+      'Column A row two',
+      'Column B row one',
+      'Column B row two',
+      'Column C row one',
+      'Column C row two',
+    ]);
+    expect(three.lines.map(({ column }) => column)).toEqual([0, 0, 1, 1, 2, 2]);
+  });
+
+  it('orders 90-degree rotated lines in their displayed right-to-left columns', () => {
+    const result = run(
+      [
+        pdfJsItem('Rotated page source geometry', [14, 0, 0, 14, 48, 710], 192.206, 14, 3),
+        pdfJsItem('Rotation content line', [12, 0, 0, 12, 48, 680], 109.392, 12, 5),
+      ],
+      page(612, 792, 90),
+    );
+    expect(result.page).toEqual({ width: 792, height: 612 });
+    expect(result.lines.map(({ text }) => text)).toEqual([
+      'Rotated page source geometry',
+      'Rotation content line',
+    ]);
+    expect(result.lines.map(({ x, y, width, height }) => ({ x, y, width, height }))).toEqual([
+      { x: 710, y: 240.206, width: 14, height: 192.206 },
+      { x: 680, y: 157.392, width: 12, height: 109.392 },
+    ]);
+  });
+
+  it.each([90, 180, 270] as const)(
+    'preserves source line order for raw-horizontal text on a %s-degree page',
+    (rotation) => {
+      const result = run(
+        [
+          pdfJsItem('First source line', [12, 0, 0, 12, 48, 710], 90, 12, 0),
+          pdfJsItem('Second source line', [12, 0, 0, 12, 48, 680], 100, 12, 1),
+        ],
+        page(612, 792, rotation),
+      );
+      expect(result.lines.map(({ text }) => text)).toEqual(['First source line', 'Second source line']);
+    },
+  );
+
+  it('keeps left-to-right display order for upright content pre-rotated on a 90-degree page', () => {
+    const result = run(
+      [
+        pdfJsItem('Pre-rotated left column', [0, 12, -12, 0, 100, 100], 80, 12, 0),
+        pdfJsItem('Pre-rotated right column', [0, 12, -12, 0, 100, 400], 80, 12, 1),
+      ],
+      page(612, 792, 90),
+    );
+    expect(result.lines.map(({ text }) => text)).toEqual([
+      'Pre-rotated left column',
+      'Pre-rotated right column',
+    ]);
+    expect(result.lines.map(({ x, y, width, height }) => ({ x, y, width, height }))).toEqual([
+      { x: 100, y: 100, width: 80, height: 12 },
+      { x: 400, y: 100, width: 80, height: 12 },
+    ]);
+  });
+
+  it('keeps source order when the final horizontal display text is upside down', () => {
+    const result = run(
+      [
+        pdfJsItem('First source column', [0, -12, 12, 0, 100, 600], 80, 12, 0),
+        pdfJsItem('Second source column', [0, -12, 12, 0, 100, 300], 80, 12, 1),
+      ],
+      page(612, 792, 90),
+    );
+    expect(result.lines.map(({ text }) => text)).toEqual(['First source column', 'Second source column']);
+  });
+
+  it('keeps mixed text orientations separate and in source order', () => {
+    const result = run(
+      [
+        pdfJsItem('First mixed item', [12, 0, 0, 12, 100, 600], 100, 12, 0),
+        pdfJsItem('Second mixed item', [0, 12, -12, 0, 300, 500], 100, 12, 1),
+      ],
+      page(612, 792, 90),
+    );
+    expect(result.lines.map(({ text, sourceIndices }) => ({ text, sourceIndices }))).toEqual([
+      { text: 'First mixed item', sourceIndices: [0] },
+      { text: 'Second mixed item', sourceIndices: [1] },
+    ]);
+  });
+
+  it('keeps paragraph grouping rotation-invariant and remaps paragraph line references', () => {
+    const items = [
+      pdfJsItem('First sentence.', [12, 0, 0, 12, 48, 740], 100, 12, 0),
+      pdfJsItem('Continued sentence', [12, 0, 0, 12, 48, 724], 120, 12, 1),
+      pdfJsItem('Separate paragraph.', [12, 0, 0, 12, 48, 680], 130, 12, 2),
+    ];
+    const results = ([0, 90, 180, 270] as const).map((rotation) => run(items, page(612, 792, rotation)));
+    const paragraphTexts = results.map((result) => result.paragraphs.map(({ text }) => text));
+    expect(paragraphTexts.every((texts) => JSON.stringify(texts) === JSON.stringify(paragraphTexts[0]))).toBe(
+      true,
+    );
+    expect(paragraphTexts[0]).toEqual(['First sentence. Continued sentence', 'Separate paragraph.']);
+    for (const result of results) {
+      for (const paragraph of result.paragraphs) {
+        for (const line of paragraph.lines) expect(result.lines).toContain(line);
+      }
+    }
   });
 
   it('scales column gaps with the supplied page units', () => {
