@@ -11,9 +11,9 @@ cells. Repeated populated cells expand only after the shared `cells` budget
 accepts them. Merged anchors retain their row and column spans, and covered
 cells only advance the column position. Hidden rows and columns remain included
 and mark their cells `hidden`; hidden sheets remain included and emit a
-`HIDDEN_CONTENT` warning. The current `DocBuilder` API cannot yet set the
-section-level `hidden` field, so hidden sheet state is not represented on the
-sheet section itself.
+`HIDDEN_CONTENT` warning. Sheet sections preserve visibility with `hidden:
+true` for hidden sheets and `hidden: false` for visible sheets. Hidden sheets
+are included by default and remain included with `includeHidden: true`.
 
 Encrypted ODF manifests are rejected with `ENCRYPTED`; the reader does not
 decrypt. External image and hyperlink targets are data only and are never

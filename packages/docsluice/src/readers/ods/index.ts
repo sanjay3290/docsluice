@@ -100,7 +100,7 @@ export const reader: Reader = {
       const hidden = display === 'false';
       if (hidden) warnHidden(ctx);
       const loc: Location = { ...(name ? { sheet: name } : {}), path: contentPath };
-      const canReadSheet = ctx.out.openSection('sheet', loc, name || undefined);
+      const canReadSheet = ctx.out.openSection('sheet', loc, name || undefined, { hidden });
       if (canReadSheet) parseSheet(sheet, scopes, name, hidden, ctx);
       ctx.out.closeSection();
     }

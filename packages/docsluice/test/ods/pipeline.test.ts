@@ -3,6 +3,7 @@ import { createExtractor } from '../../src/core/extract.js';
 import { ReaderRegistry } from '../../src/core/registry.js';
 import type { Reader } from '../../src/core/reader.js';
 import { toMarkdown } from '../../src/render/markdown.js';
+import { toJSON } from '../../src/render/json.js';
 import { toText } from '../../src/render/text.js';
 import { reader } from '../../src/readers/ods/index.js';
 import { makeZip } from '../helpers/zip.js';
@@ -39,8 +40,7 @@ function odsRegistry(): ReaderRegistry {
 }
 
 describe('ODS extraction pipeline', () => {
-  // Lead-owned renderer regression: remove `.fails` when its repair is consumed.
-  it.fails('keeps the populated cell after a sparse merged span in Markdown', async () => {
+  it('keeps the populated cell after a sparse merged span in Markdown and JSON', async () => {
     const bytes = odsZip(
       content(
         '<table:table table:name="Merged"><table:table-row><table:table-cell office:value-type="string" table:number-columns-spanned="2"><text:p>Anchor</text:p></table:table-cell><table:covered-table-cell/><table:table-cell office:value-type="string"><text:p>Next</text:p></table:table-cell></table:table-row></table:table>',
@@ -49,6 +49,28 @@ describe('ODS extraction pipeline', () => {
     const doc = await createExtractor(odsRegistry())(bytes);
     expect(toText(doc)).toContain('Anchor\tNext');
     expect(toMarkdown(doc)).toContain('Next');
+    expect((JSON.parse(toJSON(doc)) as typeof doc).blocks).toEqual(doc.blocks);
+  });
+
+  it('preserves sheet visibility and includes hidden sheets by default', async () => {
+    const doc = await createExtractor(odsRegistry())(
+      odsZip(
+        content(
+          '<table:table table:name="Visible"/><table:table table:name="Hidden" table:display="false"/>',
+        ),
+      ),
+    );
+    const [visible, hidden] = doc.blocks;
+    expect(visible).toMatchObject({ kind: 'section', title: 'Visible' });
+    expect(visible?.kind === 'section' ? visible.hidden : undefined).toBe(false);
+    expect(hidden).toMatchObject({ kind: 'section', title: 'Hidden', hidden: true });
+    expect((JSON.parse(toJSON(doc)) as typeof doc).blocks).toEqual(doc.blocks);
+
+    const includedExplicitly = await createExtractor(odsRegistry())(
+      odsZip(content('<table:table table:name="Hidden" table:display="false"/>')),
+      { includeHidden: true },
+    );
+    expect(includedExplicitly.blocks).toMatchObject([{ kind: 'section', title: 'Hidden', hidden: true }]);
   });
   it('detects a real mimetype-first ODS ZIP and extracts sparse, merged, formula and private metadata', async () => {
     const metadata = `<office:document-meta xmlns:office="${office}" xmlns:dc="${dc}" xmlns:meta="${meta}"><office:meta><dc:title>Quarterly ledger</dc:title><dc:creator>Private Author</dc:creator><meta:user-defined meta:name="department">Finance</meta:user-defined></office:meta></office:document-meta>`;
