@@ -1,0 +1,6 @@
+dist
+coverage
+corpus
+hostile
+package-lock.json
+*.md

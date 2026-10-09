@@ -1,0 +1,50 @@
+name: Task (agent-ready)
+description: One unit of work an agent or a person can finish end to end.
+labels: ['type:task']
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: One or two sentences. What exists when this is done.
+    validations:
+      required: true
+  - type: input
+    id: requirements
+    attributes:
+      label: Requirement IDs
+      description: From docs/prd.md, for example SEC-1, DOC-3. Add ADR numbers too.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context and pointers
+      description: Files to create or change, specs to read, related issues.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: A checklist. Each item must be testable.
+      value: |
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Tests required
+      value: |
+        - [ ] Unit
+        - [ ] Golden (corpus)
+        - [ ] Hostile
+        - [ ] Fuzz target
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+  - type: input
+    id: blocked-by
+    attributes:
+      label: Blocked by
+      description: Issue numbers that must be closed first, for example #3, #7.

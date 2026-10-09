@@ -1,0 +1,47 @@
+{
+  "name": "docsluice",
+  "version": "0.0.0",
+  "description": "Safe, structured document extraction for every JavaScript runtime. One call, one result shape, limits on by default.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./node": {
+      "import": "./dist/node/index.js",
+      "require": "./dist/node/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc -p tsconfig.json && tsc -p src/node/tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "document",
+    "extraction",
+    "pdf",
+    "docx",
+    "xlsx",
+    "pptx",
+    "markdown",
+    "rag",
+    "llm",
+    "parser"
+  ]
+}

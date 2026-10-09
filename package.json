@@ -1,0 +1,34 @@
+{
+  "name": "docsluice-monorepo",
+  "private": true,
+  "description": "Safe, structured document extraction for every JavaScript runtime.",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write . && eslint . --fix",
+    "test": "npm run test --workspaces --if-present",
+    "test:dist": "npm run build && node --test packages/*/test-dist/*.test.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run test:dist"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.0.0",
+    "@vitest/coverage-v8": "^5.0.3",
+    "eslint": "^10.12.0",
+    "eslint-plugin-regexp": "^3.3.1",
+    "prettier": "^3.9.9",
+    "tsdown": "^0.23.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.3"
+  }
+}

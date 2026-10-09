@@ -1,0 +1,29 @@
+name: Bug report
+description: Wrong output, a crash, a hang, or a limit that did not hold.
+labels: ['type:bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never upload a private or confidential document.** Make a small file that shows the same problem.
+        For a security problem (crash, hang, memory blow-up, file read, network call), use **Security → Report a vulnerability** instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: Sample file
+      description: Attach a small, non-private file, or describe how to make one.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: docsluice version, runtime and options
+      placeholder: "0.3.0, Node 22, { children: 'list' }"
+    validations:
+      required: true
