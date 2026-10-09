@@ -1,0 +1,422 @@
+id,format_code,value,date_system,family,kind,libreoffice_display
+NF001,General,0,1900,general,number,0
+NF002,General,1.2345,1900,general,number,1.2345
+NF003,General,-2.5,1900,general,number,-2.5
+NF004,General,1000000.25,1900,general,number,1000000.25
+NF005,General,-0.00012,1900,general,number,-0.00012
+NF006,General,123456789,1900,general,number,123456789
+NF007,General,42.125,1900,general,number,42.125
+NF008,General,0.5,1900,general,number,0.5
+NF009,General,2e-06,1900,general,number,0.000002
+NF010,General,-100000,1900,general,number,-100000
+NF011,0,0,1900,decimal,number,0
+NF012,0,1.25,1900,decimal,number,1
+NF013,0,-1.25,1900,decimal,number,-1
+NF014,0,1234.5,1900,decimal,number,1235
+NF015,0,0.009,1900,decimal,number,0
+NF016,0,0.995,1900,decimal,number,1
+NF017,0,12.345,1900,decimal,number,12
+NF018,0.0,0,1900,decimal,number,0.0
+NF019,0.0,1.25,1900,decimal,number,1.3
+NF020,0.0,-1.25,1900,decimal,number,-1.3
+NF021,0.0,1234.5,1900,decimal,number,1234.5
+NF022,0.0,0.009,1900,decimal,number,0.0
+NF023,0.0,0.995,1900,decimal,number,1.0
+NF024,0.0,12.345,1900,decimal,number,12.3
+NF025,0.00,0,1900,decimal,number,0.00
+NF026,0.00,1.25,1900,decimal,number,1.25
+NF027,0.00,-1.25,1900,decimal,number,-1.25
+NF028,0.00,1234.5,1900,decimal,number,1234.50
+NF029,0.00,0.009,1900,decimal,number,0.01
+NF030,0.00,0.995,1900,decimal,number,1.00
+NF031,0.00,12.345,1900,decimal,number,12.35
+NF032,0.000,0,1900,decimal,number,0.000
+NF033,0.000,1.25,1900,decimal,number,1.250
+NF034,0.000,-1.25,1900,decimal,number,-1.250
+NF035,0.000,1234.5,1900,decimal,number,1234.500
+NF036,0.000,0.009,1900,decimal,number,0.009
+NF037,0.000,0.995,1900,decimal,number,0.995
+NF038,0.000,12.345,1900,decimal,number,12.345
+NF039,00.00,0,1900,decimal,number,00.00
+NF040,00.00,1.25,1900,decimal,number,01.25
+NF041,00.00,-1.25,1900,decimal,number,-01.25
+NF042,00.00,1234.5,1900,decimal,number,1234.50
+NF043,00.00,0.009,1900,decimal,number,00.01
+NF044,00.00,0.995,1900,decimal,number,01.00
+NF045,00.00,12.345,1900,decimal,number,12.35
+NF046,0000.00,0,1900,decimal,number,0000.00
+NF047,0000.00,1.25,1900,decimal,number,0001.25
+NF048,0000.00,-1.25,1900,decimal,number,-0001.25
+NF049,0000.00,1234.5,1900,decimal,number,1234.50
+NF050,0000.00,0.009,1900,decimal,number,0000.01
+NF051,0000.00,0.995,1900,decimal,number,0001.00
+NF052,0000.00,12.345,1900,decimal,number,0012.35
+NF053,#.##,0,1900,decimal,number,
+NF054,#.##,1.25,1900,decimal,number,1.25
+NF055,#.##,-1.25,1900,decimal,number,-1.25
+NF056,#.##,1234.5,1900,decimal,number,1234.5
+NF057,#.##,0.009,1900,decimal,number,.01
+NF058,#.##,0.995,1900,decimal,number,1
+NF059,#.##,12.345,1900,decimal,number,12.35
+NF060,0.##,0,1900,decimal,number,0
+NF061,0.##,1.25,1900,decimal,number,1.25
+NF062,0.##,-1.25,1900,decimal,number,-1.25
+NF063,0.##,1234.5,1900,decimal,number,1234.5
+NF064,0.##,0.009,1900,decimal,number,0.01
+NF065,0.##,0.995,1900,decimal,number,1
+NF066,0.##,12.345,1900,decimal,number,12.35
+NF067,0.???,0,1900,decimal,number,0.   
+NF068,0.???,1.25,1900,decimal,number,1.25 
+NF069,0.???,-1.25,1900,decimal,number,-1.25 
+NF070,0.???,1234.5,1900,decimal,number,1234.5  
+NF071,0.???,0.009,1900,decimal,number,0.009
+NF072,0.???,0.995,1900,decimal,number,0.995
+NF073,0.???,12.345,1900,decimal,number,12.345
+NF074,0.00;-0.00,0,1900,decimal,number,0.00
+NF075,0.00;-0.00,1.25,1900,decimal,number,1.25
+NF076,0.00;-0.00,-1.25,1900,decimal,number,-1.25
+NF077,0.00;-0.00,1234.5,1900,decimal,number,1234.50
+NF078,0.00;-0.00,0.009,1900,decimal,number,0.01
+NF079,0.00;-0.00,0.995,1900,decimal,number,1.00
+NF080,0.00;-0.00,12.345,1900,decimal,number,12.35
+NF081,"#,##0",0,1900,thousands,number,0
+NF082,"#,##0",1,1900,thousands,number,1
+NF083,"#,##0",-1,1900,thousands,number,-1
+NF084,"#,##0",1234.5,1900,thousands,number,"1,235"
+NF085,"#,##0",-1234.5,1900,thousands,number,"-1,235"
+NF086,"#,##0",123456789.125,1900,thousands,number,"123,456,789"
+NF087,"#,##0.00",0,1900,thousands,number,0.00
+NF088,"#,##0.00",1,1900,thousands,number,1.00
+NF089,"#,##0.00",-1,1900,thousands,number,-1.00
+NF090,"#,##0.00",1234.5,1900,thousands,number,"1,234.50"
+NF091,"#,##0.00",-1234.5,1900,thousands,number,"-1,234.50"
+NF092,"#,##0.00",123456789.125,1900,thousands,number,"123,456,789.13"
+NF093,"#,##0;(#,##0)",0,1900,thousands,number,0
+NF094,"#,##0;(#,##0)",1,1900,thousands,number,1
+NF095,"#,##0;(#,##0)",-1,1900,thousands,number,(1)
+NF096,"#,##0;(#,##0)",1234.5,1900,thousands,number,"1,235"
+NF097,"#,##0;(#,##0)",-1234.5,1900,thousands,number,"(1,235)"
+NF098,"#,##0;(#,##0)",123456789.125,1900,thousands,number,"123,456,789"
+NF099,"#,##0.00;(#,##0.00)",0,1900,thousands,number,0.00
+NF100,"#,##0.00;(#,##0.00)",1,1900,thousands,number,1.00
+NF101,"#,##0.00;(#,##0.00)",-1,1900,thousands,number,(1.00)
+NF102,"#,##0.00;(#,##0.00)",1234.5,1900,thousands,number,"1,234.50"
+NF103,"#,##0.00;(#,##0.00)",-1234.5,1900,thousands,number,"(1,234.50)"
+NF104,"#,##0.00;(#,##0.00)",123456789.125,1900,thousands,number,"123,456,789.13"
+NF105,"#,##0.00;[Red](#,##0.00);""zero""",0,1900,thousands,number,zero
+NF106,"#,##0.00;[Red](#,##0.00);""zero""",1,1900,thousands,number,1.00
+NF107,"#,##0.00;[Red](#,##0.00);""zero""",-1,1900,thousands,number,(1.00)
+NF108,"#,##0.00;[Red](#,##0.00);""zero""",1234.5,1900,thousands,number,"1,234.50"
+NF109,"#,##0.00;[Red](#,##0.00);""zero""",-1234.5,1900,thousands,number,"(1,234.50)"
+NF110,"#,##0.00;[Red](#,##0.00);""zero""",123456789.125,1900,thousands,number,"123,456,789.13"
+NF111,0%,0,1900,percent,number,0%
+NF112,0%,0.125,1900,percent,number,13%
+NF113,0%,1.25,1900,percent,number,125%
+NF114,0%,-0.125,1900,percent,number,-13%
+NF115,0%,0.9999,1900,percent,number,100%
+NF116,0.0%,0,1900,percent,number,0.0%
+NF117,0.0%,0.125,1900,percent,number,12.5%
+NF118,0.0%,1.25,1900,percent,number,125.0%
+NF119,0.0%,-0.125,1900,percent,number,-12.5%
+NF120,0.0%,0.9999,1900,percent,number,100.0%
+NF121,0.00%,0,1900,percent,number,0.00%
+NF122,0.00%,0.125,1900,percent,number,12.50%
+NF123,0.00%,1.25,1900,percent,number,125.00%
+NF124,0.00%,-0.125,1900,percent,number,-12.50%
+NF125,0.00%,0.9999,1900,percent,number,99.99%
+NF126,0.00%;[Red](0.00%),0,1900,percent,number,0.00%
+NF127,0.00%;[Red](0.00%),0.125,1900,percent,number,12.50%
+NF128,0.00%;[Red](0.00%),1.25,1900,percent,number,125.00%
+NF129,0.00%;[Red](0.00%),-0.125,1900,percent,number,(12.50%)
+NF130,0.00%;[Red](0.00%),0.9999,1900,percent,number,99.99%
+NF131,"""$""#,##0.00",0,1900,currency,number,$0.00
+NF132,"""$""#,##0.00",1,1900,currency,number,$1.00
+NF133,"""$""#,##0.00",-1,1900,currency,number,-$1.00
+NF134,"""$""#,##0.00",1234.5,1900,currency,number,"$1,234.50"
+NF135,"""$""#,##0.00",-1234.5,1900,currency,number,"-$1,234.50"
+NF136,"""$""#,##0.00;(""$""#,##0.00)",0,1900,currency,number,$0.00
+NF137,"""$""#,##0.00;(""$""#,##0.00)",1,1900,currency,number,$1.00
+NF138,"""$""#,##0.00;(""$""#,##0.00)",-1,1900,currency,number,($1.00)
+NF139,"""$""#,##0.00;(""$""#,##0.00)",1234.5,1900,currency,number,"$1,234.50"
+NF140,"""$""#,##0.00;(""$""#,##0.00)",-1234.5,1900,currency,number,"($1,234.50)"
+NF141,"[$€-407]#,##0.00",0,1900,currency,number,€0.00
+NF142,"[$€-407]#,##0.00",1,1900,currency,number,€1.00
+NF143,"[$€-407]#,##0.00",-1,1900,currency,number,-€1.00
+NF144,"[$€-407]#,##0.00",1234.5,1900,currency,number,"€1,234.50"
+NF145,"[$€-407]#,##0.00",-1234.5,1900,currency,number,"-€1,234.50"
+NF146,"[$£-809]#,##0.00",0,1900,currency,number,£0.00
+NF147,"[$£-809]#,##0.00",1,1900,currency,number,£1.00
+NF148,"[$£-809]#,##0.00",-1,1900,currency,number,-£1.00
+NF149,"[$£-809]#,##0.00",1234.5,1900,currency,number,"£1,234.50"
+NF150,"[$£-809]#,##0.00",-1234.5,1900,currency,number,"-£1,234.50"
+NF151,"""USD ""#,##0.00",0,1900,currency,number,USD 0.00
+NF152,"""USD ""#,##0.00",1,1900,currency,number,USD 1.00
+NF153,"""USD ""#,##0.00",-1,1900,currency,number,-USD 1.00
+NF154,"""USD ""#,##0.00",1234.5,1900,currency,number,"USD 1,234.50"
+NF155,"""USD ""#,##0.00",-1234.5,1900,currency,number,"-USD 1,234.50"
+NF156,"""$""#,##0.00;[Red](""$""#,##0.00)",0,1900,currency,number,$0.00
+NF157,"""$""#,##0.00;[Red](""$""#,##0.00)",1,1900,currency,number,$1.00
+NF158,"""$""#,##0.00;[Red](""$""#,##0.00)",-1,1900,currency,number,($1.00)
+NF159,"""$""#,##0.00;[Red](""$""#,##0.00)",1234.5,1900,currency,number,"$1,234.50"
+NF160,"""$""#,##0.00;[Red](""$""#,##0.00)",-1234.5,1900,currency,number,"($1,234.50)"
+NF161,[>=100]0.0;[<0](0.0);0.0,-1234.5,1900,conditions-sections,number,(1234.5)
+NF162,[>=100]0.0;[<0](0.0);0.0,-1,1900,conditions-sections,number,(1.0)
+NF163,[>=100]0.0;[<0](0.0);0.0,0,1900,conditions-sections,number,0.0
+NF164,[>=100]0.0;[<0](0.0);0.0,1.25,1900,conditions-sections,number,1.3
+NF165,[>=100]0.0;[<0](0.0);0.0,1234.5,1900,conditions-sections,number,1234.5
+NF166,"[>=1000]#,##0;0",-1234.5,1900,conditions-sections,number,1235
+NF167,"[>=1000]#,##0;0",-1,1900,conditions-sections,number,1
+NF168,"[>=1000]#,##0;0",0,1900,conditions-sections,number,0
+NF169,"[>=1000]#,##0;0",1.25,1900,conditions-sections,number,1
+NF170,"[>=1000]#,##0;0",1234.5,1900,conditions-sections,number,"1,235"
+NF171,"0.0;[Red](0.0);""zero"";@",-1234.5,1900,conditions-sections,number,(1234.5)
+NF172,"0.0;[Red](0.0);""zero"";@",-1,1900,conditions-sections,number,(1.0)
+NF173,"0.0;[Red](0.0);""zero"";@",0,1900,conditions-sections,number,zero
+NF174,"0.0;[Red](0.0);""zero"";@",1.25,1900,conditions-sections,number,1.3
+NF175,"0.0;[Red](0.0);""zero"";@",1234.5,1900,conditions-sections,number,1234.5
+NF176,"0.00;[Blue]-0.00;""nil"";""text:""@",-1234.5,1900,conditions-sections,number,-1234.50
+NF177,"0.00;[Blue]-0.00;""nil"";""text:""@",-1,1900,conditions-sections,number,-1.00
+NF178,"0.00;[Blue]-0.00;""nil"";""text:""@",0,1900,conditions-sections,number,nil
+NF179,"0.00;[Blue]-0.00;""nil"";""text:""@",1.25,1900,conditions-sections,number,1.25
+NF180,"0.00;[Blue]-0.00;""nil"";""text:""@",1234.5,1900,conditions-sections,number,1234.50
+NF181,"0.00;-0.00;""zero""",-1234.5,1900,conditions-sections,number,-1234.50
+NF182,"0.00;-0.00;""zero""",-1,1900,conditions-sections,number,-1.00
+NF183,"0.00;-0.00;""zero""",0,1900,conditions-sections,number,zero
+NF184,"0.00;-0.00;""zero""",1.25,1900,conditions-sections,number,1.25
+NF185,"0.00;-0.00;""zero""",1234.5,1900,conditions-sections,number,1234.50
+NF186,"0.0;[Red](0.0);""zero"";@",alpha,1900,text-sections,text,alpha
+NF187,"0.0;[Red](0.0);""zero"";@",text 42,1900,text-sections,text,text 42
+NF188,"0.00;-0.00;""zero"";@",__proto__,1900,text-sections,text,__proto__
+NF189,"0.00;-0.00;""zero"";@",line 1,1900,text-sections,text,line 1
+NF190,"0 ""units""",0,1900,literals-escapes,number,0 units
+NF191,"0 ""units""",1,1900,literals-escapes,number,1 units
+NF192,"0 ""units""",-2,1900,literals-escapes,number,-2 units
+NF193,"0 ""units""",12.5,1900,literals-escapes,number,13 units
+NF194,"0.0\ ""kg""",0,1900,literals-escapes,number,0.0 kg
+NF195,"0.0\ ""kg""",1,1900,literals-escapes,number,1.0 kg
+NF196,"0.0\ ""kg""",-2,1900,literals-escapes,number,-2.0 kg
+NF197,"0.0\ ""kg""",12.5,1900,literals-escapes,number,12.5 kg
+NF198,"""value: ""0",0,1900,literals-escapes,number,value: 0
+NF199,"""value: ""0",1,1900,literals-escapes,number,value: 1
+NF200,"""value: ""0",-2,1900,literals-escapes,number,-value: 2
+NF201,"""value: ""0",12.5,1900,literals-escapes,number,value: 13
+NF202,"0 ""USD""",0,1900,literals-escapes,number,0 USD
+NF203,"0 ""USD""",1,1900,literals-escapes,number,1 USD
+NF204,"0 ""USD""",-2,1900,literals-escapes,number,-2 USD
+NF205,"0 ""USD""",12.5,1900,literals-escapes,number,13 USD
+NF206,\@0,0,1900,literals-escapes,number,@0
+NF207,\@0,1,1900,literals-escapes,number,@1
+NF208,\@0,-2,1900,literals-escapes,number,-@2
+NF209,\@0,12.5,1900,literals-escapes,number,@13
+NF210,"0 ""items"";[Red](0 ""items"")",0,1900,literals-escapes,number,0 items
+NF211,"0 ""items"";[Red](0 ""items"")",1,1900,literals-escapes,number,1 items
+NF212,"0 ""items"";[Red](0 ""items"")",-2,1900,literals-escapes,number,(2 items)
+NF213,"0 ""items"";[Red](0 ""items"")",12.5,1900,literals-escapes,number,13 items
+NF214,0.00E+00,0.000123,1900,exponent,number,1.23E-04
+NF215,0.00E+00,0.0123,1900,exponent,number,1.23E-02
+NF216,0.00E+00,12.3,1900,exponent,number,1.23E+01
+NF217,0.00E+00,12345,1900,exponent,number,1.23E+04
+NF218,0.00E+00,-1234567,1900,exponent,number,-1.23E+06
+NF219,0.0E+0,0.000123,1900,exponent,number,1.2E-4
+NF220,0.0E+0,0.0123,1900,exponent,number,1.2E-2
+NF221,0.0E+0,12.3,1900,exponent,number,1.2E+1
+NF222,0.0E+0,12345,1900,exponent,number,1.2E+4
+NF223,0.0E+0,-1234567,1900,exponent,number,-1.2E+6
+NF224,##0.0E+0,0.000123,1900,exponent,number,123.0E-6
+NF225,##0.0E+0,0.0123,1900,exponent,number,12.3E-3
+NF226,##0.0E+0,12.3,1900,exponent,number,12.3E+0
+NF227,##0.0E+0,12345,1900,exponent,number,12.3E+3
+NF228,##0.0E+0,-1234567,1900,exponent,number,-1.2E+6
+NF229,0.000E-00,0.000123,1900,exponent,number,1.230E-04
+NF230,0.000E-00,0.0123,1900,exponent,number,1.230E-02
+NF231,0.000E-00,12.3,1900,exponent,number,1.230E01
+NF232,0.000E-00,12345,1900,exponent,number,1.235E04
+NF233,0.000E-00,-1234567,1900,exponent,number,-1.235E06
+NF234,# ?/?,0.5,1900,fractions,number, 1/2
+NF235,# ?/?,1.25,1900,fractions,number,1 1/4
+NF236,# ?/?,3.14159,1900,fractions,number,3 1/7
+NF237,# ?/?,-0.25,1900,fractions,number,- 1/4
+NF238,# ??/??,0.5,1900,fractions,number,  1/2 
+NF239,# ??/??,1.25,1900,fractions,number,1  1/4 
+NF240,# ??/??,3.14159,1900,fractions,number,3 14/99
+NF241,# ??/??,-0.25,1900,fractions,number,-  1/4 
+NF242,??/??,0.5,1900,fractions,number, 1/2 
+NF243,??/??,1.25,1900,fractions,number, 5/4 
+NF244,??/??,3.14159,1900,fractions,number,311/99
+NF245,??/??,-0.25,1900,fractions,number,- 1/4 
+NF246,# ?/8,0.5,1900,fractions,number, 4/8
+NF247,# ?/8,1.25,1900,fractions,number,1 2/8
+NF248,# ?/8,3.14159,1900,fractions,number,3 1/8
+NF249,# ?/8,-0.25,1900,fractions,number,- 2/8
+NF250,# ?/16,0.5,1900,fractions,number, 8/16
+NF251,# ?/16,1.25,1900,fractions,number,1 4/16
+NF252,# ?/16,3.14159,1900,fractions,number,3 2/16
+NF253,# ?/16,-0.25,1900,fractions,number,- 4/16
+NF254,yyyy-mm-dd,0,1900,date,number,1899-12-30
+NF255,yyyy-mm-dd,1,1900,date,number,1899-12-31
+NF256,yyyy-mm-dd,59,1900,date,number,1900-02-27
+NF257,yyyy-mm-dd,60,1900,date,number,1900-02-28
+NF258,yyyy-mm-dd,61,1900,date,number,1900-03-01
+NF259,dd/mm/yyyy,0,1900,date,number,30/12/1899
+NF260,dd/mm/yyyy,1,1900,date,number,31/12/1899
+NF261,dd/mm/yyyy,59,1900,date,number,27/02/1900
+NF262,dd/mm/yyyy,60,1900,date,number,28/02/1900
+NF263,dd/mm/yyyy,61,1900,date,number,01/03/1900
+NF264,m/d/yy,0,1900,date,number,12/30/99
+NF265,m/d/yy,1,1900,date,number,12/31/99
+NF266,m/d/yy,59,1900,date,number,2/27/00
+NF267,m/d/yy,60,1900,date,number,2/28/00
+NF268,m/d/yy,61,1900,date,number,3/1/00
+NF269,"mmm d, yyyy",0,1900,date,number,"Dec 30, 1899"
+NF270,"mmm d, yyyy",1,1900,date,number,"Dec 31, 1899"
+NF271,"mmm d, yyyy",59,1900,date,number,"Feb 27, 1900"
+NF272,"mmm d, yyyy",60,1900,date,number,"Feb 28, 1900"
+NF273,"mmm d, yyyy",61,1900,date,number,"Mar 1, 1900"
+NF274,mmmm,0,1900,date,number,December
+NF275,mmmm,1,1900,date,number,December
+NF276,mmmm,59,1900,date,number,February
+NF277,mmmm,60,1900,date,number,February
+NF278,mmmm,61,1900,date,number,March
+NF279,mmm,0,1900,date,number,Dec
+NF280,mmm,1,1900,date,number,Dec
+NF281,mmm,59,1900,date,number,Feb
+NF282,mmm,60,1900,date,number,Feb
+NF283,mmm,61,1900,date,number,Mar
+NF284,mm,0,1900,date,number,12
+NF285,mm,1,1900,date,number,12
+NF286,mm,59,1900,date,number,02
+NF287,mm,60,1900,date,number,02
+NF288,mm,61,1900,date,number,03
+NF289,m,0,1900,date,number,12
+NF290,m,1,1900,date,number,12
+NF291,m,59,1900,date,number,2
+NF292,m,60,1900,date,number,2
+NF293,m,61,1900,date,number,3
+NF294,dd,0,1900,date,number,30
+NF295,dd,1,1900,date,number,31
+NF296,dd,59,1900,date,number,27
+NF297,dd,60,1900,date,number,28
+NF298,dd,61,1900,date,number,01
+NF299,d,0,1900,date,number,30
+NF300,d,1,1900,date,number,31
+NF301,d,59,1900,date,number,27
+NF302,d,60,1900,date,number,28
+NF303,d,61,1900,date,number,1
+NF304,ddd,0,1900,date,number,Sat
+NF305,ddd,1,1900,date,number,Sun
+NF306,ddd,59,1900,date,number,Tue
+NF307,ddd,60,1900,date,number,Wed
+NF308,ddd,61,1900,date,number,Thu
+NF309,dddd,0,1900,date,number,Saturday
+NF310,dddd,1,1900,date,number,Sunday
+NF311,dddd,59,1900,date,number,Tuesday
+NF312,dddd,60,1900,date,number,Wednesday
+NF313,dddd,61,1900,date,number,Thursday
+NF314,yy,0,1900,date,number,99
+NF315,yy,1,1900,date,number,99
+NF316,yy,59,1900,date,number,00
+NF317,yy,60,1900,date,number,00
+NF318,yy,61,1900,date,number,00
+NF319,yyyy,0,1900,date,number,1899
+NF320,yyyy,1,1900,date,number,1899
+NF321,yyyy,59,1900,date,number,1900
+NF322,yyyy,60,1900,date,number,1900
+NF323,yyyy,61,1900,date,number,1900
+NF324,mmm-yy,0,1900,date,number,Dec-99
+NF325,mmm-yy,1,1900,date,number,Dec-99
+NF326,mmm-yy,59,1900,date,number,Feb-00
+NF327,mmm-yy,60,1900,date,number,Feb-00
+NF328,mmm-yy,61,1900,date,number,Mar-00
+NF329,yyyy-mm-dd,0,1904,date1904,number,1904-01-01
+NF330,yyyy-mm-dd,1,1904,date1904,number,1904-01-02
+NF331,yyyy-mm-dd,1462,1904,date1904,number,1908-01-02
+NF332,yyyy-mm-dd,25569,1904,date1904,number,1974-01-02
+NF333,yyyy-mm-dd,40000,1904,date1904,number,2013-07-07
+NF334,hh:mm,0,1900,time,number,00:00
+NF335,hh:mm,0.5,1900,time,number,12:00
+NF336,hh:mm,0.99999,1900,time,number,23:59
+NF337,hh:mm,1.5,1900,time,number,12:00
+NF338,hh:mm,2.125,1900,time,number,03:00
+NF339,h:mm AM/PM,0,1900,time,number,12:00 AM
+NF340,h:mm AM/PM,0.5,1900,time,number,12:00 PM
+NF341,h:mm AM/PM,0.99999,1900,time,number,11:59 PM
+NF342,h:mm AM/PM,1.5,1900,time,number,12:00 PM
+NF343,h:mm AM/PM,2.125,1900,time,number,3:00 AM
+NF344,hh:mm:ss,0,1900,time,number,00:00:00
+NF345,hh:mm:ss,0.5,1900,time,number,12:00:00
+NF346,hh:mm:ss,0.99999,1900,time,number,23:59:59
+NF347,hh:mm:ss,1.5,1900,time,number,12:00:00
+NF348,hh:mm:ss,2.125,1900,time,number,03:00:00
+NF349,mm:ss,0,1900,time,number,00:00
+NF350,mm:ss,0.5,1900,time,number,00:00
+NF351,mm:ss,0.99999,1900,time,number,59:59
+NF352,mm:ss,1.5,1900,time,number,00:00
+NF353,mm:ss,2.125,1900,time,number,00:00
+NF354,h:mm:ss AM/PM,0,1900,time,number,12:00:00 AM
+NF355,h:mm:ss AM/PM,0.5,1900,time,number,12:00:00 PM
+NF356,h:mm:ss AM/PM,0.99999,1900,time,number,11:59:59 PM
+NF357,h:mm:ss AM/PM,1.5,1900,time,number,12:00:00 PM
+NF358,h:mm:ss AM/PM,2.125,1900,time,number,3:00:00 AM
+NF359,[h]:mm,0,1900,time,number,0:00
+NF360,[h]:mm,0.5,1900,time,number,12:00
+NF361,[h]:mm,0.99999,1900,time,number,23:59
+NF362,[h]:mm,1.5,1900,time,number,36:00
+NF363,[h]:mm,2.125,1900,time,number,51:00
+NF364,[mm]:ss,0,1900,time,number,00:00
+NF365,[mm]:ss,0.5,1900,time,number,720:00
+NF366,[mm]:ss,0.99999,1900,time,number,1439:59
+NF367,[mm]:ss,1.5,1900,time,number,2160:00
+NF368,[mm]:ss,2.125,1900,time,number,3060:00
+NF369,[ss],0,1900,time,number,00
+NF370,[ss],0.5,1900,time,number,43200
+NF371,[ss],0.99999,1900,time,number,86399
+NF372,[ss],1.5,1900,time,number,129600
+NF373,[ss],2.125,1900,time,number,183600
+NF374,[h],0.5,1900,elapsed-time,number,12
+NF375,[h],1.25,1900,elapsed-time,number,30
+NF376,[h],2.5,1900,elapsed-time,number,60
+NF377,[h],12.125,1900,elapsed-time,number,291
+NF378,[mm],0.5,1900,elapsed-time,number,720
+NF379,[mm],1.25,1900,elapsed-time,number,1800
+NF380,[mm],2.5,1900,elapsed-time,number,3600
+NF381,[mm],12.125,1900,elapsed-time,number,17460
+NF382,[ss],1.25,1900,elapsed-time,number,108000
+NF383,[ss],2.5,1900,elapsed-time,number,216000
+NF384,[ss],12.125,1900,elapsed-time,number,1047600
+NF385,@,alpha,1900,text-padding,text,alpha
+NF386,@,text 42,1900,text-padding,text,text 42
+NF387,"""[""@""]""",alpha,1900,text-padding,text,[alpha]
+NF388,"""[""@""]""",text 42,1900,text-padding,text,[text 42]
+NF389,"@ ""suffix""",alpha,1900,text-padding,text,alpha suffix
+NF390,"@ ""suffix""",text 42,1900,text-padding,text,text 42 suffix
+NF391,"""prefix ""@",alpha,1900,text-padding,text,prefix alpha
+NF392,"""prefix ""@",text 42,1900,text-padding,text,prefix text 42
+NF393,"0;[Red]-0;""zero"";@",alpha,1900,text-padding,text,alpha
+NF394,"0;[Red]-0;""zero"";@",text 42,1900,text-padding,text,text 42
+NF395,"_(* #,##0_);_(* (#,##0);_(* ""-""_);_(@_)",alpha,1900,text-padding,text, alpha 
+NF396,"_(* #,##0_);_(* (#,##0);_(* ""-""_);_(@_)",text 42,1900,text-padding,text, text 42 
+NF397,"0;[Red](0);""-"";@",123,1900,text-section,text,123
+NF398,"0;[Red](0);""-"";@",text,1900,text-section,text,text
+NF399,_(0,0,1900,padding,number, 0
+NF400,_(0,12,1900,padding,number, 12
+NF401,_(0,-12,1900,padding,number,- 12
+NF402,*x0,0,1900,padding,number,0
+NF403,*x0,12,1900,padding,number,12
+NF404,*x0,-12,1900,padding,number,-12
+NF405,"_(* #,##0_);_(* (#,##0);_(* ""-""_);_(@_)",0,1900,padding,number, - 
+NF406,"_(* #,##0_);_(* (#,##0);_(* ""-""_);_(@_)",12,1900,padding,number, 12 
+NF407,"_(* #,##0_);_(* (#,##0);_(* ""-""_);_(@_)",-12,1900,padding,number, (12)
+NF408,yyyy-mm-dd hh:mm,0,1900,date-system-1900,number,1899-12-30 00:00
+NF409,yyyy-mm-dd hh:mm,1,1900,date-system-1900,number,1899-12-31 00:00
+NF410,yyyy-mm-dd hh:mm,59,1900,date-system-1900,number,1900-02-27 00:00
+NF411,yyyy-mm-dd hh:mm,60,1900,date-system-1900,number,1900-02-28 00:00
+NF412,yyyy-mm-dd hh:mm,61,1900,date-system-1900,number,1900-03-01 00:00
+NF413,yyyy-mm-dd hh:mm,1462,1900,date-system-1900,number,1904-01-01 00:00
+NF414,yyyy-mm-dd hh:mm,25569,1900,date-system-1900,number,1970-01-01 00:00
+NF415,yyyy-mm-dd hh:mm,0,1904,date-system-1904,number,1904-01-01 00:00
+NF416,yyyy-mm-dd hh:mm,1,1904,date-system-1904,number,1904-01-02 00:00
+NF417,yyyy-mm-dd hh:mm,59,1904,date-system-1904,number,1904-02-29 00:00
+NF418,yyyy-mm-dd hh:mm,60,1904,date-system-1904,number,1904-03-01 00:00
+NF419,yyyy-mm-dd hh:mm,61,1904,date-system-1904,number,1904-03-02 00:00
+NF420,yyyy-mm-dd hh:mm,1462,1904,date-system-1904,number,1908-01-02 00:00
+NF421,yyyy-mm-dd hh:mm,25569,1904,date-system-1904,number,1974-01-02 00:00

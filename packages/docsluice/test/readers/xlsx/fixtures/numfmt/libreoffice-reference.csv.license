@@ -1,0 +1,3 @@
+SPDX-License-Identifier: CC0-1.0
+Source: Self-authored formula-free XLSX input fixtures rendered by LibreOfficeDev 26.8.0.0.alpha0.
+Notes: Captured display strings are factual observations from the exact CSV export options recorded in reference.json. Source XLSX packages are in workbooks/; direct raw exports are in raw_csv/.
