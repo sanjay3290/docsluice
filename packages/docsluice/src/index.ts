@@ -21,3 +21,5 @@ export {
 export type { ErrorCode } from './core/errors.js';
 export { parseXml, scanXml } from './xml/index.js';
 export type { XmlContext, XmlElement, XmlElementInfo, XmlHandler } from './xml/index.js';
+export { toText } from './render/text.js';
+export type { TextOptions } from './render/layout.js';
