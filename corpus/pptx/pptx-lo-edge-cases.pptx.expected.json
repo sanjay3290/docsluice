@@ -1,0 +1,334 @@
+{
+  "format": "pptx",
+  "mimeType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "metadata": {
+    "language": "en-US"
+  },
+  "features": {
+    "hasMacros": false,
+    "hasExternalLinks": false,
+    "hasEmbeddedFiles": false,
+    "isEncrypted": false,
+    "hasJavaScript": false
+  },
+  "blocks": [
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "heading",
+          "level": 1,
+          "text": "SmartArt and chart slide",
+          "loc": {
+            "slide": 1,
+            "path": "ppt/slides/slide1.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 1,
+        "path": "ppt/slides/slide1.xml"
+      },
+      "title": "SmartArt and chart slide"
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "heading",
+          "level": 1,
+          "text": "Order and layout fixture",
+          "loc": {
+            "slide": 2,
+            "path": "ppt/slides/slide2.xml"
+          }
+        },
+        {
+          "kind": "paragraph",
+          "text": "Top row right before lower row left",
+          "loc": {
+            "slide": 2,
+            "path": "ppt/slides/slide2.xml"
+          }
+        },
+        {
+          "kind": "paragraph",
+          "text": "Lower row left after top row right",
+          "loc": {
+            "slide": 2,
+            "path": "ppt/slides/slide2.xml"
+          }
+        },
+        {
+          "kind": "paragraph",
+          "text": "Left column",
+          "loc": {
+            "slide": 2,
+            "path": "ppt/slides/slide2.xml"
+          }
+        },
+        {
+          "kind": "paragraph",
+          "text": "Right column",
+          "loc": {
+            "slide": 2,
+            "path": "ppt/slides/slide2.xml"
+          }
+        },
+        {
+          "kind": "table",
+          "rows": [
+            [
+              {
+                "text": "Header A"
+              },
+              {
+                "text": "Header B"
+              }
+            ],
+            [
+              {
+                "text": "Cell 1"
+              },
+              {
+                "text": "Cell 2"
+              }
+            ]
+          ],
+          "headerRows": 0,
+          "loc": {
+            "slide": 2,
+            "path": "ppt/slides/slide2.xml"
+          }
+        },
+        {
+          "kind": "paragraph",
+          "text": "Tie document order first",
+          "loc": {
+            "slide": 2,
+            "path": "ppt/slides/slide2.xml"
+          }
+        },
+        {
+          "kind": "paragraph",
+          "text": "Tie document order second",
+          "loc": {
+            "slide": 2,
+            "path": "ppt/slides/slide2.xml"
+          }
+        },
+        {
+          "kind": "paragraph",
+          "text": "Inherited placeholder content",
+          "loc": {
+            "slide": 2,
+            "path": "ppt/slides/slide2.xml"
+          }
+        },
+        {
+          "kind": "paragraph",
+          "text": "Transformed group child",
+          "loc": {
+            "slide": 2,
+            "path": "ppt/slides/slide2.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 2,
+        "path": "ppt/slides/slide2.xml"
+      },
+      "title": "Order and layout fixture"
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Slide 1 content",
+          "loc": {
+            "slide": 3,
+            "path": "ppt/slides/slide3.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 3,
+        "path": "ppt/slides/slide3.xml"
+      }
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Slide 3 content",
+          "loc": {
+            "slide": 4,
+            "path": "ppt/slides/slide4.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 4,
+        "path": "ppt/slides/slide4.xml"
+      }
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "This slide is hidden",
+          "loc": {
+            "slide": 5,
+            "path": "ppt/slides/slide5.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 5,
+        "path": "ppt/slides/slide5.xml"
+      }
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Slide 5 content",
+          "loc": {
+            "slide": 6,
+            "path": "ppt/slides/slide6.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 6,
+        "path": "ppt/slides/slide6.xml"
+      }
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Slide 6 content",
+          "loc": {
+            "slide": 7,
+            "path": "ppt/slides/slide7.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 7,
+        "path": "ppt/slides/slide7.xml"
+      }
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Slide 7 content",
+          "loc": {
+            "slide": 8,
+            "path": "ppt/slides/slide8.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 8,
+        "path": "ppt/slides/slide8.xml"
+      }
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Slide 8 content",
+          "loc": {
+            "slide": 9,
+            "path": "ppt/slides/slide9.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 9,
+        "path": "ppt/slides/slide9.xml"
+      }
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Slide 9 content",
+          "loc": {
+            "slide": 10,
+            "path": "ppt/slides/slide10.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 10,
+        "path": "ppt/slides/slide10.xml"
+      }
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Slide 11 content",
+          "loc": {
+            "slide": 11,
+            "path": "ppt/slides/slide11.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 11,
+        "path": "ppt/slides/slide11.xml"
+      }
+    },
+    {
+      "kind": "section",
+      "role": "slide",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Slide 12 content",
+          "loc": {
+            "slide": 12,
+            "path": "ppt/slides/slide12.xml"
+          }
+        }
+      ],
+      "loc": {
+        "slide": 12,
+        "path": "ppt/slides/slide12.xml"
+      }
+    }
+  ],
+  "children": [],
+  "warnings": [],
+  "stats": {
+    "bytesRead": 0,
+    "durationMs": 0,
+    "truncated": false,
+    "needsOcr": false
+  }
+}
