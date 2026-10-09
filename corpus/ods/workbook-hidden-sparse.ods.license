@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: made for docsluice with LibreOfficeDev 26.8.0.0.alpha0 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5 from scripts/corpus/src/workbook-hidden-sparse.fods
+Requirements: XLS-1, XLS-5
+Notes: Synthetic fixture; requirement association needs reader-owner golden review.
