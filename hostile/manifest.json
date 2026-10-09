@@ -139,14 +139,5 @@
     "maxMs": 2000,
     "maxHeapMB": 256,
     "requirement": "IN-5"
-  },
-  {
-    "file": "doc/encrypted.doc",
-    "expect": {
-      "error": "ENCRYPTED"
-    },
-    "maxMs": 2000,
-    "maxHeapMB": 256,
-    "requirement": "R2"
   }
 ]

@@ -41,8 +41,3 @@ export class ReaderRegistry {
 
 /** Built-in registrations are added as the corresponding readers become available. */
 export const defaultRegistry = new ReaderRegistry();
-defaultRegistry.add({
-  id: 'doc',
-  mimeTypes: ['application/msword'],
-  load: () => import('../readers/doc/index.js').then((module) => module.docReader),
-});

@@ -18,9 +18,6 @@
     "*": {
       "node": [
         "dist/node/index.d.ts"
-      ],
-      "doc": [
-        "dist/doc.d.ts"
       ]
     }
   },
@@ -32,10 +29,6 @@
     "./node": {
       "import": "./dist/node/index.js",
       "require": "./dist/node/index.cjs"
-    },
-    "./doc": {
-      "import": "./dist/doc.js",
-      "require": "./dist/doc.cjs"
     },
     "./package.json": "./package.json"
   },

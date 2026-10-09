@@ -57,9 +57,3 @@ test('node entry loads', async () => {
   const mod = await import('../dist/node/index.js');
   assert.equal(typeof mod.DocsluiceError, 'function');
 });
-
-test('DOC reader subpath loads lazily', async () => {
-  const mod = await import('docsluice/doc');
-  assert.equal(mod.docReader.id, 'doc');
-  assert.equal(typeof mod.docReader.read, 'function');
-});

@@ -1,14 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { createExtractor, extract, resolveOptions } from '../../src/core/extract.js';
+import { createExtractor, resolveOptions } from '../../src/core/extract.js';
 import { ReaderRegistry } from '../../src/core/registry.js';
 import type { Reader, ReadContext } from '../../src/core/reader.js';
 import { CorruptFileError } from '../../src/core/errors.js';
 import { toText } from '../../src/render/text.js';
-import { Budget } from '../../src/core/budget.js';
-import { DEFAULT_LIMITS } from '../../src/core/limits.js';
-import { openCfb } from '../../src/ole/index.js';
-import { openZip } from '../../src/zip/index.js';
 
 const bytes = (value: string): Uint8Array => new TextEncoder().encode(value);
 
@@ -47,6 +42,23 @@ function addTextReader(registry: ReaderRegistry, read: (ctx: ReadContext) => voi
 afterEach(() => vi.useRealTimers());
 
 describe('extraction pipeline', () => {
+  it('retains mixed skipped and extracted child order when readers await child work', async () => {
+    const { registry: readers } = registry(async (ctx) => {
+      await ctx.extractChild('first.txt', bytes('first'));
+      ctx.out.addChild({ path: 'directory/', name: 'directory/', status: 'skipped', sizeBytes: 0 });
+      await ctx.extractChild('last.txt', bytes('last'));
+    });
+    addTextReader(readers, (ctx) => {
+      ctx.out.paragraph(new TextDecoder().decode(ctx.bytes));
+    });
+    const doc = await createExtractor(readers)(bytes('container'), { format: 'fake' });
+    expect(doc.children.map((child) => [child.path, child.status])).toEqual([
+      ['first.txt', 'extracted'],
+      ['directory/', 'skipped'],
+      ['last.txt', 'extracted'],
+    ]);
+  });
+
   it('keeps warnings isolated between concurrent siblings and forwards them to the parent', async () => {
     let releaseFirst!: () => void;
     const secondWarning = new Promise<void>((resolve) => {
@@ -156,65 +168,6 @@ describe('extraction pipeline', () => {
     expect(png).toMatchObject({ format: 'png', mimeType: 'image/png', blocks: [] });
     expect(jpeg).toMatchObject({ format: 'jpeg', mimeType: 'image/jpeg', blocks: [] });
     expect(load).not.toHaveBeenCalled();
-  });
-
-  it('extracts the native DOC through the public pipeline with one CFB index and one cell charge', async () => {
-    const fixture = new Uint8Array(
-      readFileSync(new URL('../../../../corpus/doc/doc-legacy.doc', import.meta.url)),
-    );
-    const probe = new Budget(DEFAULT_LIMITS);
-    openCfb(fixture, probe);
-    const doc = await extract(fixture, {
-      filename: 'native.doc',
-      limits: { zipEntries: probe.entries, cells: 4 },
-    });
-    expect(doc.format).toBe('doc');
-    expect(doc.blocks.map((block) => block.kind)).toEqual([
-      'heading',
-      'paragraph',
-      'heading',
-      'table',
-      'paragraph',
-    ]);
-    expect(doc.stats).toMatchObject({ bytesRead: fixture.length, truncated: false });
-    expect(doc.warnings).toEqual([]);
-    expect(toText(doc)).toBe(
-      'Legacy Word fixture\n\nParagraph with café, €12, and a visible field result: July 4, 2026.\n\nSecond heading\n\nItem\tCount\nPaper\t3\n\nFinal paragraph for text recall.',
-    );
-    for (const block of doc.blocks) {
-      expect(block.loc.offset).toBeDefined();
-      const [start, end] = block.loc.offset!;
-      if ('text' in block) expect(toText(doc).slice(start, end)).toBe(block.text);
-    }
-  });
-
-  it('passes the already-indexed ZIP to a selected lazy reader without charging entries again', async () => {
-    const fixture = new Uint8Array(
-      readFileSync(new URL('../../../../corpus/doc/doc-legacy.docx', import.meta.url)),
-    );
-    const probe = new Budget(DEFAULT_LIMITS);
-    openZip(fixture, probe);
-    const readers = new ReaderRegistry();
-    readers.add({
-      id: 'docx',
-      mimeTypes: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-      load: () =>
-        Promise.resolve({
-          id: 'docx',
-          mimeTypes: [],
-          async read(ctx) {
-            expect(ctx.zip).toBeDefined();
-            const entry = ctx.zip!.entries.find((item) => item.name === 'word/document.xml')!;
-            const body = await ctx.zip!.read(entry);
-            expect(body?.length).toBeGreaterThan(0);
-            expect(ctx.budget.entries).toBe(probe.entries);
-            ctx.out.paragraph('indexed once');
-          },
-        }),
-    });
-    const doc = await createExtractor(readers)(fixture, { limits: { zipEntries: probe.entries } });
-    expect(toText(doc)).toBe('indexed once');
-    expect(doc.stats.truncated).toBe(false);
   });
 
   it('throws an unsupported-format error when the selected format has no reader', async () => {
