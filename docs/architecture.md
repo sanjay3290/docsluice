@@ -104,6 +104,11 @@ not change an active extraction's limits. `LimitExceededError.value` is the
 configured maximum; truncation warnings report both that maximum and the observed
 count, once per limit across the whole extraction.
 
+`checkOutputChars(amount)` preflights staged parser text against the remaining
+shared output allowance without charging it. XML scanners use a local cumulative
+text count for this check; only the builder charges characters when it emits
+blocks. Failed preflights follow the same truncation, warning and throw policy.
+
 Children share counters, warnings, the start time, the signal and the clock-sampling
 counter, while XML and block depths are tracked independently in each document.
 `tick()` checks the clock on its first call and then once every 1024 calls; it checks

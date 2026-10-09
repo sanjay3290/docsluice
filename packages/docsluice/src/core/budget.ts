@@ -112,6 +112,12 @@ export class Budget {
   addOutputChars(amount: number): boolean {
     return this.#add('outputChars', amount);
   }
+  /** Bound staged parser text without charging it before the builder emits it. */
+  checkOutputChars(amount: number): boolean {
+    this.#validateAmount(amount);
+    if (!this.canRead) return false;
+    return this.#check('outputChars', this.outputChars + amount);
+  }
   addPages(amount: number): boolean {
     return this.#add('pdfPages', amount);
   }

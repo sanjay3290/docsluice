@@ -67,6 +67,23 @@ describe('Budget', () => {
     expect(() => budget.addInputBytes(1)).toThrow(LimitExceededError);
   });
 
+  it('preflights staged output without charging characters twice', () => {
+    const budget = new Budget(resolveLimits({ outputChars: 5 }));
+    budget.addOutputChars(2);
+    const child = budget.child();
+    expect(child.checkOutputChars(3)).toBe(true);
+    expect(budget.outputChars).toBe(2);
+    expect(child.checkOutputChars(4)).toBe(false);
+    expect(budget.outputChars).toBe(2);
+    expect(budget.truncated).toBe(true);
+    expect(budget.warnings.warnings).toHaveLength(1);
+    expect(() => child.checkOutputChars(-1)).toThrow(RangeError);
+    const throwing = new Budget(resolveLimits({ outputChars: 0 }), { onLimit: 'throw' });
+    expect(() => throwing.checkOutputChars(1)).toThrow(LimitExceededError);
+    const blocked = new Budget(resolveLimits({ childDepth: 0 })).child();
+    expect(blocked.checkOutputChars(0)).toBe(false);
+  });
+
   it('uses one allowance for parent, children and siblings', () => {
     const budget = new Budget(resolveLimits({ totalUncompressedBytes: 10 }));
     expect(budget.addUncompressed(7)).toBe(true);
