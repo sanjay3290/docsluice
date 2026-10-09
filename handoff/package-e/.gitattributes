@@ -1,0 +1,10 @@
+*.pdf binary
+*.png binary
+*.gif binary
+*.jpg binary
+*.tif binary
+*.webp binary
+*.zip binary
+*.gz binary
+*.tar binary
+evidence/*.log whitespace=-blank-at-eol

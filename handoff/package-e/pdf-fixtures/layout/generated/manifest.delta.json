@@ -1,0 +1,14 @@
+{
+  "status": "PROPOSED_NOT_EXTRACTION_VERIFIED",
+  "entries": [
+    {
+      "source_file": "layout-reference-10-pages.pdf",
+      "proposed_target": "pdf/layout/layout-reference-10-pages.pdf",
+      "expect": {
+        "pages": 10
+      },
+      "requirement": "PDF-2",
+      "note": "Source-fact fixture only. Assign expected warnings/output only after testing the actual approved reader; do not use source facts as extraction goldens."
+    }
+  ]
+}

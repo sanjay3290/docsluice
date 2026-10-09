@@ -1,0 +1,284 @@
+{
+  "recordedAt": "2026-10-09T18:02:08.960096+00:00",
+  "kind": "reviewed-readers-private-pdf-helpers-local-runtime-spikes-and-integration-regressions",
+  "requestedFoundation": "10ae4985a425842f965bccbb9c86a7e6018c5412",
+  "requestedFoundationVerified": true,
+  "frozenRequirementsRead": false,
+  "libraryInputs": [
+    {
+      "library_file_id": "libfile_288a932789988191a6c5d69c2a474d0e",
+      "file_id": "file_00000000445881f7b6d37b7252a42ce9",
+      "name": "docsluice-foundation.bundle",
+      "size_bytes": 216644,
+      "version_id": null
+    },
+    {
+      "library_file_id": "libfile_8536327291cc8191af8b32da923fd9f4",
+      "file_id": "file_00000000e7c081f7b7400e84db7b97d9",
+      "name": "docsluice-cloud-handoff.tar.gz",
+      "size_bytes": 86245,
+      "version_id": null
+    },
+    {
+      "library_file_id": "libfile_16268ae162e48191b79b4031751210c9",
+      "file_id": "file_0000000086e081f5b726b561da604be3",
+      "name": "external-task-packages.md",
+      "size_bytes": 7554,
+      "version_id": null
+    }
+  ],
+  "materialization": {
+    "attempts": 2,
+    "filesPerAttempt": 3,
+    "flow": "Current Library prepare_materialize plus bundled transfer helper; initial local destination plus one bounded retry",
+    "directories": [
+      "/workspace/package-e-inputs",
+      "/workspace/package-e-inputs-retry"
+    ],
+    "everyTransferOutcome": "library file transfer failed: download failed",
+    "localFilesProduced": 0,
+    "restriction": "No guessed storage URLs or raw transfer bypass; further Library retries stopped."
+  },
+  "originalCheckout": {
+    "path": "/workspace/docsluice",
+    "head": "d74175e18892af0bd125c03bb4aabf30d0ce7e15",
+    "branch": "work",
+    "dirty": false,
+    "modifiedFiles": [],
+    "configuredAuthor": {
+      "name": "Sanjay R",
+      "email": "sramadugu1@gmail.com"
+    },
+    "headAuthor": {
+      "name": "Sanjay Ramadugu",
+      "email": "sramadugu1@gmail.com"
+    },
+    "preserved": true
+  },
+  "standalonePackage": {
+    "path": "/workspace/package-e-preparation",
+    "parentCommits": [],
+    "purpose": "Research, fixture generators/assets and evidence only; not based on requested foundation.",
+    "snapshotPredecessor": "50c71c90fe684189c258c9708ddc274f4d0b5e5b"
+  },
+  "executor": {
+    "cwd": "/workspace",
+    "usable": true,
+    "statePreserved": true,
+    "node": "24.19.0",
+    "python": "3.12.14",
+    "zlib": "1.3.2"
+  },
+  "integrationLeadTask": "01a12106-e88e-73ac-ab03-9d27a2210008",
+  "publication": {
+    "authorized": ["working/fix branch pushes", "draft PR creation"],
+    "pending": null,
+    "performed": [
+      "working branches listed in handoff-refs.json",
+      "draft PRs 104,105,106,137,150,159,161"
+    ],
+    "forbidden": ["merge", "deploy", "other-package/core edits"]
+  },
+  "coordination": {
+    "leadMessageAttempt": "collaboration.send_message rejected target task ID: agent with id 01a12106-e88e-73ac-ab03-9d27a2210008 not found",
+    "parentStatus": "Published dependency refs consumed in isolated local branches. Shared core/registry/export/lock/manifest changes remain coordinator-owned.",
+    "sourceThreadId": "01a118b8-e344-7154-81dc-8e9fdd4210c4",
+    "externalCloudMessaging": "No callable cross-thread messaging tool; parent receives delegated-task final and material commentary handoffs."
+  },
+  "verification": {
+    "originalFixtureFilesWithLicenseSidecars": 45,
+    "structuralTests": 31,
+    "structuralTestsPassed": true,
+    "log": "evidence/preparation-all-fixtures-current.log",
+    "readerAndHelperEvidence": "handoff-refs.json plus evidence logs; no all-issue acceptance claimed",
+    "coreRegressions": "all19 pass on consumed8df, full586 source+13policy+5dist",
+    "localPdfRuntimes": [
+      "Node20.20.2",
+      "Node22.23.3",
+      "Node24.19.0",
+      "Bun1.4.2",
+      "Deno2.9.7 canonical npm",
+      "Chromium151.0.7922.173",
+      "workerd1.20261009.1"
+    ],
+    "pdfRuntimeAcceptance": false,
+    "realCorpusGoldens": false,
+    "globalFuzzHostileRegistration": "lead-owned; only image integration observed in8df",
+    "noThirdPartyBundlesCommitted": true,
+    "privateLayoutLatest": "head55a60269 full503source+13policy+4dist,36focused98.96%,CI37969307459success,syntheticphraseorder8/10;remainingtableordergap",
+    "corpusDependencyReview": "A6f93743534records10PDFunreviewed; noPDFreader/goldens. Scanned/encrypted facts validated; customlabels/owner-only/form gaps documented."
+  },
+  "dependencyRequests": [
+    "Complete A #23 browser/Workers hosted gate; Firefox/WebKit download403 unresolved",
+    "Finalize #44 engine acceptance/security/license/size gates then #45 reader integration",
+    "Review #27 PDFgoldens after readerexists; customlabels/metadata/form/owner-only fixturecoverage gaps",
+    "Lead #74 OCR/child-image interface and Tesseract dependency decision",
+    "7z/RAR/P2 plugin/format ADR decisions",
+    "VSDX public plugin/detection packaging using available lead #41 code"
+  ],
+  "foundation": {
+    "path": "/workspace/docsluice-package-e",
+    "remote": "https://github.com/sanjay3290/docsluice.git",
+    "baseBranch": "fix/verified-foundation",
+    "commit": "10ae4985a425842f965bccbb9c86a7e6018c5412",
+    "readerBranch": "fix/package-e-readers",
+    "authorIdentitySource": "Explicit parent instruction verified against local repository config",
+    "author": {
+      "name": "Sanjay R",
+      "email": "sramadugu1@gmail.com"
+    }
+  },
+  "requirementsFallback": "Parent explicitly authorized current GitHub requirements after Library materialization failed. Full readable assignment was read; frozen archive remains unavailable.",
+  "repositories": [
+    {
+      "path": "/workspace/docsluice",
+      "branch": "work",
+      "head": "d74175e18892af0bd125c03bb4aabf30d0ce7e15",
+      "status": [],
+      "lastCommitAuthor": "Sanjay Ramadugu <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay Ramadugu <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e",
+      "branch": "fix/package-e-readers",
+      "head": "1928c407eaa5fd2e562553f7d98ba9e4ab472c8a",
+      "status": [
+        "?? docs/formats/pdf-headers.md",
+        "?? docs/formats/pdf-layout.md",
+        "?? docs/formats/pdf-tables.md",
+        "?? packages/docsluice/src/readers/pdf/",
+        "?? packages/docsluice/test/readers/pdf/"
+      ],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-44",
+      "branch": "fix/package-e-44-engine-results",
+      "head": "6a0c00b46804aea4dac46ae82364642349783050",
+      "status": ["?? node_modules"],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-46",
+      "branch": "fix/package-e-46-layout",
+      "head": "55a60269d5b4a5c0e53e3e96b6dcbbf72338c805",
+      "status": ["?? node_modules"],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-48",
+      "branch": "fix/package-e-48-headers",
+      "head": "86d96df2316b2dcb65aa52718c3eb3be09607ba0",
+      "status": ["?? node_modules"],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-61",
+      "branch": "fix/package-e-61-archives",
+      "head": "6f397c14c108ab97c33dec3447afa6cd4c4966d7",
+      "status": [],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-69",
+      "branch": "fix/package-e-69-images",
+      "head": "68e10679206775cbba7df287dca22bb277b79699",
+      "status": ["?? node_modules"],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-82",
+      "branch": "fix/package-e-82-tables",
+      "head": "515e79f79f9799f31a8c27ef335d04f7e6ed55c9",
+      "status": ["?? node_modules"],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-archives-integration",
+      "branch": "fix/package-e-archives-pipeline-tests",
+      "head": "7a936202c482064fad733cc1575ba7ed9fb2e1bf",
+      "status": ["?? node_modules"],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-combined-check",
+      "branch": "handoff/package-e-combined-verification",
+      "head": "d89e668b4bcb762395c6d2bab87aa290ded868ef",
+      "status": ["?? node_modules"],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-core-check",
+      "branch": "handoff/package-e-core-regression-check",
+      "head": "f418a916c6ababf2e2102a5166bccf939579dde6",
+      "status": [],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-corpus-check",
+      "branch": "",
+      "head": "6f937435cb168936cdede14015acc439eb689720",
+      "status": [],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-images-integration",
+      "branch": "fix/package-e-images-pipeline-tests",
+      "head": "9e343f04cd10a0273c958496f5386d0c40d22809",
+      "status": [],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-integration",
+      "branch": "fix/package-e-pipeline-integration",
+      "head": "9e343f04cd10a0273c958496f5386d0c40d22809",
+      "status": ["?? node_modules"],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-regressions",
+      "branch": "handoff/package-e-pipeline-regressions",
+      "head": "48a8658fc6706a089ca46dc23eb686b22f834fdd",
+      "status": ["?? node_modules"],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-research-handoff",
+      "branch": "handoff/package-e-research",
+      "head": "a3b45f12429216d72fb3cb3e21955d5947b38c0d",
+      "status": [],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-vsdx",
+      "branch": "fix/package-e-88-vsdx",
+      "head": "94d77dff58fd1c351d1c03a6247e59bae345d1b1",
+      "status": ["?? node_modules"],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    },
+    {
+      "path": "/workspace/docsluice-package-e-zip-integration",
+      "branch": "fix/package-e-zip-pipeline-tests",
+      "head": "31ad8d9fb2145dd17c3ee65319c6a3e048befdd8",
+      "status": ["?? node_modules"],
+      "lastCommitAuthor": "Sanjay R <sramadugu1@gmail.com>",
+      "lastCommitCommitter": "Sanjay R <sramadugu1@gmail.com>"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "issue": 46,
+  "status": "private-helper-preparation-only",
+  "readerIntegration": "Do not register or call this module from the PDF reader until issue #45 provides a text-item adapter and issue #27 provides the reviewed corpus. Keep the API private.",
+  "inputContract": {
+    "textItem": {
+      "text": "string",
+      "transform": "[a, b, c, d, e, f] PDF user-space matrix in PDF.js convention",
+      "width": "number in page user units",
+      "height": "number in page user units",
+      "fontSize": "number in page user units",
+      "dir": "ltr or rtl; unsupported directions such as ttb are skipped until an adapter resolves/splits vertical text",
+      "sourceIndex": "stable integer content-stream index"
+    },
+    "page": {
+      "width": "unrotated media-box width in page user units",
+      "height": "unrotated media-box height in page user units",
+      "rotation": "clockwise 0, 90, 180, or 270 degrees"
+    },
+    "outlinePresent": "Suppress font-size heading guesses when outline headings are supplied."
+  },
+  "heuristics": {
+    "geometryRounding": "0.001 user units before deterministic sorting",
+    "baselineTolerance": "0.65 em",
+    "wordSpaceThreshold": "0.25 em",
+    "columns": "Up to three start-position clusters with at least two lines each",
+    "footnotes": "Lines in the bottom 10% of the rotated page follow main content",
+    "paragraphBreaks": "Scale line spacing and indentation to font size; punctuation increases sensitivity to larger inter-line gaps",
+    "dehyphenation": "Drop trailing hyphen only before lowercase ASCII a-z",
+    "outputBudget": "Check staged text with Budget.checkOutputChars before retaining it; keep a safe prefix if truncation is allowed; do not charge because DocBuilder owns final output accounting",
+    "lineSourceIndices": "Retain contributing source indices in reading order; sourceIndex is the lowest contributing index",
+    "unsupportedDirections": "Count skipped unsupportedDirectionItems; adapter must staticwarn or resolve/split these items."
+  },
+  "validation": "Synthetic unit tests only. End-to-end accuracy, real-page goldens, and adapter compatibility remain unverified until #45/#27."
+}

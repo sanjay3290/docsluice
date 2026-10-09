@@ -1,0 +1,87 @@
+{
+  "proposal_only": true,
+  "shared_manifest_edited": false,
+  "verification_status": "NOT extraction-verified",
+  "entries": [
+    {
+      "file": "zip-10000-empty.zip",
+      "expectation_to_assign_after_reader_validation": {
+        "limit_or_warning": "entry-count limit outcome to be set by reader owners"
+      },
+      "requirement": "SEC-2",
+      "maxMs": 5000,
+      "maxHeapMB": 256,
+      "verification_status": "NOT extraction-verified"
+    },
+    {
+      "file": "zip-hostile-names.zip",
+      "expectation_to_assign_after_reader_validation": {
+        "warnings_or_listing": "path and skipped-junk behavior to be set by reader owners"
+      },
+      "requirement": "SEC-3",
+      "maxMs": 5000,
+      "maxHeapMB": 256,
+      "verification_status": "NOT extraction-verified"
+    },
+    {
+      "file": "zip-nested-amplification.zip",
+      "expectation_to_assign_after_reader_validation": {
+        "limit_or_warning": "nested shared-budget outcome to be set by reader owners"
+      },
+      "requirement": "NST-1",
+      "maxMs": 5000,
+      "maxHeapMB": 256,
+      "verification_status": "NOT extraction-verified"
+    },
+    {
+      "file": "gzip-bounded-amplification.gz",
+      "expectation_to_assign_after_reader_validation": {
+        "limit_or_warning": "ratio/byte-limit outcome to be set by reader owners"
+      },
+      "requirement": "SEC-1",
+      "maxMs": 5000,
+      "maxHeapMB": 256,
+      "verification_status": "NOT extraction-verified"
+    },
+    {
+      "file": "tar-bad-checksum.tar",
+      "expectation_to_assign_after_reader_validation": {
+        "malformed": "reader outcome to be set by reader owners"
+      },
+      "requirement": "SEC-1",
+      "maxMs": 5000,
+      "maxHeapMB": 256,
+      "verification_status": "NOT extraction-verified"
+    },
+    {
+      "file": "tar-size-lie.tar",
+      "expectation_to_assign_after_reader_validation": {
+        "malformed": "reader outcome to be set by reader owners"
+      },
+      "requirement": "SEC-1",
+      "maxMs": 5000,
+      "maxHeapMB": 256,
+      "verification_status": "NOT extraction-verified"
+    },
+    {
+      "file": "tar-pax-long-path.tar",
+      "expectation_to_assign_after_reader_validation": {
+        "limit_or_warning": "metadata limit outcome to be set by reader owners"
+      },
+      "requirement": "SEC-2",
+      "maxMs": 5000,
+      "maxHeapMB": 256,
+      "verification_status": "NOT extraction-verified"
+    },
+    {
+      "file": "tar-pax-size-lie.tar",
+      "expectation_to_assign_after_reader_validation": {
+        "malformed": "PAX size claim exceeds available metadata bytes; reader outcome to be set by reader owners"
+      },
+      "requirement": "SEC-1",
+      "maxMs": 5000,
+      "maxHeapMB": 256,
+      "verification_status": "NOT extraction-verified"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "byteDeterminism": "not claimed; encryption may use randomized file identifiers",
+  "generator": "advanced/generate.py",
+  "generatorTool": "pypdf 6.10.0 (tool-only; no repository dependency)",
+  "readerAcceptance": "not tested; requires the future PDF reader/engine",
+  "status": "ORIGINAL_SYNTHETIC_FIXTURES_SOURCE_FACTS_ONLY"
+}

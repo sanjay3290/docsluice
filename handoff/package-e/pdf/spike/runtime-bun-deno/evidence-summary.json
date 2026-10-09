@@ -1,0 +1,35 @@
+{
+  "status": "THROWAWAY_LOCAL_RUNTIME_EVIDENCE",
+  "runtimeVersions": {
+    "bun": "1.4.2+744846f84",
+    "deno": "2.9.7 (stable, x86_64-unknown-linux-gnu)"
+  },
+  "packages": {
+    "unpdf": {
+      "version": "1.7.0",
+      "distIntegrity": "sha512-MiDhbougTETOvbw/x3hnNr18jzFFrlSitevfO/BHInvtUx68R3Fke9A36GLQfN1LpG1NiJZaV4oPvjioPk9vKQ==",
+      "license": "MIT; bundled PDF.js notices require separate review"
+    },
+    "pdfjsDist": {
+      "version": "5.6.205",
+      "distIntegrity": "sha512-tlUj+2IDa7G1SbvBNN74UHRLJybZDWYom+k6p5KIZl7huBvsA4APi6mKL+zCxd3tLjN5hOOEE9Tv7VdzO88pfg==",
+      "license": "Apache-2.0"
+    }
+  },
+  "runs": [
+    { "runtime": "bun", "mode": "unpdf", "status": "passed", "fixtures": 5, "pdfjsVersion": "5.6.205", "100PageMs": 37.78, "trapCounters": { "fetch": 0, "xhr": 0, "worker": 0, "eval": 0, "functionConstructor": 0 }, "actionMarkerBefore": 0, "actionMarkerAfter": 0 },
+    { "runtime": "bun", "mode": "legacy", "status": "passed", "fixtures": 5, "pdfjsVersion": "5.6.205", "100PageMs": 45.4, "trapCounters": { "fetch": 0, "xhr": 0, "worker": 0, "eval": 0, "functionConstructor": 0 }, "actionMarkerBefore": 0, "actionMarkerAfter": 0 },
+    { "runtime": "deno", "mode": "unpdf-direct-file-url", "status": "failed-before-parse", "error": "Import unpdf/pdfjs not a dependency", "networkPermission": false, "interpretation": "Direct file URL import did not exercise npm package self-resolution." },
+    { "runtime": "deno", "mode": "unpdf-canonical-npm-specifier", "status": "passed", "fixtures": 5, "pdfjsVersion": "5.6.205", "100PageMs": 50.94, "trapCounters": { "fetch": 0, "xhr": 0, "worker": 0, "eval": 0, "functionConstructor": 0 }, "actionMarkerBefore": 0, "actionMarkerAfter": 0, "networkPermission": false, "cachedOnly": true, "allowScripts": false },
+    { "runtime": "deno", "mode": "legacy", "status": "passed", "fixtures": 5, "pdfjsVersion": "5.6.205", "100PageMs": 41.75, "trapCounters": { "fetch": 0, "xhr": 0, "worker": 0, "eval": 0, "functionConstructor": 0 }, "actionMarkerBefore": 0, "actionMarkerAfter": 0, "networkPermission": false },
+    { "runtime": "deno", "mode": "unpdf-with-local-import-map", "status": "passed", "fixtures": 5, "pdfjsVersion": "5.6.205", "100PageMs": 46.15, "trapCounters": { "fetch": 0, "xhr": 0, "worker": 0, "eval": 0, "functionConstructor": 0 }, "actionMarkerBefore": 0, "actionMarkerAfter": 0, "networkPermission": false }
+  ],
+  "fixtureFacts": {
+    "labels-outline-links.pdf": { "pages": 3, "items": 4, "textChars": 73, "labels": ["i", "ii", "A-3"], "outline": ["Synthetic bookmark"] },
+    "two-columns.pdf": { "pages": 1, "items": 8, "textChars": 62 },
+    "image-only.pdf": { "pages": 1, "items": 0, "textChars": 0 },
+    "text-100-pages.pdf": { "pages": 100, "items": 100, "textChars": 3000 },
+    "hostile/actions.pdf": { "pages": 1, "items": 1, "textChars": 32, "actionReturnedAsData": true }
+  },
+  "acceptance": "Not established: one local Linux x64 environment; no full Node/browser/Workers matrix, production bundle, hostile corpus, or real-PDF accuracy gate."
+}

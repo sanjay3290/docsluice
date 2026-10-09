@@ -1,0 +1,46 @@
+{
+  "attachments": [
+    {
+      "bytes": 23,
+      "filename": "__proto__",
+      "nameTreeKey": "__proto__",
+      "sha256": "4f12b331b3313c430e3fa879e4264e5933ea484567951bf16805ba9ab9a11801"
+    },
+    {
+      "bytes": 16,
+      "filename": "data.csv",
+      "nameTreeKey": "csv-duplicate",
+      "sha256": "3c3ccef85c6f0d8931ce3941a531d9c726e4fdf89e80232a8f7cea63e6138da5"
+    },
+    {
+      "bytes": 17,
+      "filename": "data.csv",
+      "nameTreeKey": "csv-primary",
+      "sha256": "3900f57e02c84c96eb4fe5f296f9f0427670d822c7dcf5a5bd76e4877c7a117f"
+    },
+    {
+      "bytes": 146,
+      "filename": "nested.zip",
+      "nameTreeKey": "nested-zip",
+      "sha256": "d4a0c519412228ad9090efe80d7ba3691a09dbf693170a19bd0043dacb2fe8ba"
+    },
+    {
+      "bytes": 23,
+      "filename": "../../../../etc/passwd.csv",
+      "nameTreeKey": "traversal-name",
+      "sha256": "05f09c2170e6ab7d6291180a648a27578bd5ae4bc120eaccdb07520e23c5ffd3"
+    }
+  ],
+  "byteDeterminism": "fixed object ordering, ID, payloads and ZIP timestamps; generator test compares repeated output bytes",
+  "expectations": [
+    "The PDF has five embedded-file filespecs under a sorted name tree.",
+    "Two distinct name-tree keys refer to the same filename data.csv.",
+    "One filename contains path traversal segments and must never be used as a filesystem path.",
+    "One name-tree key and filename are exactly __proto__; attachment records must not be stored in ordinary prototype-bearing objects keyed by untrusted values.",
+    "nested.zip is a ZIP containing inside.txt with fixed 2020-01-01 timestamp."
+  ],
+  "generator": "generate-attachments.py (Python standard library only)",
+  "license": "CC0-1.0",
+  "pages": 1,
+  "status": "SYNTHETIC_SOURCE_FACTS_ONLY_NOT_READER_ACCEPTANCE"
+}

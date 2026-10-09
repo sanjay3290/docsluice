@@ -1,0 +1,45 @@
+{
+  "status": "PROPOSED_NOT_EXTRACTION_VERIFIED",
+  "entries": [
+    {
+      "file": "pdf/actions.pdf",
+      "expect": {
+        "warnings": []
+      },
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "requirement": "PDF-10",
+      "note": "Feature/no-execution/no-network assertions required; empty warning list alone is insufficient.",
+      "source_file": "hostile/actions.pdf",
+      "proposed_target": "hostile/pdf/actions.pdf"
+    },
+    {
+      "file": "pdf/corrupt-xref.pdf",
+      "expect": {
+        "warnings": [
+          "UNREADABLE_PART"
+        ]
+      },
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "requirement": "PDF-9",
+      "note": "Outcome tentative: engine may fully repair xref; confirm before registration.",
+      "source_file": "hostile/corrupt-xref.pdf",
+      "proposed_target": "hostile/pdf/corrupt-xref.pdf"
+    },
+    {
+      "file": "pdf/truncated.pdf",
+      "expect": {
+        "warnings": [
+          "UNREADABLE_PART"
+        ]
+      },
+      "maxMs": 2000,
+      "maxHeapMB": 256,
+      "requirement": "PDF-9",
+      "note": "Outcome tentative: unrecoverable truncation may be CORRUPT_FILE; confirm before registration.",
+      "source_file": "hostile/truncated.pdf",
+      "proposed_target": "hostile/pdf/truncated.pdf"
+    }
+  ]
+}

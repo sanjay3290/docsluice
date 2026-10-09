@@ -1,0 +1,38 @@
+{
+  "proposalOnly": true,
+  "issue": 39,
+  "reader": "packages/docsluice/src/readers/zip/index.ts",
+  "status": "NOT extraction-verified",
+  "publicExtractRegistration": "pending integration lead / issue #10",
+  "goldens": "not generated; public extract dispatch does not include this reader yet",
+  "corpusCandidate": {
+    "file": "corpus/zip/package-e-mixed.zip",
+    "license": "corpus/zip/package-e-mixed.zip.license",
+    "expectedOutput": "pending public pipeline integration"
+  },
+  "hostileCandidates": [
+    {
+      "file": "package-e-preparation/archive/fixtures/zip-hostile-names.zip",
+      "requirements": ["SEC-3"],
+      "purpose": "path-traversal spelling and common OS junk names",
+      "readerOutcome": "unit behavior only; hostile-runner outcome pending integration"
+    },
+    {
+      "file": "package-e-preparation/archive/fixtures/zip-10000-empty.zip",
+      "requirements": ["SEC-2"],
+      "purpose": "10,000 empty entries at the current default entry-count ceiling",
+      "readerOutcome": "direct safe-index/reader test passes; hostile-runner outcome pending integration"
+    },
+    {
+      "file": "package-e-preparation/archive/fixtures/zip-nested-amplification.zip",
+      "requirements": ["SEC-1", "NST-1", "NST-2"],
+      "purpose": "bounded four-container nesting around 512 KiB of repeated leaf data",
+      "readerOutcome": "reader tests cover shared-budget truncation and depth listing; public nested pipeline pending"
+    }
+  ],
+  "knownGaps": [
+    "No genuine ZIP quine fixture was constructed or verified. Unit test injects a byte-identical child through a fake ZipArchive.",
+    "Reader registration and recursive extractChild pipeline behavior remain owned by issue #10 integration.",
+    "No hostile manifest changes or extraction goldens are included in this proposal."
+  ]
+}

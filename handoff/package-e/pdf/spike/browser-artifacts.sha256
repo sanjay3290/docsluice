@@ -1,0 +1,12 @@
+21b58f4d374e464f647b0c3a5b7a1945e6bafd81d53e4a73f8242a6baf0562ed  /tmp/docsluice-pdf-spike/node_modules/unpdf/package.json
+efed9932481b50fea1ae698c7783afab4f07247371bc6fcee8290db2afde47f4  /tmp/docsluice-pdf-spike/node_modules/unpdf/dist/index.mjs
+f3f05694d882ecc984f0dd105a1659c45d2f4e2b396649468c067042ef2d231a  /tmp/docsluice-pdf-spike/node_modules/unpdf/dist/pdfjs.mjs
+c91f1f1071e5535e5161f2fff925917550f4f0d2463a52ec94be24bd00b55971  /tmp/docsluice-pdf-spike/node_modules/pdfjs-dist/package.json
+d4b840a3238bf6fbebe3dec7a7665757dad60fe014d657351a3f1f067a3df924  /tmp/docsluice-pdf-spike/node_modules/pdfjs-dist/legacy/build/pdf.mjs
+499da1f7f1c6c24be898b556638d2ffec999b2ad234c796508e3d7c7025c28cb  /tmp/docsluice-pdf-spike/node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs
+1151988de6f23561abb7321bc9efbb2bead9aa6a374e081a5fd135c49f772a81  /workspace/package-e-preparation/pdf-fixtures/generated/labels-outline-links.pdf
+e4555cf9908514f1237b5acb47ab1f8a519a345e6ad61816f492dc0012fad9af  /workspace/package-e-preparation/pdf-fixtures/generated/two-columns.pdf
+818e5e54bc7b67f8d01b70b74e0abe1e8b62b8f1b966dcff844f322fe10ff180  /workspace/package-e-preparation/pdf-fixtures/generated/image-only.pdf
+2b63a97836b272867e2c61636c8441a8a8fc73e3b9200bdb2ecbc591e0abc4b5  /workspace/package-e-preparation/pdf-fixtures/generated/text-100-pages.pdf
+87ff73c15a86e40d8ca39d6be7afbacce6003470d8aa57109e3c95ce4197cb96  /workspace/package-e-preparation/pdf-fixtures/generated/hostile/actions.pdf
+311ca83bd29182f50f67fc1713e5c603d42d5b0b9c77fe99d144895dacb24583  /workspace/package-e-preparation/pdf/spike/browser-harness.cjs

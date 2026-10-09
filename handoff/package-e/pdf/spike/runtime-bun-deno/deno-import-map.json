@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "unpdf/pdfjs": "file:///tmp/codex-pdf44/unpdf-only/node_modules/unpdf/dist/pdfjs.mjs"
+  }
+}

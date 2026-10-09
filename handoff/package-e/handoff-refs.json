@@ -1,0 +1,178 @@
+{
+  "recordedAt": "2026-10-09T18:15:16.424489+00:00",
+  "repository": "sanjay3290/docsluice",
+  "verifiedFoundation": "10ae4985a425842f965bccbb9c86a7e6018c5412",
+  "implementationRefs": [
+    {
+      "issue": 39,
+      "branch": "fix/package-e-39-zip",
+      "head": "c0dc9ed4a03c250872879ec1355c0e35b7ed93cf",
+      "pr": 104,
+      "prUrl": "https://github.com/sanjay3290/docsluice/pull/104",
+      "focusedTests": 15,
+      "lineCoverage": 100,
+      "limits": "reader; private until coordinator registration; no genuine ZIP quine",
+      "published": true
+    },
+    {
+      "issue": 61,
+      "branch": "fix/package-e-61-archives",
+      "head": "6f397c14c108ab97c33dec3447afa6cd4c4966d7",
+      "pr": 106,
+      "prUrl": "https://github.com/sanjay3290/docsluice/pull/106",
+      "focusedTests": 25,
+      "lineCoverage": 93.27,
+      "limits": "GZIP/TAR readers; actual pipeline test handoff separate; genuine CSV parser/goldens pending",
+      "published": true
+    },
+    {
+      "issue": 69,
+      "branch": "fix/package-e-69-images",
+      "head": "68e10679206775cbba7df287dca22bb277b79699",
+      "pr": 105,
+      "prUrl": "https://github.com/sanjay3290/docsluice/pull/105",
+      "focusedTests": 32,
+      "lineCoverage": 93.18,
+      "limits": "image readers; lead 8df90af registration passes 19 E regression cases in local consumed branch",
+      "published": true
+    },
+    {
+      "issue": 46,
+      "branch": "fix/package-e-46-layout",
+      "head": "55a60269d5b4a5c0e53e3e96b6dcbbf72338c805",
+      "pr": 137,
+      "prUrl": "https://github.com/sanjay3290/docsluice/pull/137",
+      "focusedTests": 36,
+      "lineCoverage": 98.96,
+      "limits": "private layout; 8/10 authored phrase-order pages, allphrasespresent, two tablepages columnwise; adapter/corpus acceptance pending",
+      "published": true
+    },
+    {
+      "issue": 48,
+      "branch": "fix/package-e-48-headers",
+      "head": "86d96df2316b2dcb65aa52718c3eb3be09607ba0",
+      "pr": 150,
+      "prUrl": "https://github.com/sanjay3290/docsluice/pull/150",
+      "focusedTests": 19,
+      "lineCoverage": 98.2,
+      "limits": "private header/footer helper; public option/emission and PDF goldens pending",
+      "published": true
+    },
+    {
+      "issue": 82,
+      "branch": "fix/package-e-82-tables",
+      "head": "515e79f79f9799f31a8c27ef335d04f7e6ed55c9",
+      "pr": 159,
+      "prUrl": "https://github.com/sanjay3290/docsluice/pull/159",
+      "focusedTests": 19,
+      "lineCoverage": 98.71,
+      "limits": "private candidate helper; operator adapter, confidence caption, real corpus accuracy pending",
+      "published": true
+    },
+    {
+      "issue": 88,
+      "branch": "fix/package-e-88-vsdx",
+      "head": "94d77dff58fd1c351d1c03a6247e59bae345d1b1",
+      "pr": 161,
+      "prUrl": "https://github.com/sanjay3290/docsluice/pull/161",
+      "focusedTests": 22,
+      "lineCoverage": 92.62,
+      "limits": "private VSDX reader and fixtures; public plugin/format ADR and broad interoperability pending",
+      "published": true
+    },
+    {
+      "issue": 44,
+      "branch": "fix/package-e-44-engine-results",
+      "head": "6a0c00b46804aea4dac46ae82364642349783050",
+      "pr": null,
+      "prUrl": null,
+      "focusedTests": null,
+      "lineCoverage": null,
+      "limits": "local runtime evidence ADR update, still Proposed; full #23 CI and acceptance gates pending",
+      "published": false,
+      "review": "pdf/spike/adr-results-review.md"
+    }
+  ],
+  "testAndDependencyRefs": [
+    {
+      "branch": "fix/package-e-zip-pipeline-tests",
+      "head": "31ad8d9fb2145dd17c3ee65319c6a3e048befdd8",
+      "purpose": "10 real injected-pipeline ZIP cases; 549 source+13policy+4dist full verification"
+    },
+    {
+      "branch": "fix/package-e-archives-pipeline-tests",
+      "head": "7a936202c482064fad733cc1575ba7ed9fb2e1bf",
+      "purpose": "13 real injected-pipeline GZIP/TAR cases; 552 source+13policy+4dist full verification"
+    },
+    {
+      "branch": "handoff/package-e-pipeline-regressions",
+      "head": "48a8658fc6706a089ca46dc23eb686b22f834fdd",
+      "purpose": "initial #10 reproductions and proposed image dispatch patch; intentionally red on a3"
+    },
+    {
+      "branch": "handoff/package-e-core-regression-check",
+      "head": "f418a916c6ababf2e2102a5166bccf939579dde6",
+      "purpose": "consumed lead c5/8df; all 19 original regressions pass, 586 source+13policy+5dist full verification; updated imageGps typed E contexts"
+    },
+    {
+      "branch": "handoff/package-e-vsdx-dependencies",
+      "head": "82ede1ed8faa0046b3eab6fe97043149adcb6beb",
+      "purpose": "dependency-only base for PR161; #10 a3 + E readers + C #28 6c1799fb"
+    }
+  ],
+  "consumedDependencies": {
+    "10": "a3b45f12429216d72fb3cb3e21955d5947b38c0d",
+    "28": "6c1799fbe8d79e847e379324fd325057b51c3e48",
+    "leadCoreInitial": "c5af54c9924caa626a78e352c46e2a6d16c9fc89",
+    "leadCoreImageRegressionCheck": "8df90af609f9a92f08f03d052ab953e26b3a3b36",
+    "27-corpus-review": "6f937435cb168936cdede14015acc439eb689720"
+  },
+  "observedRuntimeDependencies": {
+    "A23Foundation": "ed7d695b6af4b0577c9c24becbfdcf002e110bfc",
+    "A23WebVerifiedByParent": "0b0181e9cbfd35d84c10c7f19f009d288e69b4f5",
+    "A23WebUnverifiedHistorical": "0b440ebdb6f52e90c17e70bc79e1d363d82d3f78"
+  },
+  "hostedCi": {
+    "46-bd9": {
+      "run": 37963766985,
+      "conclusion": "success"
+    },
+    "48": {
+      "run": 37965196762,
+      "conclusion": "success"
+    },
+    "82": {
+      "run": 37965981930,
+      "conclusion": "success"
+    },
+    "88": {
+      "run": 37966505672,
+      "conclusion": "success"
+    },
+    "46-latest": {
+      "head": "55a60269d5b4a5c0e53e3e96b6dcbbf72338c805",
+      "run": 37969307459,
+      "conclusion": "success"
+    }
+  },
+  "publicationLimits": "Working branch pushes and draft PRs authorized. Coordinator alone merges/closes issues. No deployments/security/credential/payment changes.",
+  "archiveNotice": "Old Library checkpoints are immutable older snapshots. Current Git refs are fetchable independently of Library download failures.",
+  "integrationLimits": "All issue acceptance remains incomplete; caller/registry/OCR/engine/plugin/corpus decisions and final integration belong to coordinator.",
+  "combinedVerification": {
+    "head": "d89e668b4bcb762395c6d2bab87aa290ded868ef",
+    "sourceTests": 732,
+    "policyTests": 13,
+    "builtTests": 5,
+    "lint": true,
+    "types": true,
+    "build": true,
+    "log": "evidence/combined-package-e-verify.log"
+  },
+  "ciEvidence": {
+    "88-latest": {
+      "head": "94d77dff58fd1c351d1c03a6247e59bae345d1b1",
+      "runId": 37970163291,
+      "conclusion": "success"
+    }
+  }
+}

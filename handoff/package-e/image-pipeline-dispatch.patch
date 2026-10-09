@@ -1,0 +1,25 @@
+diff --git a/packages/docsluice/src/core/extract.ts b/packages/docsluice/src/core/extract.ts
+index 9a88f43..122906f 100644
+--- a/packages/docsluice/src/core/extract.ts
++++ b/packages/docsluice/src/core/extract.ts
+@@ -292,9 +292,8 @@ export function createExtractor(
+         },
+       };
+ 
+-      if (!EMPTY_FORMATS.has(resolution.result.format)) {
+-        const loading = registry.load(resolution.result.format);
+-        if (!loading) throw new UnsupportedFormatError(resolution.result.format);
++      const loading = registry.load(resolution.result.format);
++      if (loading) {
+         const reader = await loading;
+         activeBudget.tick();
+         try {
+@@ -303,6 +302,8 @@ export function createExtractor(
+           if (error instanceof DocsluiceError) throw error;
+           throw new CorruptFileError(undefined, { cause: error });
+         }
++      } else if (!EMPTY_FORMATS.has(resolution.result.format)) {
++        throw new UnsupportedFormatError(resolution.result.format);
+       }
+       for (const childWork of children) {
+         activeBudget.tick();

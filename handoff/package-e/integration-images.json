@@ -1,0 +1,21 @@
+{
+  "issue": 69,
+  "status": "proposed-integration-only",
+  "publicOption": {
+    "name": "imageGps",
+    "type": "boolean",
+    "default": false,
+    "description": "Include GPS latitude and longitude from image EXIF metadata.",
+    "metadataFalseBehavior": "Suppress all EXIF-derived fields, including DateTimeOriginal, Orientation, Make, Model, and GPS, regardless of imageGps."
+  },
+  "metadataMapping": {
+    "dimensions": "metadata.custom pairs image.width and image.height; image block width and height remain available",
+    "DateTimeOriginal": "metadata.created as a timezone-free ISO local timestamp",
+    "Orientation": "metadata.custom pair image.orientation",
+    "Make": "metadata.custom pair image.make",
+    "Model": "metadata.custom pair image.model",
+    "GPSLatitude": "metadata.custom pair image.gps.latitude when imageGps is true",
+    "GPSLongitude": "metadata.custom pair image.gps.longitude when imageGps is true"
+  },
+  "readerIntegration": "Deferred until the core reader registry and shared ExtractOptions are available; this file does not change the public API."
+}

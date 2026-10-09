@@ -1,0 +1,23 @@
+{
+  "issue": 48,
+  "status": "private-helper-preparation-only",
+  "readerIntegration": "Do not register or call this helper from a PDF reader until #45 provides the engine/text-item adapter, #46 layout is accepted, and #27 reviewed corpus is available. Public option registration and shared manifest changes remain integration-lead owned.",
+  "ownedFiles": [
+    "packages/docsluice/src/readers/pdf/headers/index.ts",
+    "packages/docsluice/test/readers/pdf/headers/headers.test.ts",
+    "docs/formats/pdf-headers.md"
+  ],
+  "inputContract": {
+    "pages": "Ordered array of { index, width, height, lines }; index is a zero-based source page index, width/height are rotated display-page dimensions, and lines are readonly LayoutLine values from #46.",
+    "budget": "Caller-supplied shared Budget; helper ticks upfront and throughout page, line, match and output-staging loops. Before normalizing candidate text it checkOutputChars(staged unique normalized chars + candidate source length), and checks actual normalized length when a new group is retained. Failed preflight returns unchanged lines/no groups. These are noncharging checks; DocBuilder owns output character charges. The #46 layout stage remains responsible for bounding original line buffers.",
+    "mode": "Private local argument 'remove' or 'keep', default 'remove'; public ExtractOptions wiring is lead-owned."
+  },
+  "classification": {
+    "bands": "Line center in top 10% or bottom 10% of displayed page.",
+    "text": "NFC, collapse whitespace runs, replace each decimal digit run with #.",
+    "position": "Normalized line centers rounded to 0.001; matching tolerances are 0.03 page widths horizontally and 0.015 page heights vertically.",
+    "threshold": "At least 3 distinct source page indices and >=60% of all pages. If that fails, only headers test one-based odd/even cohorts with the same minimum and ratio; footers always need the whole-document threshold.",
+    "output": "Remove mode removes all matched occurrences and returns one role/text group with unique source page indices; keep mode returns all lines and no groups. Output ordering is deterministic."
+  },
+  "validation": "19 private synthetic unit tests pass. Reader compatibility, actual PDF extraction accuracy, public options, pipeline goldens, hostile integration, and cross-runtime behavior remain unverified pending #45/#46/#27 and lead integration."
+}

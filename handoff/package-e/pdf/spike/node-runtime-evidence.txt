@@ -1,0 +1,13 @@
+Node v20.20.2 official release archive: node-v20.20.2-linux-x64.tar.xz
+SHA256: df770b2a6f130ed8627c9782c988fda9669fa23898329a61a871e32f965e007d
+Source: https://nodejs.org/dist/v20.20.2/SHASUMS256.txt
+Runtime: v20.20.2
+
+Node v22.23.3 official release archive: node-v22.23.3-linux-x64.tar.xz
+SHA256: df450af89261115ef9f9e3830c3eeb2cc9213b63c720b1af623cb5dcbe2e02de
+Source: https://nodejs.org/dist/v22.23.3/SHASUMS256.txt
+Runtime: v22.23.3
+
+Probe command per runtime and mode:
+  <verified-node>/bin/node /workspace/package-e-preparation/pdf/spike/probe.mjs <unpdf|legacy>
+Outputs: unpdf-v20.20.2.json, legacy-v20.20.2.json, unpdf-v22.23.3.json, legacy-v22.23.3.json

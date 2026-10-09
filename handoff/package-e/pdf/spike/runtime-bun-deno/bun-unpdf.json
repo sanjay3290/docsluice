@@ -1,0 +1,346 @@
+{
+  "runtime": "bun",
+  "runtimeVersion": "1.4.2",
+  "mode": "unpdf",
+  "moduleUrl": "file:///tmp/codex-pdf44/unpdf-only/node_modules/unpdf/dist/index.mjs",
+  "config": {
+    "isEvalSupported": false,
+    "useWorkerFetch": false,
+    "useWasm": false,
+    "disableAutoFetch": true,
+    "disableStream": true,
+    "verbosity": 0
+  },
+  "workerTrapInstalled": true,
+  "workerCoverageNote": "Only global Worker is trapped. This probe does not import or call node:worker_threads Worker.",
+  "markerBefore": 0,
+  "fixtures": [
+    {
+      "name": "labels-outline-links.pdf",
+      "inputByteLength": 1870,
+      "pages": 3,
+      "labels": [
+        "i",
+        "ii",
+        "A-3"
+      ],
+      "outline": [
+        "Synthetic bookmark"
+      ],
+      "title": "Original docsluice synthetic fixture",
+      "author": "Synthetic author",
+      "pageText": [
+        "Synthetic first pageExample link",
+        "Synthetic second page",
+        "Synthetic third page"
+      ],
+      "rawItemCount": 4,
+      "textChars": 73,
+      "firstPageItems": [
+        {
+          "text": "Synthetic first page",
+          "x": 48,
+          "y": 740,
+          "width": 102.04799999999997,
+          "height": 12,
+          "dir": "ltr",
+          "hasEOL": true
+        },
+        {
+          "text": "Example link",
+          "x": 48,
+          "y": 700,
+          "width": 68.01599999999999,
+          "height": 12,
+          "dir": "ltr",
+          "hasEOL": false
+        }
+      ],
+      "firstPageAnnotations": [
+        {
+          "subtype": "Link",
+          "url": "https://example.invalid/docsluice",
+          "unsafeUrl": "https://example.invalid/docsluice"
+        }
+      ],
+      "openAction": null,
+      "jsActions": null,
+      "elapsedMs": 33.68,
+      "cleanup": {
+        "pageCleanupCalls": 3,
+        "documentDestroyed": true
+      }
+    },
+    {
+      "name": "two-columns.pdf",
+      "inputByteLength": 977,
+      "pages": 1,
+      "labels": null,
+      "outline": null,
+      "title": "Original docsluice synthetic fixture",
+      "author": "Synthetic author",
+      "pageText": [
+        "Full width titleLeft first Right firstLeft second Right second"
+      ],
+      "rawItemCount": 8,
+      "textChars": 62,
+      "firstPageItems": [
+        {
+          "text": "Full width title",
+          "x": 48,
+          "y": 760,
+          "width": 121.14000000000001,
+          "height": 20,
+          "dir": "ltr",
+          "hasEOL": false
+        },
+        {
+          "text": "",
+          "x": 48,
+          "y": 700,
+          "width": 0,
+          "height": 0,
+          "dir": "ltr",
+          "hasEOL": true
+        },
+        {
+          "text": "Left first",
+          "x": 48,
+          "y": 700,
+          "width": 42.684,
+          "height": 12,
+          "dir": "ltr",
+          "hasEOL": false
+        },
+        {
+          "text": " ",
+          "x": 90.68399999999998,
+          "y": 700,
+          "width": 239.31600000000003,
+          "height": 0,
+          "dir": "ltr",
+          "hasEOL": false
+        },
+        {
+          "text": "Right first",
+          "x": 330,
+          "y": 700,
+          "width": 50.676000000000016,
+          "height": 12,
+          "dir": "ltr",
+          "hasEOL": true
+        }
+      ],
+      "firstPageAnnotations": [],
+      "openAction": null,
+      "jsActions": null,
+      "elapsedMs": 3.19,
+      "cleanup": {
+        "pageCleanupCalls": 1,
+        "documentDestroyed": true
+      }
+    },
+    {
+      "name": "image-only.pdf",
+      "inputByteLength": 935,
+      "pages": 1,
+      "labels": null,
+      "outline": null,
+      "title": "Original docsluice synthetic fixture",
+      "author": "Synthetic author",
+      "pageText": [
+        ""
+      ],
+      "rawItemCount": 0,
+      "textChars": 0,
+      "firstPageItems": [],
+      "firstPageAnnotations": [],
+      "openAction": null,
+      "jsActions": null,
+      "elapsedMs": 2.42,
+      "cleanup": {
+        "pageCleanupCalls": 1,
+        "documentDestroyed": true
+      }
+    },
+    {
+      "name": "text-100-pages.pdf",
+      "inputByteLength": 30597,
+      "pages": 100,
+      "labels": null,
+      "outline": null,
+      "title": "Original docsluice synthetic fixture",
+      "author": "Synthetic author",
+      "pageText": [
+        "Synthetic performance page 001",
+        "Synthetic performance page 002",
+        "Synthetic performance page 003",
+        "Synthetic performance page 004",
+        "Synthetic performance page 005",
+        "Synthetic performance page 006",
+        "Synthetic performance page 007",
+        "Synthetic performance page 008",
+        "Synthetic performance page 009",
+        "Synthetic performance page 010",
+        "Synthetic performance page 011",
+        "Synthetic performance page 012",
+        "Synthetic performance page 013",
+        "Synthetic performance page 014",
+        "Synthetic performance page 015",
+        "Synthetic performance page 016",
+        "Synthetic performance page 017",
+        "Synthetic performance page 018",
+        "Synthetic performance page 019",
+        "Synthetic performance page 020",
+        "Synthetic performance page 021",
+        "Synthetic performance page 022",
+        "Synthetic performance page 023",
+        "Synthetic performance page 024",
+        "Synthetic performance page 025",
+        "Synthetic performance page 026",
+        "Synthetic performance page 027",
+        "Synthetic performance page 028",
+        "Synthetic performance page 029",
+        "Synthetic performance page 030",
+        "Synthetic performance page 031",
+        "Synthetic performance page 032",
+        "Synthetic performance page 033",
+        "Synthetic performance page 034",
+        "Synthetic performance page 035",
+        "Synthetic performance page 036",
+        "Synthetic performance page 037",
+        "Synthetic performance page 038",
+        "Synthetic performance page 039",
+        "Synthetic performance page 040",
+        "Synthetic performance page 041",
+        "Synthetic performance page 042",
+        "Synthetic performance page 043",
+        "Synthetic performance page 044",
+        "Synthetic performance page 045",
+        "Synthetic performance page 046",
+        "Synthetic performance page 047",
+        "Synthetic performance page 048",
+        "Synthetic performance page 049",
+        "Synthetic performance page 050",
+        "Synthetic performance page 051",
+        "Synthetic performance page 052",
+        "Synthetic performance page 053",
+        "Synthetic performance page 054",
+        "Synthetic performance page 055",
+        "Synthetic performance page 056",
+        "Synthetic performance page 057",
+        "Synthetic performance page 058",
+        "Synthetic performance page 059",
+        "Synthetic performance page 060",
+        "Synthetic performance page 061",
+        "Synthetic performance page 062",
+        "Synthetic performance page 063",
+        "Synthetic performance page 064",
+        "Synthetic performance page 065",
+        "Synthetic performance page 066",
+        "Synthetic performance page 067",
+        "Synthetic performance page 068",
+        "Synthetic performance page 069",
+        "Synthetic performance page 070",
+        "Synthetic performance page 071",
+        "Synthetic performance page 072",
+        "Synthetic performance page 073",
+        "Synthetic performance page 074",
+        "Synthetic performance page 075",
+        "Synthetic performance page 076",
+        "Synthetic performance page 077",
+        "Synthetic performance page 078",
+        "Synthetic performance page 079",
+        "Synthetic performance page 080",
+        "Synthetic performance page 081",
+        "Synthetic performance page 082",
+        "Synthetic performance page 083",
+        "Synthetic performance page 084",
+        "Synthetic performance page 085",
+        "Synthetic performance page 086",
+        "Synthetic performance page 087",
+        "Synthetic performance page 088",
+        "Synthetic performance page 089",
+        "Synthetic performance page 090",
+        "Synthetic performance page 091",
+        "Synthetic performance page 092",
+        "Synthetic performance page 093",
+        "Synthetic performance page 094",
+        "Synthetic performance page 095",
+        "Synthetic performance page 096",
+        "Synthetic performance page 097",
+        "Synthetic performance page 098",
+        "Synthetic performance page 099",
+        "Synthetic performance page 100"
+      ],
+      "rawItemCount": 100,
+      "textChars": 3000,
+      "firstPageItems": [
+        {
+          "text": "Synthetic performance page 001",
+          "x": 48,
+          "y": 740,
+          "width": 173.42399999999998,
+          "height": 12,
+          "dir": "ltr",
+          "hasEOL": false
+        }
+      ],
+      "firstPageAnnotations": [],
+      "openAction": null,
+      "jsActions": null,
+      "elapsedMs": 37.78,
+      "cleanup": {
+        "pageCleanupCalls": 100,
+        "documentDestroyed": true
+      }
+    },
+    {
+      "name": "hostile/actions.pdf",
+      "inputByteLength": 1098,
+      "pages": 1,
+      "labels": null,
+      "outline": null,
+      "title": "Original docsluice synthetic fixture",
+      "author": "Synthetic author",
+      "pageText": [
+        "Action markers must remain inert"
+      ],
+      "rawItemCount": 1,
+      "textChars": 32,
+      "firstPageItems": [
+        {
+          "text": "Action markers must remain inert",
+          "x": 48,
+          "y": 740,
+          "width": 176.04,
+          "height": 12,
+          "dir": "ltr",
+          "hasEOL": false
+        }
+      ],
+      "firstPageAnnotations": [],
+      "openAction": null,
+      "jsActions": {
+        "OpenAction": [
+          "this.docsluiceMarker = 1;"
+        ]
+      },
+      "elapsedMs": 3.27,
+      "cleanup": {
+        "pageCleanupCalls": 1,
+        "documentDestroyed": true
+      }
+    }
+  ],
+  "pdfjsVersion": "5.6.205",
+  "importResolved": true,
+  "markerAfter": 0,
+  "attempts": {
+    "fetch": 0,
+    "xhr": 0,
+    "worker": 0,
+    "eval": 0,
+    "functionConstructor": 0
+  }
+}

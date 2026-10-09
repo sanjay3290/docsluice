@@ -1,0 +1,41 @@
+{
+  "annotations.pdf": {
+    "annotations": [
+      {
+        "author": "Fixture Annotation Author",
+        "contents": "Synthetic sticky note text.",
+        "subtype": "/Text"
+      },
+      {
+        "author": "Fixture Annotation Author",
+        "contents": "Synthetic free-text annotation.",
+        "subtype": "/FreeText"
+      }
+    ],
+    "pages": 1,
+    "text": "Annotation source facts."
+  },
+  "filled-form.pdf": {
+    "fields": {
+      "applicant.name": "Ada Example",
+      "consent": "/Yes"
+    },
+    "pages": 1,
+    "text": "Filled form source facts.",
+    "widgetCount": 2
+  },
+  "owner-password-only.pdf": {
+    "encrypted": true,
+    "ownerPassword": "fixture-owner-secret",
+    "pages": 1,
+    "text": "Owner-password-only empty-user fixture.",
+    "userPassword": ""
+  },
+  "user-password.pdf": {
+    "encrypted": true,
+    "ownerPassword": "fixture-owner-secret",
+    "pages": 1,
+    "text": "User-password protected fixture.",
+    "userPassword": "fixture-user-secret"
+  }
+}

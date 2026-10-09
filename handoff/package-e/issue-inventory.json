@@ -1,0 +1,131 @@
+{
+  "notice": "Reviewable partial package; no all-issue completion/closure claim. Current GitHub requirement fallback authorized after bounded Library transfer failure. Frozen archive unread.",
+  "issues": [
+    {
+      "number": 39,
+      "title": "reader: ZIP as a container format (NST-1..NST-6)",
+      "status": "implementation-awaiting-integration",
+      "implemented": true,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "ZIP reader, 15 direct tests, 10 injected real-pipeline tests; mixed-child regression now passes lead8df. Public registry/goldens/globalhostile/fuzz/truequine acceptance pending."
+    },
+    {
+      "number": 44,
+      "title": "spike: confirm the PDF engine (ADR 0009)",
+      "status": "spike-local-evidence-awaiting-ci-decision",
+      "implemented": false,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "Exact1.7 candidate compared with matching legacy; local Node20/22/24+Bun/Deno/Chromium/workerd evidence and independently reviewed guards. ADR remains Proposed; full#23CI/security/license/production-size gates pending."
+    },
+    {
+      "number": 45,
+      "title": "pdf: text layer per page, page labels, needsOcr, metadata, outline, links (PDF-1, 4, 6, 10)",
+      "status": "dependency-pending",
+      "implemented": false,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "Original plain/image/labels/actions/100page fixtures and real-engine API research ready. Public reader waits accepted44 and reviewed#27 corpus; no public implementation claimed."
+    },
+    {
+      "number": 46,
+      "title": "pdf: reading order \u2014 lines, paragraphs, columns (PDF-2)",
+      "status": "private-helper-awaiting-integration",
+      "implemented": true,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "Private helper PR137 head55a60269,36focused98.96%,full503source+13policy+4dist andgreenCI. Realengine authoredphraseprobe8/10pagesfullyordered/allphrasespresent; tablepages columnwise. Actualreader/corpus/wordaccuracy pending."
+    },
+    {
+      "number": 47,
+      "title": "pdf: encrypted PDFs (PDF-5)",
+      "status": "dependency-pending",
+      "implemented": false,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "Original encrypted owner/user password fixtures; actual candidate API probe with required/wrong/correct cases. Error mapping/features reader integration pending45."
+    },
+    {
+      "number": 48,
+      "title": "pdf: remove repeated headers and footers (PDF-3)",
+      "status": "private-helper-awaiting-integration",
+      "implemented": true,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "Header/footer helper PR150,19focused,98.2linecoverage,full513source+13policy+4dist and greenCI. Public pdfHeaders option/once-only block/goldens pending."
+    },
+    {
+      "number": 49,
+      "title": "pdf: form fields and annotations (PDF-7)",
+      "status": "dependency-pending",
+      "implemented": false,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "Original filled form/annotations and actual engine API probe ready; author privacy must be adapter-side. Name/value table/note emission and goldens pending45."
+    },
+    {
+      "number": 50,
+      "title": "pdf: damaged PDFs \u2014 return the pages that work (PDF-9)",
+      "status": "dependency-pending",
+      "implemented": false,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "Original damagedxref/truncated fixtures; candidate recoversxref but rejects truncation. Per-page fallback/static-warning reader mapping and full hostile matrix pending45."
+    },
+    {
+      "number": 61,
+      "title": "archives: GZIP and TAR",
+      "status": "implementation-awaiting-integration",
+      "implemented": true,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "GZIP/TAR reader PR106,25directtests,13pipeline cases in separatebranch; CRC/memberbudget/PAX hostile coverage. Public actualCSVgoldens/globalfuzz-hostile integration pending."
+    },
+    {
+      "number": 69,
+      "title": "images: metadata \u2014 dimensions, date, EXIF with GPS off (section 8.1 Images P1)",
+      "status": "implementation-awaiting-integration",
+      "implemented": true,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "Image readers PR105,32directtests93.18%; lead8df imageGps/dispatch observed; all19Eregressions/full586source+13policy+5dist pass in consumed branch. Closure/overall acceptance remain coordinator-owned."
+    },
+    {
+      "number": 76,
+      "title": "plugin: OCR interface and @docsluice/ocr-tesseract (EXT-5)",
+      "status": "dependency-and-decision-pending",
+      "implemented": false,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "OCR interface/worker lifecycle/offline-model design proposal; Tesseract7 postinstall conflicts no-install-hook rule and needs decision. Public45/74 integration pending."
+    },
+    {
+      "number": 82,
+      "title": "pdf: simple table detection with confidence (PDF-8)",
+      "status": "private-helper-awaiting-integration",
+      "implemented": true,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "Table helper PR159,19focused98.71%; full513source+13policy+4dist and greenCI. Internal confidence0.72/0.55 uncalibrated; actualPDFoperators/caption/cellaccuracy/goldens pending."
+    },
+    {
+      "number": 86,
+      "title": "archives: 7z and RAR listing (plugin candidates)",
+      "status": "dependency-and-decision-pending",
+      "implemented": false,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "Proposed plugin-only7z/RAR ADR; encoded-header decoder feasibility/size/license/source-completeness gates unverified. No listing plugin implemented."
+    },
+    {
+      "number": 88,
+      "title": "formats: Visio VSDX, Apple iWork, LaTeX, audio/video metadata",
+      "status": "private-reader-and-decision-pending",
+      "implemented": true,
+      "integrated": false,
+      "acceptanceVerified": false,
+      "preparation": "Private VSDX PR161 implementation7b3e0f9 plus resolved-context followup94d77dff,22focused92.62%,full588source+13policy+4dist. OwnimplementationCIgreen7b;latestcontextCIpending. Plugin/detection/ADR/goldens pending; remainingP2 deferral proposal only."
+    }
+  ]
+}

@@ -1,0 +1,311 @@
+{
+  "mode": "legacy",
+  "node": "v22.23.3",
+  "pdfjsVersion": "5.6.205",
+  "config": {
+    "isEvalSupported": false,
+    "useWorkerFetch": false,
+    "useWasm": false,
+    "disableAutoFetch": true,
+    "disableStream": true,
+    "verbosity": 0
+  },
+  "importResolved": true,
+  "markerBefore": 0,
+  "fixtures": [
+    {
+      "name": "labels-outline-links.pdf",
+      "bytes": 1870,
+      "pages": 3,
+      "labels": [
+        "i",
+        "ii",
+        "A-3"
+      ],
+      "outline": [
+        "Synthetic bookmark"
+      ],
+      "title": "Original docsluice synthetic fixture",
+      "author": "Synthetic author",
+      "pageText": [
+        "Synthetic first pageExample link",
+        "Synthetic second page",
+        "Synthetic third page"
+      ],
+      "rawItemCount": 4,
+      "textChars": 73,
+      "firstPageItems": [
+        {
+          "text": "Synthetic first page",
+          "x": 48,
+          "y": 740,
+          "width": 102.04799999999997,
+          "height": 12,
+          "dir": "ltr",
+          "hasEOL": true
+        },
+        {
+          "text": "Example link",
+          "x": 48,
+          "y": 700,
+          "width": 68.01599999999999,
+          "height": 12,
+          "dir": "ltr",
+          "hasEOL": false
+        }
+      ],
+      "firstPageAnnotations": [
+        {
+          "subtype": "Link",
+          "url": "https://example.invalid/docsluice",
+          "unsafeUrl": "https://example.invalid/docsluice"
+        }
+      ],
+      "unpdfTextItems": {
+        "totalPages": 3,
+        "firstPage": [
+          {
+            "str": "Synthetic first page",
+            "x": 48,
+            "y": 740,
+            "width": 102.04799999999997,
+            "height": 12,
+            "fontSize": 12,
+            "fontFamily": "sans-serif",
+            "dir": "ltr",
+            "hasEOL": true
+          },
+          {
+            "str": "Example link",
+            "x": 48,
+            "y": 700,
+            "width": 68.01599999999999,
+            "height": 12,
+            "fontSize": 12,
+            "fontFamily": "sans-serif",
+            "dir": "ltr",
+            "hasEOL": false
+          }
+        ]
+      },
+      "openAction": null,
+      "jsActions": null
+    },
+    {
+      "name": "two-columns.pdf",
+      "bytes": 977,
+      "pages": 1,
+      "labels": null,
+      "outline": null,
+      "title": "Original docsluice synthetic fixture",
+      "author": "Synthetic author",
+      "pageText": [
+        "Full width titleLeft first Right firstLeft second Right second"
+      ],
+      "rawItemCount": 8,
+      "textChars": 62,
+      "firstPageItems": [
+        {
+          "text": "Full width title",
+          "x": 48,
+          "y": 760,
+          "width": 121.14000000000001,
+          "height": 20,
+          "dir": "ltr",
+          "hasEOL": false
+        },
+        {
+          "text": "",
+          "x": 48,
+          "y": 700,
+          "width": 0,
+          "height": 0,
+          "dir": "ltr",
+          "hasEOL": true
+        },
+        {
+          "text": "Left first",
+          "x": 48,
+          "y": 700,
+          "width": 42.684,
+          "height": 12,
+          "dir": "ltr",
+          "hasEOL": false
+        },
+        {
+          "text": " ",
+          "x": 90.68399999999998,
+          "y": 700,
+          "width": 239.31600000000003,
+          "height": 0,
+          "dir": "ltr",
+          "hasEOL": false
+        },
+        {
+          "text": "Right first",
+          "x": 330,
+          "y": 700,
+          "width": 50.676000000000016,
+          "height": 12,
+          "dir": "ltr",
+          "hasEOL": true
+        }
+      ],
+      "firstPageAnnotations": [],
+      "unpdfTextItems": {
+        "totalPages": 1,
+        "firstPage": [
+          {
+            "str": "Full width title",
+            "x": 48,
+            "y": 760,
+            "width": 121.14000000000001,
+            "height": 20,
+            "fontSize": 20,
+            "fontFamily": "sans-serif",
+            "dir": "ltr",
+            "hasEOL": false
+          },
+          {
+            "str": "",
+            "x": 48,
+            "y": 700,
+            "width": 0,
+            "height": 0,
+            "fontSize": 12,
+            "fontFamily": "sans-serif",
+            "dir": "ltr",
+            "hasEOL": true
+          },
+          {
+            "str": "Left first",
+            "x": 48,
+            "y": 700,
+            "width": 42.684,
+            "height": 12,
+            "fontSize": 12,
+            "fontFamily": "sans-serif",
+            "dir": "ltr",
+            "hasEOL": false
+          },
+          {
+            "str": " ",
+            "x": 90.68399999999998,
+            "y": 700,
+            "width": 239.31600000000003,
+            "height": 0,
+            "fontSize": 12,
+            "fontFamily": "sans-serif",
+            "dir": "ltr",
+            "hasEOL": false
+          },
+          {
+            "str": "Right first",
+            "x": 330,
+            "y": 700,
+            "width": 50.676000000000016,
+            "height": 12,
+            "fontSize": 12,
+            "fontFamily": "sans-serif",
+            "dir": "ltr",
+            "hasEOL": true
+          }
+        ]
+      },
+      "openAction": null,
+      "jsActions": null
+    },
+    {
+      "name": "image-only.pdf",
+      "bytes": 935,
+      "pages": 1,
+      "labels": null,
+      "outline": null,
+      "title": "Original docsluice synthetic fixture",
+      "author": "Synthetic author",
+      "pageText": [
+        ""
+      ],
+      "rawItemCount": 0,
+      "textChars": 0,
+      "firstPageItems": [],
+      "firstPageAnnotations": [],
+      "unpdfTextItems": {
+        "totalPages": 1,
+        "firstPage": []
+      },
+      "openAction": null,
+      "jsActions": null
+    },
+    {
+      "name": "hostile/actions.pdf",
+      "bytes": 1098,
+      "pages": 1,
+      "labels": null,
+      "outline": null,
+      "title": "Original docsluice synthetic fixture",
+      "author": "Synthetic author",
+      "pageText": [
+        "Action markers must remain inert"
+      ],
+      "rawItemCount": 1,
+      "textChars": 32,
+      "firstPageItems": [
+        {
+          "text": "Action markers must remain inert",
+          "x": 48,
+          "y": 740,
+          "width": 176.04,
+          "height": 12,
+          "dir": "ltr",
+          "hasEOL": false
+        }
+      ],
+      "firstPageAnnotations": [],
+      "unpdfTextItems": {
+        "totalPages": 1,
+        "firstPage": [
+          {
+            "str": "Action markers must remain inert",
+            "x": 48,
+            "y": 740,
+            "width": 176.04,
+            "height": 12,
+            "fontSize": 12,
+            "fontFamily": "sans-serif",
+            "dir": "ltr",
+            "hasEOL": false
+          }
+        ]
+      },
+      "openAction": null,
+      "jsActions": {
+        "OpenAction": [
+          "this.docsluiceMarker = 1;"
+        ]
+      }
+    }
+  ],
+  "performance": {
+    "runs": 10,
+    "medianMs": 43.11,
+    "p95Ms": 54.2,
+    "firstResult": {
+      "pages": 100,
+      "rawItemCount": 100,
+      "textChars": 3000,
+      "firstPageText": "Synthetic performance page 001",
+      "lastPageText": "Synthetic performance page 100"
+    }
+  },
+  "markerAfter": 0,
+  "attempts": {
+    "fetch": 0,
+    "http": 0,
+    "https": 0,
+    "xhr": 0,
+    "worker": 0,
+    "eval": 0,
+    "functionConstructor": 0
+  }
+}

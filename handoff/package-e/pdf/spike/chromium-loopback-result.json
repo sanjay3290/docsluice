@@ -1,0 +1,12 @@
+{
+  "requests": [
+    "http://127.0.0.1:46851/",
+    "http://127.0.0.1:46851/unpdf/index.mjs",
+    "http://127.0.0.1:46851/unpdf/pdfjs.mjs",
+    "http://127.0.0.1:46851/legacy/pdf.mjs"
+  ],
+  "console": [],
+  "errors": [],
+  "chromium": "151.0.7922.173",
+  "result": "{\"ok\":true,\"modes\":[{\"mode\":\"unpdf\",\"engineVersion\":\"5.6.205\",\"results\":[{\"name\":\"labels-outline-links.pdf\",\"pages\":3,\"chars\":73},{\"name\":\"two-columns.pdf\",\"pages\":1,\"chars\":62},{\"name\":\"image-only.pdf\",\"pages\":1,\"chars\":0},{\"name\":\"text-100-pages.pdf\",\"pages\":100,\"chars\":3000},{\"name\":\"hostile/actions.pdf\",\"pages\":1,\"chars\":32}]},{\"mode\":\"legacy\",\"engineVersion\":\"5.6.205\",\"results\":[{\"name\":\"labels-outline-links.pdf\",\"pages\":3,\"chars\":73},{\"name\":\"two-columns.pdf\",\"pages\":1,\"chars\":62},{\"name\":\"image-only.pdf\",\"pages\":1,\"chars\":0},{\"name\":\"text-100-pages.pdf\",\"pages\":100,\"chars\":3000},{\"name\":\"hostile/actions.pdf\",\"pages\":1,\"chars\":32}]}],\"attempts\":{\"fetch\":0,\"worker\":0,\"eval\":0,\"function\":0,\"xhr\":0}}"
+}

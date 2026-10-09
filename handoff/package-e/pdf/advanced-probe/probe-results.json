@@ -1,0 +1,375 @@
+{
+  "unencrypted": {
+    "ok": true,
+    "pages": 1,
+    "fingerprints": [
+      "1aac2e02ca00e2d1ba703b81eee0101a",
+      null
+    ],
+    "info": {
+      "PDFFormatVersion": "1.3",
+      "Language": null,
+      "EncryptFilterName": null,
+      "IsLinearized": false,
+      "IsAcroFormPresent": true,
+      "IsXFAPresent": false,
+      "IsCollectionPresent": false,
+      "IsSignaturesPresent": false,
+      "Producer": "pypdf",
+      "Title": "Original synthetic filled form",
+      "Author": "Synthetic fixture author",
+      "CreationDate": "D:20260101000000Z"
+    },
+    "permissions": null,
+    "encryptedSignal": false,
+    "getFieldObjects": "function",
+    "getAttachments": "function",
+    "getPermissions": "function"
+  },
+  "owner-empty": {
+    "ok": true,
+    "pages": 1,
+    "fingerprints": [
+      "373cfdb48920bd9a1e06dc874593c595",
+      null
+    ],
+    "info": {
+      "PDFFormatVersion": "1.3",
+      "Language": null,
+      "EncryptFilterName": "Standard",
+      "IsLinearized": false,
+      "IsAcroFormPresent": false,
+      "IsXFAPresent": false,
+      "IsCollectionPresent": false,
+      "IsSignaturesPresent": false,
+      "Producer": "pypdf"
+    },
+    "permissions": [
+      4,
+      8,
+      16,
+      32,
+      256,
+      512,
+      1024,
+      2048
+    ],
+    "encryptedSignal": true,
+    "getFieldObjects": "function",
+    "getAttachments": "function",
+    "getPermissions": "function"
+  },
+  "user-absent": {
+    "ok": false,
+    "error": {
+      "name": "PasswordException",
+      "constructor": "PasswordException",
+      "message": "No password given",
+      "code": 1,
+      "reason": null,
+      "passwordLeaked": false
+    }
+  },
+  "user-right": {
+    "ok": true,
+    "pages": 1,
+    "fingerprints": [
+      "7327fbc0db59170f2222052437f8724c",
+      null
+    ],
+    "info": {
+      "PDFFormatVersion": "1.3",
+      "Language": null,
+      "EncryptFilterName": "Standard",
+      "IsLinearized": false,
+      "IsAcroFormPresent": false,
+      "IsXFAPresent": false,
+      "IsCollectionPresent": false,
+      "IsSignaturesPresent": false,
+      "Producer": "pypdf"
+    },
+    "permissions": [
+      4,
+      8,
+      16,
+      32,
+      256,
+      512,
+      1024,
+      2048
+    ],
+    "encryptedSignal": true,
+    "getFieldObjects": "function",
+    "getAttachments": "function",
+    "getPermissions": "function"
+  },
+  "user-wrong": {
+    "ok": false,
+    "error": {
+      "name": "PasswordException",
+      "constructor": "PasswordException",
+      "message": "Incorrect Password",
+      "code": 2,
+      "reason": null,
+      "passwordLeaked": false
+    }
+  },
+  "form": {
+    "fields": {
+      "applicant.name": [
+        {
+          "id": "7R",
+          "value": "Ada Example",
+          "defaultValue": "",
+          "multiline": false,
+          "password": false,
+          "charLimit": 0,
+          "comb": false,
+          "editable": true,
+          "hidden": false,
+          "name": "applicant.name",
+          "rect": [
+            48,
+            680,
+            300,
+            710
+          ],
+          "actions": null,
+          "page": 0,
+          "strokeColor": null,
+          "fillColor": null,
+          "rotation": 0,
+          "hasDatetimeHTML": false,
+          "type": "text"
+        }
+      ],
+      "consent": [
+        {
+          "id": "8R",
+          "value": "Yes",
+          "defaultValue": null,
+          "editable": true,
+          "name": "consent",
+          "rect": [
+            48,
+            630,
+            68,
+            650
+          ],
+          "hidden": false,
+          "actions": null,
+          "page": 0,
+          "strokeColor": null,
+          "fillColor": null,
+          "rotation": 0,
+          "type": "checkbox"
+        }
+      ]
+    }
+  },
+  "annotations": {
+    "annotations": [
+      {
+        "annotationType": 1,
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "rawWidth": 1,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": null,
+        "backgroundColor": null,
+        "borderColor": null,
+        "rotation": 0,
+        "contentsObj": {
+          "str": "Synthetic sticky note text.",
+          "dir": "ltr"
+        },
+        "hasAppearance": false,
+        "id": "8R",
+        "modificationDate": null,
+        "rect": [
+          48,
+          652,
+          70,
+          674
+        ],
+        "subtype": "Text",
+        "hasOwnCanvas": true,
+        "noRotate": true,
+        "noHTML": false,
+        "isEditable": false,
+        "structParent": -1,
+        "titleObj": {
+          "str": "Fixture Annotation Author",
+          "dir": "ltr"
+        },
+        "creationDate": null,
+        "popupRef": null,
+        "name": "Note",
+        "state": null,
+        "stateModel": null
+      },
+      {
+        "annotationType": 3,
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "rawWidth": 1,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 255,
+          "1": 255,
+          "2": 255
+        },
+        "backgroundColor": null,
+        "borderColor": null,
+        "rotation": 0,
+        "contentsObj": {
+          "str": "Synthetic free-text annotation.",
+          "dir": "ltr"
+        },
+        "hasAppearance": false,
+        "id": "9R",
+        "modificationDate": null,
+        "rect": [
+          80,
+          640,
+          280,
+          680
+        ],
+        "subtype": "FreeText",
+        "hasOwnCanvas": false,
+        "noRotate": false,
+        "noHTML": false,
+        "isEditable": true,
+        "structParent": -1,
+        "titleObj": {
+          "str": "Fixture Annotation Author",
+          "dir": "ltr"
+        },
+        "creationDate": null,
+        "popupRef": null,
+        "defaultAppearanceData": {
+          "fontSize": 10,
+          "fontName": "",
+          "fontColor": {
+            "0": 0,
+            "1": 0,
+            "2": 0
+          }
+        },
+        "textContent": [
+          "Synthetic free-text annotation."
+        ],
+        "textPosition": [
+          0,
+          30
+        ]
+      }
+    ]
+  },
+  "attachments": {
+    "isNull": false,
+    "containerPrototype": "ordinary",
+    "entries": [
+      {
+        "key": "__proto__",
+        "filename": "__proto__",
+        "contentLength": 23,
+        "contentType": "Uint8Array",
+        "isPrototypeKey": true,
+        "objectPrototype": "ordinary-or-other"
+      },
+      {
+        "key": "csv-duplicate",
+        "filename": "data.csv",
+        "contentLength": 16,
+        "contentType": "Uint8Array",
+        "isPrototypeKey": false,
+        "objectPrototype": "ordinary-or-other"
+      },
+      {
+        "key": "csv-primary",
+        "filename": "data.csv",
+        "contentLength": 17,
+        "contentType": "Uint8Array",
+        "isPrototypeKey": false,
+        "objectPrototype": "ordinary-or-other"
+      },
+      {
+        "key": "nested-zip",
+        "filename": "nested.zip",
+        "contentLength": 146,
+        "contentType": "Uint8Array",
+        "isPrototypeKey": false,
+        "objectPrototype": "ordinary-or-other"
+      },
+      {
+        "key": "traversal-name",
+        "filename": "passwd.csv",
+        "contentLength": 23,
+        "contentType": "Uint8Array",
+        "isPrototypeKey": false,
+        "objectPrototype": "ordinary-or-other"
+      }
+    ]
+  },
+  "damaged": {
+    "truncated.pdf": {
+      "loaded": false,
+      "error": {
+        "name": "InvalidPDFException",
+        "constructor": "InvalidPDFException",
+        "message": "Invalid PDF structure.",
+        "code": null,
+        "reason": null,
+        "passwordLeaked": false
+      }
+    },
+    "corrupt-xref.pdf": {
+      "loaded": true,
+      "pages": 3,
+      "page1Returned": true,
+      "extractionError": null
+    }
+  },
+  "exports": {
+    "getDocumentProxy": "function",
+    "getPDFProxy": "undefined",
+    "pdfjsGetDocument": "function",
+    "pdfjsPDFWorker": "function"
+  },
+  "instrumentation": {
+    "fetch": 0,
+    "eval": 0,
+    "functionConstructor": 0,
+    "workerConstructor": 0
+  },
+  "consoleWarningSamples": [
+    "Warning: FreeTextAnnotation: OffscreenCanvas is not supported, annotation may not render correctly.",
+    "Warning: Indexing all PDF objects",
+    "Warning: XRef.parse - Invalid \"Root\" reference: \"XRefEntryException: Bad (uncompressed) XRef entry: 1R\"."
+  ],
+  "probeOptions": {
+    "isEvalSupported": false,
+    "useWasm": false,
+    "useWorkerFetch": false,
+    "disableAutoFetch": true,
+    "disableStream": true,
+    "disableRange": true,
+    "stopAtErrors": false
+  },
+  "status": "LOCAL_API_PROBE_ONLY_NOT_ACCEPTANCE_OR_RUNTIME_COMPATIBILITY"
+}

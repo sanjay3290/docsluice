@@ -1,0 +1,926 @@
+{
+  "fixture": "/workspace/package-e-preparation/pdf-fixtures/layout/generated/layout-reference-10-pages.pdf",
+  "pages": [
+    {
+      "pageNumber": 1,
+      "page": {
+        "width": 612,
+        "height": 792
+      },
+      "rawItemCount": 7,
+      "unsupportedDirectionItems": 0,
+      "lines": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "x": 36,
+          "y": 26,
+          "width": 156.582,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            0
+          ],
+          "column": -1
+        },
+        {
+          "text": "Layout reference page one",
+          "x": 48,
+          "y": 82,
+          "width": 191.232,
+          "height": 16,
+          "fontSize": 16,
+          "dir": "ltr",
+          "sourceIndices": [
+            3
+          ],
+          "column": -1
+        },
+        {
+          "text": "Single column first line",
+          "x": 48,
+          "y": 122,
+          "width": 120.036,
+          "height": 12,
+          "fontSize": 12,
+          "dir": "ltr",
+          "sourceIndices": [
+            5
+          ],
+          "column": -1
+        },
+        {
+          "text": "Single column second line",
+          "x": 48,
+          "y": 142,
+          "width": 139.392,
+          "height": 12,
+          "fontSize": 12,
+          "dir": "ltr",
+          "sourceIndices": [
+            6
+          ],
+          "column": -1
+        },
+        {
+          "text": "ODD FOOTER | page 01",
+          "x": 36,
+          "y": 770,
+          "width": 99.873,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            1
+          ],
+          "column": -1
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "heading": false
+        },
+        {
+          "text": "Layout reference page one",
+          "heading": false
+        },
+        {
+          "text": "Single column first line",
+          "heading": false
+        },
+        {
+          "text": "Single column second line",
+          "heading": false
+        },
+        {
+          "text": "ODD FOOTER | page 01",
+          "heading": false
+        }
+      ]
+    },
+    {
+      "pageNumber": 2,
+      "page": {
+        "width": 612,
+        "height": 792
+      },
+      "rawItemCount": 11,
+      "unsupportedDirectionItems": 0,
+      "lines": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "x": 36,
+          "y": 26,
+          "width": 156.582,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            0
+          ],
+          "column": -1
+        },
+        {
+          "text": "Full width title spans both reading columns clearly",
+          "x": 36,
+          "y": 72,
+          "width": 396.144,
+          "height": 18,
+          "fontSize": 18,
+          "dir": "ltr",
+          "sourceIndices": [
+            3
+          ],
+          "column": -1
+        },
+        {
+          "text": "Left column first line Right column first line",
+          "x": 48,
+          "y": 117,
+          "width": 396.696,
+          "height": 12,
+          "fontSize": 12,
+          "dir": "ltr",
+          "sourceIndices": [
+            5,
+            6,
+            7
+          ],
+          "column": -1
+        },
+        {
+          "text": "Left column second line Right column second line",
+          "x": 48,
+          "y": 137,
+          "width": 416.052,
+          "height": 12,
+          "fontSize": 12,
+          "dir": "ltr",
+          "sourceIndices": [
+            8,
+            9,
+            10
+          ],
+          "column": -1
+        },
+        {
+          "text": "EVEN FOOTER | page 02",
+          "x": 36,
+          "y": 770,
+          "width": 104.382,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            1
+          ],
+          "column": -1
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "heading": false
+        },
+        {
+          "text": "Full width title spans both reading columns clearly",
+          "heading": true
+        },
+        {
+          "text": "Left column first line Right column first line",
+          "heading": false
+        },
+        {
+          "text": "Left column second line Right column second line",
+          "heading": false
+        },
+        {
+          "text": "EVEN FOOTER | page 02",
+          "heading": false
+        }
+      ]
+    },
+    {
+      "pageNumber": 3,
+      "page": {
+        "width": 612,
+        "height": 792
+      },
+      "rawItemCount": 15,
+      "unsupportedDirectionItems": 0,
+      "lines": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "x": 36,
+          "y": 26,
+          "width": 156.582,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            0
+          ],
+          "column": -1
+        },
+        {
+          "text": "Three column heading",
+          "x": 48,
+          "y": 82,
+          "width": 149.235,
+          "height": 15,
+          "fontSize": 15,
+          "dir": "ltr",
+          "sourceIndices": [
+            3
+          ],
+          "column": -1
+        },
+        {
+          "text": "Column A row one Column B row one Column C row one",
+          "x": 48,
+          "y": 122,
+          "width": 455.08,
+          "height": 11,
+          "fontSize": 11,
+          "dir": "ltr",
+          "sourceIndices": [
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "column": -1
+        },
+        {
+          "text": "Column A row two Column B row two Column C row two",
+          "x": 48,
+          "y": 142,
+          "width": 453.848,
+          "height": 11,
+          "fontSize": 11,
+          "dir": "ltr",
+          "sourceIndices": [
+            10,
+            11,
+            12,
+            13,
+            14
+          ],
+          "column": -1
+        },
+        {
+          "text": "ODD FOOTER | page 03",
+          "x": 36,
+          "y": 770,
+          "width": 99.873,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            1
+          ],
+          "column": -1
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "heading": false
+        },
+        {
+          "text": "Three column heading",
+          "heading": true
+        },
+        {
+          "text": "Column A row one Column B row one Column C row one",
+          "heading": false
+        },
+        {
+          "text": "Column A row two Column B row two Column C row two",
+          "heading": false
+        },
+        {
+          "text": "ODD FOOTER | page 03",
+          "heading": false
+        }
+      ]
+    },
+    {
+      "pageNumber": 4,
+      "page": {
+        "width": 612,
+        "height": 792
+      },
+      "rawItemCount": 6,
+      "unsupportedDirectionItems": 0,
+      "lines": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "x": 36,
+          "y": 26,
+          "width": 156.582,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            0
+          ],
+          "column": -1
+        },
+        {
+          "text": "Font Size Heading",
+          "x": 48,
+          "y": 82,
+          "width": 197.424,
+          "height": 24,
+          "fontSize": 24,
+          "dir": "ltr",
+          "sourceIndices": [
+            3
+          ],
+          "column": -1
+        },
+        {
+          "text": "The body sentence follows beneath the heading.",
+          "x": 48,
+          "y": 122,
+          "width": 258.156,
+          "height": 12,
+          "fontSize": 12,
+          "dir": "ltr",
+          "sourceIndices": [
+            5
+          ],
+          "column": -1
+        },
+        {
+          "text": "EVEN FOOTER | page 04",
+          "x": 36,
+          "y": 770,
+          "width": 104.382,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            1
+          ],
+          "column": -1
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "heading": false
+        },
+        {
+          "text": "Font Size Heading",
+          "heading": true
+        },
+        {
+          "text": "The body sentence follows beneath the heading.",
+          "heading": false
+        },
+        {
+          "text": "EVEN FOOTER | page 04",
+          "heading": false
+        }
+      ]
+    },
+    {
+      "pageNumber": 5,
+      "page": {
+        "width": 612,
+        "height": 792
+      },
+      "rawItemCount": 6,
+      "unsupportedDirectionItems": 0,
+      "lines": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "x": 36,
+          "y": 26,
+          "width": 156.582,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            0
+          ],
+          "column": -1
+        },
+        {
+          "text": "Body sentence ends before the note.",
+          "x": 48,
+          "y": 132,
+          "width": 196.128,
+          "height": 12,
+          "fontSize": 12,
+          "dir": "ltr",
+          "sourceIndices": [
+            3
+          ],
+          "column": -1
+        },
+        {
+          "text": "1. Bottom footnote source text.",
+          "x": 48,
+          "y": 750,
+          "width": 122.571,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            5
+          ],
+          "column": -1
+        },
+        {
+          "text": "ODD FOOTER | page 05",
+          "x": 36,
+          "y": 770,
+          "width": 99.873,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            1
+          ],
+          "column": -1
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "heading": false
+        },
+        {
+          "text": "Body sentence ends before the note.",
+          "heading": false
+        },
+        {
+          "text": "1. Bottom footnote source text.",
+          "heading": false
+        },
+        {
+          "text": "ODD FOOTER | page 05",
+          "heading": false
+        }
+      ]
+    },
+    {
+      "pageNumber": 6,
+      "page": {
+        "width": 612,
+        "height": 792
+      },
+      "rawItemCount": 8,
+      "unsupportedDirectionItems": 0,
+      "lines": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "x": 36,
+          "y": 26,
+          "width": 156.582,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            0
+          ],
+          "column": -1
+        },
+        {
+          "text": "Water 2 remains a synthetic source fact.",
+          "x": 48,
+          "y": 142,
+          "width": 212.068,
+          "height": 15,
+          "fontSize": 12,
+          "dir": "ltr",
+          "sourceIndices": [
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "column": -1
+        },
+        {
+          "text": "EVEN FOOTER | page 06",
+          "x": 36,
+          "y": 770,
+          "width": 104.382,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            1
+          ],
+          "column": -1
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "heading": false
+        },
+        {
+          "text": "Water 2 remains a synthetic source fact.",
+          "heading": false
+        },
+        {
+          "text": "EVEN FOOTER | page 06",
+          "heading": false
+        }
+      ]
+    },
+    {
+      "pageNumber": 7,
+      "page": {
+        "width": 612,
+        "height": 792
+      },
+      "rawItemCount": 5,
+      "unsupportedDirectionItems": 0,
+      "lines": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "x": 36,
+          "y": 26,
+          "width": 156.582,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            0
+          ],
+          "column": -1
+        },
+        {
+          "text": "Inter-",
+          "x": 48,
+          "y": 142,
+          "width": 28.008,
+          "height": 12,
+          "fontSize": 12,
+          "dir": "ltr",
+          "sourceIndices": [
+            3
+          ],
+          "column": -1
+        },
+        {
+          "text": "nationalization continues on the next line.",
+          "x": 48,
+          "y": 162,
+          "width": 219.456,
+          "height": 12,
+          "fontSize": 12,
+          "dir": "ltr",
+          "sourceIndices": [
+            4
+          ],
+          "column": -1
+        },
+        {
+          "text": "ODD FOOTER | page 07",
+          "x": 36,
+          "y": 770,
+          "width": 99.873,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            1
+          ],
+          "column": -1
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "heading": false
+        },
+        {
+          "text": "Inter-",
+          "heading": false
+        },
+        {
+          "text": "nationalization continues on the next line.",
+          "heading": false
+        },
+        {
+          "text": "ODD FOOTER | page 07",
+          "heading": false
+        }
+      ]
+    },
+    {
+      "pageNumber": 8,
+      "page": {
+        "width": 792,
+        "height": 612
+      },
+      "rawItemCount": 6,
+      "unsupportedDirectionItems": 0,
+      "lines": [
+        {
+          "text": "EVEN FOOTER | page 08",
+          "x": 22,
+          "y": 140.382,
+          "width": 9,
+          "height": 104.382,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            1
+          ],
+          "column": -1
+        },
+        {
+          "text": "Rotation content line",
+          "x": 680,
+          "y": 157.392,
+          "width": 12,
+          "height": 109.392,
+          "fontSize": 12,
+          "dir": "ltr",
+          "sourceIndices": [
+            5
+          ],
+          "column": -1
+        },
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "x": 766,
+          "y": 192.582,
+          "width": 9,
+          "height": 156.582,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            0
+          ],
+          "column": -1
+        },
+        {
+          "text": "Rotated page source geometry",
+          "x": 710,
+          "y": 240.206,
+          "width": 14,
+          "height": 192.206,
+          "fontSize": 14,
+          "dir": "ltr",
+          "sourceIndices": [
+            3
+          ],
+          "column": -1
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "EVEN FOOTER | page 08",
+          "heading": false
+        },
+        {
+          "text": "Rotation content line",
+          "heading": false
+        },
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "heading": false
+        },
+        {
+          "text": "Rotated page source geometry",
+          "heading": false
+        }
+      ]
+    },
+    {
+      "pageNumber": 9,
+      "page": {
+        "width": 612,
+        "height": 792
+      },
+      "rawItemCount": 11,
+      "unsupportedDirectionItems": 0,
+      "lines": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "x": 36,
+          "y": 26,
+          "width": 156.582,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            0
+          ],
+          "column": 0
+        },
+        {
+          "text": "Ruled 2 by 2 table",
+          "x": 48,
+          "y": 92,
+          "width": 112.84,
+          "height": 14,
+          "fontSize": 14,
+          "dir": "ltr",
+          "sourceIndices": [
+            3
+          ],
+          "column": 0
+        },
+        {
+          "text": "R1C1 R1C2",
+          "x": 145,
+          "y": 257,
+          "width": 178.116,
+          "height": 11,
+          "fontSize": 11,
+          "dir": "ltr",
+          "sourceIndices": [
+            5,
+            6,
+            7
+          ],
+          "column": 1
+        },
+        {
+          "text": "R2C1 R2C2",
+          "x": 145,
+          "y": 297,
+          "width": 178.116,
+          "height": 11,
+          "fontSize": 11,
+          "dir": "ltr",
+          "sourceIndices": [
+            8,
+            9,
+            10
+          ],
+          "column": 1
+        },
+        {
+          "text": "ODD FOOTER | page 09",
+          "x": 36,
+          "y": 770,
+          "width": 99.873,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            1
+          ],
+          "column": -1
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "heading": false
+        },
+        {
+          "text": "Ruled 2 by 2 table",
+          "heading": false
+        },
+        {
+          "text": "R1C1 R1C2",
+          "heading": false
+        },
+        {
+          "text": "R2C1 R2C2",
+          "heading": false
+        },
+        {
+          "text": "ODD FOOTER | page 09",
+          "heading": false
+        }
+      ]
+    },
+    {
+      "pageNumber": 10,
+      "page": {
+        "width": 612,
+        "height": 792
+      },
+      "rawItemCount": 14,
+      "unsupportedDirectionItems": 0,
+      "lines": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "x": 36,
+          "y": 26,
+          "width": 156.582,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            0
+          ],
+          "column": -1
+        },
+        {
+          "text": "Aligned 3 by 2 source table",
+          "x": 48,
+          "y": 92,
+          "width": 168.868,
+          "height": 14,
+          "fontSize": 14,
+          "dir": "ltr",
+          "sourceIndices": [
+            3
+          ],
+          "column": -1
+        },
+        {
+          "text": "Name Value",
+          "x": 60,
+          "y": 142,
+          "width": 278.127,
+          "height": 11,
+          "fontSize": 11,
+          "dir": "ltr",
+          "sourceIndices": [
+            5,
+            6,
+            7
+          ],
+          "column": -1
+        },
+        {
+          "text": "Alpha One",
+          "x": 60,
+          "y": 164,
+          "width": 270.79,
+          "height": 11,
+          "fontSize": 11,
+          "dir": "ltr",
+          "sourceIndices": [
+            8,
+            9,
+            10
+          ],
+          "column": -1
+        },
+        {
+          "text": "Beta Two",
+          "x": 60,
+          "y": 186,
+          "width": 270.779,
+          "height": 11,
+          "fontSize": 11,
+          "dir": "ltr",
+          "sourceIndices": [
+            11,
+            12,
+            13
+          ],
+          "column": -1
+        },
+        {
+          "text": "EVEN FOOTER | page 10",
+          "x": 36,
+          "y": 770,
+          "width": 104.382,
+          "height": 9,
+          "fontSize": 9,
+          "dir": "ltr",
+          "sourceIndices": [
+            1
+          ],
+          "column": -1
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Synthetic Package E Layout Reference",
+          "heading": false
+        },
+        {
+          "text": "Aligned 3 by 2 source table",
+          "heading": false
+        },
+        {
+          "text": "Name Value",
+          "heading": false
+        },
+        {
+          "text": "Alpha One",
+          "heading": false
+        },
+        {
+          "text": "Beta Two",
+          "heading": false
+        },
+        {
+          "text": "EVEN FOOTER | page 10",
+          "heading": false
+        }
+      ]
+    }
+  ]
+}

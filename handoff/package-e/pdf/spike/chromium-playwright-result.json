@@ -1,0 +1,7 @@
+{
+  "version": "151.0.7922.173",
+  "result": "TimeoutError: locator.textContent: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#result')\u001b[22m\n",
+  "logs": [
+    "wait: Error: page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///workspace/package-e-preparation/pdf/spike/browser-probe.html\nCall log:\n\u001b[2m  - navigating to \"file:///workspace/package-e-preparation/pdf/spike/browser-probe.html\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  ]
+}

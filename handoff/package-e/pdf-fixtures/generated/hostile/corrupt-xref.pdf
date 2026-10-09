@@ -1,0 +1,75 @@
+%PDF-1.7
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R /PageLabels << /Nums [0 << /S /r >> 2 << /S /D /P (A-) /St 3 >>] >> /Outlines 10 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 112  >>
+stream
+BT /F1 12 Tf 1 0 0 1 48 740 Tm (Synthetic first page) Tj ET
+BT /F1 12 Tf 1 0 0 1 48 700 Tm (Example link) Tj ET
+
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >>  >> /Contents 4 0 R   /Annots [12 0 R] >>
+endobj
+6 0 obj
+<< /Length 61  >>
+stream
+BT /F1 12 Tf 1 0 0 1 48 740 Tm (Synthetic second page) Tj ET
+
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >>  >> /Contents 6 0 R  >>
+endobj
+8 0 obj
+<< /Length 60  >>
+stream
+BT /F1 12 Tf 1 0 0 1 48 740 Tm (Synthetic third page) Tj ET
+
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >>  >> /Contents 8 0 R  >>
+endobj
+10 0 obj
+<< /Type /Outlines /First 11 0 R /Last 11 0 R /Count 1 >>
+endobj
+11 0 obj
+<< /Title (Synthetic bookmark) /Parent 10 0 R /Dest [5 0 R /Fit] >>
+endobj
+12 0 obj
+<< /Type /Annot /Subtype /Link /Rect [48 695 180 715] /Border [0 0 0] /A << /S /URI /URI (https://example.invalid/docsluice) >> >>
+endobj
+13 0 obj
+<< /Title (Original docsluice synthetic fixture) /Author (Synthetic author) /CreationDate (D:20260101000000Z) >>
+endobj
+xref
+0 14
+0000000000 65535 f 
+9999999999 00000 n 
+0000000149 00000 n 
+0000000218 00000 n 
+0000000288 00000 n 
+0000000452 00000 n 
+0000000598 00000 n 
+0000000710 00000 n 
+0000000838 00000 n 
+0000000949 00000 n 
+0000001077 00000 n 
+0000001151 00000 n 
+0000001235 00000 n 
+0000001382 00000 n 
+trailer
+<< /Size 14 /Root 1 0 R /Info 13 0 R >>
+startxref
+1511
+%%EOF

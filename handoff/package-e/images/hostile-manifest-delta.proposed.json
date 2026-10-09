@@ -1,0 +1,26 @@
+{
+  "notice": "Proposal only. Do not merge directly into hostile/manifest.json: expected reader outcomes must be assigned after the image reader exists.",
+  "candidates": [
+    {
+      "source_file": "package-e-preparation/images/fixtures/hostile/tiff-cyclic-ifd.tif",
+      "proposed_target": "hostile/images/tiff-cyclic-ifd.tif",
+      "requirement": "SEC-9",
+      "scenario": "IFD0 next-directory pointer loops back to IFD0",
+      "expected_outcome": "pending image-reader integration"
+    },
+    {
+      "source_file": "package-e-preparation/images/fixtures/hostile/tiff-huge-count.tif",
+      "proposed_target": "hostile/images/tiff-huge-count.tif",
+      "requirement": "SEC-12",
+      "scenario": "IFD declares 65535 entries but has no entry payload",
+      "expected_outcome": "pending image-reader integration"
+    },
+    {
+      "source_file": "package-e-preparation/images/fixtures/hostile/tiff-truncated-value-offset.tif",
+      "proposed_target": "hostile/images/tiff-truncated-value-offset.tif",
+      "requirement": "SEC-12",
+      "scenario": "out-of-line ASCII value starts near EOF and extends beyond file",
+      "expected_outcome": "pending image-reader integration"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+Network isolation attempts for the Bun runtime probe
+====================================================
+
+The Bun binary has no per-process networking permission option used by this
+probe. OS-level network namespace isolation was attempted, but the container
+does not permit the required namespaces:
+
+  bwrap --unshare-net --ro-bind / / --proc /proc --dev /dev \
+    /tmp/codex-pdf44/bin/bun/bun-linux-x64/bun --version
+  -> bwrap: setting up uid map: Read-only file system
+
+  unshare --net /tmp/codex-pdf44/bin/bun/bun-linux-x64/bun --version
+  -> unshare: unshare failed: Operation not permitted
+
+Therefore Bun results establish zero calls to the instrumented global fetch
+and XHR APIs only. They are not an OS-enforced no-network result. Deno has no
+`--allow-net` permission in its recorded commands.

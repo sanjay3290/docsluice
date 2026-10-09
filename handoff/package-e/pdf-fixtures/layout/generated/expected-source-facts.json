@@ -1,0 +1,386 @@
+{
+  "contiguousOrderReference": "Layout reference page one Single column first line Single column second line Full width title spans both reading columns clearly Left column first line Left column second line Right column first line Right column second line Three column heading Column A row one Column A row two Column B row one Column B row two Column C row one Column C row two Font Size Heading The body sentence follows beneath the heading. Body sentence ends before the note. 1. Bottom footnote source text. Water 2  remains a synthetic source fact. Inter- nationalization continues on the next line. Rotated page source geometry Rotation content line Ruled 2 by 2 table R1C1 R1C2 R2C1 R2C2 Aligned 3 by 2 source table Name Value Alpha One Beta Two",
+  "fontClaim": "Standard Type 1 Helvetica, ASCII-only source strings; no embedded Unicode font claim.",
+  "independentLayoutOrderReference": [
+    "Layout reference page one",
+    "Single column first line",
+    "Single column second line",
+    "Full width title spans both reading columns clearly",
+    "Left column first line",
+    "Left column second line",
+    "Right column first line",
+    "Right column second line",
+    "Three column heading",
+    "Column A row one",
+    "Column A row two",
+    "Column B row one",
+    "Column B row two",
+    "Column C row one",
+    "Column C row two",
+    "Font Size Heading",
+    "The body sentence follows beneath the heading.",
+    "Body sentence ends before the note.",
+    "1. Bottom footnote source text.",
+    "Water",
+    "2",
+    " remains a synthetic source fact.",
+    "Inter-",
+    "nationalization continues on the next line.",
+    "Rotated page source geometry",
+    "Rotation content line",
+    "Ruled 2 by 2 table",
+    "R1C1",
+    "R1C2",
+    "R2C1",
+    "R2C2",
+    "Aligned 3 by 2 source table",
+    "Name",
+    "Value",
+    "Alpha",
+    "One",
+    "Beta",
+    "Two"
+  ],
+  "note": "The order reference is manually authored from generator source geometry and stream content. It is not asserted as actual reader output.",
+  "pageCount": 10,
+  "pageFacts": [
+    {
+      "features": [
+        "one-column"
+      ],
+      "footer": "ODD FOOTER | page 01",
+      "geometry": {
+        "height": 792,
+        "mediaBox": [
+          0,
+          0,
+          612,
+          792
+        ],
+        "rotation": 0,
+        "width": 612
+      },
+      "header": "Synthetic Package E Layout Reference",
+      "order": [
+        "Layout reference page one",
+        "Single column first line",
+        "Single column second line"
+      ],
+      "page": 1
+    },
+    {
+      "features": [
+        "two-columns",
+        "full-width-title",
+        "interleaved-stream-order"
+      ],
+      "footer": "EVEN FOOTER | page 02",
+      "geometry": {
+        "height": 792,
+        "mediaBox": [
+          0,
+          0,
+          612,
+          792
+        ],
+        "rotation": 0,
+        "width": 612
+      },
+      "header": "Synthetic Package E Layout Reference",
+      "order": [
+        "Full width title spans both reading columns clearly",
+        "Left column first line",
+        "Left column second line",
+        "Right column first line",
+        "Right column second line"
+      ],
+      "page": 2
+    },
+    {
+      "features": [
+        "three-columns"
+      ],
+      "footer": "ODD FOOTER | page 03",
+      "geometry": {
+        "height": 792,
+        "mediaBox": [
+          0,
+          0,
+          612,
+          792
+        ],
+        "rotation": 0,
+        "width": 612
+      },
+      "header": "Synthetic Package E Layout Reference",
+      "order": [
+        "Three column heading",
+        "Column A row one",
+        "Column A row two",
+        "Column B row one",
+        "Column B row two",
+        "Column C row one",
+        "Column C row two"
+      ],
+      "page": 3
+    },
+    {
+      "features": [
+        "font-size-heading"
+      ],
+      "footer": "EVEN FOOTER | page 04",
+      "geometry": {
+        "height": 792,
+        "mediaBox": [
+          0,
+          0,
+          612,
+          792
+        ],
+        "rotation": 0,
+        "width": 612
+      },
+      "header": "Synthetic Package E Layout Reference",
+      "order": [
+        "Font Size Heading",
+        "The body sentence follows beneath the heading."
+      ],
+      "page": 4
+    },
+    {
+      "features": [
+        "bottom-footnote"
+      ],
+      "footer": "ODD FOOTER | page 05",
+      "geometry": {
+        "height": 792,
+        "mediaBox": [
+          0,
+          0,
+          612,
+          792
+        ],
+        "rotation": 0,
+        "width": 612
+      },
+      "header": "Synthetic Package E Layout Reference",
+      "order": [
+        "Body sentence ends before the note.",
+        "1. Bottom footnote source text."
+      ],
+      "page": 5
+    },
+    {
+      "features": [
+        "superscript"
+      ],
+      "footer": "EVEN FOOTER | page 06",
+      "geometry": {
+        "height": 792,
+        "mediaBox": [
+          0,
+          0,
+          612,
+          792
+        ],
+        "rotation": 0,
+        "width": 612
+      },
+      "header": "Synthetic Package E Layout Reference",
+      "order": [
+        "Water",
+        "2",
+        " remains a synthetic source fact."
+      ],
+      "page": 6,
+      "visualToken": "Water2 remains a synthetic source fact."
+    },
+    {
+      "features": [
+        "line-end-hyphenation"
+      ],
+      "footer": "ODD FOOTER | page 07",
+      "geometry": {
+        "height": 792,
+        "mediaBox": [
+          0,
+          0,
+          612,
+          792
+        ],
+        "rotation": 0,
+        "width": 612
+      },
+      "header": "Synthetic Package E Layout Reference",
+      "joinedSourceText": "Inter-nationalization continues on the next line.",
+      "page": 7,
+      "sourceLines": [
+        "Inter-",
+        "nationalization continues on the next line."
+      ]
+    },
+    {
+      "features": [
+        "rotation-90"
+      ],
+      "footer": "EVEN FOOTER | page 08",
+      "geometry": {
+        "height": 612,
+        "mediaBox": [
+          0,
+          0,
+          612,
+          792
+        ],
+        "rotation": 90,
+        "width": 792
+      },
+      "header": "Synthetic Package E Layout Reference",
+      "order": [
+        "Rotated page source geometry",
+        "Rotation content line"
+      ],
+      "page": 8,
+      "rotatedGeometry": {
+        "height": 612,
+        "width": 792
+      },
+      "rotation": 90,
+      "sourceMediaBox": [
+        0,
+        0,
+        612,
+        792
+      ]
+    },
+    {
+      "expectedCells": [
+        [
+          "R1C1",
+          "R1C2"
+        ],
+        [
+          "R2C1",
+          "R2C2"
+        ]
+      ],
+      "features": [
+        "ruled-table-2x2"
+      ],
+      "footer": "ODD FOOTER | page 09",
+      "geometry": {
+        "height": 792,
+        "mediaBox": [
+          0,
+          0,
+          612,
+          792
+        ],
+        "rotation": 0,
+        "width": 612
+      },
+      "header": "Synthetic Package E Layout Reference",
+      "page": 9,
+      "ruleCoordinates": [
+        [
+          120,
+          560,
+          420,
+          560
+        ],
+        [
+          120,
+          520,
+          420,
+          520
+        ],
+        [
+          120,
+          480,
+          420,
+          480
+        ],
+        [
+          120,
+          560,
+          120,
+          480
+        ],
+        [
+          270,
+          560,
+          270,
+          480
+        ],
+        [
+          420,
+          560,
+          420,
+          480
+        ]
+      ]
+    },
+    {
+      "expectedCells": [
+        [
+          "Name",
+          "Value"
+        ],
+        [
+          "Alpha",
+          "One"
+        ],
+        [
+          "Beta",
+          "Two"
+        ]
+      ],
+      "features": [
+        "aligned-table-3x2"
+      ],
+      "footer": "EVEN FOOTER | page 10",
+      "geometry": {
+        "height": 792,
+        "mediaBox": [
+          0,
+          0,
+          612,
+          792
+        ],
+        "rotation": 0,
+        "width": 612
+      },
+      "header": "Synthetic Package E Layout Reference",
+      "page": 10,
+      "sourceCellAnchors": [
+        [
+          60,
+          650
+        ],
+        [
+          310,
+          650
+        ],
+        [
+          60,
+          628
+        ],
+        [
+          310,
+          628
+        ],
+        [
+          60,
+          606
+        ],
+        [
+          310,
+          606
+        ]
+      ]
+    }
+  ],
+  "readerAcceptance": "NOT_TESTED; these are not extraction goldens or an accuracy claim",
+  "sha256": "24e544d672fa4ca336541a6b24c878cee814950f279339c9c9f9e7ab4ec1fef8",
+  "status": "ORIGINAL_SYNTHETIC_SOURCE_FACTS_ONLY"
+}

@@ -1,0 +1,133 @@
+{
+  "notice": "Hand-authored expectations for synthetic fixture bytes. This is independent of docsluice's public output model and does not assert parser behavior.",
+  "standards": {
+    "png": "https://www.w3.org/TR/png-3/",
+    "tiff": "https://www.itu.int/itudoc/itu-t/com16/tiff-fx/docs/tiff6.pdf",
+    "exif": "https://www.cipa.jp/std/documents/e/DC-X008-Translation-2019-E.pdf",
+    "webp": "https://www.rfc-editor.org/rfc/rfc9649.html"
+  },
+  "fixtures": {
+    "tiny.png": {
+      "description": "Complete 1x1 RGB PNG",
+      "width": 1,
+      "height": 1
+    },
+    "tiny.gif": {
+      "description": "Complete 1x1 GIF89a",
+      "width": 1,
+      "height": 1
+    },
+    "tiff-le-metadata.tif": {
+      "kind": "tiff-metadata-structure-snippet",
+      "completeImage": false,
+      "description": "Little-endian TIFF metadata structure snippet; no pixel strip",
+      "width": 3,
+      "height": 2,
+      "dateTimeOriginal": "2019:04:05 12:34:56",
+      "orientation": 6,
+      "make": "SyntheticCo",
+      "model": "Unit Camera",
+      "gps": {
+        "latitudeDms": [
+          1,
+          2,
+          3
+        ],
+        "latitudeReference": "N",
+        "longitudeDms": [
+          4,
+          5,
+          6
+        ],
+        "longitudeReference": "W"
+      }
+    },
+    "tiff-be-metadata.tif": {
+      "kind": "tiff-metadata-structure-snippet",
+      "completeImage": false,
+      "description": "Big-endian TIFF metadata structure snippet; no pixel strip",
+      "width": 3,
+      "height": 2,
+      "dateTimeOriginal": "2019:04:05 12:34:56",
+      "orientation": 6,
+      "make": "SyntheticCo",
+      "model": "Unit Camera",
+      "gps": {
+        "latitudeDms": [
+          1,
+          2,
+          3
+        ],
+        "latitudeReference": "N",
+        "longitudeDms": [
+          4,
+          5,
+          6
+        ],
+        "longitudeReference": "W"
+      }
+    },
+    "jpeg-exif-structure.jpg": {
+      "kind": "jpeg-marker-structure-snippet",
+      "width": 5,
+      "height": 3,
+      "dateTimeOriginal": "2019:04:05 12:34:56",
+      "completeImage": false
+    },
+    "webp-vp8-snippet.webp": {
+      "kind": "webp-vp8-structure-snippet",
+      "width": 5,
+      "height": 3,
+      "completeImage": false
+    },
+    "webp-vp8l-snippet.webp": {
+      "kind": "webp-vp8l-structure-snippet",
+      "width": 5,
+      "height": 3,
+      "completeImage": false
+    },
+    "webp-vp8x-exif-snippet.webp": {
+      "kind": "webp-vp8x-exif-structure-snippet",
+      "width": 5,
+      "height": 3,
+      "dateTimeOriginal": "2019:04:05 12:34:56",
+      "completeImage": false
+    },
+    "hostile/tiff-cyclic-ifd.tif": {
+      "kind": "hostile",
+      "scenario": "cyclic-ifd"
+    },
+    "hostile/tiff-huge-count.tif": {
+      "kind": "hostile",
+      "scenario": "huge-ifd-count"
+    },
+    "hostile/tiff-truncated-value-offset.tif": {
+      "kind": "hostile",
+      "scenario": "truncated-value-offset"
+    }
+  },
+  "sha256": {
+    "hostile/tiff-cyclic-ifd.tif": "e8e488a95b349a51a42e83636d5bfb2cb52aad8db18d99b38bf10334e4084edd",
+    "hostile/tiff-cyclic-ifd.tif.license": "be8027e5ffb6bf1a7da81dd59446d705637360e9b1301c2aabd772b1a83a38dd",
+    "hostile/tiff-huge-count.tif": "af2a69273aba4b19b7f9de8d5e89e5e3f9b59673b512a39a84740d1822f794be",
+    "hostile/tiff-huge-count.tif.license": "bfe0ec756924452e04a435033954dc539d4b0fd3afe6a13eebaec09df7fd4a52",
+    "hostile/tiff-truncated-value-offset.tif": "45adc78e8b7e0e905e2eae411aa8a6c8ee0964634a0a995e482fce0883eff4dd",
+    "hostile/tiff-truncated-value-offset.tif.license": "e9d9b69bb6bed50dad64a494112d15cc16a7ce3cb5efd453c26c22e05448a2f3",
+    "jpeg-exif-structure.jpg": "cddfda4135c97d7ce2a343e0e181992e4402d52c7c34c448d3662cc041e0913f",
+    "jpeg-exif-structure.jpg.license": "d51bace33638d6fbcc57b29dc0bb628e8c73a17b46904dc8b4c0a94350d20509",
+    "tiff-be-metadata.tif": "1a9a54f91d1e8a1ec07514b2fcc896b00fdba6fb0cf5e2ef9f805a9b9c160d65",
+    "tiff-be-metadata.tif.license": "6932f6fcfd1dd6e74adb76be410373ffd0e30b0ec533a1ed9c53d48898ad5d4b",
+    "tiff-le-metadata.tif": "a585091760123f17a46199bd3ee340fa5718526290344f0b0ceb514248e8dd4d",
+    "tiff-le-metadata.tif.license": "8e38746fce540e3583aa3a04e68d160e7f29b9a9e08f7bb6f938357969a7eceb",
+    "tiny.gif": "6c63cc5063ac82d8bbc925f9a31adf3a87f1510c021e0fde51854d60484b5019",
+    "tiny.gif.license": "a8615c04b83102eee32ec8704287603e3da8057cfa622eb982c0b6c4ed7217b9",
+    "tiny.png": "ed609e8489b59ee9510553e46b60114fcb9977057bf40e4e829640142ec38992",
+    "tiny.png.license": "fb9e9c9108742fbf617b371f9f547ea4b9cf66f817009e270f6001507623e1a6",
+    "webp-vp8-snippet.webp": "429d5b90d272ad6a78943519864e9dbe7a6e22ae453d90685a16866fcb0a122b",
+    "webp-vp8-snippet.webp.license": "e02b38b08967911ec0f5d9b1739fa16ac49b79fa49b4a01c00a7ecce3c2d58fa",
+    "webp-vp8l-snippet.webp": "64196dc110b9f38e7a24d6d733197832a88ab09480c925a6de6f4628d1043359",
+    "webp-vp8l-snippet.webp.license": "da8d295fbeffce950bf26806d3408eb7846dcaba3adaeb957a92f74d352e80ae",
+    "webp-vp8x-exif-snippet.webp": "e3230d11c2dc9ab5b76017fd6bbce715a20da1139cea355487e96b089605c3d3",
+    "webp-vp8x-exif-snippet.webp.license": "40f1eba670643ba9bceb92d2934fd6f4b62f5df66b3f9bfe8011fd01682ec714"
+  }
+}

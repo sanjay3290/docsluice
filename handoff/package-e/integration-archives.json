@@ -1,0 +1,36 @@
+{
+  "proposalOnly": true,
+  "baseline": "10ae4985a425842f965bccbb9c86a7e6018c5412",
+  "formats": [
+    {
+      "id": "gzip",
+      "module": "packages/docsluice/src/readers/gzip/index.ts",
+      "mimeTypes": ["application/gzip", "application/x-gzip"],
+      "detect": "GZIP magic bytes 1f 8b",
+      "childBehavior": "One decompressed child for the concatenation; use the filename without .gz or the first-member FNAME, otherwise content. Feed child bytes to ordinary format sniffing without an octet-stream MIME hint.",
+      "budget": "Budget actual output chunks before retaining; ratio checked per physical member; count each member; return listed without inflating for children=list. Preflight child depth only for children=extract."
+    },
+    {
+      "id": "tar",
+      "module": "packages/docsluice/src/readers/tar/index.ts",
+      "mimeTypes": ["application/x-tar"],
+      "detect": "ustar magic at byte offset 257; legacy V7 TAR has no confident signature and remains unsupported by this detector",
+      "childBehavior": "Regular entries enter normal child extraction in header order. Directories and special entries are skipped; symlinks and hardlinks are listed only and never followed. Normalize names to relative plain paths.",
+      "budget": "Tick every archive/data loop; add entry budget per header; charge exposed file and extension-header bytes; check tar boundaries before child creation. For children=list, parse bounded PAX/GNU metadata but do not inspect regular payloads. Preflight depth only for children=extract regular files."
+    }
+  ],
+  "integrationAfterPublicExtractExists": [
+    "Register gzip and tar in the format registry/lazy readers; do not alter public options, model, limits, manifests, or dependency lockfiles.",
+    "Ensure gzip output can be sniffed as TAR; .tar.gz is the gzip child followed by the tar reader through ordinary nested extractChild routing.",
+    "Validate generated reader functions against the real child pipeline and shared Budget, including children=list, children=skip, and child-depth refusal."
+  ],
+  "verification": {
+    "focusedTests": "npm test --workspace packages/docsluice -- test/readers/gzip/gzip.test.ts test/readers/tar/tar.test.ts",
+    "coverage": "npm test --workspace packages/docsluice -- --coverage --coverage.include='src/readers/{gzip,tar}/**' test/readers/gzip/gzip.test.ts test/readers/tar/tar.test.ts"
+  },
+  "limits": [
+    "These readers are not registered in the public extraction pipeline yet.",
+    "Corpus fixtures are synthetic CC0 fixtures; they are focused fixtures, not public golden outputs.",
+    "Fuzz entry points are added, but this branch does not modify the repository fuzz runner/registration manifest."
+  ]
+}

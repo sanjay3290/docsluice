@@ -1,0 +1,42 @@
+{
+  "format": "vsdx",
+  "reader": "src/readers/vsdx/index.ts#vsdxReader",
+  "mimeType": "application/vnd.ms-visio.drawing",
+  "privatePreparation": true,
+  "registration": "Pending issue #41 plugin API and format-packaging ADR decision; do not add to default registry yet.",
+  "detection": "Not implemented; pipeline tests inject ReaderRegistry and use format: vsdx. Public MIME mapping is not present, so forced-format pipeline reports application/octet-stream.",
+  "ownedPaths": [
+    "src/readers/vsdx/",
+    "test/readers/vsdx/",
+    "fuzz/vsdx.fuzz.ts",
+    "corpus/vsdx/",
+    "docs/formats/vsdx.md"
+  ],
+  "sharedHelpers": [
+    "src/ooxml/parts.ts",
+    "src/ooxml/rels.ts",
+    "src/ooxml/content-types.ts",
+    "src/ooxml/props.ts",
+    "src/ooxml/features.ts",
+    "src/zip/index.ts",
+    "src/xml/index.ts"
+  ],
+  "features": {
+    "pages": "Declared Pages order resolved through package relationships.",
+    "text": "Core Text_Type text from Shapes (including connector shapes when they carry Text), preserving grouped shape XML source order and multiline Unicode; foreign extension elements are skipped with static warnings.",
+    "relationships": "Only unambiguous internal document/pages/page relations are followed; external relations are reported by shared feature scanning and never fetched. Connects records are not reconstructed.",
+    "excluded": [
+      "geometry rendering",
+      "visual reading order",
+      "formulas",
+      "masters",
+      "linked images",
+      "embedded objects"
+    ]
+  },
+  "validation": {
+    "tests": "Vitest unit and injected-registry pipeline tests with hand-reviewed expected blocks.",
+    "fixtures": "Original synthetic CC0 packages, not Visio-app validated.",
+    "goldens": "No corpus extraction goldens claimed; test expectations are manually authored from fixture source facts."
+  }
+}

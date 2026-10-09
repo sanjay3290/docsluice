@@ -1,0 +1,19 @@
+--- a/packages/docsluice/src/core/builder.ts
++++ b/packages/docsluice/src/core/builder.ts
+@@ -440,7 +440,7 @@
+     role: SectionRole,
+     loc: Location = {},
+     title?: string,
+-    attributes?: Pick<SectionBlock, 'hidden'>,
++    attributes?: Pick<SectionBlock, 'hidden' | 'needsOcr'>,
+   ): boolean {
+     if (this.#stopped) return false;
+     const parentTarget = this.#target();
+@@ -449,6 +449,7 @@
+       try {
+         const section: SectionBlock = { kind: 'section', role, blocks: [], loc };
+         if (attributes?.hidden !== undefined) section.hidden = attributes.hidden;
++        if (attributes?.needsOcr !== undefined) section.needsOcr = attributes.needsOcr;
+         if (title !== undefined) section.title = normalizeText(title, this.#budget);
+         const pendingStart = this.#pendingOutputChars;
+         const pending = pendingStart + (section.title?.length ?? 0);

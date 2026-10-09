@@ -1,0 +1,91 @@
+{
+  "tiny-flow.vsdx": {
+    "fixtureNote": "small synthetic two-page flow with shapes, grouped children, a connector, and an empty shape",
+    "extractionGolden": false,
+    "pageOrder": [
+      {
+        "id": "1",
+        "name": "01 — Opening",
+        "nameU": "Opening",
+        "relationshipId": "rIdOpen",
+        "part": "visio/pages/page2.xml"
+      },
+      {
+        "id": "2",
+        "name": "02 — Review",
+        "nameU": "Review",
+        "relationshipId": "rIdReview",
+        "part": "visio/pages/page1.xml"
+      }
+    ],
+    "textByShapePath": [
+      {
+        "page": "Opening",
+        "shapeIds": [
+          "4"
+        ],
+        "text": "Start\nCafé Δ — 終わり & continue"
+      },
+      {
+        "page": "Opening",
+        "shapeIds": [
+          "5",
+          "6"
+        ],
+        "text": "Grouped child α"
+      },
+      {
+        "page": "Opening",
+        "shapeIds": [
+          "5",
+          "7"
+        ],
+        "text": "Nested\nline"
+      },
+      {
+        "page": "Opening",
+        "shapeIds": [
+          "9"
+        ],
+        "text": "Finish"
+      },
+      {
+        "page": "Review",
+        "shapeIds": [
+          "4"
+        ],
+        "text": "Second page review"
+      }
+    ],
+    "emptyShape": {
+      "page": "Opening",
+      "shapeId": "8",
+      "hasTextElement": false
+    },
+    "connector": {
+      "page": "Opening",
+      "shapeId": "10",
+      "connectCount": 2
+    }
+  },
+  "bounded-malformed.vsdx": {
+    "fixtureNote": "page1 XML is intentionally truncated; not an extraction expectation",
+    "extractionGolden": false
+  },
+  "missing-relationship.vsdx": {
+    "fixtureNote": "Opening page rId has no relationship entry; source facts only",
+    "extractionGolden": false
+  },
+  "duplicate-id.vsdx": {
+    "fixtureNote": "Opening page contains duplicate shape IDs 4; malformed source fact only",
+    "extractionGolden": false
+  },
+  "traversal-part.vsdx": {
+    "fixtureNote": "Opening page relationship target escapes package root; no outside member is present",
+    "extractionGolden": false
+  },
+  "xml-hostile-candidate.vsdx": {
+    "fixtureNote": "Page XML contains an external entity declaration; tests inspect bytes only and do not parse it",
+    "extractionGolden": false
+  }
+}

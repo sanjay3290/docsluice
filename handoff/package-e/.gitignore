@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+node_modules/
+/pdf/spike/tsdown-*/
+/pdf/spike/layout-probe-build/

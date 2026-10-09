@@ -1,0 +1,111 @@
+{
+  "description": "Original synthetic archive fixtures for independent #39/#61 preparation.",
+  "generator": "generate_fixtures.py",
+  "dependencies": [],
+  "max_fixture_bytes": 15728640,
+  "verification": {
+    "stdlib_structure_checks": "run by test_fixtures.py",
+    "extraction_verified": false,
+    "reader_acceptance_verified": false,
+    "golden_outputs_present": false,
+    "quine_verified": false,
+    "notes": "Python stdlib validates container decoding and intended malformed byte structures only; no docsluice extraction was run."
+  },
+  "known_gaps": [
+    "No true ZIP quine fixture is included. A recursive ZIP containing itself was not constructed or verified.",
+    "The nested amplification inputs are deliberately bounded and do not represent gigabyte-scale expansion.",
+    "Malformed TAR cases assert header/body contradictions; expected docsluice reader outcomes remain unverified."
+  ],
+  "fixtures": [
+    {
+      "file": "zip-mixed.zip",
+      "bytes": 737,
+      "sha256": "c785884ab9e4d44a146f2ca5751eeed2f587dc697b7bacea52347e19e85fba14",
+      "notes": "#39 valid mixed archive: ordered CSV, HTML, nested ZIP, original 1x1 RGBA PNG, directory."
+    },
+    {
+      "file": "zip-hostile-names.zip",
+      "bytes": 502,
+      "sha256": "c15fe96fc29c181bd738b558f8e02a8dda8094f6230a14a90a6c48c8d99930a5",
+      "notes": "#39 names test path traversal and common macOS/Windows OS junk; no extraction is performed."
+    },
+    {
+      "file": "zip-10000-empty.zip",
+      "bytes": 1060022,
+      "sha256": "4b87c31ba979af03bf50b7cc3e292f56560c69c1e166b6462a819dc9b4c886f9",
+      "notes": "#39 exactly 10,000 empty ZIP entries, stored without compression."
+    },
+    {
+      "file": "zip-nested-amplification.zip",
+      "bytes": 490,
+      "sha256": "234233e8472711957a89070d448e938018d7cf093bc49f9f2f6134cd0ef49f21",
+      "notes": "#39 bounded four-container nesting around about 512 KiB of repeated leaf data; not a dangerous-scale bomb."
+    },
+    {
+      "file": "gzip-csv.gz",
+      "bytes": 33,
+      "sha256": "41a8e8142974771c46befd257ab9d14e73ce24c88d7d079db53057971b8bc003",
+      "notes": "#61 single-member gzip containing a small CSV."
+    },
+    {
+      "file": "gzip-multi-member.gz",
+      "bytes": 53,
+      "sha256": "715d3ba66ace15e47ae90460d58c96f81532fcaa8b1918485a4119f99ded1d2c",
+      "notes": "#61 two concatenated gzip members; standard-library decompression yields both in order."
+    },
+    {
+      "file": "gzip-optional-header.gz",
+      "bytes": 77,
+      "sha256": "f6717db03eb1f322d5da581459d2afc1a1c2a0da96d0bafad6b4a7842b69e93b",
+      "notes": "#61 gzip FEXTRA, FNAME, FCOMMENT, and FHCRC fields."
+    },
+    {
+      "file": "gzip-bounded-amplification.gz",
+      "bytes": 544,
+      "sha256": "4450a582165ec7084717a98ee54c9fe7a77d3f336634a28d90dae0119e7b63a5",
+      "notes": "#61 bounded 512 KiB repeated data for decompression-ratio testing."
+    },
+    {
+      "file": "tar-variants.tar",
+      "bytes": 10240,
+      "sha256": "9fb8fd7f3255503424d1b0f97f85574e2e71be7571c9b160250fa080f99119f1",
+      "notes": "#61 ustar nested folders, regular CSV, and a symlink listed as metadata; no link traversal."
+    },
+    {
+      "file": "tar-pax-long-path.tar",
+      "bytes": 71680,
+      "sha256": "5e8879eb8243678c40597199ffea2ddb6d4e5b7114250f5b5ccd440e500ce24e",
+      "notes": "#61 valid PAX extended path record with a 65,536-character component, bounded metadata stress."
+    },
+    {
+      "file": "tar-gnu-long-name.tar",
+      "bytes": 10240,
+      "sha256": "82e7daae7fe79e206479b45a36e496c71664e6c5863f73f863a546a5644a4c54",
+      "notes": "#61 GNU long-name extension for a 180-character path."
+    },
+    {
+      "file": "tar-bad-checksum.tar",
+      "bytes": 10240,
+      "sha256": "a00abf134f429667b18da5f80a008409205b8d3b0c45f11c4f12603666f4d146",
+      "notes": "#61 malformed ustar header with first name byte flipped after checksum creation."
+    },
+    {
+      "file": "tar-size-lie.tar",
+      "bytes": 517,
+      "sha256": "cb5a0b998a4e84ae2565f8b1dc9e700e2b2e11d5f05273a902702e35b76121d3",
+      "notes": "#61 malformed ustar header claims a 1,000,000-byte regular file but provides five body bytes."
+    },
+    {
+      "file": "tar-pax-size-lie.tar",
+      "bytes": 522,
+      "sha256": "1c481e54331295d65173dca22d286ce6ba62633f3e5444fcce81062fcfefd472",
+      "notes": "#61 malformed PAX extended header claims a 1,000,000-byte metadata body but provides one 10-byte path record."
+    },
+    {
+      "file": "tar-gzip.tar.gz",
+      "bytes": 173,
+      "sha256": "9e1775d8d8f5b637a475703e276ebe7beea0c73db3c35a843f57c02be34034eb",
+      "notes": "#61 gzip-compressed ustar archive containing nested folders, CSV, and symlink metadata."
+    }
+  ]
+}

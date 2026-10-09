@@ -1,0 +1,63 @@
+{
+  "status": "LOCAL_WORKER_RUNTIME_EVIDENCE_PREPARATION_ONLY",
+  "runtime": {
+    "provider": "Cloudflare workerd local process",
+    "package": "@cloudflare/workerd-linux-64@1.20261009.1",
+    "reportedVersion": "workerd 2026-10-09",
+    "platform": "linux x64",
+    "compatibilityDate": "2026-08-03",
+    "nodejsCompat": false,
+    "globalBufferAvailable": false,
+    "serviceAddress": "127.0.0.1:18897",
+    "externalServiceBindings": [],
+    "globalOutbound": "deny-outbound",
+    "globalOutboundPolicy": "explicit network service with empty allow and deny lists",
+    "workerdConfigSha256": "38daacf73a4af36e9f692b5aaed3a9f52ef8141f4916bc5cae19f96c1a87af53",
+    "hostedCloudflareDeployment": false
+  },
+  "toolPackage": {
+    "license": "Apache-2.0",
+    "nodeEngine": ">=16",
+    "installScripts": "none in inspected package.json; obtained via npm pack --ignore-scripts; not installed into any repository",
+    "npmTarball": "https://registry.npmjs.org/@cloudflare/workerd-linux-64/-/workerd-linux-64-1.20261009.1.tgz",
+    "npmShasumSha1": "942fecd658625b4dd1e90c43712e817e15d86373",
+    "npmIntegrity": "sha512-nSHH1unqREYAnoesLi5X+oa9tNty6/QHHhnnZDLQAo3eLrD0dekXeeV718asSacf5m5vLEnuGE7Dt5FMCfqzxQ==",
+    "tarballSha256": "dc12f112b875dae080cf88570f242175d98d8d5be4eca315a8ecdb15587ab8e0",
+    "binarySha256": "7a3e70a6c75fa2200532d1cbe87bd08c523cd297738f4de381f61b03c26b83b3",
+    "tarballBytes": 39935653,
+    "binaryBytes": 135060080,
+    "manifestUnpackedBytes": 135060701
+  },
+  "candidate": {
+    "name": "unpdf",
+    "version": "1.7.0",
+    "status": "research-only candidate; no ADR acceptance or repository dependency change",
+    "bundledPdfjsObservedAtRuntime": "5.6.205",
+    "fixtureInputSource": "/workspace/package-e-preparation/pdf-fixtures/generated",
+    "fixtureLicense": "original synthetic CC0 source facts"
+  },
+  "build": {
+    "bundler": "tsdown 0.23.0 / rolldown 1.2.13",
+    "hostNode": "v24.19.0",
+    "target": "es2022 / neutral / minified ESM",
+    "moduleGraphCount": 2,
+    "bundleModules": [
+      {
+        "name": "worker-entry.mjs",
+        "bytes": 53686,
+        "sha256": "6c055afd328297c094fe870c4c1608d5e910373e4e3b0033adacb60ac8821a73"
+      },
+      {
+        "name": "pdfjs-Cyp7QYX0.mjs",
+        "bytes": 1609661,
+        "sha256": "cdd0603eb4415d89094360362a13e1fc6371a996abe78ffb3ccf33acd8d56517"
+      }
+    ],
+    "generatedJsLocation": "/tmp/docsluice-workerd-tools/bundle (not in preparation/repository tree)"
+  },
+  "probe": {
+    "networkAndCodeGuards": "global fetch, XMLHttpRequest, Worker, eval, Function call and Function constructor all instrumented after static module imports; zero attempts observed",
+    "noWorkerCompat": "No nodejs_compat or external service bindings; globalOutbound explicitly names deny-outbound (allow=[]); no Buffer global, Worker construction, or remote module fetch observed",
+    "caveat": "Local configuration/runtime evidence only; no hosted Cloudflare deployment or full #23/A23 runtime matrix"
+  }
+}

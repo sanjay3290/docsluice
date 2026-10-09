@@ -1,0 +1,115 @@
+{
+  "status": "ORIGINAL_SYNTHETIC_PHRASE_ORDER_SPOT_CHECK_NOT_WORD_ACCURACY",
+  "pages": 10,
+  "fullyOrdered": 8,
+  "results": [
+    {
+      "page": 1,
+      "expectedPhrases": [
+        "Layout reference page one",
+        "Single column first line",
+        "Single column second line"
+      ],
+      "fullyOrdered": true,
+      "allExpectedPresent": true
+    },
+    {
+      "page": 2,
+      "expectedPhrases": [
+        "Full width title spans both reading columns clearly",
+        "Left column first line",
+        "Left column second line",
+        "Right column first line",
+        "Right column second line"
+      ],
+      "fullyOrdered": true,
+      "allExpectedPresent": true
+    },
+    {
+      "page": 3,
+      "expectedPhrases": [
+        "Three column heading",
+        "Column A row one",
+        "Column A row two",
+        "Column B row one",
+        "Column B row two",
+        "Column C row one",
+        "Column C row two"
+      ],
+      "fullyOrdered": true,
+      "allExpectedPresent": true
+    },
+    {
+      "page": 4,
+      "expectedPhrases": [
+        "Font Size Heading",
+        "The body sentence follows beneath the heading."
+      ],
+      "fullyOrdered": true,
+      "allExpectedPresent": true
+    },
+    {
+      "page": 5,
+      "expectedPhrases": [
+        "Body sentence ends before the note.",
+        "1. Bottom footnote source text."
+      ],
+      "fullyOrdered": true,
+      "allExpectedPresent": true
+    },
+    {
+      "page": 6,
+      "expectedPhrases": [
+        "Water",
+        "2",
+        " remains a synthetic source fact."
+      ],
+      "fullyOrdered": true,
+      "allExpectedPresent": true
+    },
+    {
+      "page": 7,
+      "expectedPhrases": [
+        "Inter-",
+        "nationalization continues on the next line."
+      ],
+      "fullyOrdered": true,
+      "allExpectedPresent": true
+    },
+    {
+      "page": 8,
+      "expectedPhrases": [
+        "Rotated page source geometry",
+        "Rotation content line"
+      ],
+      "fullyOrdered": true,
+      "allExpectedPresent": true
+    },
+    {
+      "page": 9,
+      "expectedPhrases": [
+        "Ruled 2 by 2 table",
+        "R1C1",
+        "R1C2",
+        "R2C1",
+        "R2C2"
+      ],
+      "fullyOrdered": false,
+      "allExpectedPresent": true
+    },
+    {
+      "page": 10,
+      "expectedPhrases": [
+        "Aligned 3 by 2 source table",
+        "Name",
+        "Value",
+        "Alpha",
+        "One",
+        "Beta",
+        "Two"
+      ],
+      "fullyOrdered": false,
+      "allExpectedPresent": true
+    }
+  ]
+}

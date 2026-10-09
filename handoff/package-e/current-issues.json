@@ -1,0 +1,746 @@
+{
+  "notice": "Current GitHub issue snapshots for independent research/fixture planning only; not the frozen authoritative requirements archive.",
+  "retrievedDate": "2026-10-09",
+  "issues": [
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/39",
+      "title": "reader: ZIP as a container format (NST-1..NST-6)",
+      "issue_number": 39,
+      "body": "## Goal\n\nA plain zip becomes a document with no blocks of its own and one child per entry, read under the shared budget.\n\n**Requirements:** NST-1, NST-2, NST-3, NST-4, NST-6, SEC-1, SEC-2, SEC-3 — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- Create `src/readers/zip/index.ts`. Skip directory entries and OS junk (`__MACOSX/`, `.DS_Store`, `Thumbs.db`) — list them with status `skipped`.\n- Encrypted entries: status `failed` with code `ENCRYPTED`; set `features.isEncrypted`.\n- Child order is central-directory order.\n\n## Acceptance criteria\n\n- [ ] Golden test: a zip holding a CSV, an HTML file, a nested zip, and a PNG.\n- [ ] Hostile: nested bombs, quine zip, 10,000 entries, path traversal names — all pass through the runner.\n- [ ] `children: \"list\"` reads no entry data.\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Golden tests (corpus files + reviewed expected output)\n- [ ] Hostile files added to `hostile/manifest.json`\n\n## Out of scope\n\n- gzip/tar (M3).\n\n## Blocked by\n\n- #4 zip: safe zip reader on fflate with streaming byte counts\n- #10 core: reader registry, extract() and nested-file pipeline\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P0",
+          "color": "b60205",
+          "description": "Needed for 1.0"
+        },
+        {
+          "name": "size:M",
+          "color": "9be9a8",
+          "description": "1-3 days"
+        },
+        {
+          "name": "area:zip",
+          "color": "0e8a16",
+          "description": "Zip, gzip, tar"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        }
+      ],
+      "milestone": 2,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:48:16Z",
+      "updated_at": "2026-10-09T13:48:16Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/39",
+      "display_title": "reader: ZIP as a container format (NST-1..NST-6)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/44",
+      "title": "spike: confirm the PDF engine (ADR 0009)",
+      "issue_number": 44,
+      "body": "## Goal\n\nProve or reject `unpdf` as the PDF engine and record the result in ADR 0009 (status Accepted or Superseded).\n\n**Requirements:** R1, RT-1, RT-2, PDF-10, SEC-10, SEC-11, [ADR 0009](https://github.com/sanjay3290/docsluice/blob/main/docs/adr/0009-pdf-engine.md) — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- Build a throwaway reader on a branch: load unpdf by dynamic `import()`, get text items with positions per page for 3 corpus PDFs.\n- Check in all CI runtimes (Node 20/22/24, Bun, Deno, browser, Workers).\n- Check config: `isEvalSupported: false`, no worker, no font/CMap fetching from the network (bundle standard CMaps or skip them with a warning), `disableAutoFetch`, `disableStream`. Prove no network call (stub `fetch`) and no `eval`/`Function` (CSP-like test in the browser job).\n- Measure gzipped size of the PDF subpath. Measure time on a 100-page text PDF (PERF-1 target 3 s).\n- Compare with `pdfjs-dist` legacy build on the same checks. Use Context7 or the official docs for both.\n\n## Acceptance criteria\n\n- [ ] ADR 0009 updated with a results table (runtime × works, size, time, config used) and a final decision.\n- [ ] If accepted: `unpdf` pinned in ADR 0011's table (already listed) and the dependency added in the PDF reader issue, not here.\n- [ ] Spike branch is not merged; the PR adds only the ADR change.\n- [ ] `npm run verify` passes and CI is green\n\n## Out of scope\n\n- The real reader.\n\n## Blocked by\n\n- #23 ci: cross-runtime matrix — Bun, Deno, browser, Workers (QA-4, RT-1)\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:spike",
+          "color": "c5def5",
+          "description": "Time-boxed investigation that ends in a written decision"
+        },
+        {
+          "name": "priority:P0",
+          "color": "b60205",
+          "description": "Needed for 1.0"
+        },
+        {
+          "name": "size:M",
+          "color": "9be9a8",
+          "description": "1-3 days"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "area:security",
+          "color": "b60205",
+          "description": "Threats, hostile corpus, fuzzing"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        }
+      ],
+      "milestone": 3,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:48:32Z",
+      "updated_at": "2026-10-09T13:48:32Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/44",
+      "display_title": "spike: confirm the PDF engine (ADR 0009)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/45",
+      "title": "pdf: text layer per page, page labels, needsOcr, metadata, outline, links (PDF-1, 4, 6, 10)",
+      "issue_number": 45,
+      "body": "## Goal\n\nA text PDF becomes one `section` per page (role `page`, `loc.page`, `loc.pageLabel`) with its text; pages without a text layer are flagged `needsOcr`; metadata, outline and links are read; nothing in the PDF is ever run or fetched.\n\n**Requirements:** PDF-1, PDF-4, PDF-6, PDF-10, SEC-9, SEC-10, SEC-11, [ADR 0009](https://github.com/sanjay3290/docsluice/blob/main/docs/adr/0009-pdf-engine.md) — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- Create `src/readers/pdf/` with the engine behind `engine.ts` (one module that wraps unpdf so the rest of the reader does not depend on its API).\n- Page labels from `/PageLabels` (decimal, roman upper/lower, letters, prefixes, start values).\n- needsOcr per page: no text items, or text items that are all whitespace, while the page has image XObjects covering most of the page — set section `needsOcr`, `stats.needsOcr`, add a `NEEDS_OCR` warning with the page numbers. Never return a silent empty result.\n- Metadata: Info dictionary + XMP (title, author, dates, language). Outline (bookmarks) → heading blocks placed at their target page. Link annotations → URLs kept in runs (`runs: true`) and `hasExternalLinks`.\n- `hasJavaScript` when `/JavaScript`, `/JS`, `/OpenAction` with JS, or `/AA` exist; `/Launch` and `/GoToR`/`/URI` actions are reported, never followed.\n- Pages count toward `pdfPages`. Call `budget.tick()` per page and per text item batch.\n- In this issue, paragraphs are built naively (items joined by lines in content-stream order). Reading order arrives in pdf2.\n\n## Acceptance criteria\n\n- [ ] Golden tests for corpus PDFs (multi-page, labels, outline, links, scanned page).\n- [ ] A scanned PDF gives `needsOcr: true` and a `NEEDS_OCR` warning with page numbers.\n- [ ] Hostile: PDF with `/OpenAction` JS, `/Launch`, a remote `/GoToR`, an xref loop, a 100,000-page tree, a deeply nested page tree — all pass with no network call.\n- [ ] A 100-page text PDF in under 3 s (record time).\n- [ ] The PDF engine loads only when a PDF arrives (bundle test).\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Golden tests (corpus files + reviewed expected output)\n- [ ] Hostile files added to `hostile/manifest.json`\n- [ ] Fuzz target in `packages/docsluice/fuzz/`\n\n## Out of scope\n\n- Reading order (pdf2), encryption (pdf3).\n\n## Blocked by\n\n- #44 spike: confirm the PDF engine (ADR 0009)\n- #10 core: reader registry, extract() and nested-file pipeline\n- #27 test: LibreOffice corpus pipeline for Office and PDF fixtures (QA-1, R4)\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P0",
+          "color": "b60205",
+          "description": "Needed for 1.0"
+        },
+        {
+          "name": "size:L",
+          "color": "5fb88f",
+          "description": "3-7 days"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "area:security",
+          "color": "b60205",
+          "description": "Threats, hostile corpus, fuzzing"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        }
+      ],
+      "milestone": 3,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:48:36Z",
+      "updated_at": "2026-10-09T13:48:36Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/45",
+      "display_title": "pdf: text layer per page, page labels, needsOcr, metadata, outline, links (PDF-1, 4, 6, 10)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/46",
+      "title": "pdf: reading order — lines, paragraphs, columns (PDF-2)",
+      "issue_number": 46,
+      "body": "## Goal\n\nText items become lines, lines become paragraphs, and two-column pages read column by column, so the output reads like the page.\n\n**Requirements:** PDF-2, DET-1 — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- Create `src/readers/pdf/layout/`. Input: text items with transform matrix, width, height, font size, direction. Pure functions; heavy unit tests on synthetic items.\n- Steps: normalise item boxes (handle rotation 0/90/180/270), merge items into words/lines by baseline and gap (gap threshold from font size; insert a space when the gap > ~0.25 em), detect columns (projection profile / whitespace gutter analysis over the page), order blocks (XY-cut is a good start), join lines into paragraphs (line spacing + indentation + ending punctuation), de-hyphenate line-end hyphens when the next line starts lowercase, detect headings by font size relative to the page body size (only when outline is absent).\n- Right-to-left scripts: keep logical order from the content stream when items carry `dir: rtl`.\n- Determinism: no floating-point order dependence — sort with stable keys and fixed rounding.\n\n## Acceptance criteria\n\n- [ ] Synthetic tests: single column, two columns, three columns, column + full-width title, footnotes at page bottom, hyphenation, superscripts, rotated page.\n- [ ] Golden tests on corpus PDFs, with a short human review note per file in the PR.\n- [ ] Reading-order accuracy measured on 10 hand-checked pages and recorded in the PR (start of QA-7).\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Golden tests (corpus files + reviewed expected output)\n\n## Out of scope\n\n- Table detection (PDF-8, P2).\n\n## Blocked by\n\n- #45 pdf: text layer per page, page labels, needsOcr, metadata, outline, links (PDF-1, 4, 6, 10)\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P0",
+          "color": "b60205",
+          "description": "Needed for 1.0"
+        },
+        {
+          "name": "size:XL",
+          "color": "2f8f5b",
+          "description": "More than a week; may split"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        }
+      ],
+      "milestone": 3,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:48:40Z",
+      "updated_at": "2026-10-09T13:48:40Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/46",
+      "display_title": "pdf: reading order — lines, paragraphs, columns (PDF-2)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/47",
+      "title": "pdf: encrypted PDFs (PDF-5)",
+      "issue_number": 47,
+      "body": "## Goal\n\nEncrypted PDFs open with an empty user password when allowed, accept a `password` option, and otherwise throw `EncryptedError`.\n\n**Requirements:** PDF-5 — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- Map engine password errors to `EncryptedError(\"password-required\" | \"wrong-password\" | \"unsupported-encryption\")`.\n- Set `features.isEncrypted` when the file is encrypted even if it opened with an empty password.\n- Never put the password in errors, warnings or logs.\n\n## Acceptance criteria\n\n- [ ] Corpus tests: owner-password-only PDF (opens), user-password PDF without password (throws), with right password (opens), with wrong password (throws wrong-password).\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Golden tests (corpus files + reviewed expected output)\n\n## Blocked by\n\n- #45 pdf: text layer per page, page labels, needsOcr, metadata, outline, links (PDF-1, 4, 6, 10)\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P0",
+          "color": "b60205",
+          "description": "Needed for 1.0"
+        },
+        {
+          "name": "size:S",
+          "color": "c2e0c6",
+          "description": "Under a day for an agent"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        }
+      ],
+      "milestone": 3,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:48:43Z",
+      "updated_at": "2026-10-09T13:48:44Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/47",
+      "display_title": "pdf: encrypted PDFs (PDF-5)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/48",
+      "title": "pdf: remove repeated headers and footers (PDF-3)",
+      "issue_number": 48,
+      "body": "## Goal\n\nText repeated at the same spot on most pages (running headers, footers, page numbers) is removed from page text by default and emitted as `header`/`footer` blocks once.\n\n**Requirements:** PDF-3 — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- Compare normalised line text (digits replaced by a placeholder) within the top/bottom bands across pages; threshold: present on ≥ 60% of pages (≥ 3 pages).\n- Option `pdfHeaders: \"remove\" | \"keep\"` (default \"remove\") — add to `ExtractOptions` (this issue authorizes it).\n\n## Acceptance criteria\n\n- [ ] Golden tests with running headers, page numbers in footers, alternating odd/even headers.\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Golden tests (corpus files + reviewed expected output)\n\n## Blocked by\n\n- #46 pdf: reading order — lines, paragraphs, columns (PDF-2)\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P1",
+          "color": "d93f0b",
+          "description": "Soon after the P0 set"
+        },
+        {
+          "name": "size:M",
+          "color": "9be9a8",
+          "description": "1-3 days"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        }
+      ],
+      "milestone": 3,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:48:47Z",
+      "updated_at": "2026-10-09T13:48:47Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/48",
+      "display_title": "pdf: remove repeated headers and footers (PDF-3)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/49",
+      "title": "pdf: form fields and annotations (PDF-7)",
+      "issue_number": 49,
+      "body": "## Goal\n\nAcroForm fields become a name/value table; text annotations (sticky notes, free text) become `note` blocks with role `annotation`.\n\n**Requirements:** PDF-7, MOD-4 — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- Fields: full names (`parent.child`), values for text, checkbox, radio, choice. XFA-only forms: report with a warning, do not parse XFA.\n- Annotation authors (`/T`) are personal data: drop with `metadata: false`.\n\n## Acceptance criteria\n\n- [ ] Golden tests with a filled form and annotated PDF from the corpus.\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Golden tests (corpus files + reviewed expected output)\n\n## Blocked by\n\n- #45 pdf: text layer per page, page labels, needsOcr, metadata, outline, links (PDF-1, 4, 6, 10)\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P1",
+          "color": "d93f0b",
+          "description": "Soon after the P0 set"
+        },
+        {
+          "name": "size:M",
+          "color": "9be9a8",
+          "description": "1-3 days"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        }
+      ],
+      "milestone": 3,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:48:50Z",
+      "updated_at": "2026-10-09T13:48:50Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/49",
+      "display_title": "pdf: form fields and annotations (PDF-7)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/50",
+      "title": "pdf: damaged PDFs — return the pages that work (PDF-9)",
+      "issue_number": 50,
+      "body": "## Goal\n\nA damaged PDF gives the pages that can be read, with `UNREADABLE_PART` warnings for the rest, instead of failing whole.\n\n**Requirements:** PDF-9, section 5 (Partial is better than nothing) — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- Rely on the engine's xref reconstruction; per-page try/catch; truncated files; bad object streams.\n- Make damaged samples with a script (`scripts/hostile/pdf-damage.mjs`): truncate, corrupt xref offsets, corrupt one page's content stream.\n\n## Acceptance criteria\n\n- [ ] Each damaged sample returns the readable pages and warnings; none hangs or crashes.\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Hostile files added to `hostile/manifest.json`\n\n## Blocked by\n\n- #45 pdf: text layer per page, page labels, needsOcr, metadata, outline, links (PDF-1, 4, 6, 10)\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P1",
+          "color": "d93f0b",
+          "description": "Soon after the P0 set"
+        },
+        {
+          "name": "size:M",
+          "color": "9be9a8",
+          "description": "1-3 days"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "area:security",
+          "color": "b60205",
+          "description": "Threats, hostile corpus, fuzzing"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        }
+      ],
+      "milestone": 3,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:48:53Z",
+      "updated_at": "2026-10-09T13:48:53Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/50",
+      "display_title": "pdf: damaged PDFs — return the pages that work (PDF-9)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/61",
+      "title": "archives: GZIP and TAR",
+      "issue_number": 61,
+      "body": "## Goal\n\n`.gz` files give one child (the decompressed file); `.tar` (and `.tar.gz`) give one child per entry, under the shared budget.\n\n**Requirements:** section 8.1 (Archives), SEC-1, NST-1..NST-6 — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- gzip: header (FNAME, FEXTRA, FCOMMENT, FHCRC), multi-member, inflate through the same counted fflate path as zip. Ratio limit applies.\n- tar: ustar, pax extended headers (path, size), GNU long names; checksum check; skip non-regular entries (symlinks listed, never followed).\n\n## Acceptance criteria\n\n- [ ] Golden tests: .gz of a CSV, .tar with nested folders, .tar.gz.\n- [ ] Hostile: gzip bomb, tar size lies, pax header bombs.\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Golden tests (corpus files + reviewed expected output)\n- [ ] Hostile files added to `hostile/manifest.json`\n- [ ] Fuzz target in `packages/docsluice/fuzz/`\n\n## Out of scope\n\n- 7z, RAR (P2).\n\n## Blocked by\n\n- #39 reader: ZIP as a container format (NST-1..NST-6)\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P1",
+          "color": "d93f0b",
+          "description": "Soon after the P0 set"
+        },
+        {
+          "name": "size:M",
+          "color": "9be9a8",
+          "description": "1-3 days"
+        },
+        {
+          "name": "area:zip",
+          "color": "0e8a16",
+          "description": "Zip, gzip, tar"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "area:security",
+          "color": "b60205",
+          "description": "Threats, hostile corpus, fuzzing"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        }
+      ],
+      "milestone": 4,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:49:31Z",
+      "updated_at": "2026-10-09T13:49:32Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/61",
+      "display_title": "archives: GZIP and TAR"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/69",
+      "title": "images: metadata — dimensions, date, EXIF with GPS off (section 8.1 Images P1)",
+      "issue_number": 69,
+      "body": "## Goal\n\nImage files give width, height and capture date in metadata; GPS is off unless asked; no text.\n\n**Requirements:** section 8.1 (Images P1), MOD-4, section 15 — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- Parse dimensions from PNG IHDR, JPEG SOF, GIF, WebP (VP8/VP8L/VP8X), TIFF IFD0. EXIF (JPEG APP1, TIFF, WebP EXIF chunk): DateTimeOriginal, Orientation, Make/Model (not personal), GPS only with `imageGps: true` (new option; this issue authorizes it).\n- `metadata: false` drops all EXIF.\n- Bounded IFD walks with visited offsets.\n\n## Acceptance criteria\n\n- [ ] Tests with sample images made by a script (no third-party photos).\n- [ ] Hostile: IFD loops, huge counts.\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Hostile files added to `hostile/manifest.json`\n- [ ] Fuzz target in `packages/docsluice/fuzz/`\n\n## Out of scope\n\n- OCR (plugin).\n\n## Blocked by\n\n- #10 core: reader registry, extract() and nested-file pipeline\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P1",
+          "color": "d93f0b",
+          "description": "Soon after the P0 set"
+        },
+        {
+          "name": "size:M",
+          "color": "9be9a8",
+          "description": "1-3 days"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        }
+      ],
+      "milestone": 4,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:49:58Z",
+      "updated_at": "2026-10-09T13:49:58Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/69",
+      "display_title": "images: metadata — dimensions, date, EXIF with GPS off (section 8.1 Images P1)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/76",
+      "title": "plugin: OCR interface and @docsluice/ocr-tesseract (EXT-5)",
+      "issue_number": 76,
+      "body": "## Goal\n\nA documented OCR interface in the core and a first-party tesseract.js adapter package that fills text for pages and images that need OCR.\n\n**Requirements:** EXT-5, PDF-4, section 3 (OCR not in core), [ADR 0004](https://github.com/sanjay3290/docsluice/blob/main/docs/adr/0004-packaging.md) — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- Core: `ocr?: OcrProvider` option where `OcrProvider = (image: { bytes: Uint8Array; mimeType: string }, opts: { language?: string; signal?: AbortSignal }) => Promise<{ text: string; confidence: number; boxes?: … }>`. The core never bundles OCR.\n- Where it runs: PDF pages with `needsOcr` (the core does not render pages: use the largest page image XObject when it covers the page; document that vector-only pages need a renderer plugin), image files, and image children when asked. OCR text becomes paragraphs with `loc` and a confidence noted in warnings when low.\n- Package `packages/ocr-tesseract` (`@docsluice/ocr-tesseract`): wraps tesseract.js, local only, language data path configurable, worker reuse. Its own README and tests (marked slow).\n- A \"bring your own function\" example for a cloud vision API in the docs (no SDK dependency).\n\n## Acceptance criteria\n\n- [ ] Scanned corpus PDF gives text through the plugin in Node.\n- [ ] Core bundle size unchanged by the OCR interface (size check).\n- [ ] Docs page with both adapters.\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Golden tests (corpus files + reviewed expected output)\n\n## Out of scope\n\n- Page rendering of vector PDFs (P2 plugin).\n\n## Blocked by\n\n- #45 pdf: text layer per page, page labels, needsOcr, metadata, outline, links (PDF-1, 4, 6, 10)\n- #41 plugin API: registerFormat() with contract version (EXT-4, EXT-7)\n- #74 core: inline runs, child bytes, table-split chunks, exported building blocks (MOD-3, NST-5, CHK-4, EXT-6)\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P1",
+          "color": "d93f0b",
+          "description": "Soon after the P0 set"
+        },
+        {
+          "name": "size:L",
+          "color": "5fb88f",
+          "description": "3-7 days"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        },
+        {
+          "name": "area:plugin",
+          "color": "0e8a16",
+          "description": "Plugin API and plugins"
+        }
+      ],
+      "milestone": 5,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:50:21Z",
+      "updated_at": "2026-10-09T13:50:21Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/76",
+      "display_title": "plugin: OCR interface and @docsluice/ocr-tesseract (EXT-5)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/82",
+      "title": "pdf: simple table detection with confidence (PDF-8)",
+      "issue_number": 82,
+      "body": "## Goal\n\nDetect ruled and aligned-column tables in PDFs as `table` blocks with a confidence score.\n\n**Requirements:** PDF-8 — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- Use line/rect paths from the operator list for ruled tables; whitespace-column alignment for unruled tables. Add `confidence` via a caption or a warning (model has no confidence field: propose an ADR if one is needed).\n\n## Acceptance criteria\n\n- [ ] Tests on synthetic and corpus PDFs; cell accuracy measured and recorded.\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Golden tests (corpus files + reviewed expected output)\n\n## Blocked by\n\n- #46 pdf: reading order — lines, paragraphs, columns (PDF-2)\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P2",
+          "color": "fbca04",
+          "description": "Later or plugin"
+        },
+        {
+          "name": "size:XL",
+          "color": "2f8f5b",
+          "description": "More than a week; may split"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        }
+      ],
+      "milestone": 6,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:50:43Z",
+      "updated_at": "2026-10-09T13:50:43Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/82",
+      "display_title": "pdf: simple table detection with confidence (PDF-8)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/86",
+      "title": "archives: 7z and RAR listing (plugin candidates)",
+      "issue_number": 86,
+      "body": "## Goal\n\nDecide whether 7z/RAR belong in core or a plugin, then implement listing (and extraction where pure-JS and licence-safe).\n\n**Requirements:** section 8.1 (Archives P2) — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- RAR decompression has licence limits (unrar licence): likely list-only. 7z needs LZMA (pure-JS options exist; check size). Write an ADR.\n\n## Acceptance criteria\n\n- [ ] ADR plus listing support with tests.\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Hostile files added to `hostile/manifest.json`\n\n## Blocked by\n\n- #41 plugin API: registerFormat() with contract version (EXT-4, EXT-7)\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P2",
+          "color": "fbca04",
+          "description": "Later or plugin"
+        },
+        {
+          "name": "size:L",
+          "color": "5fb88f",
+          "description": "3-7 days"
+        },
+        {
+          "name": "area:zip",
+          "color": "0e8a16",
+          "description": "Zip, gzip, tar"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        },
+        {
+          "name": "area:plugin",
+          "color": "0e8a16",
+          "description": "Plugin API and plugins"
+        }
+      ],
+      "milestone": 6,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:50:55Z",
+      "updated_at": "2026-10-09T13:50:56Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/86",
+      "display_title": "archives: 7z and RAR listing (plugin candidates)"
+    },
+    {
+      "url": "https://github.com/sanjay3290/docsluice/issues/88",
+      "title": "formats: Visio VSDX, Apple iWork, LaTeX, audio/video metadata",
+      "issue_number": 88,
+      "body": "## Goal\n\nAssess each P2 format, decide core vs plugin in an ADR, and implement the cheapest valuable ones.\n\n**Requirements:** section 8.1 (P2 / plugin column) — see [docs/prd.md](https://github.com/sanjay3290/docsluice/blob/main/docs/prd.md).\n\n## Context and pointers\n\n- VSDX is OOXML (shapes text). iWork is protobuf in IWA (Snappy) — likely plugin. LaTeX: text with commands stripped. Audio/video: container metadata only.\n\n## Acceptance criteria\n\n- [ ] ADR with decisions; at least VSDX implemented with golden tests.\n- [ ] `npm run verify` passes and CI is green\n\n## Tests required\n\n- [ ] Unit tests\n- [ ] Golden tests (corpus files + reviewed expected output)\n\n## Blocked by\n\n- #41 plugin API: registerFormat() with contract version (EXT-4, EXT-7)\n- #28 ooxml: shared OOXML helpers — relationships, content types, properties, features\n\n## How to work this issue\n\nFollow the loop in [AGENTS.md](https://github.com/sanjay3290/docsluice/blob/main/AGENTS.md): read, check blockers, branch, draft PR, test first, verify, finish. Hard rules and the Definition of Done are in the same file. In Claude Code: `/work-issue <this number>`.\n",
+      "state": "open",
+      "user": {
+        "login": "sanjay3290",
+        "name": "sanjay3290",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/24948667?v=4",
+        "id": 24948667
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "type:task",
+          "color": "1d76db",
+          "description": "One unit of work, finishable end to end"
+        },
+        {
+          "name": "priority:P2",
+          "color": "fbca04",
+          "description": "Later or plugin"
+        },
+        {
+          "name": "size:XL",
+          "color": "2f8f5b",
+          "description": "More than a week; may split"
+        },
+        {
+          "name": "area:reader",
+          "color": "0e8a16",
+          "description": "A format reader"
+        },
+        {
+          "name": "agent-ready",
+          "color": "7057ff",
+          "description": "Fully specified: an agent can finish it end to end"
+        },
+        {
+          "name": "area:plugin",
+          "color": "0e8a16",
+          "description": "Plugin API and plugins"
+        }
+      ],
+      "milestone": 6,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-09T13:51:02Z",
+      "updated_at": "2026-10-09T13:51:02Z",
+      "closed_at": null,
+      "display_url": "https://github.com/sanjay3290/docsluice/issues/88",
+      "display_title": "formats: Visio VSDX, Apple iWork, LaTeX, audio/video metadata"
+    }
+  ]
+}

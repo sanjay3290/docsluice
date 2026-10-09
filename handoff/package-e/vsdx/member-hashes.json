@@ -1,0 +1,80 @@
+{
+  "tiny-flow.vsdx": {
+    "archiveSha256": "59150374c722e9990b40abd84dffecc48d57376d800d5d934c58e0004ff51725",
+    "members": {
+      "[Content_Types].xml": "d1a0866220e1cd2d1e5dd118261c2f1acdfd0774cc3ddc9b1259d84ff1b42ae0",
+      "_rels/.rels": "87c1780eb56200b903d83ab24456726d98a1b3fbc8db690ba4d405e093915edf",
+      "visio/document.xml": "ba8e6a3adc6f9e4ba37a3092e2579670eaa987ae01454faaf545494ebb46eb65",
+      "visio/_rels/document.xml.rels": "a193d54762afb0bdee7fe10290b4aaa46af90a20692b5cd57cf08a77503b50f8",
+      "visio/pages/pages.xml": "ce8822e09a90d2838f297eb71021fefd58aba65111b0f010837ec07d755edc1f",
+      "visio/pages/_rels/pages.xml.rels": "cdc3d2d47b8f1845d9da2c89390b142a039c6df56cf0b9d4a4eb7f07a576211d",
+      "visio/pages/page1.xml": "a2a9369a95a2a4d93373afe2dc56a11c5ff7f53700622f84c258e7362cf540de",
+      "visio/pages/page2.xml": "873ddfbce30b1b324ec9efedc4f44211df1a1b36d407a528b088fcbb2e6758ee"
+    }
+  },
+  "bounded-malformed.vsdx": {
+    "archiveSha256": "b87abb1871463883aa70be356d61fe98ee468bf8be2cf263bd4c626cc9b44d7f",
+    "members": {
+      "[Content_Types].xml": "d1a0866220e1cd2d1e5dd118261c2f1acdfd0774cc3ddc9b1259d84ff1b42ae0",
+      "_rels/.rels": "87c1780eb56200b903d83ab24456726d98a1b3fbc8db690ba4d405e093915edf",
+      "visio/document.xml": "ba8e6a3adc6f9e4ba37a3092e2579670eaa987ae01454faaf545494ebb46eb65",
+      "visio/_rels/document.xml.rels": "a193d54762afb0bdee7fe10290b4aaa46af90a20692b5cd57cf08a77503b50f8",
+      "visio/pages/pages.xml": "ce8822e09a90d2838f297eb71021fefd58aba65111b0f010837ec07d755edc1f",
+      "visio/pages/_rels/pages.xml.rels": "cdc3d2d47b8f1845d9da2c89390b142a039c6df56cf0b9d4a4eb7f07a576211d",
+      "visio/pages/page1.xml": "0c504eb47a93c3c66e41d1a2974a7e0f5cb6da6c6b8ce8860137aee02d243389",
+      "visio/pages/page2.xml": "873ddfbce30b1b324ec9efedc4f44211df1a1b36d407a528b088fcbb2e6758ee"
+    }
+  },
+  "missing-relationship.vsdx": {
+    "archiveSha256": "a0b95a5f2d89ef0cdb8abf3daf7ddbfe993a3bceac109dfe4688314b085ba69c",
+    "members": {
+      "[Content_Types].xml": "d1a0866220e1cd2d1e5dd118261c2f1acdfd0774cc3ddc9b1259d84ff1b42ae0",
+      "_rels/.rels": "87c1780eb56200b903d83ab24456726d98a1b3fbc8db690ba4d405e093915edf",
+      "visio/document.xml": "ba8e6a3adc6f9e4ba37a3092e2579670eaa987ae01454faaf545494ebb46eb65",
+      "visio/_rels/document.xml.rels": "a193d54762afb0bdee7fe10290b4aaa46af90a20692b5cd57cf08a77503b50f8",
+      "visio/pages/pages.xml": "ce8822e09a90d2838f297eb71021fefd58aba65111b0f010837ec07d755edc1f",
+      "visio/pages/_rels/pages.xml.rels": "ac0e872607eb0765054b79390c535bf773004dc6f7a1e38ab9deccb9bd054753",
+      "visio/pages/page1.xml": "a2a9369a95a2a4d93373afe2dc56a11c5ff7f53700622f84c258e7362cf540de",
+      "visio/pages/page2.xml": "873ddfbce30b1b324ec9efedc4f44211df1a1b36d407a528b088fcbb2e6758ee"
+    }
+  },
+  "duplicate-id.vsdx": {
+    "archiveSha256": "6b80f0576a7ccc2471aaf22cca2648837b4287d840173fb952a0cec3a9eb20b6",
+    "members": {
+      "[Content_Types].xml": "d1a0866220e1cd2d1e5dd118261c2f1acdfd0774cc3ddc9b1259d84ff1b42ae0",
+      "_rels/.rels": "87c1780eb56200b903d83ab24456726d98a1b3fbc8db690ba4d405e093915edf",
+      "visio/document.xml": "ba8e6a3adc6f9e4ba37a3092e2579670eaa987ae01454faaf545494ebb46eb65",
+      "visio/_rels/document.xml.rels": "a193d54762afb0bdee7fe10290b4aaa46af90a20692b5cd57cf08a77503b50f8",
+      "visio/pages/pages.xml": "ce8822e09a90d2838f297eb71021fefd58aba65111b0f010837ec07d755edc1f",
+      "visio/pages/_rels/pages.xml.rels": "cdc3d2d47b8f1845d9da2c89390b142a039c6df56cf0b9d4a4eb7f07a576211d",
+      "visio/pages/page1.xml": "a2a9369a95a2a4d93373afe2dc56a11c5ff7f53700622f84c258e7362cf540de",
+      "visio/pages/page2.xml": "369ea57dc474da75bde226bbc4417fcb6903a7770aa34e59f2751a00a0284a19"
+    }
+  },
+  "traversal-part.vsdx": {
+    "archiveSha256": "eeebad6b01fc0a5ad88ed13ef1209ce185efa0ae133d748134280be922219e2b",
+    "members": {
+      "[Content_Types].xml": "d1a0866220e1cd2d1e5dd118261c2f1acdfd0774cc3ddc9b1259d84ff1b42ae0",
+      "_rels/.rels": "87c1780eb56200b903d83ab24456726d98a1b3fbc8db690ba4d405e093915edf",
+      "visio/document.xml": "ba8e6a3adc6f9e4ba37a3092e2579670eaa987ae01454faaf545494ebb46eb65",
+      "visio/_rels/document.xml.rels": "a193d54762afb0bdee7fe10290b4aaa46af90a20692b5cd57cf08a77503b50f8",
+      "visio/pages/pages.xml": "ce8822e09a90d2838f297eb71021fefd58aba65111b0f010837ec07d755edc1f",
+      "visio/pages/_rels/pages.xml.rels": "5758ce222894bde705109301202eedccd86c8f8895d8bf0c06843dca0daeab4b",
+      "visio/pages/page1.xml": "a2a9369a95a2a4d93373afe2dc56a11c5ff7f53700622f84c258e7362cf540de",
+      "visio/pages/page2.xml": "873ddfbce30b1b324ec9efedc4f44211df1a1b36d407a528b088fcbb2e6758ee"
+    }
+  },
+  "xml-hostile-candidate.vsdx": {
+    "archiveSha256": "d4eba270c01d35e5fb782d5ea37825e895d05222b262695b62def2c70b14e635",
+    "members": {
+      "[Content_Types].xml": "d1a0866220e1cd2d1e5dd118261c2f1acdfd0774cc3ddc9b1259d84ff1b42ae0",
+      "_rels/.rels": "87c1780eb56200b903d83ab24456726d98a1b3fbc8db690ba4d405e093915edf",
+      "visio/document.xml": "ba8e6a3adc6f9e4ba37a3092e2579670eaa987ae01454faaf545494ebb46eb65",
+      "visio/_rels/document.xml.rels": "a193d54762afb0bdee7fe10290b4aaa46af90a20692b5cd57cf08a77503b50f8",
+      "visio/pages/pages.xml": "ce8822e09a90d2838f297eb71021fefd58aba65111b0f010837ec07d755edc1f",
+      "visio/pages/_rels/pages.xml.rels": "cdc3d2d47b8f1845d9da2c89390b142a039c6df56cf0b9d4a4eb7f07a576211d",
+      "visio/pages/page1.xml": "a2a9369a95a2a4d93373afe2dc56a11c5ff7f53700622f84c258e7362cf540de",
+      "visio/pages/page2.xml": "ba1e45623464827d95aaec5a860f122b9769437cf76d35334112f1d5e9fbaae6"
+    }
+  }
+}

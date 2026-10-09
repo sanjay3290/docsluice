@@ -1,0 +1,28 @@
+{
+  "runtime": "deno",
+  "runtimeVersion": "2.9.7",
+  "mode": "unpdf",
+  "moduleUrl": "file:///tmp/codex-pdf44/unpdf-only/node_modules/unpdf/dist/index.mjs",
+  "config": {
+    "isEvalSupported": false,
+    "useWorkerFetch": false,
+    "useWasm": false,
+    "disableAutoFetch": true,
+    "disableStream": true,
+    "verbosity": 0
+  },
+  "workerTrapInstalled": true,
+  "workerCoverageNote": "Only global Worker is trapped. This probe does not import or call node:worker_threads Worker.",
+  "markerBefore": 0,
+  "fixtures": [],
+  "importResolved": false,
+  "error": "Error: Serverless PDF.js bundle could not be resolved: TypeError: Import \"unpdf/pdfjs\" not a dependency\n    at file:///tmp/codex-pdf44/unpdf-only/node_modules/unpdf/dist/index.mjs:104:35\n",
+  "markerAfter": 0,
+  "attempts": {
+    "fetch": 0,
+    "xhr": 0,
+    "worker": 0,
+    "eval": 0,
+    "functionConstructor": 0
+  }
+}

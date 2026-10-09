@@ -1,0 +1,38 @@
+{
+  "status": "PREPARATION_ONLY_PRIVATE_STAGE_NOT_READER_ACCEPTANCE",
+  "date": "2026-10-09",
+  "repositoryRoot": "/workspace/docsluice-package-e (scaffold input; integration pending)",
+  "module": "packages/docsluice/src/readers/pdf/tables/index.ts",
+  "test": "packages/docsluice/test/readers/pdf/tables/tables.test.ts",
+  "docs": "docs/formats/pdf-tables.md",
+  "inputs": {
+    "page": "{ width, height } in top-left page units",
+    "lines": "readonly LayoutLine[] from the PDF text layout stage",
+    "segments": "readonly axis-aligned RuleSegment[] from a future operator adapter",
+    "budget": "shared Budget; staging preflights cells and output without charging successful plans"
+  },
+  "output": {
+    "kind": "private TableCandidate[]",
+    "fields": [
+      "rows/cells",
+      "confidence",
+      "sourceIndices",
+      "bounds",
+      "detection"
+    ],
+    "builderMapping": "Caller maps candidate rows to Cell[][] and emits the existing TableBlock with a caption carrying confidence; a future low-confidence warning must contain no document content.",
+    "publicModelChanges": false
+  },
+  "syntheticEvidence": {
+    "fixtures": ["hand-authored ruled 2x2", "hand-authored aligned 3x2"],
+    "positiveCellTextsExact": 10,
+    "positiveCellTextsExpected": 10,
+    "realPdfAccuracy": "not measured; engine/operator adapter and corpus integration pending"
+  },
+  "remainingIntegration": [
+    "PDF engine/runtime and positioned item adapter (#44, #45)",
+    "real operator path/rectangle extraction and LayoutLine integration (#46)",
+    "reader-to-builder mapping and table metric collection (#27)",
+    "real corpus fixtures with independently reviewed expected cell facts"
+  ]
+}
