@@ -21,6 +21,10 @@ One call gives text, Markdown, tables, page/slide/sheet locations and metadata f
 - [Testing](docs/testing.md)
 - [Contributing](CONTRIBUTING.md) · [Agents](AGENTS.md) · [Security](SECURITY.md)
 
+## Working on it
+
+Issues are written so an agent can finish each one end to end. See [AGENTS.md](AGENTS.md). In Claude Code: `/work-issue <n>` for one issue, `/work-board` to work every ready issue in order.
+
 ## Licence
 
 [MIT](LICENSE)
