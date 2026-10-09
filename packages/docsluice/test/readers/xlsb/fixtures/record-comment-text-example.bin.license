@@ -1,0 +1,3 @@
+SPDX-License-Identifier: CC0-1.0
+Source: Self-authored record bytes based on the record header example in Microsoft MS-XLSB section 2.1.4.
+Notes: Header encodes record type 637 and payload size 200; zero payload bytes are synthetic test data, not an Excel-generated record.
