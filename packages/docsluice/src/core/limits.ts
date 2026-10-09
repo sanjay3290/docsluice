@@ -53,17 +53,87 @@ export const ALWAYS_THROW_LIMITS: ReadonlySet<keyof Limits> = new Set<keyof Limi
   'compressionRatio',
 ]);
 
+function getLimit(overrides: Partial<Limits>, key: keyof Limits): number | undefined {
+  switch (key) {
+    case 'inputBytes':
+      return overrides.inputBytes;
+    case 'totalUncompressedBytes':
+      return overrides.totalUncompressedBytes;
+    case 'compressionRatio':
+      return overrides.compressionRatio;
+    case 'compressionRatioMinBytes':
+      return overrides.compressionRatioMinBytes;
+    case 'zipEntries':
+      return overrides.zipEntries;
+    case 'childDepth':
+      return overrides.childDepth;
+    case 'xmlDepth':
+      return overrides.xmlDepth;
+    case 'blockDepth':
+      return overrides.blockDepth;
+    case 'outputChars':
+      return overrides.outputChars;
+    case 'cells':
+      return overrides.cells;
+    case 'pdfPages':
+      return overrides.pdfPages;
+    case 'timeMs':
+      return overrides.timeMs;
+  }
+}
+
+function setLimit(limits: Limits, key: keyof Limits, value: number): void {
+  switch (key) {
+    case 'inputBytes':
+      limits.inputBytes = value;
+      break;
+    case 'totalUncompressedBytes':
+      limits.totalUncompressedBytes = value;
+      break;
+    case 'compressionRatio':
+      limits.compressionRatio = value;
+      break;
+    case 'compressionRatioMinBytes':
+      limits.compressionRatioMinBytes = value;
+      break;
+    case 'zipEntries':
+      limits.zipEntries = value;
+      break;
+    case 'childDepth':
+      limits.childDepth = value;
+      break;
+    case 'xmlDepth':
+      limits.xmlDepth = value;
+      break;
+    case 'blockDepth':
+      limits.blockDepth = value;
+      break;
+    case 'outputChars':
+      limits.outputChars = value;
+      break;
+    case 'cells':
+      limits.cells = value;
+      break;
+    case 'pdfPages':
+      limits.pdfPages = value;
+      break;
+    case 'timeMs':
+      limits.timeMs = value;
+      break;
+  }
+}
+
 /** Merge caller limits over the defaults. Unknown keys are ignored. */
 export function resolveLimits(overrides?: Partial<Limits>): Limits {
   const resolved: Limits = { ...DEFAULT_LIMITS };
   if (!overrides) return resolved;
   for (const key of Object.keys(DEFAULT_LIMITS) as Array<keyof Limits>) {
-    const value = overrides[key];
+    const value = getLimit(overrides, key);
     if (value === undefined) continue;
     if (!Number.isFinite(value) || value < 0) {
       throw new RangeError(`Limit "${key}" must be a finite number >= 0.`);
     }
-    resolved[key] = value;
+    setLimit(resolved, key, value);
   }
   return resolved;
 }
