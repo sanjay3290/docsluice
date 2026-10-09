@@ -11,7 +11,8 @@ internally and emits it through the shared document section metadata.
 The reader descriptor advertises the IANA whole-workbook type
 [`application/vnd.ms-excel.sheet.binary.macroEnabled.12`](https://www.iana.org/assignments/media-types/application/vnd.ms-excel.sheet.binary.macroEnabled.12);
 the `.main` content type remains the internal workbook-part type in the
-synthetic package's `[Content_Types].xml`.
+synthetic package's `[Content_Types].xml`, with an explicit override for
+`/xl/workbook.bin` (the generic `.bin` default does not replace that part type).
 
 Supported worksheet scalar values include blank, RK, error, Boolean, real,
 inline string, shared string, and cached formula string/number/Boolean/error

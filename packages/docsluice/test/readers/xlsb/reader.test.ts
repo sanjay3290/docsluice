@@ -62,6 +62,19 @@ describe('XLSB reader', () => {
     expect(xlsbReader.mimeTypes).toEqual(['application/vnd.ms-excel.sheet.binary.macroEnabled.12']);
   });
 
+  it('includes the binary workbook part content-type override in the XLSB package', async () => {
+    const bytes = new Uint8Array(readFileSync(new URL('./fixtures/reader-edgecases.xlsb', import.meta.url)));
+    const { context } = createContext(bytes);
+    const entry = context.zip?.entries.find(({ name }) => name === '[Content_Types].xml');
+    expect(entry).toBeDefined();
+    if (!entry || !context.zip) throw new Error('Expected an XLSB content-types part.');
+    const contentTypes = await context.zip.read(entry);
+    expect(contentTypes).not.toBeNull();
+    expect(new TextDecoder().decode(contentTypes!)).toContain(
+      '<Override PartName="/xl/workbook.bin" ContentType="application/vnd.ms-excel.sheet.binary.macroEnabled.main"/>',
+    );
+  });
+
   it('reads workbook order and cached scalar values from an authored XLSB package', async () => {
     const bytes = new Uint8Array(readFileSync(new URL('./fixtures/reader-edgecases.xlsb', import.meta.url)));
     const { context, builder } = createContext(bytes);
