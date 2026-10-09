@@ -27,6 +27,7 @@ import {
   toListItems,
   type TextStage,
 } from './text.js';
+import { parseSpeakerNotes, slideIsHidden } from './notes.js';
 
 const DIAGRAM_NS = 'http://schemas.openxmlformats.org/drawingml/2006/diagram';
 const OFFICE_REL_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
@@ -126,9 +127,40 @@ function warnUnreadable(ctx: ReadContext, part: string): void {
   });
 }
 
-async function xmlPart(parts: OoxmlParts, path: string, ctx: ReadContext): Promise<XmlElement | undefined> {
+/** Validate optional note bytes before the shared XML decoder can replace malformed input. */
+function validateXmlEncoding(bytes: Uint8Array, ctx: ReadContext): void {
+  ctx.budget.tick();
+  if (bytes.length > MAX_XML_SOURCE_WORK)
+    throw new LimitExceededError('pptxXmlSourceWork', MAX_XML_SOURCE_WORK);
+  let encoding: 'utf-8' | 'utf-16le' | 'utf-16be' = 'utf-8';
+  if (bytes[0] === 0xff && bytes[1] === 0xfe) encoding = 'utf-16le';
+  else if (bytes[0] === 0xfe && bytes[1] === 0xff) encoding = 'utf-16be';
+  else if (bytes.length >= 4 && bytes[0] === 0 && bytes[1] === 0x3c && bytes[2] === 0) encoding = 'utf-16be';
+  else if (bytes.length >= 4 && bytes[0] === 0x3c && bytes[1] === 0 && bytes[3] === 0) encoding = 'utf-16le';
+  const decoder = new TextDecoder(encoding, { fatal: true });
+  try {
+    for (let offset = 0; offset < bytes.length; offset += 4096) {
+      const end = Math.min(bytes.length, offset + 4096);
+      for (let index = offset; index < end; index += 1) ctx.budget.tick();
+      // Discard each bounded chunk; the structural parser owns retained source text.
+      decoder.decode(bytes.subarray(offset, end), { stream: true });
+    }
+    decoder.decode();
+  } catch (error) {
+    if (!(error instanceof TypeError)) throw error;
+    throw new CorruptFileError('A PowerPoint XML part has invalid text encoding.');
+  }
+}
+
+async function xmlPart(
+  parts: OoxmlParts,
+  path: string,
+  ctx: ReadContext,
+  validateEncoding = false,
+): Promise<XmlElement | undefined> {
   const bytes = await parts.read(path);
   if (!bytes) return undefined;
+  if (validateEncoding) validateXmlEncoding(bytes, ctx);
   return parseStructuralXml(bytes, ctx, partPath(ctx, path));
 }
 
@@ -458,6 +490,45 @@ async function emitSmartArt(
   }
 }
 
+async function emitSpeakerNotes(
+  rels: Map<string, { type: string; part?: string }>,
+  slideNumber: number,
+  parts: OoxmlParts,
+  ctx: ReadContext,
+): Promise<void> {
+  for (const relationship of rels.values()) {
+    ctx.budget.tick();
+    if (relationship.type !== `${OFFICE_REL_NS}/notesSlide` || relationship.part === undefined) continue;
+    const beforeWarnings = ctx.warnings.warnings.length;
+    let root: XmlElement | undefined;
+    try {
+      root = await xmlPart(parts, relationship.part, ctx, true);
+    } catch (error) {
+      if (!(error instanceof CorruptFileError)) throw error;
+    }
+    const common = root ? directChild(root, PRESENTATION_NS, 'cSld', ctx.budget) : undefined;
+    const tree = common ? directChild(common, PRESENTATION_NS, 'spTree', ctx.budget) : undefined;
+    if (!root || root.namespaceURI !== PRESENTATION_NS || root.localName !== 'notes' || !tree) {
+      if (ctx.warnings.warnings.length === beforeWarnings) {
+        ctx.warnings.add({
+          code: 'UNREADABLE_PART',
+          message: 'A PowerPoint notes part could not be read.',
+          loc: { path: partPath(ctx, relationship.part) },
+        });
+      }
+      return;
+    }
+    // An XML parser warning means this optional part is structurally incomplete.
+    if (ctx.warnings.warnings.length !== beforeWarnings) return;
+    for (const text of parseSpeakerNotes(root, ctx.budget)) {
+      ctx.budget.tick();
+      if (!ctx.out.note('speaker-notes', text, slideLocation(ctx, relationship.part, slideNumber))) break;
+    }
+    // A slide has one notes part. Duplicate relationships do not amplify output.
+    return;
+  }
+}
+
 async function parseSlide(
   part: string,
   slideNumber: number,
@@ -537,9 +608,17 @@ async function parseSlide(
     }
   }
   const loc = slideLocation(ctx, part, slideNumber);
+  const hidden = slideIsHidden(slide);
+  if (hidden) {
+    ctx.warnings.add({
+      code: 'HIDDEN_CONTENT',
+      message: 'The presentation contains a hidden slide.',
+      loc,
+    });
+  }
   let opened: boolean | undefined;
   try {
-    opened = ctx.out.openSection('slide', loc, titleText);
+    opened = ctx.out.openSection('slide', loc, titleText, hidden ? { hidden: true } : undefined);
     if (!opened) return false;
     if (titleText) ctx.out.heading(1, titleText, loc);
     for (const shape of shapes) {
@@ -554,6 +633,7 @@ async function parseSlide(
         emitTextShape(shape, part, slideNumber, ctx, stage);
       }
     }
+    if (!ctx.budget.truncated) await emitSpeakerNotes(rels, slideNumber, parts, ctx);
   } finally {
     if (opened !== undefined) ctx.out.closeSection();
   }

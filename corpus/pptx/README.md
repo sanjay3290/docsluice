@@ -10,3 +10,5 @@ cp /tmp/docsluice-pptx-lo/pptx-edge-cases.pptx corpus/pptx/pptx-lo-edge-cases.pp
 ```
 
 The `.expected.json` sidecar is a reviewed direct-reader result, compared in `packages/docsluice/test/readers/pptx/reader.test.ts`. Its 12 sections were checked against the LibreOffice-resaved package in presentation order; the first two title placeholders, reading-order examples, inherited placeholder, transformed group, table cells, and remaining slide labels were checked individually. LibreOffice drops the source SmartArt, so SmartArt remains covered by the synthetic unit fixture instead. This is not a public extraction-pipeline golden; reader registry and QA-1/QA-2 integration are maintained by the root task.
+
+#38 expected-output additions were manually reviewed against notesSlide4/5 body placeholder text and slide5 show=0 in the LibreOffice-resaved deck. Both notes are `Speaker note body` and `Second note paragraph`; slide-number placeholder text is excluded. The direct-reader JSON now records these notes and the one hidden-slide warning. No default public registration or corpus-runner acceptance is asserted.

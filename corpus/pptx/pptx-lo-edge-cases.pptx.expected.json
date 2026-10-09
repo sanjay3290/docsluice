@@ -171,6 +171,15 @@
             "slide": 4,
             "path": "ppt/slides/slide4.xml"
           }
+        },
+        {
+          "kind": "note",
+          "role": "speaker-notes",
+          "text": "Speaker note body\nSecond note paragraph",
+          "loc": {
+            "slide": 4,
+            "path": "ppt/notesSlides/notesSlide4.xml"
+          }
         }
       ],
       "loc": {
@@ -189,12 +198,22 @@
             "slide": 5,
             "path": "ppt/slides/slide5.xml"
           }
+        },
+        {
+          "kind": "note",
+          "role": "speaker-notes",
+          "text": "Speaker note body\nSecond note paragraph",
+          "loc": {
+            "slide": 5,
+            "path": "ppt/notesSlides/notesSlide5.xml"
+          }
         }
       ],
       "loc": {
         "slide": 5,
         "path": "ppt/slides/slide5.xml"
-      }
+      },
+      "hidden": true
     },
     {
       "kind": "section",
@@ -324,7 +343,16 @@
     }
   ],
   "children": [],
-  "warnings": [],
+  "warnings": [
+    {
+      "code": "HIDDEN_CONTENT",
+      "message": "The presentation contains a hidden slide.",
+      "loc": {
+        "slide": 5,
+        "path": "ppt/slides/slide5.xml"
+      }
+    }
+  ],
   "stats": {
     "bytesRead": 0,
     "durationMs": 0,
