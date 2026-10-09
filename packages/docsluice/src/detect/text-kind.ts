@@ -5,20 +5,25 @@ const HTML_TAGS = ['html', 'head', 'body', 'title', 'meta', 'div', 'p', 'script'
 
 /** Guess a text format from a bounded prefix without regex backtracking. */
 export function detectTextKind(text: string): FormatId {
+  return detectTextKindCandidates(text)[0] ?? 'txt';
+}
+
+/** Return equally plausible detected kinds in deterministic preference order. */
+export function detectTextKindCandidates(text: string): readonly FormatId[] {
   const sample = text.slice(0, SAMPLE_CHARS);
   const start = skipWhitespace(sample, 0);
   if (start < sample.length && (sample[start] === '{' || sample[start] === '[') && isJson(sample, start)) {
-    return 'json';
+    return ['json'];
   }
-  if (startsAsciiInsensitive(sample, start, '<!doctype html')) return 'html';
-  if (startsAsciiInsensitive(sample, start, '<?xml')) return 'xml';
-  if (hasKnownHtmlRoot(sample, start)) return 'html';
-  if (hasXmlRoot(sample, start)) return 'xml';
-  if (containsHtmlTag(sample)) return 'html';
-  const delimited = detectDelimited(sample);
-  if (delimited !== undefined) return delimited;
-  if (markdownScore(sample) >= 2) return 'markdown';
-  return 'txt';
+  if (startsAsciiInsensitive(sample, start, '<!doctype html')) return ['html'];
+  if (startsAsciiInsensitive(sample, start, '<?xml')) return ['xml'];
+  if (hasKnownHtmlRoot(sample, start)) return ['html'];
+  if (hasXmlRoot(sample, start)) return ['xml'];
+  if (containsHtmlTag(sample)) return ['html'];
+  const delimited = detectDelimitedKinds(sample);
+  if (delimited.length > 0) return delimited;
+  if (markdownScore(sample) >= 2) return ['markdown'];
+  return ['txt'];
 }
 
 function skipWhitespace(text: string, from: number): number {
@@ -103,10 +108,12 @@ function isNamePart(code: number): boolean {
   return isNameStart(code) || (code >= 0x30 && code <= 0x39) || code === 0x2d || code === 0x2e;
 }
 
-function detectDelimited(text: string): 'csv' | 'tsv' | undefined {
-  if (consistentRows(delimiterRows(text, 0x2c)) || consistentRows(delimiterRows(text, 0x3b))) return 'csv';
-  if (consistentRows(delimiterRows(text, 0x09))) return 'tsv';
-  return undefined;
+function detectDelimitedKinds(text: string): FormatId[] {
+  const candidates: FormatId[] = [];
+  if (consistentRows(delimiterRows(text, 0x2c)) || consistentRows(delimiterRows(text, 0x3b)))
+    candidates.push('csv');
+  if (consistentRows(delimiterRows(text, 0x09))) candidates.push('tsv');
+  return candidates;
 }
 
 function delimiterRows(text: string, delimiter: number): Array<{ count: number; nonEmpty: boolean }> {

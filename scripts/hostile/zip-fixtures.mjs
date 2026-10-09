@@ -86,6 +86,23 @@ writeFileSync(
   makeZip([{ name: 'bomb.bin', data: Buffer.alloc(bombSize), method: 8, declaredSize: 0x1_0000_0000 }]),
 );
 
+const oversizedContentTypesSize = 50 * 1024 * 1024;
+const oversizedContentTypes = Buffer.alloc(oversizedContentTypesSize, 0x20);
+Buffer.from('<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>').copy(
+  oversizedContentTypes,
+);
+writeFileSync(
+  new URL('content-types-50mb.zip', destination),
+  makeZip([
+    {
+      name: '[Content_Types].xml',
+      data: oversizedContentTypes,
+      method: 8,
+      declaredSize: oversizedContentTypesSize,
+    },
+  ]),
+);
+
 const zip64Count = Buffer.alloc(98);
 zip64Count.writeUInt32LE(0x06064b50, 0);
 zip64Count.writeBigUInt64LE(44n, 4);
