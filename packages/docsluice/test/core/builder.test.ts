@@ -16,6 +16,31 @@ const createBuilder = (
 };
 
 describe('DocBuilder', () => {
+  it('preserves hidden sheet and slide attributes through section closure and cloning', () => {
+    const { builder } = createBuilder();
+    const attributes: { hidden?: boolean | 'very' } = { hidden: 'very' };
+    builder.openSection('sheet', { sheet: 'Private' }, 'Private', attributes);
+    attributes.hidden = false;
+    builder.paragraph('private cells');
+    builder.closeSection();
+    builder.openSection('slide', { slide: 2 }, 'Hidden slide', { hidden: true });
+    builder.paragraph('speaker content');
+    builder.closeSection();
+    builder.openSection('sheet', { sheet: 'Visible' }, 'Visible', { hidden: false });
+    builder.closeSection();
+    const doc = builder.finish();
+    expect(doc.blocks.map((block) => (block.kind === 'section' ? block.hidden : undefined))).toEqual([
+      'very',
+      true,
+      false,
+    ]);
+    expect(doc.blocks[0]).toMatchObject({
+      role: 'sheet',
+      loc: { sheet: 'Private' },
+      blocks: [{ text: 'private cells' }],
+    });
+  });
+
   it('builds normalized blocks and returns false after output truncation', () => {
     const { budget, builder } = createBuilder({ outputChars: 5 });
     expect(builder.paragraph('hello')).toBe(true);
