@@ -143,6 +143,8 @@ export async function runWorkersRuntime() {
       [
         'dev',
         '--local',
+        '--persist-to',
+        path.join(stateDirectory, 'state'),
         '--config',
         wranglerConfig,
         '--ip',
