@@ -86,6 +86,23 @@ function locateTiffTag(bytes: Uint8Array, ifd: number, tag: number, little: bool
 
 describe('image readers', () => {
   it.each([
+    ['png', 'tiny.png'],
+    ['gif', 'tiny.gif'],
+    ['jpeg', 'jpeg-exif-structure.jpg'],
+    ['tiff', 'tiff-le-metadata.tif'],
+    ['tiff', 'tiff-be-metadata.tif'],
+    ['webp', 'webp-vp8x-exif-snippet.webp'],
+  ])('detects the %s signature without accepting an empty or damaged prefix', (id, name) => {
+    const reader = byId.get(id)!;
+    const bytes = fixture(name);
+    expect(reader.detect?.(bytes)).toBe(1);
+    expect(reader.detect?.(new Uint8Array())).toBe(0);
+    const damaged = bytes.slice();
+    damaged[0] = 0;
+    expect(reader.detect?.(damaged)).toBe(0);
+  });
+
+  it.each([
     ['png', 'tiny.png', 1, 1],
     ['gif', 'tiny.gif', 1, 1],
     ['jpeg', 'jpeg-exif-structure.jpg', 5, 3],
