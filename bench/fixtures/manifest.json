@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "generator": "bench/generate.mjs",
+  "generatorLicense": "MIT (repository license)",
+  "source": "Generated deterministic synthetic content; no third-party documents or text.",
+  "zipLibrary": "fflate 0.8.2; fixed DOS timestamp 1980-01-01T00:00:00Z",
+  "fixtures": {
+    "docx": {
+      "file": "benchmark-5mb.docx",
+      "format": "docx",
+      "bytes": 5242880,
+      "paragraphs": 10000,
+      "textCharacters": 4911554,
+      "markerCharacters": 70000,
+      "fillerCharacters": 4841554,
+      "sha256": "0b1666e687405c23269a8a74b5e0436ce1dfd28b5e7ba112f15e2970f3eb8975"
+    },
+    "xlsx": {
+      "file": "benchmark-50000-rows.xlsx",
+      "format": "xlsx",
+      "bytes": 610153,
+      "rows": 50000,
+      "sha256": "b3c5df05c403d1a02b42d53079e922ec2957b148416ecf4c63a703244ac7e040"
+    },
+    "pdf": {
+      "file": "benchmark-100-pages.pdf",
+      "format": "pdf",
+      "bytes": 29585,
+      "pages": 100,
+      "sha256": "20f179a13c8e492b4594e07aff0c7a0ab378ddc66c8505e4224ded344539e331"
+    }
+  }
+}

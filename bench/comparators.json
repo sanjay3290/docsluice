@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "libraries": {
+    "docsluice": {
+      "package": "docsluice",
+      "version": "workspace build",
+      "license": "MIT",
+      "source": "https://github.com/sanjay3290/docsluice",
+      "formats": ["docx", "xlsx", "pdf"]
+    },
+    "officeparser": {
+      "package": "officeparser",
+      "version": "8.1.1",
+      "license": "MIT",
+      "source": "https://github.com/harshankur/officeParser",
+      "formats": ["docx", "xlsx", "pdf"]
+    },
+    "mammoth": {
+      "package": "mammoth",
+      "version": "1.13.0",
+      "license": "BSD-2-Clause",
+      "source": "https://github.com/mwilliamson/mammoth.js",
+      "formats": ["docx"]
+    },
+    "xlsx": {
+      "package": "xlsx",
+      "version": "0.18.5",
+      "license": "Apache-2.0",
+      "source": "https://www.npmjs.com/package/xlsx",
+      "formats": ["xlsx"]
+    },
+    "pdf-parse": {
+      "package": "pdf-parse",
+      "version": "2.4.5",
+      "license": "Apache-2.0",
+      "source": "https://github.com/mehmet-kozan/pdf-parse",
+      "formats": ["pdf"]
+    },
+    "unpdf": {
+      "package": "unpdf",
+      "version": "1.8.1",
+      "license": "MIT",
+      "source": "https://github.com/unjs/unpdf",
+      "formats": ["pdf"]
+    },
+    "pdfjs-dist": {
+      "package": "pdfjs-dist",
+      "version": "6.4.299",
+      "license": "Apache-2.0",
+      "source": "https://github.com/mozilla/pdf.js",
+      "formats": ["pdf"]
+    }
+  },
+  "cases": [
+    {
+      "format": "docx",
+      "fixture": "benchmark-5mb.docx",
+      "expectedUnits": 10000,
+      "marker": "(?<![A-Za-z0-9])P[0-9]{5}(?![A-Za-z0-9])",
+      "markerPrefix": "P",
+      "markerWidth": 5,
+      "libraries": ["docsluice", "officeparser", "mammoth"]
+    },
+    {
+      "format": "xlsx",
+      "fixture": "benchmark-50000-rows.xlsx",
+      "expectedUnits": 50000,
+      "marker": "(?<![A-Za-z0-9])R[0-9]{5}(?![A-Za-z0-9])",
+      "markerPrefix": "R",
+      "markerWidth": 5,
+      "libraries": ["docsluice", "officeparser", "xlsx"]
+    },
+    {
+      "format": "pdf",
+      "fixture": "benchmark-100-pages.pdf",
+      "expectedUnits": 100,
+      "marker": "(?<![A-Za-z0-9])PAGE-[0-9]{3}(?![A-Za-z0-9])",
+      "markerPrefix": "PAGE-",
+      "markerWidth": 3,
+      "libraries": ["docsluice", "officeparser", "pdf-parse", "unpdf", "pdfjs-dist"]
+    }
+  ]
+}
