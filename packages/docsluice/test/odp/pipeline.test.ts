@@ -3,6 +3,7 @@ import { createExtractor } from '../../src/core/extract.js';
 import { ReaderRegistry } from '../../src/core/registry.js';
 import { odpReader } from '../../src/readers/odp/index.js';
 import { toMarkdown } from '../../src/render/markdown.js';
+import { toJSON } from '../../src/render/json.js';
 import { toText } from '../../src/render/text.js';
 import { makeZip } from '../helpers/zip.js';
 
@@ -62,6 +63,7 @@ describe('ODP extraction pipeline', () => {
     ]);
     expect(toText(document)).toContain('Speaker notes');
     expect(toMarkdown(document)).toContain('Speaker notes');
+    expect((JSON.parse(toJSON(document)) as typeof document).blocks).toEqual(document.blocks);
     expect(JSON.stringify(document)).not.toContain('Private author');
     expect(JSON.stringify(document)).not.toContain('Private note author');
   });

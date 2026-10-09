@@ -153,7 +153,7 @@ export const odpReader: Reader = {
         }
       }
 
-      ctx.out.openSection('slide', loc, title);
+      ctx.out.openSection('slide', loc, title, { hidden });
       for (const block of blocks) {
         ctx.budget.tick();
         emitBlock(ctx, block);

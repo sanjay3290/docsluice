@@ -75,6 +75,7 @@ describe('ODP reader', () => {
       kind: 'section',
       role: 'slide',
       title: 'First in document order',
+      hidden: true,
       loc: { slide: 1 },
       blocks: [
         { kind: 'paragraph', text: 'Earlier position, later reading item' },
@@ -85,6 +86,7 @@ describe('ODP reader', () => {
       kind: 'section',
       role: 'slide',
       title: 'Second slide',
+      hidden: false,
       loc: { slide: 2 },
     });
     expect(document.warnings.map(({ code }) => code)).toContain('HIDDEN_CONTENT');

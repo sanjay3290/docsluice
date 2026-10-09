@@ -17,12 +17,10 @@ height are converted to CSS pixels when the unit is known. With `childBytes: tru
 readable image parts carry their raw bytes on the listed child; otherwise the
 reader only lists them and does not read their payloads.
 
-Hidden slides are included in their original position. The reader emits a
-`HIDDEN_CONTENT` warning when it sees one. The current `DocBuilder` reader API
-has no way to set `SectionBlock.hidden`, so that section flag remains an
-integration gap for this reader implementation. `includeHidden` does not omit
-ODP slides; the PRD's option applies to hidden Word text, while PPT-5 says to
-include hidden slides by default and flag them.
+Hidden slides are included in their original position and marked with
+`hidden: true`; they also produce a `HIDDEN_CONTENT` warning. Visible slides
+carry `hidden: false`. The `includeHidden` option does not omit ODP slides;
+PPT-5 requires hidden slides to be included by default and flagged.
 
 ODP package manifest entries marked encrypted are rejected with
 `EncryptedError('password-required')`; the reader does not decrypt content.
