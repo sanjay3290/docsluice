@@ -65,6 +65,7 @@ interface ReadContext {
   path: string;                    // child path prefix for locations ('' at the root)
   extractChild(name: string, bytes: Uint8Array, hint?: { mimeType?: string }): Promise<void>;
   zip?: ZipArchive;                // set when the sniffer already opened the container
+  cfb?: CfbArchive;                // reuse the compound-file index opened by detection
 }
 ```
 
@@ -90,7 +91,7 @@ personal fields from extracted child documents.
 
 ## The budget
 
-One `Budget` object per top-level `extract()` call. Children get the same object, with depth + 1.
+One root `Budget` per top-level `extract()` call. Each child gets a budget view with depth + 1 and the same resource counters, clock and cancellation scope.
 
 | Counter | Limit | On limit |
 |---------|-------|----------|
@@ -149,6 +150,38 @@ as `BudgetOptions.warnings` to apply the caller's strict policy to all parent an
 child warnings. Selected warnings throw `StrictModeError` before being stored.
 This error has public code `STRICT_WARNING` and a `warningCode` field; its message
 does not include the warning's message or document content.
+
+## Extraction lifecycle
+
+`extract(input, options)` snapshots options and limits, reads the input under the
+input-byte allowance, resolves its format, loads that format's reader, finishes
+the builder and assigns text offsets. Built-in readers use lazy imports. Missing
+readers produce `UnsupportedFormatError`; recognized image and media formats
+return empty documents. Detection passes an existing ZIP or CFB index to the
+reader, so the container entries are counted once.
+
+Child work runs through a microtask queue rather than recursive file traversal.
+`children: 'skip'` omits children, while `'list'` records their names and sizes
+without loading readers. Extraction records children in request order, even when
+readers run concurrently. Child locations and warnings carry the complete path.
+Warnings propagate to ancestors while staying isolated from siblings. A child
+failure records a structural error code and generic message; cancellation and
+timeouts stop the whole extraction. Ancestor-identical bytes are listed with
+`DEPTH_LIMIT`, using a hash and length followed by byte equality to avoid hash
+collision false positives.
+
+The container reader charges produced child bytes to the shared uncompressed
+allowance. The pipeline does not charge those bytes again as top-level input.
+`stats.bytesRead` reports each document's own input size; truncation reflects the
+shared resource scope. `stats.durationMs` is the sole time-dependent output field.
+Offset assignment checks the existing budget without charging output or cells
+again.
+
+A private watchdog handles readers, lazy imports and streams that are awaiting
+work when the caller aborts or time expires. Closing extraction also aborts its
+private scope, so pending descendants cannot continue after a parent failure.
+Readers must still check their budget during synchronous loops: JavaScript timers
+cannot interrupt a loop that never yields or checks its budget.
 
 ## Determinism
 
