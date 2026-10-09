@@ -1,0 +1,60 @@
+{
+  "provenance": "Self-authored expected ranges and addresses; not an Excel or LibreOffice golden.",
+  "sheets": [
+    {
+      "name": "Main",
+      "state": "visible",
+      "ranges": [
+        "A1:C1",
+        "B2",
+        "A3:C3",
+        "D4",
+        "E5",
+        "A6:B7",
+        "Z90000"
+      ],
+      "addresses": [
+        [
+          "A1",
+          "B1",
+          "C1"
+        ],
+        [
+          "B2"
+        ],
+        [
+          "A3",
+          "B3",
+          "C3"
+        ],
+        [
+          "D4"
+        ],
+        [
+          "E5"
+        ],
+        [
+          "A6",
+          "B6",
+          "A7",
+          "B7"
+        ],
+        [
+          "Z90000"
+        ]
+      ]
+    },
+    {
+      "name": "Hidden",
+      "state": "hidden",
+      "ranges": [],
+      "addresses": []
+    },
+    {
+      "name": "Very",
+      "state": "very",
+      "ranges": [],
+      "addresses": []
+    }
+  ]
+}
