@@ -75,4 +75,6 @@ Hostile files are made by scripts in `scripts/hostile/` where possible, so the r
 
 ## Cross-runtime (QA-4)
 
-CI runs the tests on Node 24 (Vitest), and runs the built package on Node 20, 22 and 24, Bun, Deno, a headless browser and a Workers simulator. A feature that cannot work in one runtime must say so in its docs page and skip that runtime's test with a reason.
+CI runs unit tests on Node 24 and reuses that build artifact in Node 20/22/24, Bun and Deno jobs. The portable contract exercises a real ZIP and hostile XML. Artifact consumers install production dependencies before running the built package. See [testing-runtime.md](testing-runtime.md) for local commands.
+
+CSV/HTML extraction cases require the extraction pipeline and readers. Browser, Workers and the deliberate `Buffer` acceptance probe remain pending; this contract is partial QA-4 coverage. A feature that cannot work in one runtime must document the reason before skipping that runtime's test.

@@ -51,4 +51,53 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
+      - run: npm ci --ignore-scripts --omit=dev
+      - name: Verify production inflate dependency
+        working-directory: packages/docsluice
+        run: node --input-type=module -e "await import('fflate')"
       - run: node --test packages/docsluice/test-dist/smoke.test.mjs
+      - run: node packages/docsluice/test-runtime/run.mjs
+
+  dist-bun:
+    name: Built package on Bun
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: packages/docsluice/dist
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm ci --ignore-scripts --omit=dev
+      - name: Verify production inflate dependency
+        working-directory: packages/docsluice
+        run: node --input-type=module -e "await import('fflate')"
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun run packages/docsluice/test-runtime/run.mjs
+
+  dist-deno:
+    name: Built package on Deno
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: packages/docsluice/dist
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm ci --ignore-scripts --omit=dev
+      - name: Verify production inflate dependency
+        working-directory: packages/docsluice
+        run: node --input-type=module -e "await import('fflate')"
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno run --allow-read=. packages/docsluice/test-runtime/run.mjs
