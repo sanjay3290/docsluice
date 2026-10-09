@@ -1,6 +1,7 @@
 import { Budget } from '../src/core/budget.js';
 import { DocBuilder } from '../src/core/builder.js';
 import { DEFAULT_LIMITS } from '../src/core/limits.js';
+import { resolveOptions } from '../src/core/extract.js';
 import type { ResolvedOptions } from '../src/core/options.js';
 import type { ReadContext } from '../src/core/reader.js';
 import { WarningSink } from '../src/core/warnings.js';
@@ -22,6 +23,7 @@ export async function fuzzVsdx(input: Uint8Array): Promise<void> {
     { onLimit: 'truncate', warnings },
   );
   const options: ResolvedOptions = {
+    ...resolveOptions(),
     limits: budget.limits,
     onLimit: 'truncate',
     strict: false,
