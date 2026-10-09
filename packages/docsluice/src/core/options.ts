@@ -1,11 +1,15 @@
 import type { Block, FormatId, WarningCode } from './model.js';
 import type { Limits } from './limits.js';
+import type { ReaderRegistry } from './registry.js';
 
 /**
  * Options for `extract()` (PRD sections 7-17). Every option has a safe default; none is required.
  * Option names are the same across formats. A reader ignores options it does not use, with no warning.
  */
 export interface ExtractOptions {
+  /** Isolated per-call reader registry. Defaults to the shared built-in registry. */
+  registry?: ReaderRegistry;
+
   /** File name hint (IN-3). Never trusted over content (IN-8). */
   filename?: string;
   /** MIME type hint (IN-3). Never trusted over content (IN-8). */

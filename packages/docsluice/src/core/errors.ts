@@ -12,7 +12,8 @@ export type ErrorCode =
   | 'LIMIT_EXCEEDED'
   | 'TIMEOUT'
   | 'ABORTED'
-  | 'STRICT_WARNING';
+  | 'STRICT_WARNING'
+  | 'PLUGIN_INCOMPATIBLE';
 
 export class DocsluiceError extends Error {
   readonly code: ErrorCode;
@@ -71,6 +72,13 @@ export class TimeoutError extends DocsluiceError {
 export class AbortError extends DocsluiceError {
   constructor(options?: { cause?: unknown }) {
     super('ABORTED', 'Extraction was aborted by the caller.', options);
+  }
+}
+
+/** A registered format plugin was built for an incompatible reader contract. */
+export class PluginContractError extends DocsluiceError {
+  constructor() {
+    super('PLUGIN_INCOMPATIBLE', 'The format plugin uses an incompatible reader contract version.');
   }
 }
 

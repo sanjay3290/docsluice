@@ -15,8 +15,8 @@ import type { ReadContext } from './reader.js';
 import { defaultRegistry } from './registry.js';
 import type { ReaderRegistry } from './registry.js';
 import { WarningSink } from './warnings.js';
-import { resolveFormat } from '../detect/detect.js';
 import { assignOffsets } from '../render/text.js';
+import { resolveFormatWithRegistry } from './resolve-reader.js';
 
 const EMPTY_FORMATS = new Set(['png', 'jpeg', 'gif', 'tiff', 'webp', 'bmp', 'ico', 'audio', 'video']);
 const MAX_TIMER_DELAY = 2_147_483_647;
@@ -214,7 +214,8 @@ export function createExtractor(
       activeBudget.tick();
       const readerWarnings = job.warnings;
       setBudgetWarnings(activeBudget, readerWarnings);
-      const resolution = await resolveFormat(bytes, activeOptions, activeBudget);
+      const activeRegistry = activeOptions.registry ?? registry;
+      const resolution = await resolveFormatWithRegistry(bytes, activeOptions, activeBudget, activeRegistry);
       const out = new DocBuilder(
         resolution.result.format,
         resolution.result.mimeType,
@@ -297,13 +298,16 @@ export function createExtractor(
       };
 
       if (!EMPTY_FORMATS.has(resolution.result.format)) {
-        const loading = registry.load(resolution.result.format);
+        const loading = activeRegistry.load(resolution.result.format);
         if (!loading) throw new UnsupportedFormatError(resolution.result.format);
         const reader = await loading;
         activeBudget.tick();
         try {
           await reader.read(ctx);
         } catch (error) {
+          if (activeRegistry.isPlugin(resolution.result.format)) {
+            throw new CorruptFileError(undefined, { cause: error });
+          }
           if (error instanceof DocsluiceError) throw error;
           throw new CorruptFileError(undefined, { cause: error });
         }
