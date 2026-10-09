@@ -17,16 +17,21 @@
     "format": "prettier --write . && eslint . --fix",
     "test": "npm run test --workspaces --if-present",
     "test:dist": "npm run build && node --test packages/*/test-dist/*.test.mjs",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run test:dist"
+    "check:package": "npm run check:package --workspace packages/docsluice",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run check:package && npm run test:dist"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@eslint/js": "^10.0.1",
+    "@size-limit/preset-small-lib": "14.2.0",
     "@types/node": "^24.0.0",
     "@typescript-eslint/rule-tester": "^8.71.1",
     "@vitest/coverage-v8": "^5.0.3",
     "eslint": "^10.12.0",
     "eslint-plugin-regexp": "^3.3.1",
     "prettier": "^3.9.9",
+    "publint": "0.3.25",
+    "size-limit": "14.2.0",
     "tsdown": "^0.23.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.1",
