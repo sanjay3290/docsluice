@@ -188,5 +188,48 @@
     "maxMs": 2000,
     "maxHeapMB": 64,
     "requirement": "SEC-9"
+  },
+  {
+    "file": "csv/wide-20000-columns.csv",
+    "format": "csv",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "csv/quote-flood-100k.csv",
+    "format": "csv",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "csv/proto-headers.csv",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-6"
+  },
+  {
+    "file": "tsv/ragged-10000-rows.tsv",
+    "format": "tsv",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
   }
 ]
