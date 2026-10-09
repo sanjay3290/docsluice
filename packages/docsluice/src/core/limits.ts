@@ -12,7 +12,7 @@ export interface Limits {
   compressionRatio: number;
   /** The ratio limit applies only when an entry is larger than this many uncompressed bytes. */
   compressionRatioMinBytes: number;
-  /** Maximum zip entries per archive (SEC-2). */
+  /** Maximum archive entries / physical CFB directory slots per extraction (SEC-2, SEC-8). */
   zipEntries: number;
   /** Maximum nesting depth of child documents (NST-2). */
   childDepth: number;
