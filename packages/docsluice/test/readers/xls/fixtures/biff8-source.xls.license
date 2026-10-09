@@ -1,0 +1,3 @@
+SPDX-License-Identifier: CC0-1.0
+Source: Self-authored synthetic workbook in /workspace/package-d-preparation/xls/build_source.py, exported to BIFF8 by LibreOffice.
+Notes: Tests bounded BIFF8 record parsing and a 20,017-character SST entry split across CONTINUE records.
