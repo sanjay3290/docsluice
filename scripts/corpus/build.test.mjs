@@ -60,6 +60,48 @@ test('plan rejects traversal, format mismatch, duplicate outputs and empty plans
   assert.equal(validatePlan([fixture]).length, 3);
 });
 
+test('PDF fixture password is encoded as export filter options and limited to PDF outputs', () => {
+  const plan = [{
+    source: 'src/sample.fodt',
+    formats: ['pdf'],
+    requirements: ['PDF-5'],
+    pdfPassword: 'docsluice-fixture-only',
+  }];
+  const job = validatePlan(plan)[0];
+  const options = JSON.stringify({
+    EncryptFile: { type: 'boolean', value: 'true' },
+    DocumentOpenPassword: { type: 'string', value: 'docsluice-fixture-only' },
+  });
+  assert.equal(job.conversion, `pdf:writer_pdf_Export:${options}`);
+  assert.throws(
+    () => validatePlan([{ ...fixture, formats: ['docx'], pdfPassword: 'docsluice-fixture-only' }]),
+    /only be used with PDF/i,
+  );
+});
+
+test('PDF test password is recorded in the fixture license sidecar', async (t) => {
+  const opts = await setup(t);
+  const password = 'docsluice-fixture-only';
+  const plan = [{
+    source: 'src/sample.fodt',
+    formats: ['pdf'],
+    requirements: ['PDF-5'],
+    pdfPassword: password,
+  }];
+  await buildFixtures({ ...opts, plan });
+  const license = await readFile(path.join(opts.root, 'corpus/pdf/sample.pdf.license'), 'utf8');
+  assert.match(license, new RegExp(`fixed public password for opening this test PDF: ${password}`));
+});
+
+test('PDF fixture password rejects empty, oversized, control and non-ASCII values', () => {
+  const plan = { source: 'src/sample.fodt', formats: ['pdf'], requirements: ['PDF-5'] };
+  for (const pdfPassword of ['', 'x'.repeat(65), 'with space', 'line\nbreak', '\u007f', 'café', null, 42]) {
+    assert.throws(() => validatePlan([{ ...plan, pdfPassword }]), /printable ASCII/);
+  }
+  assert.equal(validatePlan([{ ...plan, pdfPassword: 'x'.repeat(64) }]).length, 1);
+  assert.equal(validatePlan([{ ...plan, pdfPassword: '!~"\\' }]).length, 1);
+});
+
 test('conversion installs all formats and records license/version/source/hash', async (t) => {
   const opts = await setup(t);
   const result = await buildFixtures(opts);

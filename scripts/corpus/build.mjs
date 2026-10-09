@@ -53,6 +53,20 @@ export function validatePlan(plan) {
     const allowed = conversions.get(extension);
     if (!allowed) throw new Error('Unsupported source extension');
     if (!Array.isArray(entry.formats) || entry.formats.length === 0) throw new Error('Formats are required');
+    if (entry.pdfPassword !== undefined) {
+      if (!entry.formats.includes('pdf')) throw new Error('PDF password can only be used with PDF outputs');
+      if (
+        typeof entry.pdfPassword !== 'string' ||
+        entry.pdfPassword.length < 1 ||
+        entry.pdfPassword.length > 64 ||
+        Array.from(entry.pdfPassword).some((character) => {
+          const code = character.charCodeAt(0);
+          return code < 0x21 || code > 0x7e;
+        })
+      ) {
+        throw new Error('PDF fixture password must be 1 to 64 printable ASCII characters');
+      }
+    }
     if (
       !Array.isArray(entry.requirements) ||
       entry.requirements.length === 0 ||
@@ -66,7 +80,16 @@ export function validatePlan(plan) {
       const file = format + '/' + basename + '.' + format;
       if (seen.has(file)) throw new Error('Duplicate fixture output');
       seen.add(file);
-      jobs.push({ ...entry, format, conversion: allowed.get(format), file });
+      let conversion = allowed.get(format);
+      if (format === 'pdf' && entry.pdfPassword !== undefined) {
+        conversion +=
+          ':' +
+          JSON.stringify({
+            EncryptFile: { type: 'boolean', value: 'true' },
+            DocumentOpenPassword: { type: 'string', value: entry.pdfPassword },
+          });
+      }
+      jobs.push({ ...entry, format, conversion, file });
     }
   }
   return jobs;
@@ -171,11 +194,14 @@ export async function buildFixtures({
       if (size < 8 || size > maxOutputBytes) throw new Error('Invalid output size for ' + job.file);
       const bytes = await readFile(output);
       assertSignature(bytes, job.format);
+      const notes = job.pdfPassword
+        ? 'Notes: Synthetic fixture; fixed public password for opening this test PDF: ' + job.pdfPassword + '.'
+        : 'Notes: Synthetic fixture; requirement association needs reader-owner golden review.';
       const license = [
         'SPDX-License-Identifier: CC0-1.0',
         'Source: made for docsluice with ' + version + ' from scripts/corpus/' + job.source,
         'Requirements: ' + job.requirements.join(', '),
-        'Notes: Synthetic fixture; requirement association needs reader-owner golden review.',
+        notes,
         '',
       ].join('\n');
       await writeFile(output + '.license', license);

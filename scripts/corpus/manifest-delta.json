@@ -207,8 +207,8 @@
       "requirements": [
         "XLS-3"
       ],
-      "sizeBytes": 5650,
-      "sha256": "41c151233953b5cf58e85406dd3e9c3501b25d6406baad9bad06649751e2b419",
+      "sizeBytes": 5646,
+      "sha256": "391e45e22dd191ad37458be569b9a83096aad563de1084db8f21f1e22dbbbaf6",
       "goldenStatus": "unreviewed"
     },
     {
@@ -217,8 +217,8 @@
       "requirements": [
         "XLS-3"
       ],
-      "sizeBytes": 9023,
-      "sha256": "1c2e90e6a58ab570ba1f0961ee3084fe34f495027c466519c7b95f4e3bfdc762",
+      "sizeBytes": 9054,
+      "sha256": "6c0f471a340bc0ddc15f803f2ab695451c04fb56fccf1f3a73c04f3519ee9755",
       "goldenStatus": "unreviewed"
     },
     {
@@ -348,6 +348,26 @@
       ],
       "sizeBytes": 39855,
       "sha256": "be7e5694a0c983985766d26070c8e21f4dffec1702fca9f04b64d51dd56ee860",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "file": "corpus/pdf/scanned-image-only.pdf",
+      "source": "scripts/corpus/src/scanned-image-only.fodt",
+      "requirements": [
+        "PDF-4"
+      ],
+      "sizeBytes": 99345,
+      "sha256": "d75bc4bc4667aa64ee2219f337862bae132c0c6992fb6283a54e61ca5ffb3d81",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "file": "corpus/pdf/encrypted-document.pdf",
+      "source": "scripts/corpus/src/encrypted-document.fodt",
+      "requirements": [
+        "PDF-5"
+      ],
+      "sizeBytes": 20623,
+      "sha256": "c10ea38c7533141e49114bdd9e40df60efccca4b49e8dbb46585746e4b6fef8a",
       "goldenStatus": "unreviewed"
     }
   ]
