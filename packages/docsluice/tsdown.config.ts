@@ -9,6 +9,8 @@ export default defineConfig({
     markdown: 'src/readers/markdown/index.ts',
     csv: 'src/readers/csv/index.ts',
     tsv: 'src/readers/tsv/index.ts',
+    json: 'src/readers/json/index.ts',
+    xml: 'src/readers/xml/index.ts',
   },
   format: ['esm', 'cjs'],
   platform: 'neutral',

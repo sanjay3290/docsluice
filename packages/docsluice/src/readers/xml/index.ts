@@ -38,7 +38,7 @@ function childCounts(
 }
 
 /** Generic XML reader over the shared safe XML parser; attributes and DTD content are ignored. */
-export const reader: Reader = {
+export const xmlReader: Reader = {
   id: 'xml',
   mimeTypes: ['application/xml', 'text/xml'],
   async read(ctx: ReadContext): Promise<void> {
@@ -68,5 +68,3 @@ export const reader: Reader = {
     }
   },
 };
-
-export default reader;

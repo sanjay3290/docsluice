@@ -77,3 +77,10 @@ test('CSV and TSV reader subpaths load lazily', async () => {
   const tsv = await import('docsluice/tsv');
   assert.equal(tsv.tsvReader.id, 'tsv');
 });
+
+test('JSON and XML reader subpaths load lazily', async () => {
+  const json = await import('docsluice/json');
+  assert.equal(json.jsonReader.id, 'json');
+  const xml = await import('docsluice/xml');
+  assert.equal(xml.xmlReader.id, 'xml');
+});

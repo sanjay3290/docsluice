@@ -215,6 +215,19 @@ describe('extraction pipeline', () => {
     expect(toText(markdown)).toContain('Title');
   });
 
+  it('extracts JSON leaves and XML element text through the public pipeline', async () => {
+    const json = await extract(bytes('{"title":"Report","tags":["a","b"]}'));
+    expect(json.format).toBe('json');
+    expect(json.blocks.filter((block) => block.kind === 'paragraph').map((block) => block.loc.path)).toEqual([
+      '$.title',
+      '$.tags[0]',
+      '$.tags[1]',
+    ]);
+    const xml = await extract(bytes('<?xml version="1.0"?><doc><p>one</p><p>two</p></doc>'));
+    expect(xml.format).toBe('xml');
+    expect(xml.blocks.map((block) => block.loc.path)).toEqual(['/doc/p[1]', '/doc/p[2]']);
+  });
+
   it('reports a guessed TXT or Markdown encoding once, with or without a forced format', async () => {
     const latin = new Uint8Array([0x63, 0x61, 0x66, 0xe9]);
     for (const options of [{}, { format: 'txt' as const }, { format: 'markdown' as const }]) {

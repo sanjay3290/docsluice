@@ -1,5 +1,5 @@
 import type { ReadContext, Reader } from '../../core/reader.js';
-import { decodeText, detectEncoding } from '../../detect/encoding.js';
+import { decodeTextInput } from '../text-input.js';
 
 const PRETTY_JSON_MAX_BYTES = 64 * 1024;
 const PRETTY_JSON_MAX_STAGED_CHARS = 1_000_000;
@@ -199,22 +199,14 @@ function prettyJson(root: unknown, ctx: ReadContext): string | undefined {
 }
 
 /** JSON reader: emits scalar leaves with stable JSON-style paths and a small pretty code view. */
-export const reader: Reader = {
+export const jsonReader: Reader = {
   id: 'json',
   mimeTypes: ['application/json', 'text/json'],
   async read(ctx: ReadContext): Promise<void> {
     ctx.budget.tick();
     await Promise.resolve();
-    const detected = detectEncoding(ctx.bytes);
-    if (!detected.isText || detected.encoding === 'unsupported') return;
-    const text = decodeText(ctx.bytes, detected.encoding);
-    ctx.out.setEncoding(detected.encoding);
-    if (detected.warning) {
-      ctx.warnings.add({
-        code: detected.warning,
-        message: 'Text encoding was inferred from the byte sample.',
-      });
-    }
+    const text = decodeTextInput(ctx);
+    if (text === undefined) return;
     if (!withinBlockDepth(text, ctx)) return;
 
     let root: unknown;
@@ -277,5 +269,3 @@ export const reader: Reader = {
     }
   },
 };
-
-export default reader;

@@ -66,3 +66,13 @@ defaultRegistry.add({
   mimeTypes: ['text/tab-separated-values'],
   load: () => import('../readers/tsv/index.js').then((module) => module.tsvReader),
 });
+defaultRegistry.add({
+  id: 'json',
+  mimeTypes: ['application/json', 'text/json'],
+  load: () => import('../readers/json/index.js').then((module) => module.jsonReader),
+});
+defaultRegistry.add({
+  id: 'xml',
+  mimeTypes: ['application/xml', 'text/xml'],
+  load: () => import('../readers/xml/index.js').then((module) => module.xmlReader),
+});

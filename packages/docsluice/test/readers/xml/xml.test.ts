@@ -5,7 +5,7 @@ import { resolveLimits } from '../../../src/core/limits.js';
 import { WarningSink } from '../../../src/core/warnings.js';
 import type { ReadContext } from '../../../src/core/reader.js';
 import type { ResolvedOptions } from '../../../src/core/options.js';
-import reader from '../../../src/readers/xml/index.js';
+import { xmlReader as reader } from '../../../src/readers/xml/index.js';
 
 async function parse(source: string, limits: Record<string, number> = {}) {
   const bytes = new TextEncoder().encode(source);

@@ -5,7 +5,9 @@ import { resolveLimits } from '../../../src/core/limits.js';
 import { WarningSink } from '../../../src/core/warnings.js';
 import type { ReadContext } from '../../../src/core/reader.js';
 import type { ResolvedOptions } from '../../../src/core/options.js';
-import reader from '../../../src/readers/json/index.js';
+import { jsonReader as reader } from '../../../src/readers/json/index.js';
+import { fuzzJson } from '../../../fuzz/json.fuzz.js';
+import { fuzzXmlReader } from '../../../fuzz/xml-reader.fuzz.js';
 
 async function parse(
   source: string,
@@ -137,5 +139,43 @@ describe('JSON reader', () => {
       { loc: { path: 'archive/data.json/$.a' } },
       { kind: 'code', loc: { path: 'archive/data.json' } },
     ]);
+  });
+});
+
+describe('JSON and XML fuzz entry points', () => {
+  const tokens = [
+    '{',
+    '}',
+    '[',
+    ']',
+    '"',
+    '\\',
+    ':',
+    ',',
+    '1',
+    'e',
+    'true',
+    'null',
+    '<',
+    '>',
+    '/',
+    'a',
+    '=',
+    '<!DOCTYPE',
+    '&x;',
+    ' ',
+  ];
+  it('survive seeded mixes of JSON and XML syntax', async () => {
+    for (let seed = 1; seed <= 300; seed++) {
+      let state = seed;
+      let source = '';
+      for (let step = 0; step < 120; step++) {
+        state = (state * 1_103_515_245 + 12_345) % 2_147_483_648;
+        source += tokens[state % tokens.length];
+      }
+      const bytes = new TextEncoder().encode(source);
+      await expect(fuzzJson(bytes)).resolves.toBeUndefined();
+      await expect(fuzzXmlReader(bytes)).resolves.toBeUndefined();
+    }
   });
 });
