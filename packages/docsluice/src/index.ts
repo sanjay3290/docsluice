@@ -1,5 +1,9 @@
 export type * from './core/model.js';
+export { toJSON } from './render/json.js';
+export type { ToJSONOptions } from './render/json.js';
 export type { ExtractOptions } from './core/options.js';
+export { extract } from './core/extract.js';
+export { detect } from './detect/detect.js';
 export type { Limits } from './core/limits.js';
 export { DEFAULT_LIMITS, resolveLimits } from './core/limits.js';
 export { Budget } from './core/budget.js';
@@ -21,3 +25,7 @@ export {
 export type { ErrorCode } from './core/errors.js';
 export { parseXml, scanXml } from './xml/index.js';
 export type { XmlContext, XmlElement, XmlElementInfo, XmlHandler } from './xml/index.js';
+export { toText } from './render/text.js';
+export type { TextOptions } from './render/layout.js';
+export { toMarkdown } from './render/markdown.js';
+export type { MarkdownOptions } from './render/markdown.js';
