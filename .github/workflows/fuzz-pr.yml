@@ -30,6 +30,7 @@ jobs:
             html,
             doc,
             listed-archives,
+            ppt,
             ooxml,
             docx,
             xlsx,

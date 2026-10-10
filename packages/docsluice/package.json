@@ -32,6 +32,9 @@
       "rar": [
         "dist/rar.d.ts"
       ],
+      "ppt": [
+        "dist/ppt.d.ts"
+      ],
       "txt": [
         "dist/txt.d.ts"
       ],
@@ -148,6 +151,10 @@
     "./rar": {
       "import": "./dist/rar.js",
       "require": "./dist/rar.cjs"
+    },
+    "./ppt": {
+      "import": "./dist/ppt.js",
+      "require": "./dist/ppt.cjs"
     },
     "./txt": {
       "import": "./dist/txt.js",

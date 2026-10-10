@@ -11,6 +11,7 @@ export default defineConfig({
     // Opt-in format plugins (ADR 0014): not registered by default.
     '7z': 'src/readers/7z/index.ts',
     rar: 'src/readers/rar/index.ts',
+    ppt: 'src/readers/ppt/index.ts',
     txt: 'src/readers/txt/index.ts',
     markdown: 'src/readers/markdown/index.ts',
     csv: 'src/readers/csv/index.ts',

@@ -62,6 +62,7 @@ export const TARGETS = {
     seeds: ['corpus/7z', 'corpus/rar', 'hostile/7z', 'hostile/rar'],
   },
   doc: { module: 'fuzz/doc.fuzz.js', export: 'fuzzDoc', seeds: ['corpus/doc', 'corpus/ole', 'hostile/doc'] },
+  ppt: { module: 'fuzz/ppt.fuzz.js', export: 'fuzzPpt', seeds: ['corpus/ppt', 'corpus/ole', 'hostile/ppt'] },
   docx: { module: 'fuzz/docx.fuzz.js', export: 'fuzzDocx', seeds: ['corpus/docx', 'hostile/docx'] },
   xlsx: { module: 'fuzz/xlsx.fuzz.js', export: 'fuzzXlsx', seeds: ['corpus/xlsx', 'hostile/xlsx'] },
   'zip-container': {
