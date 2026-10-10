@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { createNodeExtract } from '../../src/node/file.js';
+import { extract, extractFile } from '../../src/node/index.js';
 import { createExtractor } from '../../src/core/extract.js';
 import { ReaderRegistry } from '../../src/core/registry.js';
 import type { Reader, ReadContext } from '../../src/core/reader.js';
@@ -70,6 +71,26 @@ describe('Node input adapter', () => {
     expect(observed?.filename).toBe('report.fake');
     expect(observed?.bytes.constructor).toBe(Uint8Array);
     expect(Buffer.isBuffer(observed?.bytes)).toBe(false);
+  });
+
+  it('extracts a real CSV file and a Node Readable through the public docsluice/node entry', async () => {
+    const path = await tempFile('x.csv', bytes('name,count\npaper,3\n'));
+    const fromFile = await extractFile(path);
+    expect(fromFile.format).toBe('csv');
+    expect(fromFile.blocks[0]).toMatchObject({
+      kind: 'table',
+      rows: [
+        [{ text: 'name' }, { text: 'count' }],
+        [{ text: 'paper' }, { text: '3' }],
+      ],
+    });
+    const fromStream = await extract(Readable.from([Buffer.from('# Title\n\nBody')]), {
+      filename: 'notes.md',
+    });
+    expect(fromStream.format).toBe('markdown');
+    await expect(extractFile(path, { limits: { inputBytes: 4 } })).rejects.toMatchObject({
+      code: 'LIMIT_EXCEEDED',
+    });
   });
 
   it('converts Node Readable chunks to plain Uint8Array before calling core', async () => {

@@ -90,7 +90,7 @@
   },
   "scripts": {
     "build": "tsdown",
-    "typecheck": "tsc -p tsconfig.json && tsc -p src/node/tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json && tsc -p src/node/tsconfig.json && tsc -p test/node/tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",

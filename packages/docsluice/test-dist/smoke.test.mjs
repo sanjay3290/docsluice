@@ -58,6 +58,27 @@ test('node entry loads', async () => {
   assert.equal(typeof mod.DocsluiceError, 'function');
 });
 
+test('node entry extracts files and Readable streams', async () => {
+  const { mkdtemp, rm, writeFile } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const { Readable } = await import('node:stream');
+  const mod = await import('docsluice/node');
+  const directory = await mkdtemp(join(tmpdir(), 'docsluice-smoke-'));
+  try {
+    const path = join(directory, 'x.csv');
+    await writeFile(path, 'a,b\n1,2\n');
+    const fromFile = await mod.extractFile(path);
+    assert.equal(fromFile.format, 'csv');
+    const fromStream = await mod.extract(Readable.from([Uint8Array.of(0x70, 0x6c, 0x61, 0x69, 0x6e)]));
+    assert.equal(fromStream.format, 'txt');
+    const cjs = require('../dist/node/index.cjs');
+    assert.equal(typeof cjs.extractFile, 'function');
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test('DOC reader subpath loads lazily', async () => {
   const mod = await import('docsluice/doc');
   assert.equal(mod.docReader.id, 'doc');
