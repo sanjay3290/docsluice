@@ -146,3 +146,38 @@ await writeFile(
     `<numFmts>${numFmts}</numFmts><cellXfs>${cellXfs}</cellXfs>`,
   ),
 );
+
+// Spreadsheet P1 (issue #71): 8,000 defined names (prototype-named, all on one range or on the whole
+// grid), 16,500 hidden column entries, 4,000 notes with prototype authors, threaded comments whose
+// persons are prototype ids, and an Excel table named __proto__ over the whole grid.
+{
+  const TC = 'http://schemas.microsoft.com/office/spreadsheetml/2018/threadedcomments';
+  const MS = 'http://schemas.microsoft.com/office/2017/10/relationships';
+  const names = Array.from({ length: 8_000 }, (_, index) =>
+    index % 2 === 0
+      ? `<definedName name="${index % 4 === 0 ? '__proto__' : `n${index}`}">Flood!$A$1:$B$2</definedName>`
+      : `<definedName name="g${index}">Flood!$A$1:$XFD$1048576</definedName>`,
+  ).join('');
+  const cols = '<col min="1" max="16384" hidden="1"/>'.repeat(16_500);
+  const notes = Array.from(
+    { length: 4_000 },
+    (_, index) => `<comment ref="A${(index % 2) + 1}" authorId="${index % 3}"><text><t>note ${index}</t></text></comment>`,
+  ).join('');
+  const files = {
+    '[Content_Types].xml': `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/></Types>`,
+    '_rels/.rels': `<Relationships xmlns="${PKG}"><Relationship Id="rId1" Type="${R}/officeDocument" Target="xl/workbook.xml"/></Relationships>`,
+    'xl/workbook.xml': `<workbook xmlns="${S}" xmlns:r="${R}"><sheets><sheet name="Flood" sheetId="1" r:id="s"/></sheets><definedNames>${names}</definedNames></workbook>`,
+    'xl/_rels/workbook.xml.rels': `<Relationships xmlns="${PKG}"><Relationship Id="s" Type="${R}/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="p" Type="${MS}/person" Target="persons/person.xml"/></Relationships>`,
+    'xl/persons/person.xml': `<personList xmlns="${TC}"><person displayName="constructor" id="__proto__"/><person displayName="x" id="__proto__"/></personList>`,
+    'xl/worksheets/sheet1.xml': `<worksheet xmlns="${S}"><cols>${cols}</cols><sheetData><row r="1" hidden="1"><c r="A1"><v>1</v></c><c r="B1"><v>2</v></c></row><row r="2"><c r="A2"><v>3</v></c><c r="B2"><v>4</v></c></row></sheetData></worksheet>`,
+    'xl/worksheets/_rels/sheet1.xml.rels': `<Relationships xmlns="${PKG}"><Relationship Id="c" Type="${R}/comments" Target="../comments1.xml"/><Relationship Id="t" Type="${MS}/threadedComment" Target="../threaded.xml"/><Relationship Id="__proto__" Type="${R}/table" Target="../tables/table1.xml"/></Relationships>`,
+    'xl/comments1.xml': `<comments xmlns="${S}"><authors><author>__proto__</author><author>constructor</author></authors><commentList>${notes}</commentList></comments>`,
+    'xl/threaded.xml': `<ThreadedComments xmlns="${TC}"><threadedComment ref="A1" personId="__proto__"><text>threaded</text></threadedComment><threadedComment ref="B1" personId="toString"><text>no person</text></threadedComment></ThreadedComments>`,
+    'xl/tables/table1.xml': `<table xmlns="${S}" name="__proto__" ref="A1:XFD1048576"/>`,
+  };
+  const zipEntries = Object.create(null);
+  for (const [name, content] of Object.entries(files)) {
+    zipEntries[name] = [strToU8(content), { mtime: new Date('1980-01-01T00:00:00Z') }];
+  }
+  await writeFile(new URL('names-comments-floods.xlsx', directory), zipSync(zipEntries, { level: 9 }));
+}

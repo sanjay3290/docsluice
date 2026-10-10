@@ -1490,5 +1490,14 @@
     "maxMs": 2000,
     "maxHeapMB": 128,
     "requirement": "NST-1"
+  },
+  {
+    "file": "xlsx/names-comments-floods.xlsx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-6"
   }
 ]

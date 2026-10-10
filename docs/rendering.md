@@ -6,6 +6,24 @@ Extracted child documents are omitted by default. Pass `{ children: true }` to a
 
 `toText` processes block data under the default renderer limits for output characters (20 million), table cells (2 million), block nesting (64), child-document depth (3), and elapsed time (60 seconds). It throws the corresponding limit error instead of returning partial text. It also rejects active child-document cycles.
 
+## Table records (REN-5)
+
+`toRecords(table)` turns a `table` block into one record per row after its `headerRows` header rows:
+
+```ts
+import { extract, toRecords } from 'docsluice';
+
+const doc = await extract(bytes);
+const sheet = doc.blocks.find((block) => block.kind === 'section');
+const table = sheet?.kind === 'section' ? sheet.blocks.find((block) => block.kind === 'table') : undefined;
+if (table?.kind === 'table') console.log(toRecords(table)); // [{ Item: 'Pump', Cost: '120' }, …]
+```
+
+- Keys come from the last header row. An empty header cell takes the name of a merged header cell that spans it; any other empty one is named by its position (`column4`). A table with `headerRows: 0` has positional keys only.
+- Repeated names get a suffix: `name`, `name_2`, `name_3`.
+- Every record has every column as a key; values are the cells' `text`, and missing cells are `''`.
+- Records have a `null` prototype (SEC-6), so a header named `__proto__` or `constructor` is an ordinary key and cannot reach `Object.prototype`. Spread a record (`{ ...record }`) when you need a plain object.
+
 ## Chunks (CHK-1, CHK-2, CHK-3)
 
 `chunk(doc, options)` splits a document into pieces for search indexes and language models. It returns a lazy generator: chunks are built as you iterate, so a large document never holds all of them at once. The same document and options always give the same chunks.

@@ -22,3 +22,7 @@ Formulas are never evaluated or decoded: the `formulas` option has no formula te
 ## Corpus and generators
 
 LibreOffice reads XLSB but cannot write it. `scripts/corpus/make-xlsb.mjs` writes the four `corpus/xlsb` workbooks from the specification, converting the cells, shared strings, formats, merges, sheet states and date system of the matching `corpus/xlsx` files; LibreOffice 24.2 imports them with the same values. Formula cells store their cached value as a constant formula. `scripts/hostile/generate-xlsb.mjs` writes `hostile/xlsb`.
+
+## Header rows (XLS-8)
+
+Tables get `headerRows` from the `headerRow` option, guessed the same way as for XLSX (see [xlsx.md](xlsx.md#header-rows-xls-8)). Hidden rows and columns, comments and named ranges are not read yet (#231).

@@ -39,6 +39,12 @@ export interface ExtractOptions {
   /** Return formula text on spreadsheet cells (XLS-4). Default false. */
   formulas?: boolean;
   /**
+   * Whether the first row of a spreadsheet table is its header (XLS-8). `'auto'` (the default)
+   * guesses from the cell types and uses an Excel table's own header row; `true` always marks the
+   * first row, `false` never does. Sets `headerRows` on the table.
+   */
+  headerRow?: 'auto' | boolean;
+  /**
    * Include GPS position from image EXIF data (latitude, longitude, altitude) in `metadata.custom`.
    * Default false: a photo's location is personal data. `metadata: false` drops all EXIF regardless.
    */

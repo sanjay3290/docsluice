@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-xlsx-p1.mjs
+Requirements: XLS-8
+Notes: a typed table with a text header (header), a text-only table, a numeric first row and a title row over numbers (no header).

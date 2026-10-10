@@ -1,8 +1,7 @@
 ## Sheet: Visible
 
-|  |  |
-| --- | --- |
 | Label | Value |
+| --- | --- |
 | first | 1 |
 
 |  |
