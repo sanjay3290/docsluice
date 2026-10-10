@@ -42,6 +42,11 @@ export const TARGETS = {
   },
   html: { module: 'fuzz/html.fuzz.js', export: 'fuzzHtml', seeds: ['corpus/html', 'hostile/html'] },
   doc: { module: 'fuzz/doc.fuzz.js', export: 'fuzzDoc', seeds: ['corpus/doc', 'corpus/ole', 'hostile/doc'] },
+  ooxml: {
+    module: 'fuzz/ooxml.fuzz.js',
+    export: 'fuzzOoxml',
+    seeds: ['corpus/docx', 'corpus/xlsx', 'corpus/pptx', 'hostile/ooxml'],
+  },
 };
 const targets = new Set(Object.keys(TARGETS));
 

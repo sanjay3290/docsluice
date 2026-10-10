@@ -13,6 +13,7 @@ import { readRelationships, resolveInternalTarget } from '../../src/ooxml/rels.j
 import { readContentTypes } from '../../src/ooxml/content-types.js';
 import { readProperties } from '../../src/ooxml/props.js';
 import { scanFeatures, rejectEncryptedOffice } from '../../src/ooxml/features.js';
+import { fuzzOoxml } from '../../fuzz/ooxml.fuzz.js';
 
 const RELS = 'http://schemas.openxmlformats.org/package/2006/relationships';
 const TYPES = 'http://schemas.openxmlformats.org/package/2006/content-types';
@@ -239,6 +240,26 @@ describe('OOXML shared helpers', () => {
     expect(env.warnings.warnings.map((warning) => warning.code)).toContain('UNREADABLE_PART');
   });
 
+  it('reads LibreOffice-written properties, omitting the empty creator and title', async () => {
+    for (const name of [
+      'docx/headings-outline.docx',
+      'xlsx/workbook-values-formulas.xlsx',
+      'pptx/deck-slide-order.pptx',
+    ]) {
+      const ctx = context();
+      const archive = openZip(
+        new Uint8Array(readFileSync(new URL(`../../../../corpus/${name}`, import.meta.url))),
+        ctx.budget,
+      );
+      const parts = new OoxmlParts(archive, ctx);
+      const properties = await readProperties(parts, ctx);
+      expect(properties.language).toBe('en-US');
+      expect(properties).not.toHaveProperty('title');
+      expect(properties).not.toHaveProperty('authors');
+      expect(ctx.warnings.warnings).toEqual([]);
+    }
+  });
+
   it('maps core, app and custom properties while metadata false omits personal data', async () => {
     const env = createParts([
       {
@@ -374,5 +395,24 @@ describe('OOXML shared helpers', () => {
     );
     controller.abort();
     await expect(readRelationships(aborted.parts, '', aborted.ctx)).rejects.toThrow();
+  });
+});
+
+describe('OOXML fuzz entry point', () => {
+  it('survives seeded corruptions of a real package', async () => {
+    const source = new Uint8Array(
+      readFileSync(new URL('../../../../corpus/docx/lists-tables.docx', import.meta.url)),
+    );
+    for (let seed = 1; seed <= 200; seed++) {
+      const bytes = source.slice();
+      let state = seed;
+      for (let flip = 0; flip < 8; flip++) {
+        state = (state * 1_103_515_245 + 12_345) % 2_147_483_648;
+        const at = state % bytes.length;
+        bytes[at] = bytes[at]! ^ (1 + (state % 255));
+      }
+      await expect(fuzzOoxml(bytes)).resolves.toBeUndefined();
+    }
+    await expect(fuzzOoxml(source)).resolves.toBeUndefined();
   });
 });

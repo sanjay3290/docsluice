@@ -1,3 +1,4 @@
+import { DocsluiceError } from '../src/core/errors.js';
 import { Budget } from '../src/core/budget.js';
 import { DEFAULT_LIMITS } from '../src/core/limits.js';
 import { WarningSink } from '../src/core/warnings.js';
@@ -30,7 +31,9 @@ export async function fuzzOoxml(bytes: Uint8Array): Promise<void> {
     await readContentTypes(parts, ctx);
     await readProperties(parts, ctx, false);
     await scanFeatures(parts, archive, ctx);
-  } catch {
-    // Invalid packages and expected resource-limit errors are ordinary fuzz outcomes.
+  } catch (error) {
+    // Invalid packages and resource limits are ordinary outcomes; anything else is a finding.
+    if (error instanceof DocsluiceError) return;
+    throw error;
   }
 }
