@@ -41,6 +41,7 @@ jobs:
             zip-container,
             mime,
             eml,
+            mbox,
             msg,
             ods,
             odp,

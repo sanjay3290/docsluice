@@ -712,6 +712,24 @@
     "requirement": "SEC-12"
   },
   {
+    "file": "mbox/messages-6000.mbox",
+    "expect": {
+      "warnings": ["TRUNCATED"]
+    },
+    "maxMs": 5000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-2"
+  },
+  {
+    "file": "mbox/quoted-from-flood.mbox",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
     "file": "pptx/deep-groups-1000.pptx",
     "expect": {
       "warnings": ["TRUNCATED", "DEPTH_LIMIT"]

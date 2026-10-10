@@ -22,6 +22,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | image | `docsluice/image` | 8 | 8 | [image.md](image.md) |
 | json | `docsluice/json` | 2 | 2 | [json.md](json.md) |
 | markdown | `docsluice/markdown` | 2 | 2 | [markdown.md](markdown.md) |
+| mbox | `docsluice/mbox` | 1 | 1 | [mbox.md](mbox.md) |
 | msg | `docsluice/msg` | 5 | 5 | [msg.md](msg.md) |
 | ndjson | `docsluice/ndjson` | 1 | 1 | [ndjson.md](ndjson.md) |
 | odp | `docsluice/odp` | 5 | 5 | [odp.md](odp.md) |
@@ -111,9 +112,9 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | SEC-1 | **Zip bomb** — a 40 KB file that expands to many gigabytes. \| Count bytes as they decompress. Stop at the total-uncompressed limit and at a compression-ratio limit. Never trust the sizes written in the zip header. | Not covered | 14 |
 | SEC-10 | **Network calls** — linked images, remote templates, external relationships in Office files, PDF remote actions. \| docsluice never fetches anything. External targets are reported as data only (`hasExternalLinks`). | Not covered | 4 |
 | SEC-11 | **Running content** — macros, PDF JavaScript, HTML scripts, formulas. \| Never run. Report presence only. Formula text is returned as a string. | `docx/headings-outline-macros.docm`<br>`ods/formulas.ods`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/formulas.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 2 |
-| SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 50 |
+| SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 51 |
 | SEC-14 | **Supply-chain attack** through a dependency. \| Few dependencies, pinned with a lockfile, reviewed on update. No install scripts. Publish with npm provenance. | Not covered | — |
-| SEC-2 | **Too many entries** — a zip with a million tiny files. \| Entry-count limit, checked before reading entries. | Not covered | 6 |
+| SEC-2 | **Too many entries** — a zip with a million tiny files. \| Entry-count limit, checked before reading entries. | Not covered | 7 |
 | SEC-3 | **Path tricks** — entry names like `../../etc/passwd`. \| docsluice never writes to disk. Entry names are treated as plain strings and cleaned before they appear in paths. | Not covered | 4 |
 | SEC-4 | **XML external entities (XXE)** — XML that asks the parser to read local files or URLs. \| One shared XML parser with DTD, external entities and processing instructions **off and not switchable**. | `xml/external-entity.xml` | 3 |
 | SEC-5 | **Billion laughs** — XML entities that expand to huge text. \| No entity expansion beyond the five built-in XML entities. Element-depth and text-size limits. | `xml/internal-entity-expansion.xml` | 3 |

@@ -29,6 +29,7 @@ const EXTERNAL_READERS = [
   ...CONTAINERS,
   ...OPT_IN,
   'eml',
+  'mbox',
   'msg',
   'rtf',
   'epub',
