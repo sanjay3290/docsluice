@@ -168,6 +168,11 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     mimeTypes: ['application/zip'],
     load: () => import('../readers/zip/index.js').then((module) => module.zipReader),
   });
+  registry.add({
+    id: 'eml',
+    mimeTypes: ['message/rfc822'],
+    load: () => import('../readers/eml/index.js').then((module) => module.emlReader),
+  });
 }
 
 /** The registry `extract()` and `detect()` use when no `registry` option is given. */

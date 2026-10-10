@@ -33,6 +33,8 @@ jobs:
             xlsx-numfmt,
             pptx,
             zip-container,
+            mime,
+            eml,
           ]
     steps:
       - uses: actions/checkout@v7

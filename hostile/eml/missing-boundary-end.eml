@@ -1,0 +1,13 @@
+From: a@example.test
+Subject: hostile
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="open"
+
+--open
+Content-Type: text/plain
+
+first
+--open
+Content-Type: text/plain
+
+second part with no closing delimiter

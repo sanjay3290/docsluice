@@ -55,6 +55,8 @@ export const TARGETS = {
     export: 'fuzzXlsxNumberFormat',
     seeds: ['packages/docsluice/test/xlsx/fixtures/numfmt'],
   },
+  mime: { module: 'fuzz/mime.fuzz.js', export: 'fuzzMime', seeds: ['corpus/eml', 'hostile/eml'] },
+  eml: { module: 'fuzz/eml.fuzz.js', export: 'fuzzEml', seeds: ['corpus/eml', 'hostile/eml'] },
   ooxml: {
     module: 'fuzz/ooxml.fuzz.js',
     export: 'fuzzOoxml',

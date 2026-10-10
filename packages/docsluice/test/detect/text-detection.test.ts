@@ -247,3 +247,23 @@ describe('text kind detection', () => {
     expect(detectTextKind(text)).toBe(expected);
   });
 });
+
+describe('email header detection', () => {
+  it('detects an RFC 5322 header block as eml, including folded lines and an HTML body', () => {
+    expect(
+      detectTextKind(
+        'Received: from mx.example.test\r\n  by relay.example.test\r\nFrom: A <a@example.test>\r\nTo: b@example.test\r\nSubject: Hi\r\nContent-Type: text/html\r\n\r\n<html><body><p>Hi</p></body></html>\r\n',
+      ),
+    ).toBe('eml');
+    expect(detectTextKind('MIME-Version: 1.0\nMessage-ID: <x@example.test>\n\nbody')).toBe('eml');
+  });
+
+  it('keeps plain text with one header-like line, or header lines without a message header, as text', () => {
+    expect(detectTextKind('Subject: notes\n\nThis is a plain note.')).toBe('txt');
+    expect(detectTextKind('Name: Ada\nRole: Engineer\n\nText')).toBe('txt');
+    expect(
+      detectTextKind('From: a@example.test\nthis line is not a header\nTo: b@example.test\n\nbody'),
+    ).toBe('txt');
+    expect(detectTextKind(' From: a@example.test\nTo: b@example.test\n\nbody')).toBe('txt');
+  });
+});

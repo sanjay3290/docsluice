@@ -2,6 +2,21 @@ import type { FormatId } from '../core/model.js';
 
 const SAMPLE_CHARS = 8 * 1024;
 const HTML_TAGS = ['html', 'head', 'body', 'title', 'meta', 'div', 'p', 'script', 'table', 'h1', 'h2'];
+/** Header fields that mark an RFC 5322 message; two of them in a valid header block mean `eml`. */
+const MESSAGE_HEADERS = new Set([
+  'from',
+  'to',
+  'cc',
+  'subject',
+  'date',
+  'message-id',
+  'mime-version',
+  'received',
+  'return-path',
+  'reply-to',
+  'delivered-to',
+  'content-type',
+]);
 
 /** Guess a text format from a bounded prefix without regex backtracking. */
 export function detectTextKind(text: string): FormatId {
@@ -15,6 +30,7 @@ export function detectTextKindCandidates(text: string): readonly FormatId[] {
   if (start < sample.length && (sample[start] === '{' || sample[start] === '[') && isJson(sample, start)) {
     return ['json'];
   }
+  if (isEmailHeaderBlock(sample)) return ['eml'];
   if (startsAsciiInsensitive(sample, start, '<!doctype html')) return ['html'];
   if (startsAsciiInsensitive(sample, start, '<?xml')) return ['xml'];
   if (hasKnownHtmlRoot(sample, start)) return ['html'];
@@ -24,6 +40,40 @@ export function detectTextKindCandidates(text: string): readonly FormatId[] {
   if (delimited.length > 0) return delimited;
   if (markdownScore(sample) >= 2) return ['markdown'];
   return ['txt'];
+}
+
+/**
+ * True when the sample opens with RFC 5322 header fields (folded lines allowed) up to a blank line or the
+ * sample end, and at least two of them are message headers. One linear pass, no regular expressions.
+ */
+function isEmailHeaderBlock(text: string): boolean {
+  let messageHeaders = 0;
+  let fields = 0;
+  let at = 0;
+  while (at < text.length) {
+    let end = text.indexOf('\n', at);
+    if (end < 0) end = text.length;
+    const lineEnd = end > at && text.charCodeAt(end - 1) === 0x0d ? end - 1 : end;
+    if (lineEnd === at) break;
+    const first = text.charCodeAt(at);
+    if (first === 0x20 || first === 0x09) {
+      if (fields === 0) return false;
+    } else {
+      let colon = at;
+      while (colon < lineEnd && isFieldNameChar(text.charCodeAt(colon))) colon += 1;
+      if (colon === at || colon >= lineEnd || text.charCodeAt(colon) !== 0x3a || colon - at > 76)
+        return false;
+      fields += 1;
+      if (MESSAGE_HEADERS.has(text.slice(at, colon).toLowerCase())) messageHeaders += 1;
+    }
+    at = end + 1;
+  }
+  return messageHeaders >= 2;
+}
+
+/** RFC 5322 field-name characters: printable ASCII except colon. */
+function isFieldNameChar(code: number): boolean {
+  return code > 0x20 && code < 0x7f && code !== 0x3a;
 }
 
 function skipWhitespace(text: string, from: number): number {

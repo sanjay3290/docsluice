@@ -1,0 +1,20 @@
+From: Sender <sender@example.test>
+To: Reader <reader@example.test>
+Date: Tue, 06 Oct 2026 09:30:00 +0000
+Subject: RFC2231 filename
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary=outer
+
+--outer
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+QP BODY: caf=C3=A9.
+--outer
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename*0*=utf-8''long%20caf%C3%A9%20;
+ filename*1*=report.bin
+
+AQIDBAUG
+--outer--

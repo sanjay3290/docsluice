@@ -1,6 +1,7 @@
 // Bundle budgets (RT-4, RT-5). Every reader subpath in package.json "exports" gets an entry, so a
 // new reader cannot ship without a budget. Readers load lazily, so the core check treats the
-// Office readers as external; text readers count toward the core budget too.
+// Office and email readers as external (RT-5 budgets core plus text formats); text readers count
+// toward the core budget too.
 import { readFileSync } from 'node:fs';
 import { URL } from 'node:url';
 
@@ -10,7 +11,8 @@ export const READERS = Object.keys(manifest.exports)
   .filter((subpath) => !NOT_READERS.has(subpath))
   .map((subpath) => subpath.slice(2));
 const OFFICE_READERS = new Set(['doc', 'docx', 'xlsx', 'pptx']);
-const officeReader = new RegExp(`/(?:${[...OFFICE_READERS].join('|')})\\.js$`);
+const EXTERNAL_READERS = [...OFFICE_READERS, 'eml'];
+const externalReader = new RegExp(`/(?:${EXTERNAL_READERS.join('|')})\\.js$`);
 
 export default [
   {
@@ -20,7 +22,7 @@ export default [
     gzip: true,
     modifyRolldownConfig: (config) => ({
       ...config,
-      external: (id, importer) => importer !== undefined && officeReader.test(id),
+      external: (id, importer) => importer !== undefined && externalReader.test(id),
     }),
   },
   ...READERS.map((reader) => ({
