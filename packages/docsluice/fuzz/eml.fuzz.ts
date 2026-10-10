@@ -25,6 +25,8 @@ export async function fuzzEml(input: Uint8Array): Promise<void> {
     revisions: 'accept',
     includeHidden: false,
     formulas: false,
+    // Half the inputs also run the quoted-reply filters (EML-4).
+    quotedReplies: input.length % 2 === 0 ? 'drop' : 'keep',
   };
   const out = new DocBuilder('eml', 'message/rfc822', budget, options);
   const context: ReadContext = {

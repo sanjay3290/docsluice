@@ -57,7 +57,7 @@ A table split across chunks repeats its header row in every piece.
 | `children` | `'extract'` (default), `'list'` or `'skip'` for attachments and archive entries. |
 | `runs: true` | Keep bold, italic, code and link runs on paragraphs. |
 | `transform` | Change or drop every block before it is rendered, for example to [redact](recipes/redaction.md). |
-| `headerRow`, `formulas`, `revisions`, `includeHidden`, `mainContent` | Format-specific switches; see the [format pages](formats/support-matrix.md). |
+| `headerRow`, `formulas`, `revisions`, `includeHidden`, `mainContent`, `quotedReplies` | Format-specific switches; see the [format pages](formats/support-matrix.md). |
 
 ## Stream big files
 
