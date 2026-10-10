@@ -10,7 +10,7 @@ const NOT_READERS = new Set(['.', './node', './package.json']);
 export const READERS = Object.keys(manifest.exports)
   .filter((subpath) => !NOT_READERS.has(subpath))
   .map((subpath) => subpath.slice(2));
-const OFFICE_READERS = new Set(['doc', 'docx', 'xlsx', 'pptx']);
+const OFFICE_READERS = new Set(['doc', 'docx', 'xlsx', 'pptx', 'odt']);
 const EXTERNAL_READERS = [...OFFICE_READERS, 'eml'];
 const externalReader = new RegExp(`/(?:${EXTERNAL_READERS.join('|')})\\.js$`);
 

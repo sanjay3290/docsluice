@@ -52,6 +52,9 @@
       "pptx": [
         "dist/pptx.d.ts"
       ],
+      "odt": [
+        "dist/odt.d.ts"
+      ],
       "zip": [
         "dist/zip.d.ts"
       ],
@@ -112,6 +115,10 @@
     "./pptx": {
       "import": "./dist/pptx.js",
       "require": "./dist/pptx.cjs"
+    },
+    "./odt": {
+      "import": "./dist/odt.js",
+      "require": "./dist/odt.cjs"
     },
     "./zip": {
       "import": "./dist/zip.js",

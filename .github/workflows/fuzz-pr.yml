@@ -35,6 +35,8 @@ jobs:
             zip-container,
             mime,
             eml,
+            odf,
+            odt,
           ]
     steps:
       - uses: actions/checkout@v7

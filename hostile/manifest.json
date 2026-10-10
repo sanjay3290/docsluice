@@ -653,5 +653,81 @@
     "maxMs": 2000,
     "maxHeapMB": 128,
     "requirement": "NST-1"
+  },
+  {
+    "file": "odt/deep-lists-10000.odt",
+    "expect": {
+      "warnings": [
+        "TRUNCATED",
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "odt/deep-tables-1000.odt",
+    "expect": {
+      "warnings": [
+        "TRUNCATED"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "odt/content-bomb.odt",
+    "expect": {
+      "error": "LIMIT_EXCEEDED"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "odt/repeated-cells-flood.odt",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "odt/style-cycle-proto.odt",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-6"
+  },
+  {
+    "file": "odt/image-path-tricks.odt",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART",
+        "UNREADABLE_PART",
+        "UNREADABLE_PART",
+        "UNREADABLE_PART",
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-10"
+  },
+  {
+    "file": "odt/encrypted-manifest.odt",
+    "expect": {
+      "error": "ENCRYPTED"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "MOD-5"
   }
 ]
