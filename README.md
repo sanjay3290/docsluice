@@ -28,6 +28,8 @@ One call gives text, Markdown, tables, page/slide/sheet locations and metadata f
 
 ## Docs
 
+Start with the [docs home](docs/index.md): [quick start](docs/quickstart.md), [security model](docs/security.md), [limits](docs/limits.md), [recipes](docs/recipes/index.md) and the [format pages](docs/formats/support-matrix.md). `npm run docs:site` builds them as a static site in `site/`, with the API reference from TSDoc ([ADR 0013](docs/adr/0013-documentation-site.md)).
+
 - [Product requirements](docs/prd.md)
 - [Architecture](docs/architecture.md)
 - [Decisions (ADRs)](docs/adr/)

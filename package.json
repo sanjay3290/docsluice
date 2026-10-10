@@ -18,11 +18,12 @@
     "test": "npm run test --workspaces --if-present",
     "fuzz": "node scripts/fuzz-run.mjs",
     "docs:support": "node scripts/docs-support.mjs",
-    "test:dist": "npm run build && node --test packages/*/test-dist/*.test.mjs",
+    "docs:site": "node scripts/docs-site.mjs",
+    "test:dist": "npm run build && node --test packages/*/test-dist/*.test.mjs examples/*.test.mjs",
     "check:package": "npm run check:package --workspace packages/docsluice",
     "test:runtime-tools": "node scripts/runtime-fixtures.mjs --check && node --test scripts/test/*.test.mjs scripts/corpus/build.test.mjs packages/docsluice/test-runtime/workers/buffer-trap.test.mjs",
     "test:browser": "vitest run --config packages/docsluice/test-runtime/browser/vitest.config.mjs",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run test:runtime-tools && npm run build && npm run check:package && npm run test:dist"
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run test:runtime-tools && npm run build && npm run check:package && npm run test:dist && npm run docs:site"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
@@ -35,12 +36,14 @@
     "@vitest/coverage-v8": "^5.0.3",
     "eslint": "^10.12.0",
     "eslint-plugin-regexp": "^3.3.1",
+    "markdown-it": "14.3.2",
     "playwright": "1.64.0",
     "prettier": "^3.9.9",
     "publint": "0.3.25",
     "rolldown": "1.2.13",
     "size-limit": "14.2.0",
     "tsdown": "^0.23.0",
+    "typedoc": "0.28.20",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.1",
     "vitest": "^5.0.3"
