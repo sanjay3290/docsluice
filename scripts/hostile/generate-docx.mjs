@@ -59,3 +59,13 @@ await writeFile(
     'word/_rels/document.xml.rels': `<Relationships xmlns="${PKG}"><Relationship Id="n" Type="${R}/numbering" Target="numbering.xml"/></Relationships>`,
   }),
 );
+
+// 1,000 tables nested in cells: depth is flattened at blockDepth, then the XML depth budget stops the scan.
+await writeFile(
+  new URL('deep-tables-1000.docx', directory),
+  docx(body(`${'<w:tbl><w:tr><w:tc>'.repeat(1_000)}${para('core')}${'</w:tc></w:tr></w:tbl>'.repeat(1_000)}`)),
+);
+
+// 3,000 rows of one cell spanning 1,000 grid columns: a few kilobytes that would expand to 3 million cells.
+const wide = `<w:tbl>${'<w:tr><w:tc><w:tcPr><w:gridSpan w:val="1000"/></w:tcPr><w:p/></w:tc></w:tr>'.repeat(3_000)}</w:tbl>`;
+await writeFile(new URL('gridspan-flood.docx', directory), docx(body(wide)));

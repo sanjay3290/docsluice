@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-docx-tables.mjs
+Requirements: DOC-4
+Notes: horizontal merge with header rows, vertical merge, both together, tables nested three deep, and a numbered list ending right before a table.

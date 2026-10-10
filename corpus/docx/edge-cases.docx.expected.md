@@ -14,8 +14,8 @@ See the results and the project site.
 
 Results: page 1
 
-Cell text one
-
-Cell text two
+|  |  |
+| --- | --- |
+| Cell text one | Cell text two |
 
 Closing paragraph.

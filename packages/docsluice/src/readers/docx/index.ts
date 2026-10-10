@@ -157,6 +157,7 @@ export const docxReader: Reader = {
       styles,
       mainRelationships,
       (paragraph) => lists.accept(paragraph),
+      () => lists.flush(),
     );
     lists.flush();
   },

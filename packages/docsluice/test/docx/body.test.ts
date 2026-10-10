@@ -40,11 +40,15 @@ describe('scanDocxBody', () => {
         .finish()
         .blocks.map((block) => [
           block.kind,
-          block.kind === 'heading' || block.kind === 'paragraph' ? block.text : '',
+          block.kind === 'heading' || block.kind === 'paragraph'
+            ? block.text
+            : block.kind === 'table'
+              ? block.rows[0]![0]!.text
+              : '',
         ]),
     ).toEqual([
       ['heading', 'First'],
-      ['paragraph', 'Cell'],
+      ['table', 'Cell'],
       ['paragraph', 'Control'],
       ['paragraph', 'before'],
       ['paragraph', 'Box'],
