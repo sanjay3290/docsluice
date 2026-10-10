@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { detect, extract } from '../../src/index.js';
 import type { Block, DocsluiceDocument } from '../../src/core/model.js';
 import { fuzzTextFamilies } from '../../fuzz/text-families.fuzz.js';
@@ -143,6 +143,23 @@ describe('NDJSON reader', () => {
       '1 record(s) nest deeper than the block depth limit of 5 and were skipped.',
       '1 line(s) are not valid JSON and were skipped.',
     ]);
+  });
+});
+
+describe('NDJSON malformed lines', () => {
+  it('counts lines that cannot be JSON without calling JSON.parse, and still parses the rest', async () => {
+    const parse = vi.spyOn(JSON, 'parse');
+    try {
+      const lines = [' x', 'junk', '{"a":1}', '  ', '[1,2', 'true', '-', '"s"', 'nul'];
+      const doc = await read(`${lines.join('\n')}\n`, { filename: 'log.ndjson' });
+      expect(doc.warnings).toEqual([
+        { code: 'UNREADABLE_PART', message: '5 line(s) are not valid JSON and were skipped.' },
+      ]);
+      // Only lines that start and end like a JSON value reach the parser; ` x`, `junk` and `-` do not.
+      expect(parse.mock.calls.map(([text]) => text)).toEqual(['{"a":1}', '[1,2', 'true', '"s"', 'nul']);
+    } finally {
+      parse.mockRestore();
+    }
   });
 });
 
