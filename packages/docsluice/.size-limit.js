@@ -17,7 +17,7 @@ const TEXT_FAMILY_READERS = ['yaml', 'ndjson', 'ics', 'vcf', 'srt', 'vtt', 'code
 const MEDIA_READERS = ['image'];
 // Container classification that only non-text files need loads lazily: the compound-file parser
 // behind legacy Office and Outlook detection, and the ZIP-based format classifier.
-const CONTAINERS = ['ole', 'zip-kind'];
+const CONTAINERS = ['ole', 'zip-kind', 'office-encryption'];
 // Opt-in features of core readers that load only when their option is on.
 const OPT_IN = ['main-content'];
 const EXTERNAL_READERS = [

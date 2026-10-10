@@ -33,6 +33,7 @@ jobs:
             doc,
             ppt,
             ooxml,
+            office-encryption,
             docx,
             xlsx,
             xlsx-numfmt,

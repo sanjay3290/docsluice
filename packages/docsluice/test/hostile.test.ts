@@ -8,6 +8,8 @@ interface ManifestEntry {
   file: string;
   /** Forces a reader for attack files that detection routes elsewhere. */
   format?: FormatId;
+  /** The `password` option, for encrypted attack files that must be opened to reach the payload. */
+  password?: string;
   expect: { error: string } | { warnings: string[] };
   maxMs: number;
   maxHeapMB: number;
@@ -47,6 +49,7 @@ describe('hostile corpus', () => {
       const options = {
         filename: entry.file.slice(entry.file.lastIndexOf('/') + 1),
         ...(entry.format ? { format: entry.format } : {}),
+        ...(entry.password !== undefined ? { password: entry.password } : {}),
       };
       const started = performance.now();
       let outcome: { error: string } | { warnings: string[] };

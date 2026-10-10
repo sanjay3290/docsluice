@@ -612,6 +612,26 @@
     "requirement": "SEC-12"
   },
   {
+    "file": "office/hmac-tampered.cfb",
+    "password": "Public test é😀",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 10000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "office/spin-count-overflow.cfb",
+    "password": "Public test é😀",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 10000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
     "file": "pptx/deep-groups-1000.pptx",
     "expect": {
       "warnings": ["TRUNCATED", "DEPTH_LIMIT"]

@@ -20,6 +20,8 @@ export default defineConfig({
     'readers/code': 'src/readers/code/index.ts',
     // Not a package subpath: the compound-file (OLE) parser that detection loads for legacy files.
     ole: 'src/ole/index.ts',
+    // Not a package subpath: OOXML decryption, loaded only for encrypted packages opened with `password`.
+    'office-encryption': 'src/office/encryption/index.ts',
     // Not a package subpath: ZIP-based format classification that detection loads for ZIP files.
     'zip-kind': 'src/detect/zip-kind.ts',
     // Not a package subpath: HTML main-content selection, loaded only with `mainContent: true`.
