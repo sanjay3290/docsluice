@@ -62,8 +62,9 @@ export function parseOdfManifest(input: Uint8Array | string, ctx: XmlContext): O
       odfWarn(ctx, 'UNREADABLE_PART', 'ODF manifest contains an invalid internal part entry.');
       continue;
     }
-    // The ODF root entry describes the package and is not a part that a reader may open.
-    if (path === '/') continue;
+    // The root entry describes the package, and directory entries (`Configurations2/`, ODF 1.3
+    // Part 2, 4.3) describe folders: neither is a part that a reader may open.
+    if (path.endsWith('/')) continue;
     if (result.entries.has(path)) {
       odfWarn(ctx, 'UNREADABLE_PART', 'ODF manifest contains a duplicate part path.');
       continue;
@@ -73,8 +74,10 @@ export function parseOdfManifest(input: Uint8Array | string, ctx: XmlContext): O
   return result;
 }
 
-function isSafePartPath(path: string, budget: XmlContext['budget']): boolean {
-  if (path === '/') return true;
+function isSafePartPath(fullPath: string, budget: XmlContext['budget']): boolean {
+  if (fullPath === '/') return true;
+  // A directory entry ends with one `/`; the name before it follows the part rules.
+  const path = fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath;
   if (path.length === 0) return false;
   let segmentStart = 0;
   let firstColon = -1;
