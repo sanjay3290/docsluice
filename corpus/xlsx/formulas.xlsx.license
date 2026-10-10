@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-xlsx-formulas.mjs
+Requirements: XLS-4, SEC-11
+Notes: simple, shared (vertical and horizontal), array, cross-sheet and string formulas with cached values; =1+1 cached as 5; one formula without a cached value.

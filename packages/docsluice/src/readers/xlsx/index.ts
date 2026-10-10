@@ -176,6 +176,7 @@ export const xlsxReader: Reader = {
         sharedStrings,
         styles,
         date1904: workbook.date1904,
+        formulas: ctx.options.formulas,
         onBadSharedString: () => {
           if (badSharedString) return;
           badSharedString = true;
@@ -205,6 +206,13 @@ export const xlsxReader: Reader = {
         if (loc.sheet !== undefined) tableLoc.sheet = loc.sheet;
         tableLoc.range = rangeName(region.range);
         if (table.rows.length > 0 && !ctx.out.table(table.rows, 0, tableLoc)) open = false;
+      }
+      if (sheet.missingCachedValues > 0) {
+        ctx.warnings.add({
+          code: 'UNREADABLE_PART',
+          message: `Sheet ${index + 1}: ${sheet.missingCachedValues} formula cells have no cached value and are empty; formulas are never calculated.`,
+          loc: { path },
+        });
       }
       if (sheet.skippedCells > 0) ctx.budget.addCells(sheet.skippedCells);
       const skippedRows = gridRows - keptRows + sheet.skippedRows;

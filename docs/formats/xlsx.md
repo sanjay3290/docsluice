@@ -15,7 +15,8 @@ The XLSX reader turns every sheet of a SpreadsheetML workbook (`.xlsx`, `.xlsm`,
 - General (and any format that cannot be read) shows up to 15 significant digits, so `0.30000000000000004` shows `0.3`; exponents are written `1E+21`.
 - Text cells keep their text unless their format has a text section (`"text: "@`); then `text` is the formatted value and `raw` the stored text.
 - Booleans show `TRUE`/`FALSE` with a boolean `raw`. Errors (`#N/A`), formula string results (`t="str"`) and ISO dates (`t="d"`) show the stored text.
-- Formulas are never calculated: a formula cell shows its cached value. Formula text is not returned yet.
+- Formulas are never calculated (XLS-4, SEC-11): a formula cell shows the cached value saved in the file. A formula cell saved without a cached value is empty, and the sheet gets one `UNREADABLE_PART` warning with the count.
+- With `formulas: true`, `Cell.formula` holds the formula text with a leading `=` (`=A1+B1`); array formulas are written `{=…}` on the range's first cell. Shared formulas (`t="shared"`) store the text once, on the first cell; each dependent gets that text with its relative A1 references moved by the dependent's offset (`=A2*$B$1` → `=A3*$B$1`), as Excel shows it. Strings, quoted sheet names, function names (`LOG10(`) and sheet prefixes are not moved; whole-row and whole-column references (`1:1`, `A:A`) are left as written, and a reference moved off the grid becomes `#REF!`. A dependent whose first cell is missing has no formula text.
 - Every grid cell, including empty and merged placeholders, has its `address` (`B7`). Each table has `loc.sheet` and `loc.range` (`A1:C7`), so a cell's citation is `Sheet!B7`.
 - A shared-string index that does not exist gives an empty cell and one `UNREADABLE_PART` per workbook.
 

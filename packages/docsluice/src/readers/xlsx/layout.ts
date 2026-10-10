@@ -211,6 +211,7 @@ export function regionRows(
       const anchor = values?.get(merge.left);
       const cell: Cell = { text: anchor?.text ?? '' };
       if (anchor?.raw !== undefined) cell.raw = anchor.raw;
+      if (anchor?.formula !== undefined) cell.formula = anchor.formula;
       if (merge.bottom > merge.top) cell.rowSpan = merge.bottom - merge.top + 1;
       if (merge.right > merge.left) cell.colSpan = merge.right - merge.left + 1;
       cell.address = `${letters[merge.left - region.left]!}${row}`;
@@ -231,6 +232,7 @@ export function regionRows(
       if (!cell) {
         cell = { text: value?.text ?? '' };
         if (value?.raw !== undefined) cell.raw = value.raw;
+        if (value?.formula !== undefined) cell.formula = value.formula;
         cell.address = `${letters[index]!}${row}`;
       }
       output.push(cell);
