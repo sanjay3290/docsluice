@@ -77,4 +77,4 @@ Hostile files are made by scripts in `scripts/hostile/` where possible, so the r
 
 ## Cross-runtime (QA-4)
 
-CI runs the tests on Node 24 (Vitest), and runs the built package on Node 20, 22 and 24, Bun, Deno, a headless browser and a Workers simulator. A feature that cannot work in one runtime must say so in its docs page and skip that runtime's test with a reason.
+CI runs the unit tests on Node 24. The built package then runs one shared contract (ZIP, XML, and `extract()` on CSV, HTML and hostile HTML) on Node 20, 22 and 24, Bun, Deno, Chromium, Firefox and WebKit (Vitest browser mode), and Cloudflare Workers (local `wrangler dev`). The browser and Workers runs trap any access to `globalThis.Buffer`. [testing-runtime.md](testing-runtime.md) has the command for each runtime. A feature that cannot work in one runtime must say so in its docs page and skip that runtime's test with a reason.

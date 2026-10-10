@@ -19,7 +19,9 @@
     "fuzz": "node scripts/fuzz-run.mjs",
     "test:dist": "npm run build && node --test packages/*/test-dist/*.test.mjs",
     "check:package": "npm run check:package --workspace packages/docsluice",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run check:package && npm run test:dist"
+    "test:runtime-tools": "node scripts/runtime-fixtures.mjs --check && node --test scripts/test/*.test.mjs packages/docsluice/test-runtime/workers/buffer-trap.test.mjs",
+    "test:browser": "vitest run --config packages/docsluice/test-runtime/browser/vitest.config.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run test:runtime-tools && npm run build && npm run check:package && npm run test:dist"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
@@ -28,9 +30,11 @@
     "@size-limit/preset-small-lib": "14.2.0",
     "@types/node": "^24.0.0",
     "@typescript-eslint/rule-tester": "^8.71.1",
+    "@vitest/browser-playwright": "5.0.3",
     "@vitest/coverage-v8": "^5.0.3",
     "eslint": "^10.12.0",
     "eslint-plugin-regexp": "^3.3.1",
+    "playwright": "1.64.0",
     "prettier": "^3.9.9",
     "publint": "0.3.25",
     "size-limit": "14.2.0",

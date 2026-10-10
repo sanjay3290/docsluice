@@ -26,6 +26,7 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      - run: npm run test:runtime-tools
       - run: npm run build
       - run: npm run check:package
       - uses: actions/upload-artifact@v7
@@ -53,3 +54,81 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm ci --omit=dev --ignore-scripts
       - run: node --test packages/docsluice/test-dist/smoke.test.mjs
+      - run: node packages/docsluice/test-runtime/run.mjs
+
+  dist-bun:
+    name: Built package on Bun
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: packages/docsluice/dist
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm ci --omit=dev --ignore-scripts
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun run packages/docsluice/test-runtime/run.mjs
+
+  dist-deno:
+    name: Built package on Deno
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: packages/docsluice/dist
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm ci --omit=dev --ignore-scripts
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno run --allow-read=. packages/docsluice/test-runtime/run.mjs
+
+  dist-browser:
+    name: Built package in Chromium, Firefox and WebKit
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: packages/docsluice/dist
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run test:browser
+
+  dist-workers:
+    name: Built package on Cloudflare Workers (local workerd)
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: packages/docsluice/dist
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm ci --omit=dev --ignore-scripts
+      # Wrangler's esbuild and workerd carry install scripts, so it is installed outside the workspace,
+      # pinned and with scripts off, instead of as a repository dev dependency (ADR 0011).
+      - run: npm install --prefix "$RUNNER_TEMP/wrangler" --ignore-scripts --no-audit --no-fund wrangler@4.146.0
+      - run: node scripts/run-workers-runtime.mjs
+        env:
+          DOCSLUICE_WRANGLER_BIN: ${{ runner.temp }}/wrangler/node_modules/.bin/wrangler
