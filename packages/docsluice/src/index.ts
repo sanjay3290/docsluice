@@ -28,4 +28,6 @@ export type { XmlContext, XmlElement, XmlElementInfo, XmlHandler } from './xml/i
 export { toText } from './render/text.js';
 export type { TextOptions } from './render/layout.js';
 export { toMarkdown } from './render/markdown.js';
+export { chunk } from './chunk/index.js';
+export type { Chunk, ChunkOptions } from './chunk/index.js';
 export type { MarkdownOptions } from './render/markdown.js';
