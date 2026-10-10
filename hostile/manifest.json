@@ -425,5 +425,23 @@
     "maxMs": 2000,
     "maxHeapMB": 64,
     "requirement": "SEC-1"
+  },
+  {
+    "file": "ooxml/extension-nested-records.zip",
+    "expect": {
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-10"
+  },
+  {
+    "file": "ooxml/encrypted-package.cfb",
+    "expect": {
+      "error": "ENCRYPTED"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "MOD-5"
   }
 ]
