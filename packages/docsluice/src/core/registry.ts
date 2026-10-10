@@ -113,137 +113,45 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
   const loadPptx = () => import('../readers/pptx/index.js').then((module) => module.pptxReader);
   const loadXlsx = () => import('../readers/xlsx/index.js').then((module) => module.xlsxReader);
   const loadDocx = () => import('../readers/docx/index.js').then((module) => module.docxReader);
-  registry.add({
-    id: 'doc',
-    load: () => import('../readers/doc/index.js').then((module) => module.docReader),
-  });
-  registry.add({
-    id: 'txt',
-    load: () => import('../readers/txt/index.js').then((module) => module.txtReader),
-  });
-  registry.add({
-    id: 'markdown',
-    load: () => import('../readers/markdown/index.js').then((module) => module.markdownReader),
-  });
-  registry.add({
-    id: 'csv',
-    load: () => import('../readers/csv/index.js').then((module) => module.csvReader),
-  });
-  registry.add({
-    id: 'tsv',
-    load: () => import('../readers/tsv/index.js').then((module) => module.tsvReader),
-  });
-  registry.add({
-    id: 'json',
-    load: () => import('../readers/json/index.js').then((module) => module.jsonReader),
-  });
-  registry.add({
-    id: 'yaml',
-    load: () => import('../readers/yaml/index.js').then((module) => module.yamlReader),
-  });
-  registry.add({
-    id: 'ndjson',
-    load: () => import('../readers/ndjson/index.js').then((module) => module.ndjsonReader),
-  });
-  registry.add({
-    id: 'ics',
-    load: () => import('../readers/ics/index.js').then((module) => module.icsReader),
-  });
-  registry.add({
-    id: 'vcf',
-    load: () => import('../readers/vcf/index.js').then((module) => module.vcfReader),
-  });
-  registry.add({
-    id: 'srt',
-    load: () => import('../readers/srt/index.js').then((module) => module.srtReader),
-  });
-  registry.add({
-    id: 'vtt',
-    load: () => import('../readers/vtt/index.js').then((module) => module.vttReader),
-  });
-  registry.add({
-    id: 'xml',
-    load: () => import('../readers/xml/index.js').then((module) => module.xmlReader),
-  });
-  registry.add({
-    id: 'html',
-    load: () => import('../readers/html/index.js').then((module) => module.htmlReader),
-  });
-  registry.add({
-    id: 'rtf',
-    load: () => import('../readers/rtf/index.js').then((module) => module.rtfReader),
-  });
-  registry.add({
-    id: 'docx',
-    load: loadDocx,
-  });
-  // Macro-enabled files are read like their plain version; macros are flagged, never read or run.
-  registry.add({
-    id: 'docm',
-    load: loadDocx,
-  });
-  registry.add({
-    id: 'xlsx',
-    load: loadXlsx,
-  });
-  // Macro-enabled files are read like their plain version; macros are flagged, never read or run.
-  registry.add({
-    id: 'xlsm',
-    load: loadXlsx,
-  });
-  registry.add({
-    id: 'xlsb',
-    load: () => import('../readers/xlsb/index.js').then((module) => module.xlsbReader),
-  });
-  registry.add({
-    id: 'xls',
-    load: () => import('../readers/xls/index.js').then((module) => module.xlsReader),
-  });
-  registry.add({
-    id: 'pptx',
-    load: loadPptx,
-  });
-  // Macro-enabled files are read like their plain version; macros are flagged, never read or run.
-  registry.add({
-    id: 'pptm',
-    load: loadPptx,
-  });
-  registry.add({
-    id: 'odt',
-    load: () => import('../readers/odt/index.js').then((module) => module.odtReader),
-  });
-  registry.add({
-    id: 'ods',
-    load: () => import('../readers/ods/index.js').then((module) => module.odsReader),
-  });
-  registry.add({
-    id: 'odp',
-    load: () => import('../readers/odp/index.js').then((module) => module.odpReader),
-  });
-  registry.add({
-    id: 'zip',
-    load: () => import('../readers/zip/index.js').then((module) => module.zipReader),
-  });
-  registry.add({
-    id: 'gzip',
-    load: () => import('../readers/gzip/index.js').then((module) => module.gzipReader),
-  });
-  registry.add({
-    id: 'tar',
-    load: () => import('../readers/tar/index.js').then((module) => module.tarReader),
-  });
-  registry.add({
-    id: 'eml',
-    load: () => import('../readers/eml/index.js').then((module) => module.emlReader),
-  });
-  registry.add({
-    id: 'msg',
-    load: () => import('../readers/msg/index.js').then((module) => module.msgReader),
-  });
-  registry.add({
-    id: 'epub',
-    load: () => import('../readers/epub/index.js').then((module) => module.epubReader),
-  });
+  // One image reader for every image format: size and EXIF metadata, no text.
+  const loadImage = () => import('../readers/image/index.js').then((module) => module.imageReader);
+  // Each format module loads only when that format is read.
+  const builtIns: Array<[FormatId, () => Promise<Reader>]> = [
+    ['doc', () => import('../readers/doc/index.js').then((module) => module.docReader)],
+    ['txt', () => import('../readers/txt/index.js').then((module) => module.txtReader)],
+    ['markdown', () => import('../readers/markdown/index.js').then((module) => module.markdownReader)],
+    ['csv', () => import('../readers/csv/index.js').then((module) => module.csvReader)],
+    ['tsv', () => import('../readers/tsv/index.js').then((module) => module.tsvReader)],
+    ['json', () => import('../readers/json/index.js').then((module) => module.jsonReader)],
+    ['yaml', () => import('../readers/yaml/index.js').then((module) => module.yamlReader)],
+    ['ndjson', () => import('../readers/ndjson/index.js').then((module) => module.ndjsonReader)],
+    ['ics', () => import('../readers/ics/index.js').then((module) => module.icsReader)],
+    ['vcf', () => import('../readers/vcf/index.js').then((module) => module.vcfReader)],
+    ['srt', () => import('../readers/srt/index.js').then((module) => module.srtReader)],
+    ['vtt', () => import('../readers/vtt/index.js').then((module) => module.vttReader)],
+    ['xml', () => import('../readers/xml/index.js').then((module) => module.xmlReader)],
+    ['html', () => import('../readers/html/index.js').then((module) => module.htmlReader)],
+    ['rtf', () => import('../readers/rtf/index.js').then((module) => module.rtfReader)],
+    ['docx', loadDocx],
+    ['docm', loadDocx],
+    ['xlsx', loadXlsx],
+    ['xlsm', loadXlsx],
+    ['xlsb', () => import('../readers/xlsb/index.js').then((module) => module.xlsbReader)],
+    ['xls', () => import('../readers/xls/index.js').then((module) => module.xlsReader)],
+    ['pptx', loadPptx],
+    ['pptm', loadPptx],
+    ['odt', () => import('../readers/odt/index.js').then((module) => module.odtReader)],
+    ['ods', () => import('../readers/ods/index.js').then((module) => module.odsReader)],
+    ['odp', () => import('../readers/odp/index.js').then((module) => module.odpReader)],
+    ['zip', () => import('../readers/zip/index.js').then((module) => module.zipReader)],
+    ['gzip', () => import('../readers/gzip/index.js').then((module) => module.gzipReader)],
+    ['tar', () => import('../readers/tar/index.js').then((module) => module.tarReader)],
+    ['eml', () => import('../readers/eml/index.js').then((module) => module.emlReader)],
+    ['msg', () => import('../readers/msg/index.js').then((module) => module.msgReader)],
+    ['epub', () => import('../readers/epub/index.js').then((module) => module.epubReader)],
+  ];
+  for (const id of ['png', 'jpeg', 'gif', 'tiff', 'webp']) builtIns.push([id, loadImage]);
+  for (const [id, load] of builtIns) registry.add({ id, load });
 }
 
 /** The registry `extract()` and `detect()` use when no `registry` option is given. */

@@ -48,7 +48,11 @@ test('ESM entry loads', async () => {
   assert.equal(typeof mod.scanXml, 'function');
   const image = await mod.extract(Uint8Array.of(137, 80, 78, 71, 13, 10, 26, 10));
   assert.equal(image.format, 'png');
-  assert.deepEqual(image.blocks, []);
+  // An image gives one image block (size unknown for a bare signature) and no text.
+  assert.deepEqual(
+    image.blocks.map((block) => [block.kind, block.mimeType]),
+    [['image', 'image/png']],
+  );
   assert.equal(mod.toText(renderDoc), 'Title\n\na\tb');
   assert.equal(typeof mod.toJSON, 'function');
   assert.equal(
@@ -163,6 +167,11 @@ test('PPTX reader subpath loads lazily', async () => {
 test('ODT reader subpath loads lazily', async () => {
   const odt = await import('docsluice/odt');
   assert.equal(odt.odtReader.id, 'odt');
+});
+
+test('image reader subpath loads lazily', async () => {
+  const image = await import('docsluice/image');
+  assert.equal(image.imageReader.id, 'image');
 });
 
 test('ODS reader subpath loads lazily', async () => {

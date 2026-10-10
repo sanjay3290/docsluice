@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: made for docsluice by scripts/corpus/make-images.py with Pillow 12.3.0
+Requirements: MOD-4, MOD-5
+Notes: a synthetic gradient; EXIF (when present) has a fictional camera and a GPS position at sea, written by the script.

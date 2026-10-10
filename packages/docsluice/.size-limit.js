@@ -14,9 +14,11 @@ const OFFICE_READERS = new Set(['doc', 'docx', 'xlsx', 'xls', 'xlsb', 'pptx', 'o
 // The P1 text families (issue #68) load lazily like the office readers and keep their own budgets.
 // `code` is the source-code language table the text reader loads only for source file names.
 const TEXT_FAMILY_READERS = ['yaml', 'ndjson', 'ics', 'vcf', 'srt', 'vtt', 'code'];
+const MEDIA_READERS = ['image'];
 const EXTERNAL_READERS = [
   ...OFFICE_READERS,
   ...TEXT_FAMILY_READERS,
+  ...MEDIA_READERS,
   'eml',
   'msg',
   'rtf',
