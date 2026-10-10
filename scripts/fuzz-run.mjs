@@ -8,7 +8,42 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const packageRoot = join(root, 'packages/docsluice');
 const targetFile = join(packageRoot, 'fuzz/runner/jazzer-target.mjs');
-const targets = new Set(['zip', 'xml', 'detect', 'detection', 'ole']);
+/**
+ * Fuzz targets: the compiled module and export Jazzer calls, and the seed folders copied before a run.
+ * `zip` uses the strict adapter in `fuzz/runner/strict-zip.fuzz.mjs`. To add a target, add a row here
+ * and its name to both workflow matrices.
+ */
+export const TARGETS = {
+  zip: { module: 'fuzz/zip.fuzz.js', export: 'fuzzZip', seeds: ['corpus/zip', 'hostile/zip'] },
+  xml: { module: 'fuzz/xml.fuzz.js', export: 'fuzzXml', seeds: ['corpus/xml', 'hostile/xml'] },
+  detect: {
+    module: 'fuzz/detect.fuzz.js',
+    export: 'fuzzDetect',
+    seeds: ['corpus/zip', 'corpus/ole', 'hostile/zip', 'hostile/ole', 'hostile/xml'],
+  },
+  detection: { module: 'fuzz/detection.fuzz.js', export: 'fuzzDetection', seeds: ['corpus', 'hostile/xml'] },
+  ole: { module: 'fuzz/ole.fuzz.js', export: 'fuzzOle', seeds: ['corpus/ole', 'hostile/ole'] },
+  txt: { module: 'fuzz/txt.fuzz.js', export: 'fuzzTxt', seeds: ['corpus/txt', 'hostile/txt'] },
+  markdown: {
+    module: 'fuzz/markdown.fuzz.js',
+    export: 'fuzzMarkdown',
+    seeds: ['corpus/markdown', 'hostile/markdown'],
+  },
+  csv: {
+    module: 'fuzz/csv.fuzz.js',
+    export: 'fuzzCsv',
+    seeds: ['corpus/csv', 'corpus/tsv', 'hostile/csv', 'hostile/tsv'],
+  },
+  json: { module: 'fuzz/json.fuzz.js', export: 'fuzzJson', seeds: ['corpus/json', 'hostile/json'] },
+  'xml-reader': {
+    module: 'fuzz/xml-reader.fuzz.js',
+    export: 'fuzzXmlReader',
+    seeds: ['corpus/xml', 'hostile/xml'],
+  },
+  html: { module: 'fuzz/html.fuzz.js', export: 'fuzzHtml', seeds: ['corpus/html', 'hostile/html'] },
+  doc: { module: 'fuzz/doc.fuzz.js', export: 'fuzzDoc', seeds: ['corpus/doc', 'corpus/ole', 'hostile/doc'] },
+};
+const targets = new Set(Object.keys(TARGETS));
 
 function appendByteTail(current, chunk, limit) {
   const combined = globalThis.Buffer.concat([current, chunk]);
@@ -32,6 +67,13 @@ function parseArgs(args) {
   return options;
 }
 
+// Licences, goldens, manifests and readmes are not inputs; every other corpus or hostile file is a seed.
+const SIDECAR_NAMES = new Set(['README.md', 'manifest.json', '.gitattributes', '.gitkeep']);
+const SIDECAR_SUFFIXES = ['.license', '.expected.json', '.expected.md', '.blocks.json', '.native.txt'];
+function isSidecar(name) {
+  return SIDECAR_NAMES.has(name) || SIDECAR_SUFFIXES.some((suffix) => name.endsWith(suffix));
+}
+
 async function walkFiles(directory) {
   let entries;
   try {
@@ -44,21 +86,13 @@ async function walkFiles(directory) {
   for (const entry of entries) {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) files.push(...(await walkFiles(path)));
-    else if (entry.isFile() && !/\.(?:license|md|json)$/.test(entry.name) && entry.name !== '.gitkeep')
-      files.push(path);
+    else if (entry.isFile() && !isSidecar(entry.name)) files.push(path);
   }
   return files.sort();
 }
 
 function seedDirectories(target) {
-  const map = {
-    detect: ['corpus/zip', 'corpus/ole', 'hostile/zip', 'hostile/ole', 'hostile/xml'],
-    detection: ['hostile/xml'],
-    ole: ['corpus/ole', 'hostile/ole'],
-    xml: ['hostile/xml'],
-    zip: ['corpus/zip', 'hostile/zip'],
-  };
-  return map[target].map((path) => join(root, path));
+  return TARGETS[target].seeds.map((path) => join(root, path));
 }
 
 async function copySeeds(target, directory, extraSeeds = []) {
@@ -131,8 +165,8 @@ async function compileFuzzSources(
   buildDir,
   { tscBin = join(root, 'node_modules/.bin/tsc'), timeoutMs = 30_000, outputLimitBytes = 32 * 1024 } = {},
 ) {
-  const sources = ['zip', 'xml', 'detect', 'detection', 'ole'].map((name) =>
-    join(packageRoot, `fuzz/${name}.fuzz.ts`),
+  const sources = Object.values(TARGETS).map(({ module }) =>
+    join(packageRoot, module.replace(/\.js$/, '.ts')),
   );
   const args = [
     '--target',
@@ -251,6 +285,8 @@ export async function executeJazzer({
     ...process.env,
     ...extraEnv,
     DOCSLUICE_FUZZ_TARGET: target,
+    DOCSLUICE_FUZZ_MODULE: TARGETS[target].module,
+    DOCSLUICE_FUZZ_EXPORT: TARGETS[target].export,
     DOCSLUICE_FUZZ_BUILD_DIR: buildDir,
   };
   const command = [
@@ -409,7 +445,7 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
     process.stdout.write(
-      'Usage: node scripts/fuzz-run.mjs <zip|xml|detect|detection|ole> [--seconds N] [--memory-mb N] [--artifacts DIR] [--seed FILE_OR_DIR]\n',
+      `Usage: node scripts/fuzz-run.mjs <${[...targets].join('|')}> [--seconds N] [--memory-mb N] [--artifacts DIR] [--seed FILE_OR_DIR]\n`,
     );
     return;
   }

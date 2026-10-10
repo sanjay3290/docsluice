@@ -8,10 +8,10 @@ Install the repository's development dependencies with scripts disabled, then ru
 
 ```sh
 npm ci --ignore-scripts
-node scripts/fuzz-run.mjs zip
+npm run fuzz -- zip
 ```
 
-The default run lasts 60 seconds. Use `--seconds 2` for a short smoke run, `--memory-mb 1024` to set the process-tree cap, `--artifacts /path/to/fuzz-artifacts` to choose where reports and crash inputs are written, or repeat `--seed FILE_OR_DIR` to add an input to the copied seed corpus. The default artifact directory is under the operating system's temporary directory. Targets are `zip`, `xml`, `detect`, `detection`, and `ole`.
+The default run lasts 60 seconds. Use `--seconds 2` for a short smoke run, `--memory-mb 1024` to set the process-tree cap, `--artifacts /path/to/fuzz-artifacts` to choose where reports and crash inputs are written, or repeat `--seed FILE_OR_DIR` to add an input to the copied seed corpus. The default artifact directory is under the operating system's temporary directory. Targets are the keys of `TARGETS` in `scripts/fuzz-run.mjs`: `zip`, `xml`, `detect`, `detection`, `ole`, `txt`, `markdown`, `csv`, `json`, `xml-reader`, `html` and `doc`. Each row names the compiled module and export Jazzer calls and the `corpus/` and `hostile/` folders used as seeds (licences, goldens, manifests and readmes are skipped). `@jazzer.js/core` is an exact dev dependency; its native fuzzer ships as prebuilt binaries, so `--ignore-scripts` installs work.
 
 Jazzer receives a private copy of the seeds. It never modifies the checked-in `corpus/` or `hostile/` files. TypeScript fuzz targets and the source modules they import are compiled to JavaScript under ignored `node_modules/.cache/` before instrumentation so coverage feedback applies to parser code. The library continues to run only on `Uint8Array`; the Node `Buffer` supplied at Jazzer's boundary is passed as a byte view.
 
@@ -22,8 +22,6 @@ Seed copying and TypeScript compilation happen before Jazzer starts. `--seconds`
 ## CI runs
 
 `.github/workflows/fuzz-pr.yml` runs every target for 60 seconds on each pull request. `.github/workflows/fuzz-nightly.yml` runs each target for 30 minutes and can also be started manually. Both upload the target artifact directory when a run fails. Crash, timeout, and out-of-memory inputs use a `crash-*` filename; `run.json`, stdout, and stderr record the command, exit status, elapsed time, and observed peak memory.
-
-The repository package manifest and lockfile still need the lead-owned exact `@jazzer.js/core@4.0.0` dev dependency and `fuzz` / `fuzz:test` script aliases before these workflows can run Jazzer. Until that integration lands, direct runner invocations report that Jazzer.js is missing and the fuzz CI jobs are not ready to pass.
 
 ## Triage and promote a crash
 
@@ -43,4 +41,4 @@ Do not check a raw crash artifact into `hostile/` until it has been confirmed, m
 
 ## Add a target
 
-Create `packages/docsluice/fuzz/<name>.fuzz.ts` with a bounded `Uint8Array` entry point. Use the same limits that keep ordinary fuzz inputs fast, and let `DocsluiceError` represent an expected parser outcome. Do not catch arbitrary errors: they are crash signals. Update the `targets` and source-compilation lists in `scripts/fuzz-run.mjs`, add a target mapping and strict invocation path in `packages/docsluice/fuzz/runner/jazzer-target.mjs` (including the expected-error policy), add seed directories in `scripts/fuzz-run.mjs`, and register the name in both workflow matrices. Add a short run or regression test for the new target before merging.
+Create `packages/docsluice/fuzz/<name>.fuzz.ts` with a bounded `Uint8Array` entry point. Use limits that keep ordinary inputs fast, and let `DocsluiceError` (abort, limit and timeout errors) represent expected outcomes; rethrow anything else, because unexpected errors are the crash signal. Add a row to `TARGETS` in `scripts/fuzz-run.mjs` with the compiled module path, the export name and the seed folders, and add the name to the matrix in both `.github/workflows/fuzz-pr.yml` and `fuzz-nightly.yml` (a runner test checks that they match). Also call the target from a unit test with a few seeded inputs, so `npm test` exercises it on every PR.

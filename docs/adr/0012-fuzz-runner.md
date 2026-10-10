@@ -1,7 +1,8 @@
-# ADR 0012: Jazzer.js fuzz runner
+# 0012. Jazzer.js fuzz runner
 
-**Status:** Accepted  
-**Date:** 2026-10-09
+- Status: Accepted
+- Date: 2026-10-10
+- Requirement IDs: QA-6
 
 ## Context
 
@@ -11,7 +12,7 @@ QA-6 requires coverage-guided fuzzing for parser inputs on pull requests and nig
 
 Use `@jazzer.js/core` at exact version `4.0.0` as a development-only dependency. Its CLI accepts native ESM targets exporting `fuzz`, supports libFuzzer time and artifact flags, and works on Node 24. The package metadata has no install lifecycle scripts; an isolated `npm install --ignore-scripts --no-save --no-package-lock @jazzer.js/core@4.0.0` completed successfully. The local proof also showed a seeded exception creates a crash artifact, and a two-second XML run produced coverage feedback over compiled parser source.
 
-The wrapper runs one target per process, copies source seeds into a temporary corpus, compiles TypeScript targets and parser sources to ignored `node_modules/.cache/`, then invokes Jazzer with source instrumentation. Each target has a 60-second PR budget or a 30-minute nightly budget, a one-second per-input timeout, a 1 GiB Linux process-tree memory cap, and a hard outer watchdog. `DocsluiceError` exceptions are expected; unexpected exceptions, timeout, memory excess, or mutation of selected built-in prototypes fail the run. ZIP has a strict harness adapter because its existing target intentionally catches all exceptions for unit-fuzz convenience.
+The wrapper runs one target per process, copies source seeds into a temporary corpus, compiles TypeScript targets and parser sources to ignored `node_modules/.cache/`, then invokes Jazzer with source instrumentation. Each target has a 60-second PR budget or a 30-minute nightly budget, a one-second per-input timeout, a 1 GiB Linux process-tree memory cap, and a hard outer watchdog. `DocsluiceError` exceptions are expected; unexpected exceptions, timeout, memory excess, or mutation of selected built-in prototypes fail the run. ZIP has a strict harness adapter because its existing target intentionally catches all exceptions for unit-fuzz convenience. `scripts/fuzz-run.mjs` holds the one target table (module, export, seeds).
 
 ## Consequences
 
@@ -19,7 +20,7 @@ The wrapper runs one target per process, copies source seeds into a temporary co
 - Linux x64 CI is the supported initial host for process-tree RSS monitoring. Other hosts retain the per-input timeout and outer watchdog.
 - Jazzer/libFuzzer seed discoveries are run-local. Confirmed failures are promoted to `hostile/`, paired with a manifest row and regression test, then minimized before check-in.
 - New readers need a bounded target, source/seed registration, workflow matrix registration, and a regression test.
-- The exact dev dependency and root `npm run fuzz` alias must be wired by the integration owner; the implementation remains limited to assigned fuzz infrastructure paths.
+- `@jazzer.js/core` is pinned as an exact dev dependency and `npm run fuzz -- <target>` runs one target. Its native fuzzer ships as prebuilt `.node` binaries (Linux, macOS and Windows x64, Linux and macOS arm64), so installs stay script-free, as ADR 0011 requires for dev dependencies.
 
 ## Alternatives
 

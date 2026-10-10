@@ -63,7 +63,7 @@ Hostile files are made by scripts in `scripts/hostile/` where possible, so the r
 
 ## 4. Fuzzing (QA-6)
 
-- Existing parser targets are `zip`, `xml`, `ole`, and `detect`; `detection` covers text encoding and text-format detection. Add targets for new readers as they land.
+- Each reader and each parser has a target in `packages/docsluice/fuzz/<name>.fuzz.ts`, registered in the `TARGETS` table of `scripts/fuzz-run.mjs`: parsers `zip`, `xml`, `ole`, `detect`, `detection`, and readers `txt`, `markdown`, `csv`, `json`, `xml-reader`, `html`, `doc`. Run one locally with `npm run fuzz -- <target> [--seconds N]`.
 - Jazzer.js runs each target for 60 seconds on pull requests and 30 minutes nightly. The runner caps each input at one second and monitors the child process tree for a 1 GiB memory limit. Unexpected exceptions, hangs, memory-limit breaches, and built-in prototype changes fail the job.
 - Preserve every confirmed crash in `hostile/` with an expected result in `hostile/manifest.json`. See [testing-fuzz.md](testing-fuzz.md) for local commands, target wiring, artifacts, and crash triage.
 

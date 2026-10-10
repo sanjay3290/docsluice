@@ -4,7 +4,7 @@ import { chmod, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { executeJazzer } from './fuzz-run.mjs';
+import { executeJazzer, TARGETS } from './fuzz-run.mjs';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new globalThis.URL('../', import.meta.url));
@@ -218,3 +218,18 @@ test(
     }
   },
 );
+
+test('both fuzz workflows run every registered target', async () => {
+  const expected = Object.keys(TARGETS).sort();
+  for (const workflow of ['fuzz-pr.yml', 'fuzz-nightly.yml']) {
+    const text = await readFile(join(root, '.github/workflows', workflow), 'utf8');
+    const line = text.split('\n').find((row) => row.trim().startsWith('target: ['));
+    assert.ok(line, `${workflow} has a target matrix`);
+    const listed = line
+      .slice(line.indexOf('[') + 1, line.indexOf(']'))
+      .split(',')
+      .map((name) => name.trim())
+      .sort();
+    assert.deepEqual(listed, expected, `${workflow} matrix matches TARGETS`);
+  }
+});

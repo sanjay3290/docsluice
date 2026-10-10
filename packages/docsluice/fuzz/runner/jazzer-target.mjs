@@ -3,23 +3,22 @@ import { pathToFileURL } from 'node:url';
 
 const buildDir = globalThis.process.env.DOCSLUICE_FUZZ_BUILD_DIR;
 const targetName = globalThis.process.env.DOCSLUICE_FUZZ_TARGET;
-const targets = {
-  detect: ['fuzz/detect.fuzz.js', 'fuzzDetect'],
-  detection: ['fuzz/detection.fuzz.js', 'fuzzDetection'],
-  ole: ['fuzz/ole.fuzz.js', 'fuzzOle'],
-  xml: ['fuzz/xml.fuzz.js', 'fuzzXml'],
-};
+// scripts/fuzz-run.mjs owns the target table and passes the compiled module and export.
+const targetModule = globalThis.process.env.DOCSLUICE_FUZZ_MODULE;
+const targetExport = globalThis.process.env.DOCSLUICE_FUZZ_EXPORT;
 
-if (!buildDir || (!targets[targetName] && targetName !== 'zip')) {
+if (!buildDir || !targetName || !targetModule || !targetExport) {
   throw new Error(`Unknown or unbuilt DOCSLUICE_FUZZ_TARGET: ${targetName ?? '(unset)'}`);
 }
 
 const modulePath = (path) => pathToFileURL(resolve(buildDir, path)).href;
 const [{ DocsluiceError }, target] = await Promise.all([
   import(modulePath('src/core/errors.js')),
-  targetName === 'zip' ? import('./strict-zip.fuzz.mjs') : import(modulePath(targets[targetName][0])),
+  targetName === 'zip' ? import('./strict-zip.fuzz.mjs') : import(modulePath(targetModule)),
 ]);
-const runInput = targetName === 'zip' ? target.fuzzZipStrict : target[targets[targetName][1]];
+const runInput = targetName === 'zip' ? target.fuzzZipStrict : target[targetExport];
+if (typeof runInput !== 'function')
+  throw new Error(`Fuzz target ${targetName} has no ${targetExport} export`);
 
 const prototypes = [
   ...new Set([

@@ -16,6 +16,7 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write . && eslint . --fix",
     "test": "npm run test --workspaces --if-present",
+    "fuzz": "node scripts/fuzz-run.mjs",
     "test:dist": "npm run build && node --test packages/*/test-dist/*.test.mjs",
     "check:package": "npm run check:package --workspace packages/docsluice",
     "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run check:package && npm run test:dist"
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
     "@eslint/js": "^10.0.1",
+    "@jazzer.js/core": "4.0.0",
     "@size-limit/preset-small-lib": "14.2.0",
     "@types/node": "^24.0.0",
     "@typescript-eslint/rule-tester": "^8.71.1",
