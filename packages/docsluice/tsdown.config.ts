@@ -19,6 +19,7 @@ export default defineConfig({
     odt: 'src/readers/odt/index.ts',
     zip: 'src/readers/zip/index.ts',
     eml: 'src/readers/eml/index.ts',
+    epub: 'src/readers/epub/index.ts',
   },
   format: ['esm', 'cjs'],
   platform: 'neutral',

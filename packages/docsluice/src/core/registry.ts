@@ -183,6 +183,11 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     mimeTypes: ['message/rfc822'],
     load: () => import('../readers/eml/index.js').then((module) => module.emlReader),
   });
+  registry.add({
+    id: 'epub',
+    mimeTypes: ['application/epub+zip'],
+    load: () => import('../readers/epub/index.js').then((module) => module.epubReader),
+  });
 }
 
 /** The registry `extract()` and `detect()` use when no `registry` option is given. */

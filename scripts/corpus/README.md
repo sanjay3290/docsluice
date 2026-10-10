@@ -9,7 +9,7 @@ node scripts/corpus/build.mjs
 node --test scripts/corpus/build.test.mjs
 ```
 
-Use `--soffice "/path/with spaces/soffice"` or `SOFFICE` for a non-default executable. `--output DIR` selects a separate destination, and `--timeout-ms 60000` sets the conversion watchdog. A fresh isolated LibreOffice profile is used for each conversion. The tool generates 38 files: four each in DOCX, ODT, RTF, XLSX, ODS, PPTX and ODP, plus ten PDFs. The committed files were built with LibreOffice 24.2.7.2 on Linux; each `.license` records the version used.
+Use `--soffice "/path/with spaces/soffice"` or `SOFFICE` for a non-default executable. `--output DIR` selects a separate destination, and `--timeout-ms 60000` sets the conversion watchdog. A fresh isolated LibreOffice profile is used for each conversion. The tool generates 39 files: four each in DOCX, ODT, RTF, XLSX, ODS, PPTX and ODP, ten PDFs, and one EPUB 3 from the public-domain `gettysburg-address.fodt`. `node scripts/corpus/make-epub2.mjs` writes the EPUB 2 version of that text without LibreOffice, because LibreOffice exports EPUB 3 only. The committed files were built with LibreOffice 24.2.7.2 on Linux; each `.license` records the version used.
 
 Re-running the build gives the same documents with different timestamps and tool-generated identifiers: ZIP entry times and `meta.xml`/`docProps` dates, ODF `RsidRoot`/`Rsid` settings and tracked-change IDs, PowerPoint field GUIDs, and PDF creation dates and document IDs. Text, structure and features do not change. Because the files are committed, goldens never depend on a rebuild.
 

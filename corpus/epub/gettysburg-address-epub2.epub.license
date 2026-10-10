@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: made for docsluice by scripts/corpus/make-epub2.mjs from scripts/corpus/src/gettysburg-address.fodt
+Requirements: HTM-1
+Text: The Gettysburg Address by Abraham Lincoln (1863, Bliss copy), in the public domain.

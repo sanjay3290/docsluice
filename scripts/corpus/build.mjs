@@ -14,6 +14,7 @@ const conversions = new Map([
       ['docx', 'docx:Office Open XML Text'],
       ['odt', 'odt:writer8'],
       ['rtf', 'rtf:Rich Text Format'],
+      ['epub', 'epub:EPUB'],
       ['pdf', 'pdf:writer_pdf_Export'],
     ]),
   ],

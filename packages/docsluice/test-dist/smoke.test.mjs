@@ -146,6 +146,11 @@ test('EML reader subpath loads lazily', async () => {
   assert.equal(eml.emlReader.id, 'eml');
 });
 
+test('EPUB reader subpath loads lazily', async () => {
+  const epub = await import('docsluice/epub');
+  assert.equal(epub.epubReader.id, 'epub');
+});
+
 test('chunk is exported from the main entry', async () => {
   const docsluice = await import('docsluice');
   assert.equal(typeof docsluice.chunk, 'function');
