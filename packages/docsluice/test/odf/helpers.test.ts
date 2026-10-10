@@ -201,6 +201,27 @@ describe('ODF styles helpers', () => {
 });
 
 describe('ODF manifest helpers', () => {
+  const manifest = (...paths: string[]) =>
+    `<manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0">${paths
+      .map((path) => `<manifest:file-entry manifest:full-path="${path}" manifest:media-type=""/>`)
+      .join('')}</manifest:manifest>`;
+
+  it('accepts directory entries without adding them as parts (#218)', () => {
+    const ctx = context();
+    const result = parseOdfManifest(
+      manifest('/', 'Configurations2/', 'Configurations2/toolbar/', 'content.xml'),
+      ctx,
+    );
+    expect([...result.entries.keys()]).toEqual(['content.xml']);
+    expect(ctx.warnings.warnings).toEqual([]);
+  });
+
+  it.each(['a//b', '../x', '/abs', 'x/./', 'a//', '//'])('still rejects %j', (path) => {
+    const ctx = context();
+    expect(parseOdfManifest(manifest(path), ctx).entries.size).toBe(0);
+    expect(ctx.warnings.warnings.map((warning) => warning.code)).toEqual(['UNREADABLE_PART']);
+  });
+
   it('returns safe path/media pairs and reports encryption data without decrypting', () => {
     const ctx = context();
     const result = parseOdfManifest(
