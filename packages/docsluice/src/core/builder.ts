@@ -9,6 +9,7 @@ import type {
   Location,
   Metadata,
   NoteBlock,
+  Run,
   SectionBlock,
   Warning,
 } from './model.js';
@@ -142,7 +143,11 @@ function stripChildBytes(children: ChildDocument[], budget: Budget): void {
   }
 }
 
-function normalizeText(text: string, budget: Budget): string {
+/**
+ * `keepTrailing` keeps horizontal white space at the very end, for a run that more text follows:
+ * a run's trailing space is not a line end (MOD-3).
+ */
+function normalizeText(text: string, budget: Budget, keepTrailing = false): string {
   let lines = '';
   for (let index = 0; index < text.length; index++) {
     budget.tick();
@@ -171,7 +176,7 @@ function normalizeText(text: string, budget: Budget): string {
         budget.tick();
         index++;
       }
-      if (index < normalized.length && normalized.charCodeAt(index) !== 0x0a)
+      if (index < normalized.length ? normalized.charCodeAt(index) !== 0x0a : keepTrailing)
         output += normalized.slice(start, index);
       continue;
     }
@@ -221,6 +226,31 @@ function stripPersonalDocument(document: DocsluiceDocument, budget: Budget): voi
   }
 }
 
+/**
+ * Normalize a paragraph's runs so they join to exactly its normalized `text`: each run keeps its
+ * trailing white space except the last, and empty runs go. When a line end or a combining mark
+ * falls between two runs, normalizing them apart can still differ from the whole; then the runs
+ * become one plain run, so the text is never wrong.
+ */
+function normalizeRuns(paragraph: Extract<Block, { kind: 'paragraph' }>, budget: Budget): void {
+  const runs = paragraph.runs!;
+  const kept: Run[] = [];
+  let joined = '';
+  for (let index = 0; index < runs.length; index++) {
+    budget.tick();
+    const run = runs[index]!;
+    run.text = normalizeText(run.text, budget, index < runs.length - 1);
+    if (run.text.length === 0) continue;
+    joined += run.text;
+    kept.push(run);
+  }
+  if (joined !== paragraph.text) {
+    paragraph.runs = paragraph.text.length > 0 ? [{ text: paragraph.text }] : [];
+    return;
+  }
+  paragraph.runs = kept;
+}
+
 function normalizeBlockStrings(block: Block, stripAuthors: boolean, budget: Budget): void {
   const stack: Block[] = [block];
   while (stack.length > 0) {
@@ -235,12 +265,7 @@ function normalizeBlockStrings(block: Block, stripAuthors: boolean, budget: Budg
       case 'footer':
         if (current.kind === 'note' && stripAuthors) delete current.author;
         current.text = normalizeText(current.text, budget);
-        if (current.kind === 'paragraph') {
-          for (const run of current.runs ?? []) {
-            budget.tick();
-            run.text = normalizeText(run.text, budget);
-          }
-        }
+        if (current.kind === 'paragraph' && current.runs) normalizeRuns(current, budget);
         break;
       case 'list': {
         const items: ListItem[] = [];

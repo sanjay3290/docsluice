@@ -122,7 +122,7 @@ describe('HTML reader', () => {
     expect(doc.features.hasExternalLinks).toBe(false);
     expect(doc.blocks[0]).toMatchObject({
       text: 'See guide.',
-      runs: [{ text: 'See' }, { text: 'guide', href: 'https://example.invalid/' }, { text: '.' }],
+      runs: [{ text: 'See ' }, { text: 'guide', href: 'https://example.invalid/' }, { text: '.' }],
     });
     const resources = context(
       '<img src="https://example.invalid/a" alt="A"><iframe src="https://example.invalid/" onload="SECRET"></iframe>',
