@@ -1,4 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
-Source: made for docsluice with LibreOfficeDev 26.8.0.0.alpha0 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5 from scripts/corpus/src/scanned-image-only.fodt
+Source: made for docsluice with LibreOffice 24.2.7.2 420(Build:2) from scripts/corpus/src/scanned-image-only.fodt
 Requirements: PDF-4
 Notes: Synthetic fixture; requirement association needs reader-owner golden review.
