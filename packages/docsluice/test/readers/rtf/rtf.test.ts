@@ -529,7 +529,6 @@ describe('RTF reader', () => {
 
   it('takes list markers from listtext, maps symbol-font bullets and keeps lists before following tables', async () => {
     const { doc } = await parse(
-      // The \u escape is spelled as a plain string: Vitest's transform cooks \u inside String.raw.
       String.raw`{\rtf1{\listtext\pard\plain 1.\tab}\ls1\ilvl0 One\par{\listtext\pard\plain a)\tab}\ls1\ilvl1 Sub\par\pard{\listtext ` +
         '\\u61623?' +
         String.raw`\tab}\ls2 Dot\par\trowd\cellx1000\pard\intbl Cell\cell\row\pard Tail\par}`,

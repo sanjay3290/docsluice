@@ -8,6 +8,7 @@ Four kinds of test. Each issue says which kinds it needs. A reader needs all fou
 - Runner: Vitest. `npm test`.
 - Build small inputs in the test itself where you can (a tiny CSV string, a zip made in memory with a test helper).
 - Test helpers live in `packages/docsluice/test/helpers/`. A zip writer for tests is fine there; it never ships.
+- `String.raw` keeps `\u` escapes as text under Vitest (RTF, JSON and regex sources rely on this). Check that the tool that writes a test file does not decode them into characters: `test/string-raw.test.ts` fails when a `String.raw` template holds a non-ASCII character (#240).
 
 ## 2. Golden tests (QA-2)
 
