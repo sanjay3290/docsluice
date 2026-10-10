@@ -64,6 +64,9 @@
       "odt": [
         "dist/odt.d.ts"
       ],
+      "ods": [
+        "dist/ods.d.ts"
+      ],
       "zip": [
         "dist/zip.d.ts"
       ],
@@ -155,6 +158,10 @@
     "./odt": {
       "import": "./dist/odt.js",
       "require": "./dist/odt.cjs"
+    },
+    "./ods": {
+      "import": "./dist/ods.js",
+      "require": "./dist/ods.cjs"
     },
     "./zip": {
       "import": "./dist/zip.js",

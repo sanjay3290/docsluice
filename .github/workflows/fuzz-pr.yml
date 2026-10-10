@@ -36,6 +36,7 @@ jobs:
             mime,
             eml,
             msg,
+            ods,
             odf,
             odt,
             rtf,

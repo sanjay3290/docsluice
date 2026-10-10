@@ -1,0 +1,3 @@
+SPDX-License-Identifier: CC0-1.0
+Source: converted for docsluice with LibreOffice 24.2.7.2 420(Build:2) from corpus/xlsx/cell-types.xlsx (soffice --headless --convert-to ods)
+Notes: mirrors the XLSX corpus file. LibreOffice recalculates formulas on import, has no very hidden sheets and stores the ISO date text cell as a number, so those cells differ from the XLSX golden.
