@@ -17,7 +17,7 @@ import { resolvePlugin } from './plugin.js';
 import type { ReaderRegistry } from './registry.js';
 import { WarningSink } from './warnings.js';
 import { resolveFormat } from '../detect/detect.js';
-import { assignOffsets } from '../render/text.js';
+import { assignOffsets, createOffsetTracker } from '../render/text.js';
 
 const EMPTY_FORMATS = new Set(['png', 'jpeg', 'gif', 'tiff', 'webp', 'bmp', 'ico', 'audio', 'video']);
 const MAX_TIMER_DELAY = 2_147_483_647;
@@ -146,6 +146,8 @@ function childOptions(parent: ResolvedOptions, name: string, hint?: { mimeType?:
   const resolved = { ...parent, filename: name };
   delete resolved.format;
   delete resolved.mimeType;
+  // onBlock sees the top-level blocks of the document being extracted, not its attachments' blocks.
+  delete resolved.onBlock;
   if (hint?.mimeType !== undefined) resolved.mimeType = hint.mimeType;
   return Object.freeze(resolved);
 }
@@ -157,12 +159,43 @@ function childFailure(error: unknown): ChildDocument['error'] {
   };
 }
 
+/** Hooks `extractStream()` passes to the shared pipeline; never part of the public options. */
+interface StreamHooks {
+  /** Each top-level block of the root document, with final offsets, in output order. */
+  onBlock(block: Block): void;
+  /** Backpressure for `DocBuilder.flush()`: a promise while the consumer is behind. */
+  drain(): Promise<void> | undefined;
+}
+
 /** Build an extractor against an internal registry, used by pipeline and plugin tests. */
 export function createExtractor(
   registry: ReaderRegistry,
 ): (input: unknown, options?: ExtractOptions) => Promise<DocsluiceDocument> {
-  return async (input, options = {}) => {
-    const resolved = resolveOptions(options);
+  return (input, options = {}) => runExtraction(registry, input, options);
+}
+
+async function runExtraction(
+  registry: ReaderRegistry,
+  input: unknown,
+  options: ExtractOptions,
+  stream?: StreamHooks,
+): Promise<DocsluiceDocument> {
+  {
+    const caller = resolveOptions(options);
+    // The root document's onBlock receives blocks with their final offsets (EXT-2).
+    const userOnBlock = caller.onBlock;
+    let resolved = caller;
+    if (userOnBlock || stream) {
+      const track = createOffsetTracker();
+      resolved = Object.freeze({
+        ...caller,
+        onBlock: (block: Block): void => {
+          track(block);
+          userOnBlock?.(block);
+          stream?.onBlock(block);
+        },
+      });
+    }
     const startedAt = performance.now();
     const cancellation = new AbortController();
     const warnings = new WarningSink({ strict: resolved.strict });
@@ -228,6 +261,7 @@ export function createExtractor(
         resolution.result.mimeType,
         activeBudget,
         activeOptions,
+        path === '' && job.ancestors.length === 0 ? stream?.drain.bind(stream) : undefined,
       );
       if (resolution.result.encoding) out.setEncoding(resolution.result.encoding);
       const children: Array<Promise<void>> = [];
@@ -359,7 +393,7 @@ export function createExtractor(
       if (timer !== undefined) clearTimeout(timer);
       resolved.signal?.removeEventListener('abort', onAbort);
     }
-  };
+  }
 }
 
 /**
@@ -367,3 +401,125 @@ export function createExtractor(
  * Readers load on demand; children share byte, output and time allowances.
  */
 export const extract = createExtractor(defaultRegistry);
+
+/** Blocks waiting for the consumer before readers pause at their next `flush()`. */
+const STREAM_HIGH_WATER = 16;
+
+/** The stream `extractStream()` returns: top-level blocks as they are produced, then the document. */
+export interface BlockStream extends AsyncIterable<Block> {
+  /**
+   * The finished document (metadata, warnings, children and all blocks), as `extract()` returns it.
+   * Rejects with the extraction error, or with `AbortError` after the consumer stops early.
+   */
+  readonly result: Promise<DocsluiceDocument>;
+}
+
+/**
+ * Stream a document's top-level blocks as readers produce them (EXT-2): the same blocks, in the
+ * same order and with the same offsets as `extract()`. Breaking out of the loop stops the readers.
+ * Readers pause at their yield points while 16 blocks wait, so a slow consumer bounds memory.
+ *
+ * ```ts
+ * const stream = extractStream(bytes);
+ * for await (const block of stream) if (block.kind === 'heading') break;
+ * ```
+ */
+export function extractStream(input: unknown, options: ExtractOptions = {}): BlockStream {
+  return streamWith(defaultRegistry, input, options);
+}
+
+/** `extractStream` against an internal registry, used by pipeline tests. */
+export function createStreamExtractor(registry: ReaderRegistry): typeof extractStream {
+  return (input, options = {}) => streamWith(registry, input, options);
+}
+
+function streamWith(registry: ReaderRegistry, input: unknown, options: ExtractOptions): BlockStream {
+  const queue: Block[] = [];
+  const stop = new AbortController();
+  let stopped = false;
+  let finished = false;
+  let failure: { error: unknown } | undefined;
+  let wakeConsumer: (() => void) | undefined;
+  let wakeProducer: (() => void) | undefined;
+  const notifyConsumer = (): void => {
+    const wake = wakeConsumer;
+    wakeConsumer = undefined;
+    wake?.();
+  };
+  const notifyProducer = (): void => {
+    const wake = wakeProducer;
+    wakeProducer = undefined;
+    wake?.();
+  };
+  const outer = options.signal;
+  const onOuterAbort = (): void => stop.abort(outer?.reason);
+  if (outer?.aborted) onOuterAbort();
+  else outer?.addEventListener('abort', onOuterAbort, { once: true });
+
+  const result = runExtraction(
+    registry,
+    input,
+    { ...options, signal: stop.signal },
+    {
+      onBlock(block) {
+        if (stopped) return;
+        queue.push(block);
+        notifyConsumer();
+      },
+      drain() {
+        if (stopped || queue.length < STREAM_HIGH_WATER) return undefined;
+        return new Promise<void>((resolve) => {
+          wakeProducer = resolve;
+        });
+      },
+    },
+  ).finally(() => {
+    finished = true;
+    outer?.removeEventListener('abort', onOuterAbort);
+    notifyConsumer();
+  });
+  result.catch((error: unknown) => {
+    failure = { error };
+  });
+  // The caller may never read `result`; its rejection is reported through the iterator instead.
+  void result.catch(() => undefined);
+
+  const iterator: AsyncIterator<Block> = {
+    async next(): Promise<IteratorResult<Block>> {
+      while (true) {
+        if (stopped) return { done: true, value: undefined };
+        const block = queue.shift();
+        if (block !== undefined) {
+          if (queue.length < STREAM_HIGH_WATER) notifyProducer();
+          return { done: false, value: block };
+        }
+        if (finished) {
+          // Let the result's own handlers record a failure before deciding how to end.
+          await result.then(
+            () => undefined,
+            () => undefined,
+          );
+          if (failure) throw failure.error;
+          return { done: true, value: undefined };
+        }
+        await new Promise<void>((resolve) => {
+          wakeConsumer = resolve;
+        });
+      }
+    },
+    return(): Promise<IteratorResult<Block>> {
+      if (!stopped && !finished) {
+        stopped = true;
+        queue.length = 0;
+        notifyProducer();
+        stop.abort();
+      }
+      stopped = true;
+      return Promise.resolve({ done: true, value: undefined });
+    },
+  };
+  return {
+    result,
+    [Symbol.asyncIterator]: () => iterator,
+  };
+}

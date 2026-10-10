@@ -81,7 +81,8 @@ Format plugins (EXT-4, EXT-7) use the same `ReadContext`. They are registered wi
 to NFC and LF, removes C0 controls other than tab and line feed, trims trailing
 horizontal whitespace on each line, and keeps at most one blank line in a run.
 The transform hook sees each retained block once, including blocks inside
-sections; `onBlock` sees completed top-level blocks in output order. The builder
+sections; `onBlock` sees completed top-level blocks of the document being extracted (not its
+children's blocks) in output order, with their final offsets. The builder
 preflights text as it is staged inside open sections, then charges each completed
 top-level tree once against the shared output-character budget. If output is
 truncated, finishing unwinds open sections and returns accepted partial content.
@@ -90,6 +91,20 @@ container while retaining its content and emits one `DEPTH_LIMIT` warning. This
 structural flattening does not mark output as truncated. With `metadata: false`,
 the builder removes authors, custom properties, note authors, and the same
 personal fields from extracted child documents.
+
+### Streaming (EXT-2)
+
+`extractStream(input, options)` returns an async iterable of the root document's top-level
+blocks and a `result` promise for the finished document. It runs the same pipeline as
+`extract()`, so blocks, order and offsets are identical; offsets are assigned incrementally with
+the same layout as `assignOffsets`. Readers call `await ctx.out.flush()` between batches of
+output. Under `extractStream()` that call waits while 16 blocks are queued, so a slow consumer
+pauses the reader instead of letting blocks pile up; elsewhere it resolves at once. Breaking out of
+the loop aborts the extraction (the `result` promise then rejects with `AbortError`). Readers
+with yield points: CSV and TSV (every 1,000-row table), TXT (every 64 paragraphs), Markdown
+(every 256 lines), XLSX and XLS (every sheet). Other readers still stream their blocks, but
+produce them without pausing. Input is read whole before detection; reading it incrementally
+(IN-10) is a follow-up.
 
 ## The budget
 
