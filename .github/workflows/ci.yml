@@ -32,7 +32,11 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: dist
-          path: packages/docsluice/dist
+          # The built package: dist/ and the generated JSON Schema at the package root (MOD-2).
+          path: |
+            packages/docsluice/dist
+            packages/docsluice/schema.json
+          if-no-files-found: error
           retention-days: 3
 
   dist-node:
@@ -48,7 +52,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: dist
-          path: packages/docsluice/dist
+          path: packages/docsluice
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
@@ -65,7 +69,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: dist
-          path: packages/docsluice/dist
+          path: packages/docsluice
       - uses: actions/setup-node@v7
         with:
           node-version: 24
@@ -84,7 +88,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: dist
-          path: packages/docsluice/dist
+          path: packages/docsluice
       - uses: actions/setup-node@v7
         with:
           node-version: 24
@@ -103,7 +107,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: dist
-          path: packages/docsluice/dist
+          path: packages/docsluice
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
@@ -121,7 +125,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: dist
-          path: packages/docsluice/dist
+          path: packages/docsluice
       - uses: actions/setup-node@v7
         with:
           node-version: 24
