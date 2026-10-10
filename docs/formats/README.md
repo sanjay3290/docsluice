@@ -5,3 +5,5 @@ One page per format: what is read, what is not, options that apply, known gaps. 
 ## Signature detection
 
 The magic-byte sniffer recognizes BMP as `kind: 'bmp'` and ICO as `kind: 'ico'`, with MIME types `image/bmp` and `image/x-icon`. These identifiers indicate format detection only; this repository does not yet provide BMP or ICO content readers.
+
+7z and RAR archives are detected as `7z` and `rar`. They are read only by the opt-in plugins `docsluice/7z` and `docsluice/rar` ([7z.md](7z.md), [rar.md](rar.md)). Without a plugin, they fail with `UNSUPPORTED_FORMAT`.

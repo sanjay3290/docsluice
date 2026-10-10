@@ -176,6 +176,18 @@ test('XLS reader subpath loads lazily', async () => {
   assert.equal(xlsb.xlsbReader.id, 'xlsb');
 });
 
+test('7z and RAR plugins load from their subpaths', async () => {
+  const { sevenZipPlugin } = await import('docsluice/7z');
+  assert.equal(sevenZipPlugin.id, '7z');
+  const { rarPlugin } = await import('docsluice/rar');
+  assert.equal(rarPlugin.id, 'rar');
+});
+
+test('PPT reader subpath loads lazily', async () => {
+  const ppt = await import('docsluice/ppt');
+  assert.equal(ppt.pptReader.id, 'ppt');
+});
+
 test('PPTX reader subpath loads lazily', async () => {
   const pptx = await import('docsluice/pptx');
   assert.equal(pptx.pptxReader.id, 'pptx');

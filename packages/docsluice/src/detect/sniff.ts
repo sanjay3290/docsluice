@@ -17,6 +17,8 @@ const PNG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] as const;
 const TIFF_LE = [0x49, 0x49, 0x2a, 0x00] as const;
 const TIFF_BE = [0x4d, 0x4d, 0x00, 0x2a] as const;
 const PST = [0x21, 0x42, 0x44, 0x4e] as const;
+const SEVEN_ZIP = [0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c] as const;
+const RAR = [0x52, 0x61, 0x72, 0x21, 0x1a, 0x07] as const;
 const ICO = [0x00, 0x00, 0x01, 0x00] as const;
 const PE = [0x4d, 0x5a] as const;
 const ELF = [0x7f, 0x45, 0x4c, 0x46] as const;
@@ -66,6 +68,10 @@ export function sniffMagic(input: Uint8Array): MagicSniffResult {
   // Detection only (ADR 0015): Outlook PST mailboxes have no reader.
   if (matches(bytes, 0, PST) && length >= 10 && bytes[8] === 0x53 && bytes[9] === 0x4d)
     return result('pst', 'application/vnd.ms-outlook-pst');
+  // Detection only: 7z and RAR are read by the opt-in plugins `docsluice/7z` and `docsluice/rar`.
+  if (matches(bytes, 0, SEVEN_ZIP)) return result('7z', 'application/x-7z-compressed');
+  if (matches(bytes, 0, RAR) && (bytes[6] === 0x00 || (bytes[6] === 0x01 && bytes[7] === 0x00)))
+    return result('rar', 'application/vnd.rar');
 
   if (matches(bytes, 0, PNG)) {
     return result('png', 'image/png');
