@@ -26,6 +26,12 @@
       "doc": [
         "dist/doc.d.ts"
       ],
+      "7z": [
+        "dist/7z.d.ts"
+      ],
+      "rar": [
+        "dist/rar.d.ts"
+      ],
       "txt": [
         "dist/txt.d.ts"
       ],
@@ -134,6 +140,14 @@
     "./doc": {
       "import": "./dist/doc.js",
       "require": "./dist/doc.cjs"
+    },
+    "./7z": {
+      "import": "./dist/7z.js",
+      "require": "./dist/7z.cjs"
+    },
+    "./rar": {
+      "import": "./dist/rar.js",
+      "require": "./dist/rar.cjs"
     },
     "./txt": {
       "import": "./dist/txt.js",

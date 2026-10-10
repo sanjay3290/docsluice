@@ -35,6 +35,8 @@ const FORMAT_MIME = new Map<FormatId, string>([
   ['zip', 'application/zip'],
   ['gzip', 'application/gzip'],
   ['tar', 'application/x-tar'],
+  ['7z', 'application/x-7z-compressed'],
+  ['rar', 'application/vnd.rar'],
   ['ole', 'application/x-ole-storage'],
   ['png', 'image/png'],
   ['jpeg', 'image/jpeg'],
