@@ -64,6 +64,12 @@
       "zip": [
         "dist/zip.d.ts"
       ],
+      "gzip": [
+        "dist/gzip.d.ts"
+      ],
+      "tar": [
+        "dist/tar.d.ts"
+      ],
       "eml": [
         "dist/eml.d.ts"
       ],
@@ -140,6 +146,14 @@
     "./zip": {
       "import": "./dist/zip.js",
       "require": "./dist/zip.cjs"
+    },
+    "./gzip": {
+      "import": "./dist/gzip.js",
+      "require": "./dist/gzip.cjs"
+    },
+    "./tar": {
+      "import": "./dist/tar.js",
+      "require": "./dist/tar.cjs"
     },
     "./eml": {
       "import": "./dist/eml.js",

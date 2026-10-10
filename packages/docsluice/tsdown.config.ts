@@ -19,6 +19,8 @@ export default defineConfig({
     pptx: 'src/readers/pptx/index.ts',
     odt: 'src/readers/odt/index.ts',
     zip: 'src/readers/zip/index.ts',
+    gzip: 'src/readers/gzip/index.ts',
+    tar: 'src/readers/tar/index.ts',
     eml: 'src/readers/eml/index.ts',
     epub: 'src/readers/epub/index.ts',
   },

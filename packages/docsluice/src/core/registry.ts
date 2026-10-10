@@ -184,6 +184,16 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     load: () => import('../readers/zip/index.js').then((module) => module.zipReader),
   });
   registry.add({
+    id: 'gzip',
+    mimeTypes: ['application/gzip', 'application/x-gzip'],
+    load: () => import('../readers/gzip/index.js').then((module) => module.gzipReader),
+  });
+  registry.add({
+    id: 'tar',
+    mimeTypes: ['application/x-tar'],
+    load: () => import('../readers/tar/index.js').then((module) => module.tarReader),
+  });
+  registry.add({
     id: 'eml',
     mimeTypes: ['message/rfc822'],
     load: () => import('../readers/eml/index.js').then((module) => module.emlReader),
