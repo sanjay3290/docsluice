@@ -14,13 +14,17 @@ import { yamlReader } from '../src/readers/yaml/index.js';
 
 const READERS: readonly Reader[] = [yamlReader, ndjsonReader, icsReader, vcfReader, srtReader, vttReader];
 
-/** Run the YAML, NDJSON, iCalendar, vCard, SubRip and WebVTT readers on the same input, each bounded. */
+/**
+ * Run the YAML, NDJSON, iCalendar, vCard, SubRip and WebVTT readers on the same input, each bounded.
+ * Six readers share libFuzzer's 1 s per-input timeout, so each gets a sixth of it and the same
+ * output allowance as the single-reader targets.
+ */
 export async function fuzzTextFamilies(input: Uint8Array): Promise<void> {
   const bytes = input.subarray(0, 256 * 1024);
   for (const reader of READERS) {
     const warnings = new WarningSink();
     const budget = new Budget(
-      { ...DEFAULT_LIMITS, outputChars: 262_144, blockDepth: 32, timeMs: 1_000 },
+      { ...DEFAULT_LIMITS, outputChars: 65_536, blockDepth: 32, timeMs: 150 },
       { warnings },
     );
     const options: ResolvedOptions = {
