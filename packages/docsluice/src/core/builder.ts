@@ -144,10 +144,35 @@ function stripChildBytes(children: ChildDocument[], budget: Budget): void {
 }
 
 /**
+ * Whether `normalizeText` would return `text` unchanged: no CR or other control characters, no
+ * white space before a line end (or at the end unless `keepTrailing`), no run of more than two
+ * line breaks, and nothing at or above U+0300 that NFC could change. One linear scan, so most
+ * extracted text skips the copying passes (#182).
+ */
+function isNormalized(text: string, keepTrailing: boolean, budget: Budget): boolean {
+  let spaceRun = false;
+  let breaks = 0;
+  for (let index = 0; index < text.length; index++) {
+    if ((index & 0xfff) === 0) budget.tick();
+    const code = text.charCodeAt(index);
+    if (code === 0x0a) {
+      if (spaceRun || ++breaks > 2) return false;
+      continue;
+    }
+    breaks = 0;
+    if (code === 0x20 || code === 0x09) spaceRun = true;
+    else if (code < 0x20 || code >= 0x300) return false;
+    else spaceRun = false;
+  }
+  return keepTrailing || !spaceRun;
+}
+
+/**
  * `keepTrailing` keeps horizontal white space at the very end, for a run that more text follows:
  * a run's trailing space is not a line end (MOD-3).
  */
 function normalizeText(text: string, budget: Budget, keepTrailing = false): string {
+  if (isNormalized(text, keepTrailing, budget)) return text;
   let lines = '';
   for (let index = 0; index < text.length; index++) {
     budget.tick();
@@ -393,6 +418,7 @@ export class DocBuilder {
   #needsOcr = false;
   #depthWarned = false;
   #stopped = false;
+  #finished = false;
   #sectionDepth = 0;
   #pendingOutputChars = 0;
 
@@ -599,7 +625,9 @@ export class DocBuilder {
       mimeType: this.#mimeType,
       metadata,
       features: cloneValue(this.#features, this.#budget),
-      blocks: cloneValue(this.#blocks, this.#budget),
+      // Emitted blocks are already private copies, so the first finish hands them over instead of
+      // copying the whole tree again (#182); a later finish returns a copy.
+      blocks: this.#finished ? cloneValue(this.#blocks, this.#budget) : this.#blocks,
       children: cloneValue(this.#children, this.#budget),
       warnings: cloneValue(this.#budget.warnings.warnings as Warning[], this.#budget),
       stats: {
@@ -610,6 +638,7 @@ export class DocBuilder {
       },
     };
     if (this.#encoding !== undefined) document.encoding = this.#encoding;
+    this.#finished = true;
     return document;
   }
 

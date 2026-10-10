@@ -100,7 +100,7 @@ describe('DOCX performance (PERF-1)', () => {
     const doc = await createExtractor(registry)(zip);
     const elapsed = performance.now() - started;
     expect(doc.blocks.length).toBe(paragraphs.length);
-    // PERF-1 target is 1 s (about 0.8 s locally); shared CI runners get twice that before failing.
-    expect(elapsed).toBeLessThan(2_000);
+    // PERF-1 target is 1 s; this runs in about 0.4 s locally (#182), so CI keeps the 1 s bound.
+    expect(elapsed).toBeLessThan(1_000);
   });
 });

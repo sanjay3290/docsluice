@@ -216,3 +216,22 @@ describe('Budget', () => {
     expect(budget.truncated).toBe(true);
   });
 });
+
+describe('cancellation checks (#182)', () => {
+  it('sees an abort through the signal event, without reading the getter on every tick', () => {
+    const controller = new AbortController();
+    const budget = new Budget(resolveLimits(), { signal: controller.signal });
+    budget.tick();
+    controller.abort(new Error('stop'));
+    expect(() => budget.tick()).toThrow(AbortError);
+    expect(() => new Budget(resolveLimits(), { signal: controller.signal }).tick()).toThrow(AbortError);
+  });
+
+  it('polls a signal-like object that cannot take listeners', () => {
+    const signal = { aborted: false, reason: undefined } as unknown as AbortSignal;
+    const budget = new Budget(resolveLimits(), { signal });
+    budget.tick();
+    (signal as { aborted: boolean }).aborted = true;
+    expect(() => budget.tick()).toThrow(AbortError);
+  });
+});

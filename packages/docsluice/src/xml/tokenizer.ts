@@ -243,6 +243,8 @@ function decodeEntities(
   ctx: XmlContext,
   state: { unknownEntity: boolean; malformed: boolean },
 ): string {
+  // Most text and attribute values hold no reference at all (#182).
+  if (value.indexOf('&') < 0) return value;
   const pieces: string[] = [];
   let cursor = 0;
   while (cursor < value.length) {
@@ -293,6 +295,9 @@ function decodeEntities(
 }
 
 /** Scan XML using a bounded hand-written scanner. DTDs and PIs are only skipped. */
+/** The namespace map of an element that declares none. Never written to. */
+const NO_NAMESPACES: Map<string, string> = new Map();
+
 export function scanXml(input: Uint8Array | string, handler: XmlHandler, ctx: XmlContext): void {
   const text = decodeInput(input, ctx);
   const frames: ElementFrame[] = [];
@@ -308,13 +313,22 @@ export function scanXml(input: Uint8Array | string, handler: XmlHandler, ctx: Xm
     cursor += 1;
     return value;
   };
+  // The hot scans move the cursor directly and tick once per scan, not once per character (#182).
   const skipSpace = (): void => {
-    while (cursor < text.length && isSpace(text.charCodeAt(cursor))) consume();
+    ctx.budget.tick();
+    while (cursor < text.length && isSpace(text.charCodeAt(cursor))) cursor += 1;
   };
   const readName = (): string => {
+    ctx.budget.tick();
     const start = cursor;
-    while (cursor < text.length && isNameChar(text.charCodeAt(cursor))) consume();
+    while (cursor < text.length && isNameChar(text.charCodeAt(cursor))) cursor += 1;
     return text.slice(start, cursor);
+  };
+  /** Move to the next `char` (or the end) with one native search. */
+  const skipTo = (char: string): void => {
+    ctx.budget.tick();
+    const found = text.indexOf(char, cursor);
+    cursor = found < 0 ? text.length : found;
   };
   const emitText = (raw: string): boolean => {
     if (raw.length === 0) return true;
@@ -394,7 +408,7 @@ export function scanXml(input: Uint8Array | string, handler: XmlHandler, ctx: Xm
       ctx.budget.tick();
       if (text.charCodeAt(cursor) !== 60) {
         const start = cursor;
-        while (cursor < text.length && text.charCodeAt(cursor) !== 60) consume();
+        skipTo('<');
         if (!emitText(text.slice(start, cursor))) stopped = true;
         reportStateWarnings();
         continue;
@@ -506,7 +520,7 @@ export function scanXml(input: Uint8Array | string, handler: XmlHandler, ctx: Xm
         if (quote === 34 || quote === 39) {
           consume();
           const valueStart = cursor;
-          while (cursor < text.length && text.charCodeAt(cursor) !== quote) consume();
+          skipTo(quote === 34 ? '"' : "'");
           rawValue = text.slice(valueStart, cursor);
           if (cursor < text.length) consume();
           else malformed();
@@ -523,11 +537,13 @@ export function scanXml(input: Uint8Array | string, handler: XmlHandler, ctx: Xm
       if (!tagFinished) malformed();
       reportStateWarnings();
 
-      const namespaces = new Map<string, string>();
+      // Most elements declare no namespace and share one empty map.
+      let namespaces = NO_NAMESPACES;
       for (const [attrName, value] of attrs) {
         ctx.budget.tick();
-        if (attrName === 'xmlns') namespaces.set('', value);
-        else if (attrName.startsWith('xmlns:')) namespaces.set(attrName.slice(6), value);
+        if (attrName !== 'xmlns' && !attrName.startsWith('xmlns:')) continue;
+        if (namespaces === NO_NAMESPACES) namespaces = new Map<string, string>();
+        namespaces.set(attrName === 'xmlns' ? '' : attrName.slice(6), value);
       }
       const colon = name.indexOf(':');
       const prefix = colon < 0 ? '' : name.slice(0, colon);
