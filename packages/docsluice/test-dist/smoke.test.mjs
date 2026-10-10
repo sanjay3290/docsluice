@@ -110,3 +110,8 @@ test('HTML reader subpath loads lazily', async () => {
   const html = await import('docsluice/html');
   assert.equal(html.htmlReader.id, 'html');
 });
+
+test('DOCX reader subpath loads lazily', async () => {
+  const docx = await import('docsluice/docx');
+  assert.equal(docx.docxReader.id, 'docx');
+});

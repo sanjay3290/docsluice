@@ -81,3 +81,8 @@ defaultRegistry.add({
   mimeTypes: ['text/html'],
   load: () => import('../readers/html/index.js').then((module) => module.htmlReader),
 });
+defaultRegistry.add({
+  id: 'docx',
+  mimeTypes: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+  load: () => import('../readers/docx/index.js').then((module) => module.docxReader),
+});

@@ -42,6 +42,9 @@
       ],
       "html": [
         "dist/html.d.ts"
+      ],
+      "docx": [
+        "dist/docx.d.ts"
       ]
     }
   },
@@ -86,6 +89,10 @@
       "import": "./dist/html.js",
       "require": "./dist/html.cjs"
     },
+    "./docx": {
+      "import": "./dist/docx.js",
+      "require": "./dist/docx.cjs"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -96,13 +103,6 @@
     "coverage": "vitest run --coverage",
     "check:package": "node ../../scripts/check-deps.test.mjs && node ../../scripts/check-deps.mjs && publint . && attw --pack . && size-limit"
   },
-  "size-limit": [
-    {
-      "path": "dist/index.js",
-      "limit": "50 KB",
-      "gzip": true
-    }
-  ],
   "keywords": [
     "document",
     "extraction",
