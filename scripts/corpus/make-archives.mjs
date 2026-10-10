@@ -1,3 +1,4 @@
+import { TextEncoder } from 'node:util';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { URL } from 'node:url';
 import { TAR_END, concat, gzipMember, paxEntry, tarEntry } from './archive-writer.mjs';

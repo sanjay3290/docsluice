@@ -1,3 +1,4 @@
+import { DocsluiceError } from '../src/core/errors.js';
 import { Budget } from '../src/core/budget.js';
 import { DocBuilder } from '../src/core/builder.js';
 import { DEFAULT_LIMITS } from '../src/core/limits.js';
@@ -30,7 +31,9 @@ export async function fuzzGzip(bytes: Uint8Array): Promise<void> {
   try {
     await reader.read(context);
     out.finish();
-  } catch {
-    // Invalid streams and expected resource limits are ordinary fuzz outcomes.
+  } catch (error) {
+    // Malformed archives and resource limits are ordinary outcomes; anything else is a finding.
+    if (error instanceof DocsluiceError) return;
+    throw error;
   }
 }

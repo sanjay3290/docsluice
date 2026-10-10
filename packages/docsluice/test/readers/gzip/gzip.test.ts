@@ -78,7 +78,12 @@ describe('gzip reader', () => {
   });
 
   it('inflates a CSV to one child', async () => {
-    const { ctx, out, extracted, budget } = makeContext(fixture('corpus/gzip/scores.csv.gz'), {}, 'extract', 'other.gz');
+    const { ctx, out, extracted, budget } = makeContext(
+      fixture('corpus/gzip/scores.csv.gz'),
+      {},
+      'extract',
+      'other.gz',
+    );
     await reader.read(ctx);
     expect(extracted).toHaveLength(1);
     expect(new TextDecoder().decode(extracted[0]!.bytes)).toContain('species,count,site');
@@ -111,7 +116,9 @@ describe('gzip reader', () => {
     const multi = makeContext(fixture('corpus/gzip/multi-member.txt.gz'));
     await reader.read(multi.ctx);
     expect(multi.budget.entries).toBe(2);
-    expect(new TextDecoder().decode(multi.extracted[0]!.bytes)).toBe('first member line\nsecond member line\n');
+    expect(new TextDecoder().decode(multi.extracted[0]!.bytes)).toBe(
+      'first member line\nsecond member line\n',
+    );
   });
 
   it('bounds an oversized FNAME while scanning through its terminator', async () => {
@@ -152,7 +159,12 @@ describe('gzip reader', () => {
     const skipped = makeContext(fixture('corpus/gzip/scores.csv.gz'), {}, 'skip');
     await reader.read(skipped.ctx);
     expect(skipped.extracted).toEqual([]);
-    const named = makeContext(gzipSync(new TextEncoder().encode('x\n')), {}, 'extract', 'C:\\..\\tmp\\sheet.csv.gz');
+    const named = makeContext(
+      gzipSync(new TextEncoder().encode('x\n')),
+      {},
+      'extract',
+      'C:\\..\\tmp\\sheet.csv.gz',
+    );
     await reader.read(named.ctx);
     expect(named.extracted[0]?.name).toBe('tmp/sheet.csv');
   });
@@ -170,7 +182,13 @@ describe('gzip reader', () => {
     await expect(reader.read(ratio.ctx)).rejects.toBeInstanceOf(LimitExceededError);
     const controller = new AbortController();
     controller.abort();
-    const cancelled = makeContext(fixture('corpus/gzip/scores.csv.gz'), {}, 'extract', undefined, controller.signal);
+    const cancelled = makeContext(
+      fixture('corpus/gzip/scores.csv.gz'),
+      {},
+      'extract',
+      undefined,
+      controller.signal,
+    );
     await expect(reader.read(cancelled.ctx)).rejects.toHaveProperty('code', 'ABORTED');
   });
 
@@ -186,7 +204,9 @@ describe('gzip reader', () => {
     expect(cut.extracted).toHaveLength(1);
     expect(cut.warnings.warnings.map(({ code }) => code)).toEqual(['UNREADABLE_PART']);
     // Nothing inflated: the file is corrupt.
-    await expect(reader.read(makeContext(fixture('corpus/gzip/scores.csv.gz').subarray(0, 24)).ctx)).rejects.toBeDefined();
+    await expect(
+      reader.read(makeContext(fixture('corpus/gzip/scores.csv.gz').subarray(0, 24)).ctx),
+    ).rejects.toBeDefined();
   });
 
   it('validates FHCRC instead of relying on inflater behavior', async () => {

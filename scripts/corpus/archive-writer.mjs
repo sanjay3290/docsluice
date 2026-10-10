@@ -1,3 +1,4 @@
+import { TextEncoder } from 'node:util';
 import { deflateRawSync } from 'node:zlib';
 
 // Deterministic GZIP and TAR writers for corpus and hostile fixtures (RFC 1952, POSIX ustar/pax).

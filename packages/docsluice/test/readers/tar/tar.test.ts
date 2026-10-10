@@ -143,7 +143,9 @@ describe('tar reader', () => {
   });
 
   it('preflights child depth only for an extractable regular file', async () => {
-    const { ctx, out, budget, extracted } = makeContext(fixture('corpus/tar/nested-folders.tar'), { childDepth: 0 });
+    const { ctx, out, budget, extracted } = makeContext(fixture('corpus/tar/nested-folders.tar'), {
+      childDepth: 0,
+    });
     await reader.read(ctx);
     expect(extracted).toEqual([]);
     expect(out.finish().children.some((child) => child.status === 'listed')).toBe(true);
@@ -224,18 +226,18 @@ describe('tar reader', () => {
   });
 
   it('rejects invalid checksum and size lies', async () => {
-    await expect(reader.read(makeContext(fixture('hostile/tar/bad-checksum.tar')).ctx)).rejects.toBeInstanceOf(
-      CorruptFileError,
-    );
+    await expect(
+      reader.read(makeContext(fixture('hostile/tar/bad-checksum.tar')).ctx),
+    ).rejects.toBeInstanceOf(CorruptFileError);
     await expect(reader.read(makeContext(fixture('hostile/tar/size-lie.tar')).ctx)).rejects.toBeInstanceOf(
       CorruptFileError,
     );
   });
 
   it('bounds PAX metadata claims and entry count', async () => {
-    await expect(reader.read(makeContext(fixture('hostile/tar/pax-size-lie.tar')).ctx)).rejects.toBeInstanceOf(
-      CorruptFileError,
-    );
+    await expect(
+      reader.read(makeContext(fixture('hostile/tar/pax-size-lie.tar')).ctx),
+    ).rejects.toBeInstanceOf(CorruptFileError);
     await expect(
       reader.read(makeContext(fixture('corpus/tar/nested-folders.tar'), { zipEntries: 0 }).ctx),
     ).rejects.toBeInstanceOf(LimitExceededError);

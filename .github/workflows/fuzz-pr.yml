@@ -40,6 +40,8 @@ jobs:
             rtf,
             epub,
             xls,
+            gzip,
+            tar,
           ]
     steps:
       - uses: actions/checkout@v7
