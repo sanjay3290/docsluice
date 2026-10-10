@@ -2,7 +2,7 @@ import { CorruptFileError, EncryptedError } from '../../core/errors.js';
 import type { ReadContext, Reader } from '../../core/reader.js';
 import { parseXml, type XmlElement } from '../../xml/index.js';
 import { openZip, type ZipArchive, type ZipEntry } from '../../zip/index.js';
-import { emitHtml } from '../html/index.js';
+import { emitHtml } from '../../html/index.js';
 
 interface ManifestItem {
   id: string;
@@ -103,8 +103,65 @@ function parsePart(bytes: Uint8Array, ctx: ReadContext): XmlElement | undefined 
   return parseXml(bytes, { budget: ctx.budget, warnings: ctx.warnings, path: ctx.path });
 }
 
+/** The number made of `count` digits at `start`, or -1 when any of them is not a digit. */
+function digitsAt(value: string, start: number, count: number): number {
+  let result = 0;
+  for (let index = start; index < start + count; index++) {
+    const code = value.charCodeAt(index);
+    if (!(code >= 48 && code <= 57)) return -1;
+    result = result * 10 + code - 48;
+  }
+  return result;
+}
+
+/**
+ * An OPF date (`YYYY`, `YYYY-MM`, `YYYY-MM-DD`, or that date with `THH:MM[:SS[.fff]]` and an optional
+ * `Z` or `±HH:MM` zone) as ISO 8601 UTC. Other forms are ignored, because `Date.parse` is engine-defined
+ * for them; a date-time without a zone is read as UTC, never in the host time zone.
+ */
 function canonicalDate(value: string): string | undefined {
-  const parsed = Date.parse(value);
+  const text = value.trim();
+  const year = digitsAt(text, 0, 4);
+  if (year < 1 || text.length > 40) return undefined;
+  const month = text.length >= 7 ? digitsAt(text, 5, 2) : 1;
+  const day = text.length >= 10 ? digitsAt(text, 8, 2) : 1;
+  if ((text.length >= 7 && text[4] !== '-') || (text.length >= 10 && text[7] !== '-')) return undefined;
+  if (text.length !== 4 && text.length !== 7 && text.length < 10) return undefined;
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (month < 1 || month > 12 || day < 1 || day > days[month - 1]!) return undefined;
+  const date = `${text.slice(0, 4)}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  if (text.length <= 10) return `${date}T00:00:00.000Z`;
+  const hour = digitsAt(text, 11, 2);
+  const minute = digitsAt(text, 14, 2);
+  if (text[10] !== 'T' || text[13] !== ':' || hour < 0 || hour > 23 || minute < 0 || minute > 59) return undefined;
+  let index = 16;
+  let second = 0;
+  if (text[index] === ':') {
+    second = digitsAt(text, 17, 2);
+    if (second < 0 || second > 59) return undefined;
+    index = 19;
+  }
+  let fraction = '000';
+  if (text[index] === '.') {
+    let end = index + 1;
+    while (end < text.length && digitsAt(text, end, 1) >= 0) end++;
+    if (end === index + 1) return undefined;
+    fraction = text.slice(index + 1, Math.min(end, index + 4)).padEnd(3, '0');
+    index = end;
+  }
+  const zone = text.slice(index);
+  const validZone =
+    zone === '' ||
+    zone === 'Z' ||
+    (zone.length === 6 &&
+      (zone[0] === '+' || zone[0] === '-') &&
+      digitsAt(zone, 1, 2) >= 0 &&
+      zone[3] === ':' &&
+      digitsAt(zone, 4, 2) >= 0);
+  if (!validZone) return undefined;
+  const pad = (number: number): string => String(number).padStart(2, '0');
+  const parsed = Date.parse(`${date}T${pad(hour)}:${pad(minute)}:${pad(second)}.${fraction}${zone || 'Z'}`);
   return Number.isFinite(parsed) ? new Date(parsed).toISOString() : undefined;
 }
 
@@ -112,13 +169,27 @@ function addUnreadable(ctx: ReadContext): void {
   ctx.warnings.add({ code: 'UNREADABLE_PART', message: 'An EPUB package part could not be read.' });
 }
 
+/** Font obfuscation (IDPF and Adobe) hides font files from copying; it is not encryption of content. */
+const FONT_OBFUSCATION = new Set(['http://www.idpf.org/2008/embedding', 'http://ns.adobe.com/pdf/enc#RC']);
+
+/** Paths that `META-INF/encryption.xml` lists as encrypted, leaving out obfuscated fonts. */
 function encryptionReferences(root: XmlElement, ctx: ReadContext): Set<string> {
   const paths = new Set<string>();
-  for (const element of descendants(root, ctx)) {
+  for (const data of descendants(root, ctx)) {
     ctx.budget.tick();
-    if (element.localName !== 'CipherReference') continue;
-    const uri = localAttribute(element, 'URI');
-    if (uri) paths.add(uri);
+    if (data.localName !== 'EncryptedData') continue;
+    let algorithm: string | undefined;
+    const uris: string[] = [];
+    for (const element of descendants(data, ctx)) {
+      ctx.budget.tick();
+      if (element.localName === 'EncryptionMethod') algorithm ??= localAttribute(element, 'Algorithm');
+      else if (element.localName === 'CipherReference') {
+        const uri = localAttribute(element, 'URI');
+        if (uri) uris.push(uri);
+      }
+    }
+    if (algorithm !== undefined && FONT_OBFUSCATION.has(algorithm)) continue;
+    for (const uri of uris) paths.add(uri);
   }
   return paths;
 }
@@ -171,27 +242,32 @@ function chapterTitles(root: XmlElement | undefined, base: string, ctx: ReadCont
         }
     }
     const path = target ? resolvePath(base, target, ctx) : undefined;
-    if (path && title) titles.set(path, title);
+    // The first entry for a file names its chapter; later ones point at fragments inside it.
+    if (path && title && !titles.has(path)) titles.set(path, title);
   }
   return titles;
 }
 
+/** Chapter titles from the EPUB 3 navigation document's `toc` nav (landmarks and page lists are not titles). */
 function navigationTitles(root: XmlElement | undefined, base: string, ctx: ReadContext): Map<string, string> {
   const titles = new Map<string, string>();
   if (!root) return titles;
-  for (const element of descendants(root, ctx)) {
+  const navs = descendants(root, ctx).filter((element) => element.localName === 'nav');
+  const toc = navs.find((nav) => (localAttribute(nav, 'type') ?? '').split(' ').includes('toc'));
+  const scope = toc ?? (navs.length === 0 ? root : navs[0]!);
+  for (const element of descendants(scope, ctx)) {
     ctx.budget.tick();
     if (element.localName !== 'a') continue;
     const href = localAttribute(element, 'href');
     const path = href ? resolvePath(base, href, ctx) : undefined;
     const title = textContent(element, ctx);
-    if (path && title) titles.set(path, title);
+    if (path && title && !titles.has(path)) titles.set(path, title);
   }
   return titles;
 }
 
 /** Read EPUB package metadata and chapter XHTML in OPF spine order. */
-export const reader: Reader = {
+export const epubReader: Reader = {
   id: 'epub',
   mimeTypes: ['application/epub+zip'],
   async read(ctx: ReadContext): Promise<void> {
@@ -240,7 +316,6 @@ export const reader: Reader = {
     const encryptionEntry = byName.get('META-INF/encryption.xml');
     const encryptedPaths = new Set<string>();
     if (encryptionEntry) {
-      ctx.out.setFeature('isEncrypted');
       const encryptionBytes = await readEntry(zip, encryptionEntry, ctx);
       const encryption = encryptionBytes ? parsePart(encryptionBytes, ctx) : undefined;
       if (encryption) {
@@ -249,6 +324,7 @@ export const reader: Reader = {
           if (path) encryptedPaths.add(path);
         }
       } else addUnreadable(ctx);
+      if (encryptedPaths.size > 0) ctx.out.setFeature('isEncrypted');
     }
 
     const elements = descendants(opf, ctx);
@@ -336,6 +412,17 @@ export const reader: Reader = {
       if (isNcx) ncxTitles = chapterTitles(root, navigationDirectory, ctx);
     }
 
+    // A DRM book (every linear spine document encrypted) cannot be read at all; never try to decrypt.
+    const linearChapters = spineRefs
+      .filter((ref) => localAttribute(ref, 'linear')?.toLowerCase() !== 'no')
+      .map((ref) => manifest.get(localAttribute(ref, 'idref') ?? ''))
+      .filter((item): item is ManifestItem => item !== undefined);
+    if (
+      linearChapters.length > 0 &&
+      linearChapters.every((item) => encryptedPaths.has(item.path) || byName.get(item.path)?.isEncrypted === true)
+    )
+      throw new EncryptedError('unsupported-encryption');
+
     for (const ref of spineRefs) {
       ctx.budget.tick();
       if (ctx.budget.outputChars >= ctx.budget.limits.outputChars) {
@@ -382,4 +469,3 @@ export const reader: Reader = {
   },
 };
 
-export default reader;

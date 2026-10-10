@@ -9,7 +9,7 @@ import type { ResolvedOptions } from '../../../src/core/options.js';
 import { WarningSink } from '../../../src/core/warnings.js';
 import { makeZip } from '../../helpers/zip.js';
 import { fuzzEpub } from '../../../fuzz/epub.fuzz.js';
-import reader from '../../../src/readers/epub/index.js';
+import { epubReader as reader } from '../../../src/readers/epub/index.js';
 
 const enc = (text: string): Uint8Array => new TextEncoder().encode(text);
 
@@ -41,7 +41,7 @@ async function parse(
   return { doc: out.finish(), warnings: warnings.warnings };
 }
 
-function miniatureEpub(encryption = false): Uint8Array {
+function miniatureEpub(encryption: false | 'chapter' | 'font' | 'second' = false): Uint8Array {
   const files: Array<{ name: string; data: Uint8Array; method?: number }> = [
     { name: 'mimetype', data: enc('application/epub+zip') },
     {
@@ -51,16 +51,26 @@ function miniatureEpub(encryption = false): Uint8Array {
     {
       name: 'OPS/book.opf',
       data: enc(
-        '<package><metadata><dc:title xmlns:dc="x">Safe Book</dc:title></metadata><manifest><item id="ch" href="Text/ch.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="ch"/></spine></package>',
+        '<package><metadata><dc:title xmlns:dc="x">Safe Book</dc:title></metadata><manifest><item id="ch" href="Text/ch.xhtml" media-type="application/xhtml+xml"/><item id="ch2" href="Text/ch2.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="ch"/><itemref idref="ch2"/></spine></package>',
       ),
     },
     { name: 'OPS/Text/ch.xhtml', data: enc('<html><body><p>Readable chapter.</p></body></html>') },
+    { name: 'OPS/Text/ch2.xhtml', data: enc('<html><body><p>Second chapter.</p></body></html>') },
   ];
+  const reference = (uri: string, algorithm: string) =>
+    `<EncryptedData><EncryptionMethod Algorithm="${algorithm}"/><CipherData><CipherReference URI="${uri}"/></CipherData></EncryptedData>`;
+  const aes = 'http://www.w3.org/2001/04/xmlenc#aes128-cbc';
   if (encryption)
     files.push({
       name: 'META-INF/encryption.xml',
       data: enc(
-        '<encryption><EncryptedData><CipherData><CipherReference URI="OPS/Text/ch.xhtml"/></CipherData></EncryptedData></encryption>',
+        `<encryption>${
+          encryption === 'font'
+            ? reference('OPS/Fonts/a.otf', 'http://www.idpf.org/2008/embedding')
+            : encryption === 'second'
+              ? reference('OPS/Text/ch2.xhtml', aes)
+              : reference('OPS/Text/ch.xhtml', aes) + reference('OPS/Text/ch2.xhtml', aes)
+        }</encryption>`,
       ),
     });
   return makeZip(files);
@@ -79,9 +89,9 @@ describe('EPUB reader', () => {
           '<package><manifest><item id="ch" href="ch.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="ch"/></spine></package>',
         ),
       },
-      { name: 'ch.xhtml', data: enc('<div><div><p>secret</p></div></div>') },
+      { name: 'ch.xhtml', data: enc('<p>first paragraph</p><p>secret</p>') },
     ]);
-    const budget = new Budget(resolveLimits({ blockDepth: 2 }), { onLimit: 'throw' });
+    const budget = new Budget(resolveLimits({ blockDepth: 2, outputChars: 20 }), { onLimit: 'throw' });
     const out = new DocBuilder('epub', 'application/epub+zip', budget);
     await expect(
       reader.read({
@@ -220,10 +230,17 @@ describe('EPUB reader', () => {
   });
 
   it('treats encrypted package parts as unreadable and throws for encrypted package control data', async () => {
-    const { doc, warnings } = await parse(miniatureEpub(true));
+    const { doc, warnings } = await parse(miniatureEpub('second'));
     expect(doc.features.isEncrypted).toBe(true);
-    expect(doc.blocks).toEqual([]);
+    expect(JSON.stringify(doc.blocks)).toContain('Readable chapter.');
+    expect(JSON.stringify(doc.blocks)).not.toContain('Second chapter.');
     expect(warnings.map(({ code }) => code)).toContain('UNREADABLE_PART');
+    // A DRM book, every chapter encrypted, is not readable at all.
+    await expect(parse(miniatureEpub('chapter'))).rejects.toBeInstanceOf(EncryptedError);
+    // Font obfuscation hides fonts, not content: it is not encryption.
+    const fonts = await parse(miniatureEpub('font'));
+    expect(fonts.doc.features.isEncrypted).toBe(false);
+    expect(fonts.warnings).toEqual([]);
     await expect(
       parse(makeZip([{ name: 'META-INF/container.xml', data: enc('<container/>'), flags: 0x0801 }])),
     ).rejects.toBeInstanceOf(EncryptedError);

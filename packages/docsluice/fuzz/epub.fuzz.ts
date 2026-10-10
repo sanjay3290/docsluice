@@ -5,7 +5,7 @@ import { DocBuilder } from '../src/core/builder.js';
 import type { ReadContext } from '../src/core/reader.js';
 import type { ResolvedOptions } from '../src/core/options.js';
 import { WarningSink } from '../src/core/warnings.js';
-import epubReader from '../src/readers/epub/index.js';
+import { epubReader } from '../src/readers/epub/index.js';
 
 /** Run bounded arbitrary bytes through the EPUB ZIP/XML/package path. */
 export async function fuzzEpub(input: Uint8Array): Promise<void> {
