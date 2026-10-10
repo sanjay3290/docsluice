@@ -13,3 +13,7 @@ await writeFile(
     '<script>never closed SECRET\n',
 );
 await writeFile(new URL('entity-flood.html', html), `<!doctype html><p>${'&amp;&#x1F600;&bogus;&'.repeat(20_000)}</p>\n`);
+await writeFile(
+  new URL('remote-image.html', html),
+  '<html><body><img src="https://example.invalid/pixel.png" alt="remote"></body></html>\n',
+);
