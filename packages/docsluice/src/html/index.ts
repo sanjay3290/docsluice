@@ -480,14 +480,27 @@ function inlineImages(
   return true;
 }
 
+/** Selects the part of a page to emit, and elements inside it to leave out (`mainContent`, HTM-2). */
+export type HtmlSelector = (
+  root: HtmlNode,
+  ctx: ReadContext,
+) => { node: HtmlNode; skip: ReadonlySet<HtmlNode> };
+
 /** Build blocks from bounded HTML, reusable by EML/EPUB without changing encoding metadata. */
-export function emitHtml(ctx: ReadContext, html: string, cidReferences?: ReadonlyMap<string, string>): void {
+export function emitHtml(
+  ctx: ReadContext,
+  html: string,
+  cidReferences?: ReadonlyMap<string, string>,
+  select?: HtmlSelector,
+): void {
   const root = parseHtml(html, ctx);
   const loc = ctx.path ? { path: ctx.path } : {};
-  const pending: Array<HtmlNode | string> = [root];
+  const selected = select?.(root, ctx);
+  const pending: Array<HtmlNode | string> = [selected?.node ?? root];
   while (pending.length) {
     ctx.budget.tick();
     const node = pending.pop()!;
+    if (typeof node !== 'string' && selected?.skip.has(node)) continue;
     if (typeof node === 'string') {
       const text = node.trim();
       if (text && !ctx.out.paragraph(text, loc)) return;

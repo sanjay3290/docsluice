@@ -16,7 +16,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | eml | `docsluice/eml` | 8 | 8 | [eml.md](eml.md) |
 | epub | `docsluice/epub` | 4 | 4 | [epub.md](epub.md) |
 | gzip | `docsluice/gzip` | 3 | 3 | [gzip.md](gzip.md) |
-| html | `docsluice/html` | 6 | 6 | [html.md](html.md) |
+| html | `docsluice/html` | 16 | 16 | [html.md](html.md) |
 | ics | `docsluice/ics` | 1 | 1 | [ics.md](ics.md) |
 | image | `docsluice/image` | 8 | 8 | [image.md](image.md) |
 | json | `docsluice/json` | 2 | 2 | [json.md](json.md) |

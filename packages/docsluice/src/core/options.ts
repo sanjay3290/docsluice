@@ -36,6 +36,12 @@ export interface ExtractOptions {
   revisions?: 'accept' | 'reject' | 'show';
   /** Include hidden text (DOC-9). Default false. */
   includeHidden?: boolean;
+  /**
+   * HTML pages: keep only the main content and drop navigation, headers, footers, sidebars, comments
+   * and ads (HTM-2). The choice is deterministic: landmarks first (`main`, `role="main"`, `article`),
+   * then a text- and link-density score. Default false. Email and EPUB HTML are always read whole.
+   */
+  mainContent?: boolean;
   /** Return formula text on spreadsheet cells (XLS-4). Default false. */
   formulas?: boolean;
   /**

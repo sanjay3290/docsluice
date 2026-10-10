@@ -17,11 +17,14 @@ const TEXT_FAMILY_READERS = ['yaml', 'ndjson', 'ics', 'vcf', 'srt', 'vtt', 'code
 const MEDIA_READERS = ['image'];
 // The compound-file parser behind legacy Office and Outlook detection (doc, xls, msg) loads lazily.
 const CONTAINERS = ['ole'];
+// Opt-in features of core readers that load only when their option is on.
+const OPT_IN = ['main-content'];
 const EXTERNAL_READERS = [
   ...OFFICE_READERS,
   ...TEXT_FAMILY_READERS,
   ...MEDIA_READERS,
   ...CONTAINERS,
+  ...OPT_IN,
   'eml',
   'msg',
   'rtf',
