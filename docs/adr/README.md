@@ -17,5 +17,6 @@ To change a decision, write a new ADR that supersedes the old one. Do not edit a
 | [0009](0009-pdf-engine.md) | PDF engine: unpdf (serverless pdf.js), lazy-loaded | Proposed — confirm in the PDF spike issue |
 | [0010](0010-toolchain.md) | Toolchain: TypeScript 6.0, tsdown, Vitest, Node 24 for development | Accepted |
 | [0011](0011-dependency-policy.md) | Runtime dependency allow-list | Accepted |
+| [0012](0012-fuzz-runner.md) | Fuzzing: Jazzer.js as a dev dependency, one process per target | Accepted |
 
 Template: copy [0000-template.md](0000-template.md).
