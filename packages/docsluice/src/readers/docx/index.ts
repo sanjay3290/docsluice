@@ -13,7 +13,8 @@ import { scanDocxBody } from './body.js';
 import { DocxLists } from './lists.js';
 import { readDocxNotes, readDocxStoryText } from './stories.js';
 import type { DocxNoteText } from './stories.js';
-import type { DocxNoteRef } from './body.js';
+import type { DocxAnchor, DocxImageRef } from './body.js';
+import type { ChildDocument } from '../../core/model.js';
 import { parseDocxNumbering } from './numbering.js';
 import type { DocxNumbering } from './numbering.js';
 import { parseDocxStyles } from './styles.js';
@@ -149,6 +150,27 @@ async function readOptionalNumbering(
   });
 }
 
+/** Embedded picture parts by part name, read only when the caller asked for child bytes (ADR 0006). */
+async function readImageParts(
+  parts: OoxmlParts,
+  relationships: ReadonlyMap<string, OoxmlRelationship>,
+  ctx: XmlContext,
+): Promise<Map<string, Uint8Array>> {
+  const images = new Map<string, Uint8Array>();
+  for (const relationship of relationships.values()) {
+    ctx.budget.tick();
+    if (relationship.type !== `${REL_BASE}image` || relationship.external || !relationship.part) continue;
+    if (images.has(relationship.part)) continue;
+    const bytes = await parts.read(relationship.part);
+    if (bytes) images.set(relationship.part, bytes);
+  }
+  return images;
+}
+
+function location(prefix: string, part: string): { path: string } {
+  return { path: pathWithPrefix(prefix, part) };
+}
+
 async function readMainPart(
   parts: OoxmlParts,
   ctx: XmlContext,
@@ -212,10 +234,51 @@ export const docxReader: Reader = {
     if (features.hasJavaScript) ctx.out.setFeature('hasJavaScript');
     const stories = await readStories(parts, mainRelationships, xmlContext, ctx.path);
     const notes = await readNotes(parts, mainRelationships, xmlContext, ctx.path);
+    const imageBytes = ctx.options.childBytes
+      ? await readImageParts(parts, mainRelationships, xmlContext)
+      : new Map<string, Uint8Array>();
+    const listedImages = new Set<string>();
+    const emitImage = (image: DocxImageRef): void => {
+      const relationship =
+        image.relationshipId === undefined ? undefined : mainRelationships.get(image.relationshipId);
+      const block: Parameters<typeof ctx.out.image>[0] = {};
+      if (image.alt !== undefined && image.alt.length > 0) block.alt = image.alt;
+      if (image.width !== undefined) block.width = image.width;
+      if (image.height !== undefined) block.height = image.height;
+      // Linked (external) pictures are reported as data only and never fetched (SEC-10).
+      const part = relationship && !relationship.external ? relationship.part : undefined;
+      const entry = part === undefined ? undefined : parts.find(part);
+      if (part !== undefined && entry) {
+        const mimeType = contentTypes.mimeType(part);
+        if (mimeType !== undefined) block.mimeType = mimeType;
+        if (ctx.options.children !== 'skip') {
+          const childPath = pathWithPrefix(ctx.path, part);
+          block.ref = childPath;
+          if (!listedImages.has(part)) {
+            listedImages.add(part);
+            const bytes = imageBytes.get(part);
+            const child: ChildDocument = {
+              path: childPath,
+              name: part,
+              status: 'listed',
+              sizeBytes: bytes?.length ?? entry.uncompressedSize,
+            };
+            if (mimeType !== undefined) child.mimeType = mimeType;
+            if (bytes) child.bytes = bytes;
+            ctx.out.addChild(child);
+          }
+        }
+      }
+      ctx.out.image(block, location(ctx.path, main.path));
+    };
     const emittedNotes = new Set<string>();
-    const emitNotes = (refs: readonly DocxNoteRef[]): void => {
-      for (const ref of refs) {
+    const emitAnchors = (anchors: readonly DocxAnchor[]): void => {
+      for (const ref of anchors) {
         ctx.budget.tick();
+        if (ref.role === 'image') {
+          emitImage(ref);
+          continue;
+        }
         const key = `${ref.role}:${ref.id}`;
         const source = notes.get(ref.role);
         const note = source?.notes.get(ref.id);
@@ -237,7 +300,7 @@ export const docxReader: Reader = {
         ctx.out.headerFooter(kind, story.text, { path: story.path });
       }
     };
-    const lists = new DocxLists(ctx, numbering, styles, emitNotes);
+    const lists = new DocxLists(ctx, numbering, styles, emitAnchors);
     scanDocxBody(
       main.bytes,
       { ...ctx, path: pathWithPrefix(ctx.path, main.path) },
@@ -246,7 +309,7 @@ export const docxReader: Reader = {
       {
         onParagraph: (paragraph) => lists.accept(paragraph),
         onTable: () => lists.flush(),
-        onNotes: emitNotes,
+        onAnchors: emitAnchors,
         onSectionReference: (kind, id) => sectionStories.push({ kind, id }),
         beforeEmit: () => emitStories('header'),
       },

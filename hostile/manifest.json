@@ -511,5 +511,14 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-6"
+  },
+  {
+    "file": "docx/image-and-revision-oddities.docx",
+    "expect": {
+      "warnings": ["HIDDEN_CONTENT"]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-6"
   }
 ]

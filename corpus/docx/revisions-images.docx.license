@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-docx-revisions.mjs
+Requirements: DOC-6, DOC-8
+Notes: insertions, deletions, a move, deleted and inserted paragraph marks; an inline drawing with alt text and extent, a VML picture, and an external linked image.
