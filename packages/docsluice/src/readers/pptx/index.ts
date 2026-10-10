@@ -182,7 +182,7 @@ export const pptxReader: Reader = {
         entry = {
           content: bytes
             ? parseSlide(bytes, { budget: ctx.budget, warnings: ctx.warnings, path })
-            : { shapes: [], depthLimited: false },
+            : { shapes: [], depthLimited: false, hidden: false },
           relationships: await readRelationships(parts, part, {
             budget: ctx.budget,
             warnings: ctx.warnings,
@@ -195,6 +195,7 @@ export const pptxReader: Reader = {
     };
 
     let depthWarned = false;
+    let hiddenSlides = 0;
     for (let index = 0; index < order.length; index++) {
       ctx.budget.tick();
       const number = index + 1;
@@ -250,7 +251,8 @@ export const pptxReader: Reader = {
       const found = slideTitle(slide.shapes, slideContext);
       const titleShape = found?.shape;
       const title = found?.title;
-      if (!ctx.out.openSection('slide', loc, title)) break;
+      if (slide.hidden) hiddenSlides++;
+      if (!ctx.out.openSection('slide', loc, title, slide.hidden || undefined)) break;
       if (title !== undefined) ctx.out.heading(1, title, loc);
 
       // Reading order: top to bottom, then left to right; ties and unplaced shapes keep tree order.
@@ -301,10 +303,52 @@ export const pptxReader: Reader = {
         }
         open = emitParagraphs(ctx, shape, loc);
       }
+      if (open) await emitNotes(ctx, parts, slideRelationships, slideContext, number);
       if (!ctx.out.closeSection()) break;
+    }
+    if (hiddenSlides > 0) {
+      ctx.warnings.add({
+        code: 'HIDDEN_CONTENT',
+        message: `${hiddenSlides} hidden slides are included with hidden: true.`,
+      });
     }
   },
 };
+
+/**
+ * Speaker notes (PPT-4): the slide's notes part, read like a slide. The notes body placeholder and
+ * plain text boxes are kept; the slide image, number, date, header and footer placeholders are not.
+ */
+async function emitNotes(
+  ctx: ReadContext,
+  parts: OoxmlParts,
+  slideRelationships: ReadonlyMap<string, OoxmlRelationship>,
+  slideContext: XmlContext,
+  number: number,
+): Promise<void> {
+  const notesPart = relationshipOfType(slideRelationships, 'notesSlide', slideContext)?.part;
+  const bytes = notesPart === undefined ? undefined : await parts.read(notesPart);
+  if (!bytes || notesPart === undefined) return;
+  const path = pathWithPrefix(ctx.path, notesPart);
+  const notes = parseSlide(bytes, { budget: ctx.budget, warnings: ctx.warnings, path });
+  const shapes = notes.shapes
+    .filter((shape) => {
+      ctx.budget.tick();
+      return shape.kind === 'text' && (!shape.placeholder || BULLETED_TYPES.has(shape.placeholder.type));
+    })
+    .sort((a, b) => {
+      ctx.budget.tick();
+      return (a.y ?? Number.POSITIVE_INFINITY) - (b.y ?? Number.POSITIVE_INFINITY) || a.order - b.order;
+    });
+  const lines: string[] = [];
+  for (const shape of shapes) {
+    for (const paragraph of shape.paragraphs) {
+      ctx.budget.tick();
+      if (paragraph.text.trim().length > 0) lines.push(paragraph.text);
+    }
+  }
+  if (lines.length > 0) ctx.out.note('speaker-notes', lines.join('\n'), { slide: number, path });
+}
 
 /** A text shape's paragraphs: bulleted runs become list blocks, the rest paragraph blocks. */
 function emitParagraphs(ctx: ReadContext, shape: PptxShape, loc: Location): boolean {

@@ -24,6 +24,9 @@ A note without a bullet
 - Tide logged
 - Gauge read
 
+> Note (speaker-notes): Start with the left column.
+> Then compare the right.
+
 ## Slide 3: Groups and tables
 
 # Groups and tables

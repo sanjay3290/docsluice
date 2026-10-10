@@ -55,6 +55,8 @@ export interface PptxSlideContent {
   shapes: PptxShape[];
   /** True when groups nested deeper than `blockDepth`; their transforms were not applied. */
   depthLimited: boolean;
+  /** `p:sld show="0"`: the slide is hidden in a slide show (PPT-5). */
+  hidden: boolean;
 }
 
 interface Transform {
@@ -121,6 +123,7 @@ export function parseSlide(input: Uint8Array, ctx: XmlContext): PptxSlideContent
   const maxGroupDepth = ctx.budget.limits.blockDepth;
   let groupDepth = 0;
   let depthLimited = false;
+  let hidden = false;
   let order = 0;
   let shape: PptxShape | undefined;
   let shapeXfrm: Xfrm | undefined;
@@ -152,6 +155,10 @@ export function parseSlide(input: Uint8Array, ctx: XmlContext): PptxSlideContent
         const local = info.localName;
         const skipped = (parent?.skipped ?? false) || (ns === MC_NS && local === 'Choice');
         const frame: Frame = { ns, local, skipped };
+        if (!parent && ns === P_NS && local === 'sld') {
+          const show = attrs.get('show');
+          hidden = show === '0' || show === 'false';
+        }
         frames.push(frame);
         if (skipped) return;
         const parentLocal = parent?.ns === P_NS || parent?.ns === A_NS ? parent.local : undefined;
@@ -335,5 +342,5 @@ export function parseSlide(input: Uint8Array, ctx: XmlContext): PptxSlideContent
     },
     ctx,
   );
-  return { shapes, depthLimited };
+  return { shapes, depthLimited, hidden };
 }
