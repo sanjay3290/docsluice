@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice by package-b-prep/text/generators/make_fixtures.py
+Requirements: XML-1, SEC-4
 Notes: authored fixture for xml/external-entity.xml; see expectations.json for proposed checks

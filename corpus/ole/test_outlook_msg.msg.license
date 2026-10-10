@@ -1,5 +1,6 @@
 SPDX-License-Identifier: MIT
 Source: https://github.com/microsoft/markitdown/blob/4cc9fa17653d695d64fb9eee5b33d4de55ff84e8/packages/markitdown/tests/test_files/test_outlook_msg.msg
+Requirements: IN-4
 Copyright (c) Microsoft Corporation.
 Notes: unmodified upstream Outlook-produced test fixture; licensed under the upstream repository MIT license.
 

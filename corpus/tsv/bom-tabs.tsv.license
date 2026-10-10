@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice by package-b-prep/text/generators/make_fixtures.py
+Requirements: CSV-1
 Notes: authored fixture for tsv/bom-tabs.tsv; see expectations.json for proposed checks

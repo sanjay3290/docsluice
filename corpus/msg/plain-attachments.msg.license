@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice by scripts/corpus/make-msg.mjs
+Requirements: EML-1, EML-2, EML-3, IN-4
 Notes: A Unicode message with To and Cc recipients, a plain-text body and two attachments.

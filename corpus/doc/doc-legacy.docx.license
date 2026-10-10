@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice with LibreOfficeDev 26.8 from scripts/corpus/doc-legacy.fodt
+Requirements: IN-4
 Notes: matching DOC/DOCX sample for legacy text recall, heading, table and encoding coverage.

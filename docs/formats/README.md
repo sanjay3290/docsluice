@@ -1,6 +1,6 @@
 # Format support
 
-One page per format: what is read, what is not, options that apply, known gaps. The support matrix is generated from the corpus (section 20) once the generator exists.
+One page per format: what is read, what is not, options that apply, known gaps. The [support matrix](support-matrix.md) is generated from the corpus (PRD section 20): run `npm run docs:support` after you add a corpus file, a reader or a requirement tag. A test fails when the committed page is out of date, and the generator fails when a reader has no format page.
 
 ## Signature detection
 
