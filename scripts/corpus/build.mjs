@@ -30,6 +30,7 @@ const conversions = new Map([
     'fodp',
     new Map([
       ['pptx', 'pptx:Impress MS PowerPoint 2007 XML'],
+      ['ppt', 'ppt:MS PowerPoint 97'],
       ['odp', 'odp:impress8'],
       ['pdf', 'pdf:impress_pdf_Export'],
     ]),
@@ -115,7 +116,7 @@ function execute(soffice, args, timeoutMs, label) {
 
 function assertSignature(bytes, format) {
   const valid =
-    format === 'xls'
+    format === 'xls' || format === 'ppt'
       ? bytes.subarray(0, 8).equals(Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]))
       : format === 'pdf'
       ? bytes.subarray(0, 5).equals(Buffer.from('%PDF-'))

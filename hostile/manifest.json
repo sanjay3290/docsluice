@@ -567,6 +567,51 @@
     "requirement": "XLS-3"
   },
   {
+    "file": "ppt/deep-drawing-1000.ppt",
+    "expect": {
+      "warnings": ["DEPTH_LIMIT"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "ppt/edit-chain-loop.ppt",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "ppt/encrypted-token.ppt",
+    "expect": {
+      "error": "ENCRYPTED"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "R2"
+  },
+  {
+    "file": "ppt/orphan-slides-5000.ppt",
+    "expect": {
+      "warnings": ["UNREADABLE_PART"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "ppt/paragraph-flood.ppt",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
     "file": "pptx/deep-groups-1000.pptx",
     "expect": {
       "warnings": ["TRUNCATED", "DEPTH_LIMIT"]

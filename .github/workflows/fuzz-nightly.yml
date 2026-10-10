@@ -31,6 +31,7 @@ jobs:
             xml-reader,
             html,
             doc,
+            ppt,
             ooxml,
             docx,
             xlsx,

@@ -26,6 +26,9 @@
       "doc": [
         "dist/doc.d.ts"
       ],
+      "ppt": [
+        "dist/ppt.d.ts"
+      ],
       "txt": [
         "dist/txt.d.ts"
       ],
@@ -134,6 +137,10 @@
     "./doc": {
       "import": "./dist/doc.js",
       "require": "./dist/doc.cjs"
+    },
+    "./ppt": {
+      "import": "./dist/ppt.js",
+      "require": "./dist/ppt.cjs"
     },
     "./txt": {
       "import": "./dist/txt.js",
