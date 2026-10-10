@@ -1,6 +1,16 @@
-// Bundle budgets (RT-5). Office readers load lazily, so the core check treats them as external.
-const OFFICE_READERS = ['doc', 'docx', 'xlsx', 'pptx'];
-const officeReader = new RegExp(`/(?:${OFFICE_READERS.join('|')})\\.js$`);
+// Bundle budgets (RT-4, RT-5). Every reader subpath in package.json "exports" gets an entry, so a
+// new reader cannot ship without a budget. Readers load lazily, so the core check treats the
+// Office readers as external; text readers count toward the core budget too.
+import { readFileSync } from 'node:fs';
+import { URL } from 'node:url';
+
+const manifest = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
+const NOT_READERS = new Set(['.', './node', './package.json']);
+export const READERS = Object.keys(manifest.exports)
+  .filter((subpath) => !NOT_READERS.has(subpath))
+  .map((subpath) => subpath.slice(2));
+const OFFICE_READERS = new Set(['doc', 'docx', 'xlsx', 'pptx']);
+const officeReader = new RegExp(`/(?:${[...OFFICE_READERS].join('|')})\\.js$`);
 
 export default [
   {
@@ -13,10 +23,10 @@ export default [
       external: (id, importer) => importer !== undefined && officeReader.test(id),
     }),
   },
-  ...OFFICE_READERS.map((reader) => ({
+  ...READERS.map((reader) => ({
     name: `${reader} reader`,
     path: `dist/${reader}.js`,
-    limit: '40 KB',
+    limit: OFFICE_READERS.has(reader) ? '40 KB' : '25 KB',
     gzip: true,
   })),
 ];

@@ -78,3 +78,9 @@ Hostile files are made by scripts in `scripts/hostile/` where possible, so the r
 ## Cross-runtime (QA-4)
 
 CI runs the unit tests on Node 24. The built package then runs one shared contract (ZIP, XML, and `extract()` on CSV, HTML and hostile HTML) on Node 20, 22 and 24, Bun, Deno, Chromium, Firefox and WebKit (Vitest browser mode), and Cloudflare Workers (local `wrangler dev`). The browser and Workers runs trap any access to `globalThis.Buffer`. [testing-runtime.md](testing-runtime.md) has the command for each runtime. A feature that cannot work in one runtime must say so in its docs page and skip that runtime's test with a reason.
+
+## Bundle budgets and lazy readers (RT-4, RT-5)
+
+`npm run check:package` (part of `npm run verify` and CI) runs `size-limit` with `packages/docsluice/.size-limit.js`. The config reads the reader subpaths from the package's `exports`, so every reader gets a budget as soon as it gets a subpath: Office readers (`doc`, `docx`, `xlsx`, `pptx`) 40 KB and other readers 25 KB, gzipped, plus 50 KB for `docsluice` itself with the text readers it loads lazily. A reader over its budget fails the job.
+
+`packages/docsluice/test-dist/bundle.test.mjs` (in `npm run test:dist`) checks that every reader subpath has a budget, and bundles an app that only does `import { extract } from 'docsluice'` with rolldown: each reader module must end up in its own dynamically imported chunk, never in the app's entry chunk.
