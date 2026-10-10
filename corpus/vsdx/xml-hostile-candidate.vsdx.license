@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice: synthetic VSDX package parts written with the Python standard library (the generator script was not kept). LibreOffice 24.2 Draw imports tiny-flow.vsdx with the same text in the same order.
+Requirements: IN-5
+Notes: Page XML contains an external entity declaration; tests inspect bytes only and do not parse it. Not created or rendered with Microsoft Visio; not a complete Visio-app-validated document.

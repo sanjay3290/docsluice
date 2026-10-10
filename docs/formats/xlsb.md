@@ -11,7 +11,7 @@ The XLSB reader (`docsluice/xlsb`) reads Excel binary workbooks ([MS-XLSB]) with
 - **Number formats**: `BrtFmt` custom codes and the `iFmt` of each cell XF after `BrtBeginCellXFs`, with the built-in format table; `BrtWbProp` gives the 1904 date system.
 - **Merges**: `BrtMergeCell` ranges become `colSpan`/`rowSpan` like XLSX merges.
 
-Formulas are never evaluated or decoded: the `formulas` option has no formula text for XLSB. Comments, hidden rows and columns, tables and defined names are not read, as in XLSX today. A shared-string index past the table gives an empty cell and one `UNREADABLE_PART` warning.
+Formulas are never evaluated or decoded: the `formulas` option has no formula text for XLSB. A shared-string index past the table gives an empty cell and one `UNREADABLE_PART` warning.
 
 ## Safety
 
@@ -25,4 +25,9 @@ LibreOffice reads XLSB but cannot write it. `scripts/corpus/make-xlsb.mjs` write
 
 ## Header rows (XLS-8)
 
-Tables get `headerRows` from the `headerRow` option, guessed the same way as for XLSX (see [xlsx.md](xlsx.md#header-rows-xls-8)). Hidden rows and columns, comments and named ranges are not read yet (#231).
+Tables get `headerRows` from the `headerRow` option, guessed the same way as for XLSX (see [xlsx.md](xlsx.md#header-rows-xls-8)). ## Hidden rows and columns, comments, tables, names (XLS-9, XLS-10)
+
+- `BrtRowHdr` with `fDyZero` and `BrtColInfo` with `fHidden` mark their cells `hidden: true`.
+- Comment parts (`commentsN.bin`: `BrtCommentAuthor`, `BrtBeginComment`, `BrtCommentText`) become `note` blocks after the sheet's tables, as in XLSX.
+- Table parts (`BrtBeginList`: range, header row count, display name) and `BrtName` records with one 3-D area or cell, resolved through `BrtExternSheet`, caption the regions they cover exactly.
+- `scripts/corpus/make-xlsb.mjs` carries all of these over from the XLSX corpus. `workbook-comments-hidden-names.xlsb` gives the same blocks as its XLSX source.

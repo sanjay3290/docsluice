@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: made for docsluice with the 7-Zip command line by scripts/corpus/make-7z.mjs (-pdocsluice -mhe=on)
+Requirements: IN-4
+Notes: listing only (ADR 0014); synthetic files, a directory, an empty directory and file, and a non-ASCII name.

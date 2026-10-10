@@ -73,5 +73,7 @@ export function resolvePlugin(
     },
     ...(resolution.zip ? { zip: resolution.zip } : {}),
     ...(resolution.cfb ? { cfb: resolution.cfb } : {}),
+    ...(resolution.bytes ? { bytes: resolution.bytes } : {}),
+    ...(resolution.encrypted ? { encrypted: true } : {}),
   };
 }
