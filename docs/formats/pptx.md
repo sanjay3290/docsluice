@@ -33,3 +33,7 @@ The PPTX reader turns every slide of a PresentationML deck (`.pptx`, `.ppsx`, `.
 Pictures and their alt text, chart data (PPT-6), and comments.
 
 Hostile samples in `hostile/pptx/`: groups nested 1,000 deep (`DEPTH_LIMIT`, then `TRUNCATED`), a SmartArt part with 10,000 points whose connections form one cycle, and prototype-named relationship ids, placeholder types and slides with a table of huge spans (inert).
+
+## Macro-enabled files
+
+`.pptm` files are detected by their macro-enabled main content type and reported with their own format id (`pptm`), and are read by this reader with the same blocks as the plain version. A VBA project part (`vbaProject.bin`) sets `features.hasMacros` and adds one `MACROS_PRESENT` warning. Macros are never parsed, extracted or run (SEC-11). `corpus/pptx/deck-hidden-notes-macros.pptm` is made by `scripts/corpus/make-macro-enabled.mjs`.

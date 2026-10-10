@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: made for docsluice by scripts/corpus/make-macro-enabled.mjs from corpus/pptx/deck-hidden-notes.pptx
+Requirements: PPT-4, SEC-11, MOD-5
+Notes: the source file with a macro-enabled main content type and an inert VBA project part (a PROJECT stream and an empty VBA storage, no code).
