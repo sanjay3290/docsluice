@@ -38,6 +38,7 @@ export type FormatId =
   | 'pdf'
   | 'epub'
   | 'eml'
+  | 'mbox'
   | 'msg'
   | 'zip'
   | 'gzip'

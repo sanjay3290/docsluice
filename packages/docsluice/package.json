@@ -107,6 +107,9 @@
       "eml": [
         "dist/eml.d.ts"
       ],
+      "mbox": [
+        "dist/mbox.d.ts"
+      ],
       "msg": [
         "dist/msg.d.ts"
       ],
@@ -242,6 +245,10 @@
     "./eml": {
       "import": "./dist/eml.js",
       "require": "./dist/eml.cjs"
+    },
+    "./mbox": {
+      "import": "./dist/mbox.js",
+      "require": "./dist/mbox.cjs"
     },
     "./msg": {
       "import": "./dist/msg.js",

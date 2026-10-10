@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-mbox.mjs
+Requirements: EML-1, EML-3
+Notes: mboxrd quoting, a body line that starts with "From " after text, and a message with an attachment.

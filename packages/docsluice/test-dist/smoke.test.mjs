@@ -218,6 +218,11 @@ test('GZIP and TAR reader subpaths load lazily', async () => {
   assert.equal(tar.tarReader.id, 'tar');
 });
 
+test('MBOX reader subpath loads lazily', async () => {
+  const mbox = await import('docsluice/mbox');
+  assert.equal(mbox.mboxReader.id, 'mbox');
+});
+
 test('EML reader subpath loads lazily', async () => {
   const eml = await import('docsluice/eml');
   assert.equal(eml.emlReader.id, 'eml');

@@ -147,6 +147,7 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     ['gzip', () => import('../readers/gzip/index.js').then((module) => module.gzipReader)],
     ['tar', () => import('../readers/tar/index.js').then((module) => module.tarReader)],
     ['eml', () => import('../readers/eml/index.js').then((module) => module.emlReader)],
+    ['mbox', () => import('../readers/mbox/index.js').then((module) => module.mboxReader)],
     ['msg', () => import('../readers/msg/index.js').then((module) => module.msgReader)],
     ['epub', () => import('../readers/epub/index.js').then((module) => module.epubReader)],
   ];

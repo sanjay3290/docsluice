@@ -35,6 +35,7 @@ export function detectTextKindCandidates(text: string): readonly FormatId[] {
   if (WEBVTT.test(sample)) return ['vtt'];
   if (SUBRIP.test(sample.slice(start, start + 64))) return ['srt'];
   if (isNdjson(sample)) return ['ndjson'];
+  if (isMailbox(sample)) return ['mbox'];
   if (isEmailHeaderBlock(sample)) return ['eml'];
   if (startsAsciiInsensitive(sample, start, '<!doctype html')) return ['html'];
   if (startsAsciiInsensitive(sample, start, '<?xml')) return ['xml'];
@@ -74,6 +75,13 @@ function isEmailHeaderBlock(text: string): boolean {
     at = end + 1;
   }
   return messageHeaders >= 2;
+}
+
+/** A Unix mailbox: a `From ` envelope line at the very start, then a message header block (RFC 4155). */
+function isMailbox(text: string): boolean {
+  if (!text.startsWith('From ')) return false;
+  const end = text.indexOf('\n');
+  return end > 0 && isEmailHeaderBlock(text.slice(end + 1));
 }
 
 /** RFC 5322 field-name characters: printable ASCII except colon. */

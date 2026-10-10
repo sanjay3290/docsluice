@@ -16,6 +16,7 @@ const OLE = [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1] as const;
 const PNG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] as const;
 const TIFF_LE = [0x49, 0x49, 0x2a, 0x00] as const;
 const TIFF_BE = [0x4d, 0x4d, 0x00, 0x2a] as const;
+const PST = [0x21, 0x42, 0x44, 0x4e] as const;
 const ICO = [0x00, 0x00, 0x01, 0x00] as const;
 const PE = [0x4d, 0x5a] as const;
 const ELF = [0x7f, 0x45, 0x4c, 0x46] as const;
@@ -62,6 +63,9 @@ export function sniffMagic(input: Uint8Array): MagicSniffResult {
   if (ascii(bytes, 0, '{\\rtf')) return result('rtf', 'application/rtf');
   if (matches(bytes, 0, [0x1f, 0x8b])) return result('gzip', 'application/gzip');
   if (length >= 262 && ascii(bytes, 257, 'ustar')) return result('tar', 'application/x-tar');
+  // Detection only (ADR 0015): Outlook PST mailboxes have no reader.
+  if (matches(bytes, 0, PST) && length >= 10 && bytes[8] === 0x53 && bytes[9] === 0x4d)
+    return result('pst', 'application/vnd.ms-outlook-pst');
 
   if (matches(bytes, 0, PNG)) {
     return result('png', 'image/png');

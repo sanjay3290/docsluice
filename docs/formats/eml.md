@@ -19,4 +19,4 @@ With `quotedReplies: 'drop'` (default `'keep'`), the body loses the history a re
 
 The scan is one pass over the lines or the HTML tree with a fixed look-ahead and no regular expressions. Each HTML probe looks at no more than 256 nodes and 2,000 characters. Text that only looks like a header can be dropped: a body line "From: …" followed by "Sent: …" ends the kept text. Headers in other languages are not recognized. Attachments, including attached messages, are read unchanged. MSG bodies follow the same rules: [msg.md](msg.md).
 
-Support is best effort. This reader does not validate signatures, decrypt encrypted mail, fetch remote content, or process S/MIME. Outlook `.msg` files have their own reader with the same output shape: see [msg.md](msg.md).
+Support is best effort. This reader does not validate signatures, decrypt encrypted mail, fetch remote content, or process S/MIME. Outlook `.msg` files have their own reader with the same output shape: see [msg.md](msg.md). Mailboxes (`.mbox`) give one EML child per message: see [mbox.md](mbox.md).
