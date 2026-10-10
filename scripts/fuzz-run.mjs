@@ -35,6 +35,7 @@ export const TARGETS = {
     export: 'fuzzCsv',
     seeds: ['corpus/csv', 'corpus/tsv', 'hostile/csv', 'hostile/tsv'],
   },
+  latex: { module: 'fuzz/latex.fuzz.js', export: 'fuzzLatex', seeds: ['corpus/latex', 'hostile/latex'] },
   'text-families': {
     module: 'fuzz/text-families.fuzz.js',
     export: 'fuzzTextFamilies',

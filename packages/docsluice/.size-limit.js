@@ -27,7 +27,7 @@ const OFFICE_READERS = new Set([
 ]);
 // The P1 text families (issue #68) load lazily like the office readers and keep their own budgets.
 // `code` is the source-code language table the text reader loads only for source file names.
-const TEXT_FAMILY_READERS = ['yaml', 'ndjson', 'ics', 'vcf', 'srt', 'vtt', 'code'];
+const TEXT_FAMILY_READERS = ['yaml', 'ndjson', 'latex', 'ics', 'vcf', 'srt', 'vtt', 'code'];
 const MEDIA_READERS = ['image'];
 // Container classification that only non-text files need loads lazily: the compound-file parser
 // behind legacy Office and Outlook detection, and the ZIP-based format classifier.

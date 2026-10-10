@@ -17,6 +17,7 @@ export type FormatId =
   | 'html'
   | 'yaml'
   | 'ndjson'
+  | 'latex'
   | 'ics'
   | 'vcf'
   | 'srt'

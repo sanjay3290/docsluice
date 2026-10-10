@@ -1,0 +1,60 @@
+% A synthetic article for the docsluice LaTeX reader (CC0-1.0).
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\usepackage[colorlinks]{hyperref}
+\title{Tidal Garden Survey}
+\author{Casey Example \and Alex Example}
+\date{2026}
+\newcommand{\site}{Plot A}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A synthetic report for parser testing.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+We sampled \textbf{salinity} and \emph{plant cover} at three sites~\cite{survey2026}.
+See Section~\ref{sec:methods} and \href{https://example.invalid}{the protocol}.
+Costs rose by 5\% and \$12 per sample; % an inline comment
+the mean is $\bar{x} = 24.5$.
+
+\subsection{Sites}
+\begin{itemize}
+  \item North inlet
+  \item South bank
+  \begin{enumerate}
+    \item Upper marsh
+    \item Lower marsh
+  \end{enumerate}
+  \item[Extra] Dune ridge
+\end{itemize}
+
+\section{Methods}\label{sec:methods}
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|r|}
+\hline
+Station & Salinity \\
+\hline
+N-1 & 24 \\
+S-1 & 21 \\
+\hline
+\end{tabular}
+\caption{Readings by station.}
+\end{table}
+
+\begin{equation}
+  E = mc^2
+\end{equation}
+
+\begin{verbatim}
+raw \text{kept} as written
+\end{verbatim}
+
+Line one\\
+line two.\footnote{A footnote stays as text.}
+
+\end{document}
+Text after the document end is ignored.

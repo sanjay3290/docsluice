@@ -29,6 +29,7 @@ export default defineConfig({
     // Not a package subpath: HTML main-content selection, loaded only with `mainContent: true`.
     'html/main-content': 'src/html/main-content.ts',
     ndjson: 'src/readers/ndjson/index.ts',
+    latex: 'src/readers/latex/index.ts',
     ics: 'src/readers/ics/index.ts',
     vcf: 'src/readers/vcf/index.ts',
     srt: 'src/readers/srt/index.ts',
