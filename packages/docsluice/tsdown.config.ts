@@ -13,6 +13,7 @@ export default defineConfig({
     xml: 'src/readers/xml/index.ts',
     html: 'src/readers/html/index.ts',
     docx: 'src/readers/docx/index.ts',
+    xlsx: 'src/readers/xlsx/index.ts',
   },
   format: ['esm', 'cjs'],
   platform: 'neutral',

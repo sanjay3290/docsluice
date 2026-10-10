@@ -520,5 +520,41 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-6"
+  },
+  {
+    "file": "xlsx/claimed-full-grid.xlsx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "XLS-5"
+  },
+  {
+    "file": "xlsx/sparse-corners.xlsx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "XLS-5"
+  },
+  {
+    "file": "xlsx/shared-string-bomb.xlsx",
+    "expect": {
+      "error": "LIMIT_EXCEEDED"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "xlsx/proto-names.xlsx",
+    "expect": {
+      "warnings": ["UNREADABLE_PART"]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-6"
   }
 ]
