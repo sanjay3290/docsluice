@@ -6,9 +6,10 @@ import { regionRows, sheetRegions } from '../src/readers/xlsx/layout.js';
 import { parseSharedStrings } from '../src/readers/xlsx/shared-strings.js';
 import { parseWorksheet } from '../src/readers/xlsx/sheet.js';
 import { parseStyles } from '../src/readers/xlsx/styles.js';
+import { shiftFormula } from '../src/readers/xlsx/formula.js';
 import { parseWorkbook } from '../src/readers/xlsx/workbook.js';
 
-/** Bounded entry point for arbitrary XML payloads sent through every XLSX SAX module, number formats and the grid layout. */
+/** Bounded entry point for arbitrary XML payloads sent through every XLSX SAX module, number formats, formula shifting and the grid layout. */
 export function fuzzXlsx(input: Uint8Array): void {
   const sample = input.subarray(0, 1_000_000);
   const warnings = new WarningSink();
@@ -26,9 +27,11 @@ export function fuzzXlsx(input: Uint8Array): void {
       sharedStrings,
       styles,
       date1904: sample.length % 2 === 1,
+      formulas: true,
       onBadSharedString: () => undefined,
     });
     for (const region of sheetRegions(sheet, budget)) regionRows(sheet, region, budget);
+    shiftFormula(new TextDecoder().decode(sample.subarray(0, 4096)), 3, -2, budget);
   } catch (error) {
     // Malformed XML and resource limits are ordinary outcomes; anything else is a finding.
     if (error instanceof DocsluiceError) return;

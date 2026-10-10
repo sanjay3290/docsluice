@@ -1,5 +1,6 @@
 import type { XmlContext } from '../../xml/index.js';
 import { scanXml } from '../../xml/index.js';
+import { shiftFormula } from './formula.js';
 import { formatGeneral, formatNumber } from './numfmt.js';
 import { StringItemText } from './shared-strings.js';
 import type { XlsxSharedStrings } from './shared-strings.js';
@@ -19,6 +20,8 @@ const MAX_STYLE = 0xffff;
 export interface XlsxCell {
   text: string;
   raw?: string | number | boolean;
+  /** Formula text with a leading `=` (`{=…}` for array formulas), kept only with `formulas: true`. */
+  formula?: string;
 }
 
 export interface XlsxRange {
@@ -38,6 +41,8 @@ export interface XlsxSheet {
   skippedCells: number;
   /** Rows whose value cells were all skipped. */
   skippedRows: number;
+  /** Formula cells saved without a cached value; they are empty (XLS-4). */
+  missingCachedValues: number;
 }
 
 export interface SheetContext extends XmlContext {
@@ -48,6 +53,8 @@ export interface SheetContext extends XmlContext {
   styles?: XlsxStyles;
   /** `workbookPr date1904`: serial 0 is 1904-01-01 instead of 1899-12-31 (XLS-3). */
   date1904?: boolean;
+  /** Keep formula text in `XlsxCell.formula` (the `formulas` option). Formulas are never evaluated. */
+  formulas?: boolean;
 }
 
 interface OpenCell {
@@ -57,7 +64,11 @@ interface OpenCell {
   style: number;
   value: string;
   inValue: boolean;
+  hasValue: boolean;
   inline: StringItemText | undefined;
+  /** `f` element: its `t` (`normal` when absent), shared index and text. */
+  formula: { kind: string; sharedIndex: string | undefined; text: string } | undefined;
+  inFormula: boolean;
 }
 
 /** An `xsd:double` lexical value: digits with an optional sign, point and exponent. No hex, no spaces. */
@@ -79,7 +90,16 @@ function isDecimal(value: string, budget: XmlContext['budget']): boolean {
  * `cells` budget; once it is spent, the rest of the sheet is counted, not stored.
  */
 export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet {
-  const sheet: XlsxSheet = { rows: new Map(), merges: [], stored: 0, skippedCells: 0, skippedRows: 0 };
+  const sheet: XlsxSheet = {
+    rows: new Map(),
+    merges: [],
+    stored: 0,
+    skippedCells: 0,
+    skippedRows: 0,
+    missingCachedValues: 0,
+  };
+  // Shared-formula masters by `si`, so dependents can be written out (formulas option only).
+  const sharedFormulas = new Map<string, { text: string; row: number; column: number }>();
   const names: Array<string | undefined> = [];
   const maxMerges = ctx.budget.limits.cells;
   let full = false;
@@ -97,8 +117,25 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
     return shown === text ? { text } : { text: shown, raw: text };
   };
 
+  const formulaText = (open: OpenCell, column: number): string | undefined => {
+    const formula = open.formula;
+    if (!ctx.formulas || !formula) return undefined;
+    if (formula.kind === 'shared' && formula.sharedIndex !== undefined) {
+      const master = sharedFormulas.get(formula.sharedIndex);
+      if (formula.text.length > 0) {
+        if (!master) sharedFormulas.set(formula.sharedIndex, { text: formula.text, row: open.row, column });
+        return `=${formula.text}`;
+      }
+      if (!master) return undefined;
+      return `=${shiftFormula(master.text, open.row - master.row, column - master.column, ctx.budget)}`;
+    }
+    if (formula.text.length === 0) return undefined;
+    return formula.kind === 'array' ? `{=${formula.text}}` : `=${formula.text}`;
+  };
+
   const finishCell = (open: OpenCell): void => {
     if (open.column === undefined) return;
+    const formula = formulaText(open, open.column);
     let value: XlsxCell | undefined;
     switch (open.type) {
       case 's': {
@@ -139,6 +176,12 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
         value = { text, raw: number };
       }
     }
+    if (open.formula) {
+      // A formula cell shows its cached value; without one it is empty (XLS-4).
+      if (!open.hasValue) sheet.missingCachedValues++;
+      value ??= { text: '' };
+      if (formula !== undefined) value.formula = formula;
+    }
     if (!value) return;
     if (full || ctx.budget.cells >= ctx.budget.limits.cells) {
       full = true;
@@ -171,8 +214,13 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
         const parent = names.at(-1);
         names.push(local);
         if (cell) {
-          if (local === 'v' && parent === 'c') cell.inValue = true;
-          else if (local === 'is' && parent === 'c') cell.inline = new StringItemText();
+          if (local === 'v' && parent === 'c') {
+            cell.inValue = true;
+            cell.hasValue = true;
+          } else if (local === 'f' && parent === 'c') {
+            cell.formula = { kind: attrs.get('t') ?? 'normal', sharedIndex: attrs.get('si'), text: '' };
+            cell.inFormula = ctx.formulas === true;
+          } else if (local === 'is' && parent === 'c') cell.inline = new StringItemText();
           else cell.inline?.open(local);
           return;
         }
@@ -197,7 +245,10 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
             style: parseIndex(attrs.get('s'), MAX_STYLE) ?? 0,
             value: '',
             inValue: false,
+            hasValue: false,
             inline: undefined,
+            formula: undefined,
+            inFormula: false,
           };
         } else if (local === 'mergeCell' && parent === 'mergeCells') {
           const range = parseRangeReference(attrs.get('ref'));
@@ -213,6 +264,7 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
       onText(text) {
         if (!cell) return;
         if (cell.inValue) cell.value += text;
+        else if (cell.inFormula) cell.formula!.text += text;
         else cell.inline?.append(text);
       },
       onClose() {
@@ -225,6 +277,8 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
             cell = undefined;
           } else if (local === 'v' && parent === 'c') {
             cell.inValue = false;
+          } else if (local === 'f' && parent === 'c') {
+            cell.inFormula = false;
           } else if (local !== 'is') {
             cell.inline?.close(local);
           }
