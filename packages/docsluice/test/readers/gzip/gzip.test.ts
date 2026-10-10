@@ -7,11 +7,11 @@ import { DEFAULT_LIMITS } from '../../../src/core/limits.js';
 import type { ReadContext } from '../../../src/core/reader.js';
 import { WarningSink } from '../../../src/core/warnings.js';
 import { gzipSync } from 'fflate';
-import { reader } from '../../../src/readers/gzip/index.js';
-import { reader as tarReader } from '../../../src/readers/tar/index.js';
+import { gzipReader as reader } from '../../../src/readers/gzip/index.js';
+import { tarReader } from '../../../src/readers/tar/index.js';
 
 function fixture(name: string): Uint8Array {
-  return new Uint8Array(readFileSync(new URL(`../../../../../corpus/tar/${name}`, import.meta.url)));
+  return new Uint8Array(readFileSync(new URL(`../../../../../${name}`, import.meta.url)));
 }
 
 function makeContext(
@@ -78,39 +78,44 @@ describe('gzip reader', () => {
   });
 
   it('inflates a CSV to one child', async () => {
-    const { ctx, out, extracted, budget } = makeContext(fixture('gzip-csv.gz'), {}, 'extract', 'gzip-csv.gz');
+    const { ctx, out, extracted, budget } = makeContext(fixture('corpus/gzip/scores.csv.gz'), {}, 'extract', 'other.gz');
     await reader.read(ctx);
     expect(extracted).toHaveLength(1);
-    expect(new TextDecoder().decode(extracted[0]!.bytes)).toContain('id,total');
-    expect(extracted[0]!.name).toBe('gzip-csv');
+    expect(new TextDecoder().decode(extracted[0]!.bytes)).toContain('species,count,site');
+    // The member's original name wins over the input filename.
+    expect(extracted[0]!.name).toBe('scores.csv');
+    const unnamed = makeContext(gzipSync(new TextEncoder().encode('a,b\n')), {}, 'extract', 'plain.csv.gz');
+    await reader.read(unnamed.ctx);
+    expect(unnamed.extracted[0]!.name).toBe('plain.csv');
     expect(budget.totalUncompressedBytes).toBe(extracted[0]!.bytes.length);
     expect(out.finish().children).toHaveLength(0);
   });
 
   it('composes with TAR for a .tar.gz child', async () => {
-    const gzip = makeContext(fixture('tar-gzip.tar.gz'));
+    const gzip = makeContext(fixture('corpus/tar/nested-folders.tar.gz'));
     await reader.read(gzip.ctx);
     expect(gzip.extracted).toHaveLength(1);
     const tar = makeTarContext(gzip.extracted[0]!.bytes);
     await tarReader.read(tar.ctx);
-    expect(tar.extracted.map((entry) => entry.name)).toContain('folder/subfolder/data.csv');
-    expect(new TextDecoder().decode(tar.extracted[0]!.bytes)).toContain('k,v');
+    expect(tar.extracted.map((entry) => entry.name)).toContain('field/plots/counts.csv');
+    expect(new TextDecoder().decode(tar.extracted[0]!.bytes)).toContain('species,count');
   });
 
   it('supports concatenated members and optional gzip header fields', async () => {
-    for (const filename of ['gzip-multi-member.gz', 'gzip-optional-header.gz']) {
+    for (const filename of ['corpus/gzip/multi-member.txt.gz', 'corpus/gzip/optional-header.gz']) {
       const { ctx, extracted } = makeContext(fixture(filename));
       await reader.read(ctx);
       expect(extracted).toHaveLength(1);
       expect(extracted[0]!.bytes.length).toBeGreaterThan(0);
     }
-    const multi = makeContext(fixture('gzip-multi-member.gz'));
+    const multi = makeContext(fixture('corpus/gzip/multi-member.txt.gz'));
     await reader.read(multi.ctx);
     expect(multi.budget.entries).toBe(2);
+    expect(new TextDecoder().decode(multi.extracted[0]!.bytes)).toBe('first member line\nsecond member line\n');
   });
 
   it('bounds an oversized FNAME while scanning through its terminator', async () => {
-    const compressed = fixture('gzip-csv.gz');
+    const compressed = gzipSync(new TextEncoder().encode('id,total\n1,9\n'));
     const name = new Uint8Array(16_385).fill(0x61);
     const bytes = new Uint8Array(compressed.length + name.length);
     bytes.set(compressed.subarray(0, 10), 0);
@@ -125,7 +130,7 @@ describe('gzip reader', () => {
   });
 
   it('validates the second member header before inflating it', async () => {
-    const bytes = fixture('gzip-multi-member.gz');
+    const bytes = fixture('corpus/gzip/multi-member.txt.gz');
     let second = -1;
     for (let index = 1; index + 2 < bytes.length; index++) {
       if (bytes[index] === 0x1f && bytes[index + 1] === 0x8b && bytes[index + 2] === 8) second = index;
@@ -136,7 +141,7 @@ describe('gzip reader', () => {
   });
 
   it('does not inflate in list mode', async () => {
-    const { ctx, out, budget, extracted } = makeContext(fixture('gzip-csv.gz'), {}, 'list');
+    const { ctx, out, budget, extracted } = makeContext(fixture('corpus/gzip/scores.csv.gz'), {}, 'list');
     await reader.read(ctx);
     expect(extracted).toEqual([]);
     expect(budget.totalUncompressedBytes).toBe(0);
@@ -144,39 +149,39 @@ describe('gzip reader', () => {
   });
 
   it('does not inflate in skip mode and sanitizes filename paths', async () => {
-    const skipped = makeContext(fixture('gzip-csv.gz'), {}, 'skip');
+    const skipped = makeContext(fixture('corpus/gzip/scores.csv.gz'), {}, 'skip');
     await reader.read(skipped.ctx);
     expect(skipped.extracted).toEqual([]);
-    const named = makeContext(fixture('gzip-csv.gz'), {}, 'extract', 'C:\\..\\tmp\\sheet.csv.gz');
+    const named = makeContext(gzipSync(new TextEncoder().encode('x\n')), {}, 'extract', 'C:\\..\\tmp\\sheet.csv.gz');
     await reader.read(named.ctx);
     expect(named.extracted[0]?.name).toBe('tmp/sheet.csv');
   });
 
   it('stops on the shared uncompressed byte limit', async () => {
-    const { ctx } = makeContext(fixture('gzip-bounded-amplification.gz'), { totalUncompressedBytes: 64 });
+    const { ctx } = makeContext(gzipSync(new Uint8Array(100_000)), { totalUncompressedBytes: 64 });
     await expect(reader.read(ctx)).rejects.toBeInstanceOf(LimitExceededError);
   });
 
   it('enforces compression ratio and propagates cancellation', async () => {
-    const ratio = makeContext(fixture('gzip-bounded-amplification.gz'), {
+    const ratio = makeContext(gzipSync(new Uint8Array(100_000)), {
       compressionRatio: 2,
       compressionRatioMinBytes: 0,
     });
     await expect(reader.read(ratio.ctx)).rejects.toBeInstanceOf(LimitExceededError);
     const controller = new AbortController();
     controller.abort();
-    const cancelled = makeContext(fixture('gzip-csv.gz'), {}, 'extract', undefined, controller.signal);
+    const cancelled = makeContext(fixture('corpus/gzip/scores.csv.gz'), {}, 'extract', undefined, controller.signal);
     await expect(reader.read(cancelled.ctx)).rejects.toHaveProperty('code', 'ABORTED');
   });
 
   it('verifies member CRC and rejects a damaged trailer', async () => {
-    const bytes = fixture('gzip-csv.gz');
+    const bytes = fixture('corpus/gzip/scores.csv.gz');
     bytes[bytes.length - 8] = bytes[bytes.length - 8]! ^ 0xff;
     await expect(reader.read(makeContext(bytes).ctx)).rejects.toBeDefined();
   });
 
   it('validates FHCRC instead of relying on inflater behavior', async () => {
-    const bytes = fixture('gzip-optional-header.gz');
+    const bytes = fixture('corpus/gzip/optional-header.gz');
     const flags = bytes[3]!;
     let cursor = 10;
     if (flags & 4) cursor += 2 + bytes[cursor]! + (bytes[cursor + 1]! << 8);
@@ -194,7 +199,7 @@ describe('gzip reader', () => {
   });
 
   it('rejects malformed gzip input without swallowing budget errors', async () => {
-    const bytes = fixture('gzip-csv.gz');
+    const bytes = fixture('corpus/gzip/scores.csv.gz');
     bytes[0] = 0;
     const { ctx } = makeContext(bytes);
     await expect(reader.read(ctx)).rejects.toBeDefined();

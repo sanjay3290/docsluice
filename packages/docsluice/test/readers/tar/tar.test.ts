@@ -6,10 +6,10 @@ import { CorruptFileError, LimitExceededError } from '../../../src/core/errors.j
 import { DEFAULT_LIMITS } from '../../../src/core/limits.js';
 import type { ReadContext } from '../../../src/core/reader.js';
 import { WarningSink } from '../../../src/core/warnings.js';
-import { reader } from '../../../src/readers/tar/index.js';
+import { tarReader as reader } from '../../../src/readers/tar/index.js';
 
 function fixture(name: string): Uint8Array {
-  return new Uint8Array(readFileSync(new URL(`../../../../../corpus/tar/${name}`, import.meta.url)));
+  return new Uint8Array(readFileSync(new URL(`../../../../../${name}`, import.meta.url)));
 }
 
 function makeContext(
@@ -104,22 +104,22 @@ function pax(key: string, value: string): Uint8Array {
 
 describe('tar reader', () => {
   it('detects ustar headers and declines unknown bytes', () => {
-    expect(reader.detect?.(fixture('tar-variants.tar'))).toBe(0.9);
+    expect(reader.detect?.(fixture('corpus/tar/nested-folders.tar'))).toBe(0.9);
     expect(reader.detect?.(new Uint8Array(511))).toBe(0);
     expect(reader.detect?.(new Uint8Array(512))).toBe(0);
   });
 
   it('reads regular files in order and keeps safe normalized paths', async () => {
-    const { ctx, out, extracted, budget } = makeContext(fixture('tar-variants.tar'));
+    const { ctx, out, extracted, budget } = makeContext(fixture('corpus/tar/nested-folders.tar'));
     await reader.read(ctx);
-    expect(extracted.map((entry) => entry.name)).toContain('folder/subfolder/data.csv');
+    expect(extracted.map((entry) => entry.name)).toEqual(['field/plots/counts.csv', 'field/notes.md']);
     expect(extracted.every((entry) => !entry.name.startsWith('/'))).toBe(true);
     expect(budget.totalUncompressedBytes).toBeGreaterThan(0);
     expect(out.finish().children.length).toBeGreaterThan(0);
   });
 
   it('applies PAX paths and GNU long names', async () => {
-    for (const filename of ['tar-pax-long-path.tar', 'tar-gnu-long-name.tar']) {
+    for (const filename of ['corpus/tar/pax-long-path.tar', 'corpus/tar/gnu-long-name.tar']) {
       const { ctx, extracted } = makeContext(fixture(filename));
       await reader.read(ctx);
       expect(extracted).toHaveLength(1);
@@ -128,7 +128,7 @@ describe('tar reader', () => {
   });
 
   it('lists entries without reading file bodies', async () => {
-    const { ctx, out, budget, extracted } = makeContext(fixture('tar-variants.tar'), {}, 'list');
+    const { ctx, out, budget, extracted } = makeContext(fixture('corpus/tar/nested-folders.tar'), {}, 'list');
     await reader.read(ctx);
     expect(extracted).toEqual([]);
     expect(budget.totalUncompressedBytes).toBe(0);
@@ -143,7 +143,7 @@ describe('tar reader', () => {
   });
 
   it('preflights child depth only for an extractable regular file', async () => {
-    const { ctx, out, budget, extracted } = makeContext(fixture('tar-variants.tar'), { childDepth: 0 });
+    const { ctx, out, budget, extracted } = makeContext(fixture('corpus/tar/nested-folders.tar'), { childDepth: 0 });
     await reader.read(ctx);
     expect(extracted).toEqual([]);
     expect(out.finish().children.some((child) => child.status === 'listed')).toBe(true);
@@ -220,20 +220,20 @@ describe('tar reader', () => {
   });
 
   it('rejects invalid checksum and size lies', async () => {
-    await expect(reader.read(makeContext(fixture('tar-bad-checksum.tar')).ctx)).rejects.toBeInstanceOf(
+    await expect(reader.read(makeContext(fixture('hostile/tar/bad-checksum.tar')).ctx)).rejects.toBeInstanceOf(
       CorruptFileError,
     );
-    await expect(reader.read(makeContext(fixture('tar-size-lie.tar')).ctx)).rejects.toBeInstanceOf(
+    await expect(reader.read(makeContext(fixture('hostile/tar/size-lie.tar')).ctx)).rejects.toBeInstanceOf(
       CorruptFileError,
     );
   });
 
   it('bounds PAX metadata claims and entry count', async () => {
-    await expect(reader.read(makeContext(fixture('tar-pax-size-lie.tar')).ctx)).rejects.toBeInstanceOf(
+    await expect(reader.read(makeContext(fixture('hostile/tar/pax-size-lie.tar')).ctx)).rejects.toBeInstanceOf(
       CorruptFileError,
     );
     await expect(
-      reader.read(makeContext(fixture('tar-variants.tar'), { zipEntries: 0 }).ctx),
+      reader.read(makeContext(fixture('corpus/tar/nested-folders.tar'), { zipEntries: 0 }).ctx),
     ).rejects.toBeInstanceOf(LimitExceededError);
   });
 });

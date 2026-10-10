@@ -2,7 +2,13 @@ import { Gunzip } from 'fflate';
 import type { ReadContext, Reader } from '../../core/reader.js';
 import { CorruptFileError, DocsluiceError } from '../../core/errors.js';
 
-const CHUNK_SIZE = 8;
+/**
+ * Compressed bytes per push. DEFLATE expands at most about 1,032 times, so one push yields at most
+ * about 4 MB before the next uncompressed-byte and ratio check.
+ */
+const CHUNK_SIZE = 4096;
+/** CRC bytes per budget tick. */
+const CRC_TICK = 65_536;
 const FEXTRA = 0x04;
 const FNAME = 0x08;
 const FCOMMENT = 0x10;
@@ -11,7 +17,7 @@ const RESERVED = 0xe0;
 const MAX_DISPLAY_NAME_BYTES = 4096;
 const CRC_TABLE = makeCrcTable();
 
-export const reader: Reader = {
+export const gzipReader: Reader = {
   id: 'gzip',
   mimeTypes: ['application/gzip', 'application/x-gzip'],
   detect(bytes) {
@@ -96,12 +102,15 @@ export const reader: Reader = {
 
     try {
       if (bytes.length <= header.end) throw new CorruptFileError();
+      // Chunks go in as non-final pushes, then one empty final push: fflate only reports the next
+      // member (and its boundary) when the stream is not yet marked final.
       for (let offset = 0; offset < bytes.length && !outputStopped; offset += CHUNK_SIZE) {
         ctx.budget.tick();
         const end = Math.min(offset + CHUNK_SIZE, bytes.length);
         compressedFed = end;
-        gunzip.push(bytes.subarray(offset, end), end === bytes.length);
+        gunzip.push(bytes.subarray(offset, end), false);
       }
+      if (!outputStopped) gunzip.push(new Uint8Array(0), true);
     } catch (error) {
       if (error instanceof DocsluiceError) throw error;
       if (failure instanceof DocsluiceError) throw failure;
@@ -201,7 +210,7 @@ function hasResourceTruncation(ctx: ReadContext): boolean {
 function updateCrc(previous: number, bytes: Uint8Array, ctx: ReadContext): number {
   let crc = previous;
   for (let index = 0; index < bytes.length; index++) {
-    ctx.budget.tick();
+    if (index % CRC_TICK === 0) ctx.budget.tick();
     crc = CRC_TABLE[(crc ^ bytes[index]!) & 0xff]! ^ (crc >>> 8);
   }
   return crc >>> 0;

@@ -3,7 +3,7 @@ import { DocBuilder } from '../src/core/builder.js';
 import { DEFAULT_LIMITS } from '../src/core/limits.js';
 import type { ReadContext } from '../src/core/reader.js';
 import { WarningSink } from '../src/core/warnings.js';
-import { reader } from '../src/readers/gzip/index.js';
+import { gzipReader as reader } from '../src/readers/gzip/index.js';
 
 /** Bounded entry point for byte-oriented GZIP fuzzing. */
 export async function fuzzGzip(bytes: Uint8Array): Promise<void> {

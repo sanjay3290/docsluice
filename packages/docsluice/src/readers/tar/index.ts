@@ -4,7 +4,7 @@ import { CorruptFileError } from '../../core/errors.js';
 const BLOCK = 512;
 const PAX_TYPES = new Set([0x78, 0x67]);
 
-export const reader: Reader = {
+export const tarReader: Reader = {
   id: 'tar',
   mimeTypes: ['application/x-tar'],
   detect(bytes) {
