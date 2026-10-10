@@ -237,6 +237,20 @@ describe('Excel tables and defined names (XLS-9)', () => {
     expect(parseTablePart(encode('<other name="T" ref="A1"/>'), context())).toBeUndefined();
   });
 
+  it('keeps merges that start inside an extra table, clipped to it', async () => {
+    const doc = await extract(
+      workbook(
+        `<worksheet xmlns="${S}"><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>wide</t></is></c></row><row r="2"><c r="B2"><v>1</v></c></row><row r="3"><c r="C3"><v>2</v></c></row></sheetData><mergeCells><mergeCell ref="A1:C1"/><mergeCell ref="C2:C3"/><mergeCell ref="A3:A3"/></mergeCells></worksheet>`,
+        '',
+        {},
+        '<definedNames><definedName name="Part">One!$A$1:$B$2</definedName></definedNames>',
+      ),
+    );
+    const part = sheetTables(doc).find((table) => table.caption === 'Part')!;
+    expect(part.loc.range).toBe('A1:B2');
+    expect(part.rows[0]![0]).toMatchObject({ text: 'wide', colSpan: 2 });
+  });
+
   it('charges extra tables to the cells budget', async () => {
     const names = Array.from(
       { length: 50 },
