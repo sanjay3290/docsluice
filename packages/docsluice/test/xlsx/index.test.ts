@@ -7,6 +7,11 @@ import { formatGeneral } from '../../src/readers/xlsx/numfmt.js';
 import { columnName, parseCellReference, parseRangeReference } from '../../src/readers/xlsx/spreadsheetml.js';
 import { xlsxReader } from '../../src/readers/xlsx/index.js';
 
+// Timing assertions mean nothing under coverage instrumentation (`npm run coverage` sets this).
+const underCoverage =
+  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env
+    ?.DOCSLUICE_COVERAGE === '1';
+
 const S = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 const PKG = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -405,25 +410,29 @@ describe('XLSX reader', () => {
     expect(rows.flat().filter((cell: Cell) => cell.rowSpan || cell.colSpan)).toHaveLength(1);
   });
 
-  it('reads a 50,000-row workbook within the PERF budget', async () => {
-    const rows: string[] = [];
-    for (let row = 1; row <= 50_000; row++) {
-      rows.push(
-        `<row r="${row}"><c r="A${row}" t="s"><v>${row % 100}</v></c><c r="B${row}"><v>${row * 1.5}</v></c><c r="C${row}" t="inlineStr"><is><t>note ${row}</t></is></c><c r="D${row}" t="b"><v>${row % 2}</v></c></row>`,
-      );
-    }
-    const strings = Array.from({ length: 100 }, (_, index) => `<si><t>label ${index}</t></si>`).join('');
-    const bytes = workbook([{ name: 'Big', xml: worksheet(rows.join('')) }], strings);
-    const started = performance.now();
-    const doc = await extract(bytes);
-    const elapsed = performance.now() - started;
-    const table = tables(sections(doc)[0]!)[0]!;
-    expect(table.rows).toHaveLength(50_000);
-    expect(table.rows[49_999]![2]).toEqual({ text: 'note 50000', address: 'C50000' });
-    expect(doc.warnings).toEqual([]);
-    // Target 3 s (about 2.0-2.3 s measured alone); the bound leaves room for loaded CI runners.
-    expect(elapsed).toBeLessThan(6000);
-  }, 20_000);
+  it.skipIf(underCoverage)(
+    'reads a 50,000-row workbook within the PERF budget',
+    async () => {
+      const rows: string[] = [];
+      for (let row = 1; row <= 50_000; row++) {
+        rows.push(
+          `<row r="${row}"><c r="A${row}" t="s"><v>${row % 100}</v></c><c r="B${row}"><v>${row * 1.5}</v></c><c r="C${row}" t="inlineStr"><is><t>note ${row}</t></is></c><c r="D${row}" t="b"><v>${row % 2}</v></c></row>`,
+        );
+      }
+      const strings = Array.from({ length: 100 }, (_, index) => `<si><t>label ${index}</t></si>`).join('');
+      const bytes = workbook([{ name: 'Big', xml: worksheet(rows.join('')) }], strings);
+      const started = performance.now();
+      const doc = await extract(bytes);
+      const elapsed = performance.now() - started;
+      const table = tables(sections(doc)[0]!)[0]!;
+      expect(table.rows).toHaveLength(50_000);
+      expect(table.rows[49_999]![2]).toEqual({ text: 'note 50000', address: 'C50000' });
+      expect(doc.warnings).toEqual([]);
+      // Target 3 s (about 2.0-2.3 s measured alone); the bound leaves room for loaded CI runners.
+      expect(elapsed).toBeLessThan(6000);
+    },
+    20_000,
+  );
 
   it('never fetches and keeps external links as a feature only', async () => {
     const fetch = vi.fn();

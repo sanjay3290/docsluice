@@ -26,9 +26,13 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      # Line coverage per file (QA-5); fails below a threshold and writes the job summary.
+      - run: npm run coverage
       - run: npm run test:runtime-tools
       - run: npm run build
       - run: npm run check:package
+      # The docs site and API reference build (ADR 0013, #78); broken links fail the job.
+      - run: npm run docs:site
       - uses: actions/upload-artifact@v7
         with:
           name: dist
