@@ -29,11 +29,32 @@ export interface DocxParagraph {
   numId?: string;
   ilvl?: number;
   runs?: Array<{ text: string; bold?: boolean; italic?: boolean; href?: string }>;
+  /** Footnotes, endnotes and comments anchored in this paragraph, in reference order (DOC-5). */
+  notes?: DocxNoteRef[];
   loc: { path?: string };
+}
+
+/** A footnote, endnote or comment referenced from the body by its `w:id`. */
+export interface DocxNoteRef {
+  role: 'footnote' | 'endnote' | 'comment';
+  id: string;
 }
 
 /** Return `true` after emitting or consuming this paragraph to suppress default emission. */
 export type DocxParagraphHandler = (paragraph: DocxParagraph) => boolean | void;
+
+/** Reader hooks around the body scan. All are optional. */
+export interface DocxBodyHooks {
+  onParagraph?: DocxParagraphHandler;
+  /** Called before each table block is emitted. */
+  onTable?: () => void;
+  /** Called after a paragraph or table is emitted, with the notes it references. */
+  onNotes?: (notes: readonly DocxNoteRef[]) => void;
+  /** Called for each section `w:headerReference`/`w:footerReference` relationship id. */
+  onSectionReference?: (kind: 'header' | 'footer', relationshipId: string) => void;
+  /** Called once after the scan and before any body block is emitted. */
+  beforeEmit?: () => void;
+}
 
 interface ParagraphState {
   text: string;
@@ -43,6 +64,7 @@ interface ParagraphState {
   outlineLevel?: number;
   numId?: string;
   ilvl?: number;
+  notes?: DocxNoteRef[];
 }
 
 interface RunState {
@@ -67,11 +89,14 @@ interface TableState {
   cell?: CellState;
   /** Tables nested in this one, in document order, emitted right after it. */
   nested: TableEvent[];
+  /** Notes referenced from any cell, emitted after the outermost table. */
+  notes: DocxNoteRef[];
 }
 
 interface TableEvent {
   table: { rows: Cell[][]; headerRows: number };
   loc: { path?: string };
+  notes?: DocxNoteRef[];
 }
 
 type BodyEvent = DocxParagraph | TableEvent;
@@ -243,10 +268,13 @@ export function scanDocxBody(
   context: ReadContext | BodyContext,
   styles: ReadonlyMap<string, DocxStyle>,
   relationships: DocxRelationships,
-  onParagraph?: DocxParagraphHandler,
-  onTable?: () => void,
+  hooks: DocxBodyHooks = {},
 ): void {
   const ctx = context as BodyContext;
+  const { onParagraph, onTable, onNotes } = hooks;
+  // References that appear between paragraphs (a comment range start) attach to the next one.
+  const pendingNotes: DocxNoteRef[] = [];
+  const seenComments = new Set<string>();
   const frames: Frame[] = [];
   const paragraphs: ParagraphState[] = [];
   let activeTextDepth = 0;
@@ -287,6 +315,7 @@ export function scanDocxBody(
       // Cell paragraphs become the cell's text, one line each (DOC-4).
       if (paragraph.text.length > 0)
         cell.text += cell.text.length > 0 ? `\n${paragraph.text}` : paragraph.text;
+      if (paragraph.notes) tables[0]!.notes.push(...paragraph.notes);
       return;
     }
     const baseLoc = location(ctx);
@@ -307,7 +336,9 @@ export function scanDocxBody(
     if (paragraph.numId !== undefined) event.numId = paragraph.numId;
     if (paragraph.ilvl !== undefined) event.ilvl = paragraph.ilvl;
     if (ctx.options.runs) event.runs = cloneRuns(paragraph.runs, ctx.budget);
+    if (paragraph.notes) event.notes = paragraph.notes;
     if (paragraph.text.length === 0) {
+      if (paragraph.notes) events.push({ text: '', loc: baseLoc, notes: paragraph.notes });
       if (onParagraph) emptyParagraphPending = true;
       return;
     }
@@ -403,7 +434,34 @@ export function scanDocxBody(
           if (skipped) skippedDepth++;
           if (isWord && info.localName === 'p') {
             frame.paragraph = { text: '', runs: [] };
+            if (pendingNotes.length > 0) frame.paragraph.notes = pendingNotes.splice(0);
             paragraphs.push(frame.paragraph);
+          }
+          if (!skipped && isWord) {
+            const role =
+              info.localName === 'footnoteReference'
+                ? 'footnote'
+                : info.localName === 'endnoteReference'
+                  ? 'endnote'
+                  : info.localName === 'commentRangeStart' || info.localName === 'commentReference'
+                    ? 'comment'
+                    : undefined;
+            const id = role ? wordAttribute(attrs, 'id', frames, namespaceScope, ctx.budget) : undefined;
+            // A comment has a range start and a reference; it is placed once, at whichever comes first.
+            if (role && id !== undefined && !(role === 'comment' && seenComments.has(id))) {
+              if (role === 'comment') seenComments.add(id);
+              const paragraph = paragraphs.at(-1);
+              if (paragraph) (paragraph.notes ??= []).push({ role, id });
+              else pendingNotes.push({ role, id });
+            }
+            if (info.localName === 'headerReference' || info.localName === 'footerReference') {
+              const relationshipId = relationshipAttribute(attrs, 'id', frames, namespaceScope, ctx.budget);
+              if (relationshipId !== undefined)
+                hooks.onSectionReference?.(
+                  info.localName === 'headerReference' ? 'header' : 'footer',
+                  relationshipId,
+                );
+            }
           }
           if (isWord && info.localName === 'r') frame.run = {};
           if (isWord && info.localName === 'hyperlink') {
@@ -458,7 +516,7 @@ export function scanDocxBody(
                 });
               }
             } else {
-              frame.table = { rows: [], nested: [] };
+              frame.table = { rows: [], nested: [], notes: [] };
               tables.push(frame.table);
             }
           }
@@ -518,6 +576,7 @@ export function scanDocxBody(
               }
               parent.nested.push(event, ...frame.table.nested);
             } else {
+              if (frame.table.notes.length > 0) event.notes = frame.table.notes;
               events.push(event, ...frame.table.nested);
             }
           }
@@ -531,6 +590,8 @@ export function scanDocxBody(
 
   if (!rootSeen || !validRoot || !bodySeen) warnUnreadableRoot();
   if (emptyParagraphPending) events.push({ text: '', loc: location(ctx) });
+  if (pendingNotes.length > 0) events.push({ text: '', loc: location(ctx), notes: pendingNotes.splice(0) });
+  hooks.beforeEmit?.();
   for (let index = 0; index < events.length; index++) {
     ctx.budget.tick();
     const next = events[index]!;
@@ -539,10 +600,15 @@ export function scanDocxBody(
       onTable?.();
       if (next.table.rows.length > 0 && !ctx.out.table(next.table.rows, next.table.headerRows, next.loc))
         break;
+      if (next.notes) onNotes?.(next.notes);
       continue;
     }
     const event = next;
-    if (onParagraph?.(event) === true || event.text.length === 0) continue;
+    if (onParagraph?.(event) === true) continue;
+    if (event.text.length === 0) {
+      if (event.notes) onNotes?.(event.notes);
+      continue;
+    }
     const level = event.level;
     const emitted =
       level !== undefined
@@ -551,6 +617,7 @@ export function scanDocxBody(
           ? ctx.out.paragraph(event.text, event.loc, event.runs)
           : ctx.out.paragraph(event.text, event.loc);
     if (!emitted) break;
+    if (event.notes) onNotes?.(event.notes);
   }
 }
 

@@ -5,6 +5,7 @@ import { DEFAULT_LIMITS } from '../src/core/limits.js';
 import { parseDocxStyles } from '../src/readers/docx/styles.js';
 import { scanDocxBody } from '../src/readers/docx/body.js';
 import { parseDocxNumbering } from '../src/readers/docx/numbering.js';
+import { readDocxNotes, readDocxStoryText } from '../src/readers/docx/stories.js';
 import { WarningSink } from '../src/core/warnings.js';
 
 /** Bounded entry point for arbitrary XML payloads sent through both DOCX SAX modules. */
@@ -23,6 +24,8 @@ export function fuzzDocx(input: Uint8Array): void {
   };
   try {
     parseDocxNumbering(sample, context);
+    readDocxStoryText(sample, context);
+    readDocxNotes(sample, context, 'comment');
     const styles = parseDocxStyles(sample, context);
     scanDocxBody(sample, context, styles, new Map());
   } catch (error) {
