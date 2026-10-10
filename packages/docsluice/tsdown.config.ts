@@ -25,6 +25,7 @@ export default defineConfig({
     gzip: 'src/readers/gzip/index.ts',
     tar: 'src/readers/tar/index.ts',
     eml: 'src/readers/eml/index.ts',
+    msg: 'src/readers/msg/index.ts',
     epub: 'src/readers/epub/index.ts',
   },
   format: ['esm', 'cjs'],

@@ -11,7 +11,7 @@ export const READERS = Object.keys(manifest.exports)
   .filter((subpath) => !NOT_READERS.has(subpath))
   .map((subpath) => subpath.slice(2));
 const OFFICE_READERS = new Set(['doc', 'docx', 'xlsx', 'xls', 'pptx', 'odt']);
-const EXTERNAL_READERS = [...OFFICE_READERS, 'eml', 'rtf', 'epub', 'gzip', 'tar'];
+const EXTERNAL_READERS = [...OFFICE_READERS, 'eml', 'msg', 'rtf', 'epub', 'gzip', 'tar'];
 const externalReader = new RegExp(`/(?:${EXTERNAL_READERS.join('|')})\\.js$`);
 
 export default [

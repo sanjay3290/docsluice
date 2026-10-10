@@ -10,4 +10,4 @@ Subject and date are retained as document metadata. Sender, recipient, and copie
 
 MIME parts are scanned iteratively and bounded by the 1 MiB per-header cap, a multipart nesting cap of 64 levels (`DEPTH_LIMIT` warning; `xmlDepth` applies when it is lower, with a `TRUNCATED` warning), the shared entry and uncompressed-byte allowances, output limits, and the shared time/abort budget. Transfer decoding preflights the shared uncompressed allowance before allocation; text is decoded in chunks and stops at the remaining output allowance. A missing closing boundary produces an `UNREADABLE_PART` warning when readable content remains.
 
-Support is best effort. This reader does not validate signatures, decrypt encrypted mail, fetch remote content, or process S/MIME. It does not parse Outlook MSG containers.
+Support is best effort. This reader does not validate signatures, decrypt encrypted mail, fetch remote content, or process S/MIME. Outlook `.msg` files have their own reader with the same output shape: see [msg.md](msg.md).

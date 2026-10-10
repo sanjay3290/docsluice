@@ -11,3 +11,7 @@ Before allocating directory metadata, the reader charges the archive's physical 
 Directory paths use `/` between storage names. Stream lookup is exact and case-sensitive. Directory entries use a `Map` keyed by those paths internally; duplicate paths make the file invalid. Callers should treat entry names as untrusted display data.
 
 The implementation follows Microsoft's public [MS-CFB specification](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-cfb/53989ce4-7b05-4f8d-829b-d08d6148375b). It intentionally does not add document-format interpretation or change the public document model.
+
+## Writing
+
+`packages/docsluice/src/ole/write.ts` exports an internal `writeCfb(entries, budget)` that writes storages and streams as a version 3 compound file (512-byte sectors, a mini stream below 4096 bytes, DIFAT sectors when the FAT outgrows the header). The MSG reader uses it to hand an embedded message or OLE object to the child pipeline as a file of its own. Sibling entries form a balanced tree built with an explicit stack, and the output size is charged to `totalUncompressedBytes` before allocation.
