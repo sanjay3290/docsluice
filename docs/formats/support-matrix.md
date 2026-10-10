@@ -10,6 +10,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 
 | Format | Reader | Corpus files | With goldens | Format page |
 |---|---|---|---|---|
+| 7z | `docsluice/7z` | 5 | 0 | [7z.md](7z.md) |
 | csv | `docsluice/csv` | 4 | 4 | [csv.md](csv.md) |
 | doc | `docsluice/doc` | 2 | 2 | [doc.md](doc.md) |
 | docx | `docsluice/docx` | 14 | 14 | [docx.md](docx.md) |
@@ -30,6 +31,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | pdf | no reader | 10 | 0 | — |
 | ppt | `docsluice/ppt` | 3 | 3 | [ppt.md](ppt.md) |
 | pptx | `docsluice/pptx` | 7 | 7 | [pptx.md](pptx.md) |
+| rar | `docsluice/rar` | 2 | 0 | [rar.md](rar.md) |
 | rtf | `docsluice/rtf` | 8 | 8 | [rtf.md](rtf.md) |
 | srt | `docsluice/srt` | 1 | 1 | [srt.md](srt.md) |
 | tar | `docsluice/tar` | 4 | 4 | [tar.md](tar.md) |
@@ -69,7 +71,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | IN-1 | Accept `Uint8Array`, `ArrayBuffer`, Node `Buffer`, `Blob`/`File`, and web `ReadableStream`. | Not covered | — |
 | IN-2 | Accept a Node `Readable` stream and a file path, only from the Node entry point (`docsluice/node`), so the core stays runtime-neutral. | Not covered | — |
 | IN-3 | Take optional hints: `filename`, `mimeType`, `format` (forces a reader and skips sniffing). | Not covered | — |
-| IN-4 | Detect format from magic bytes: PDF, zip, OLE compound file (old Office and Outlook `.msg`), RTF, gzip, PNG/JPEG/GIF/TIFF/WebP, and others. | `doc/doc-legacy.doc`<br>`doc/doc-legacy.docx`<br>`gzip/multi-member.txt.gz`<br>`gzip/optional-header.gz`<br>`gzip/scores.csv.gz`<br>`msg/embedded-message.msg`<br>`msg/html-body.msg`<br>`msg/plain-attachments.msg`<br>`msg/rtf-ansi-1251.msg`<br>`msg/rtf-fromhtml.msg`<br>`ole/libreoffice.doc`<br>`ole/libreoffice.ppt`<br>`ole/libreoffice.xls`<br>`ole/test_outlook_msg.msg`<br>`rtf/bin-overrun.rtf`<br>`rtf/japanese-codepage.rtf`<br>`rtf/table-and-list.rtf`<br>`rtf/wordpad-unicode.rtf` | 1 |
+| IN-4 | Detect format from magic bytes: PDF, zip, OLE compound file (old Office and Outlook `.msg`), RTF, gzip, PNG/JPEG/GIF/TIFF/WebP, and others. | `7z/encrypted-content.7z (no golden)`<br>`7z/encrypted-header.7z (no golden)`<br>`7z/listing-stored-header.7z (no golden)`<br>`7z/listing.7z (no golden)`<br>`7z/many-files.7z (no golden)`<br>`doc/doc-legacy.doc`<br>`doc/doc-legacy.docx`<br>`gzip/multi-member.txt.gz`<br>`gzip/optional-header.gz`<br>`gzip/scores.csv.gz`<br>`msg/embedded-message.msg`<br>`msg/html-body.msg`<br>`msg/plain-attachments.msg`<br>`msg/rtf-ansi-1251.msg`<br>`msg/rtf-fromhtml.msg`<br>`ole/libreoffice.doc`<br>`ole/libreoffice.ppt`<br>`ole/libreoffice.xls`<br>`ole/test_outlook_msg.msg`<br>`rar/listing-rar4.rar (no golden)`<br>`rar/listing-rar5.rar (no golden)`<br>`rtf/bin-overrun.rtf`<br>`rtf/japanese-codepage.rtf`<br>`rtf/table-and-list.rtf`<br>`rtf/wordpad-unicode.rtf` | 1 |
 | IN-5 | Look inside zip containers to tell DOCX, XLSX, PPTX, ODT, ODS, ODP, EPUB and plain zip apart (via `[Content_Types].xml` and the ODF/EPUB `mimetype` entry). | `epub/tiny-epub2.epub`<br>`epub/tiny-epub3.epub`<br>`zip/hello.odt`<br>`zip/zip-cli.zip` | 1 |
 | IN-6 | Tell text formats apart by content: JSON, XML, HTML, CSV/TSV, Markdown, plain text. | `ics/field-season.ics`<br>`json/dangerous-keys.json`<br>`json/mixed-leaves.json`<br>`markdown/constructs.md`<br>`ndjson/observations.ndjson`<br>`srt/survey-briefing.srt`<br>`txt/paragraphs.txt`<br>`txt/tide_table.py`<br>`txt/utf16le-bom.txt`<br>`txt/windows-1252.txt`<br>`vcf/survey-team.vcf`<br>`vtt/survey-briefing.vtt`<br>`yaml/survey-config.yaml` | — |
 | IN-7 | Detect text encoding: byte-order mark (BOM), UTF-8, UTF-16 LE/BE, and a fallback to Windows-1252 when bytes are not valid UTF-8. Report the encoding used. | `html/windows-1252-meta.html`<br>`txt/paragraphs.txt`<br>`txt/utf16le-bom.txt`<br>`txt/windows-1252.txt` | 1 |
@@ -106,19 +108,19 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | RT-2 | The core uses only web-standard APIs (`Uint8Array`, `TextDecoder`, `DecompressionStream` or a pure-JS inflate). Node-only features live in `docsluice/node`. | Not covered | — |
 | RT-3 | Ships ESM and CommonJS, with full TypeScript types. | Not covered | — |
 | RT-4 | Each format is its own subpath export (`docsluice/pdf`, `docsluice/xlsx`). Importing `docsluice` with the default set loads readers lazily. | Not covered | — |
-| SEC-1 | **Zip bomb** — a 40 KB file that expands to many gigabytes. \| Count bytes as they decompress. Stop at the total-uncompressed limit and at a compression-ratio limit. Never trust the sizes written in the zip header. | Not covered | 12 |
+| SEC-1 | **Zip bomb** — a 40 KB file that expands to many gigabytes. \| Count bytes as they decompress. Stop at the total-uncompressed limit and at a compression-ratio limit. Never trust the sizes written in the zip header. | Not covered | 14 |
 | SEC-10 | **Network calls** — linked images, remote templates, external relationships in Office files, PDF remote actions. \| docsluice never fetches anything. External targets are reported as data only (`hasExternalLinks`). | Not covered | 4 |
 | SEC-11 | **Running content** — macros, PDF JavaScript, HTML scripts, formulas. \| Never run. Report presence only. Formula text is returned as a string. | `docx/headings-outline-macros.docm`<br>`ods/formulas.ods`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/formulas.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 2 |
-| SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 48 |
+| SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 50 |
 | SEC-14 | **Supply-chain attack** through a dependency. \| Few dependencies, pinned with a lockfile, reviewed on update. No install scripts. Publish with npm provenance. | Not covered | — |
-| SEC-2 | **Too many entries** — a zip with a million tiny files. \| Entry-count limit, checked before reading entries. | Not covered | 4 |
+| SEC-2 | **Too many entries** — a zip with a million tiny files. \| Entry-count limit, checked before reading entries. | Not covered | 6 |
 | SEC-3 | **Path tricks** — entry names like `../../etc/passwd`. \| docsluice never writes to disk. Entry names are treated as plain strings and cleaned before they appear in paths. | Not covered | 4 |
 | SEC-4 | **XML external entities (XXE)** — XML that asks the parser to read local files or URLs. \| One shared XML parser with DTD, external entities and processing instructions **off and not switchable**. | `xml/external-entity.xml` | 3 |
 | SEC-5 | **Billion laughs** — XML entities that expand to huge text. \| No entity expansion beyond the five built-in XML entities. Element-depth and text-size limits. | `xml/internal-entity-expansion.xml` | 3 |
 | SEC-6 | **Prototype pollution** — a key named `__proto__` in a file changes JavaScript objects across the app. (This is SheetJS's open advisory.) \| Never use file data as plain-object keys. Use `Map` or `Object.create(null)`. A lint rule and a test file full of `__proto__`, `constructor` and `prototype` keys in every format. | `json/dangerous-keys.json`<br>`yaml/survey-config.yaml` | 10 |
 | SEC-7 | **Slow regular expressions (ReDoS)** — text built to make a pattern run for minutes. \| No regular expression with nested repeats on file data. Static check in CI (for example `eslint-plugin-regexp`). Hand-written scanners for hot paths. | Not covered | 5 |
 | SEC-8 | **Deep nesting** — tables in tables, lists in lists, 10,000 levels deep, to crash the stack. \| Depth limit everywhere. Iterative code, not recursion, for tree walks over file data. | Not covered | 24 |
-| SEC-9 | **Endless loops** — PDF objects or zip parts that point at each other. \| Visited sets on every reference graph. A global time budget. | Not covered | 18 |
+| SEC-9 | **Endless loops** — PDF objects or zip parts that point at each other. \| Visited sets on every reference graph. A global time budget. | Not covered | 20 |
 | XLS-1 | Read every sheet in workbook order, with its name and state (visible, hidden, very hidden). | `ods/cell-types.ods`<br>`ods/workbook-hidden-sparse.ods`<br>`xls/workbook-hidden-sparse.xls`<br>`xlsb/workbook-hidden-sparse.xlsb`<br>`xlsx/cell-types.xlsx`<br>`xlsx/workbook-hidden-sparse.xlsx` | — |
 | XLS-2 | Resolve shared strings, inline strings and rich-text runs. | `ods/cell-types.ods`<br>`ods/workbook-merged-richstrings.ods`<br>`ods/workbook-values-formulas.ods`<br>`xls/workbook-merged-richstrings.xls`<br>`xls/workbook-values-formulas.xls`<br>`xlsb/workbook-merged-richstrings.xlsb`<br>`xlsb/workbook-values-formulas.xlsb`<br>`xlsx/cell-types.xlsx`<br>`xlsx/workbook-merged-richstrings.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm`<br>`xlsx/workbook-values-formulas.xlsx` | — |
 | XLS-3 | Apply number formats to give the value a person sees: dates (both 1900 and 1904 date systems), percentages, currency, thousands separators. Keep the raw value too. | `ods/number-formats.ods`<br>`ods/workbook-1904-note.ods`<br>`ods/workbook-values-formulas.ods`<br>`xls/workbook-1904-note.xls`<br>`xls/workbook-values-formulas.xls`<br>`xlsb/workbook-1904-note.xlsb`<br>`xlsb/workbook-values-formulas.xlsb`<br>`xlsx/number-formats.xlsx`<br>`xlsx/workbook-1904-note.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm`<br>`xlsx/workbook-values-formulas.xlsx` | 1 |
