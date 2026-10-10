@@ -72,5 +72,8 @@ export async function readHtml(ctx: ReadContext): Promise<void> {
     });
   }
   ctx.out.setEncoding(encoding);
-  emitHtml(ctx, text);
+  // Main-content selection loads only when asked for (HTM-2).
+  const select =
+    ctx.options.mainContent === true ? (await import('../../html/main-content.js')).mainContent : undefined;
+  emitHtml(ctx, text, undefined, select);
 }

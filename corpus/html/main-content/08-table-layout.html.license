@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: written for docsluice; invented text, no third-party content
+Requirements: HTM-2
+Notes: an old table layout: the content cell wins over the navigation cell.

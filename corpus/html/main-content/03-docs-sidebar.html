@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Configuring limits</title></head>
+<body>
+<div class="layout">
+<div class="breadcrumb"><a href="/">Docs</a> / <a href="/guide">Guide</a> / Limits</div>
+<div class="sidebar"><ul><li><a href="#intro">Introduction</a></li><li><a href="#limits">Limits</a></li><li><a href="#errors">Errors</a></li></ul></div>
+<div role="main" class="doc">
+<h1>Configuring limits</h1>
+<p>Every extraction runs under a budget of bytes, cells, characters and time that callers can lower per call.</p>
+<pre><code>extract(bytes, { limits: { cells: 10000 } })</code></pre>
+<p>When a limit is reached, the reader stops and the document reports what was left out in its warnings.</p>
+</div>
+</div>
+</body></html>
