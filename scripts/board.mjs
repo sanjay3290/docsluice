@@ -6,6 +6,7 @@
 //   node scripts/board.mjs sync            # recompute Ready/Backlog on the board for open issues
 //   node scripts/board.mjs status 12 "In review"
 //
+// `next` and `ready` fall back to the REST API when GraphQL is refused; `sync` and `status` need GraphQL.
 // "Ready" means: open, not an epic, no needs-human/needs-decision label, and every blocked-by issue closed.
 // Work order: milestone (M0 first), then priority (P0 first), then issue number.
 import { execFileSync } from 'node:child_process';
@@ -15,7 +16,13 @@ const REPO = 'docsluice';
 const PROJECT_NUMBER = 3;
 const SKIP_LABELS = new Set(['type:epic', 'needs-human', 'needs-decision']);
 
-const gh = (args) => execFileSync('gh', args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+// stderr is captured, so a refused GraphQL call stays quiet; a failure still reports it in the thrown error.
+const gh = (args) =>
+  execFileSync('gh', args, {
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
 const graphql = (query, vars = {}) =>
   JSON.parse(
     gh([
@@ -27,7 +34,40 @@ const graphql = (query, vars = {}) =>
     ]),
   );
 
+/** Open issues from GraphQL, or from the REST API where GraphQL is refused (some sandboxes block it). */
 function openIssues() {
+  try {
+    return openIssuesGraphql();
+  } catch {
+    return openIssuesRest();
+  }
+}
+
+/** The REST equivalent of the GraphQL query, in the same shape. */
+function openIssuesRest() {
+  const rest = (path) => JSON.parse(gh(['api', path]));
+  const all = [];
+  for (let page = 1; ; page++) {
+    const batch = rest(`repos/${OWNER}/${REPO}/issues?state=open&per_page=100&page=${page}`);
+    for (const issue of batch) {
+      if (issue.pull_request) continue;
+      const blockedBy =
+        issue.issue_dependencies_summary?.blocked_by > 0
+          ? rest(`repos/${OWNER}/${REPO}/issues/${issue.number}/dependencies/blocked_by?per_page=100`)
+          : [];
+      all.push({
+        number: issue.number,
+        title: issue.title,
+        labels: { nodes: issue.labels.map((l) => ({ name: l.name })) },
+        milestone: issue.milestone ? { title: issue.milestone.title } : null,
+        blockedBy: { nodes: blockedBy.map((b) => ({ number: b.number, state: b.state.toUpperCase() })) },
+      });
+    }
+    if (batch.length < 100) return all;
+  }
+}
+
+function openIssuesGraphql() {
   const all = [];
   let cursor = null;
   for (;;) {
