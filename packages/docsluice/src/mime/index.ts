@@ -1,6 +1,11 @@
 import type { Budget } from '../core/budget.js';
 
 const MAX_HEADER_BYTES = 1_048_576;
+/**
+ * Multipart nesting stops here even when `xmlDepth` allows more. Each level rescans its body for its
+ * boundary, so work grows with depth times size; real mail nests a handful of levels.
+ */
+export const MAX_MULTIPART_DEPTH = 64;
 const MAX_HEADER_FIELDS = 512;
 const MAX_CONTENT_PARAMETERS = 256;
 const MIME_CHUNK_BYTES = 4096;
@@ -425,6 +430,12 @@ function splitHeaderBody(
   };
 }
 
+/** The index after the next line feed at or after `from`, or the input length. */
+function nextLine(bytes: Uint8Array, from: number): number {
+  const feed = bytes.indexOf(10, from);
+  return feed < 0 ? bytes.length : feed + 1;
+}
+
 function boundarySlices(
   bytes: Uint8Array,
   boundary: string,
@@ -435,12 +446,12 @@ function boundarySlices(
   let partStart = -1;
   let closed = false;
   let limited = false;
-  for (let index = 0; index <= bytes.length - delimiter.length; index++) {
+  // Delimiters only start a line, so jump from line start to line start; each level stays one linear pass.
+  for (let index = 0; index <= bytes.length - delimiter.length; index = nextLine(bytes, index)) {
     budget.tick();
-    if (index > 0 && bytes[index - 1] !== 10) continue;
     let matches = true;
+    // At most 72 bytes (RFC 2046 boundary of 70 plus "--"); the line tick above covers it.
     for (let offset = 0; offset < delimiter.length; offset++) {
-      budget.tick();
       if (bytes[index + offset] !== delimiter[offset]) {
         matches = false;
         break;
@@ -471,6 +482,7 @@ function boundarySlices(
       break;
     }
     partStart = bytes[end] === 13 ? end + 2 : end + 1;
+    // bytes[partStart - 1] is the delimiter line's feed, so the loop step lands on partStart itself.
     index = partStart - 1;
   }
   if (!closed && !limited && partStart >= 0 && partStart < bytes.length) {
@@ -674,6 +686,7 @@ export function parseMime(bytes: Uint8Array, budget: Budget): MimeMessage {
   const pending: Task[] = [{ bytes, target: parts }];
   let incomplete = false;
   let activeDepths = 0;
+  let depthWarned = false;
   try {
     while (pending.length > 0) {
       budget.tick();
@@ -702,6 +715,16 @@ export function parseMime(bytes: Uint8Array, budget: Budget): MimeMessage {
       if (contentType.value.startsWith('multipart/')) {
         const boundary = contentType.parameters.get('boundary');
         if (!boundary || !validBoundary(boundary, budget)) {
+          incomplete = true;
+          continue;
+        }
+        if (activeDepths >= MAX_MULTIPART_DEPTH) {
+          if (!depthWarned)
+            budget.warnings.add({
+              code: 'DEPTH_LIMIT',
+              message: `MIME multipart nesting is limited to ${MAX_MULTIPART_DEPTH} levels. Deeper parts were skipped.`,
+            });
+          depthWarned = true;
           incomplete = true;
           continue;
         }

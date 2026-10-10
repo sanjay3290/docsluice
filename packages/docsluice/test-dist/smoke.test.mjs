@@ -131,6 +131,11 @@ test('ZIP container reader subpath loads lazily', async () => {
   assert.equal(zip.zipReader.id, 'zip');
 });
 
+test('EML reader subpath loads lazily', async () => {
+  const eml = await import('docsluice/eml');
+  assert.equal(eml.emlReader.id, 'eml');
+});
+
 test('chunk is exported from the main entry', async () => {
   const docsluice = await import('docsluice');
   assert.equal(typeof docsluice.chunk, 'function');

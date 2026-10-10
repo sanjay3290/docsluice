@@ -610,5 +610,48 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "NST-4"
+  },
+  {
+    "file": "eml/nested-multipart-10000.eml",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT",
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "eml/missing-boundary-end.eml",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "eml/huge-base64-line.eml",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "eml/nested-attachment-bomb.eml",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "NST-1"
   }
 ]

@@ -1,0 +1,10205 @@
+From: a@example.test
+Subject: level 199
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb199"
+
+--bomb199
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a199-0.txt"
+
+x
+--bomb199
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a199-1.txt"
+
+x
+--bomb199
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a199-2.txt"
+
+x
+--bomb199
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a199-3.txt"
+
+x
+--bomb199
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a199-4.txt"
+
+x
+--bomb199
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a199-5.txt"
+
+x
+--bomb199
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a199-6.txt"
+
+x
+--bomb199
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a199-7.txt"
+
+x
+--bomb199
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m199.eml"
+
+From: a@example.test
+Subject: level 198
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb198"
+
+--bomb198
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a198-0.txt"
+
+x
+--bomb198
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a198-1.txt"
+
+x
+--bomb198
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a198-2.txt"
+
+x
+--bomb198
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a198-3.txt"
+
+x
+--bomb198
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a198-4.txt"
+
+x
+--bomb198
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a198-5.txt"
+
+x
+--bomb198
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a198-6.txt"
+
+x
+--bomb198
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a198-7.txt"
+
+x
+--bomb198
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m198.eml"
+
+From: a@example.test
+Subject: level 197
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb197"
+
+--bomb197
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a197-0.txt"
+
+x
+--bomb197
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a197-1.txt"
+
+x
+--bomb197
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a197-2.txt"
+
+x
+--bomb197
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a197-3.txt"
+
+x
+--bomb197
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a197-4.txt"
+
+x
+--bomb197
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a197-5.txt"
+
+x
+--bomb197
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a197-6.txt"
+
+x
+--bomb197
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a197-7.txt"
+
+x
+--bomb197
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m197.eml"
+
+From: a@example.test
+Subject: level 196
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb196"
+
+--bomb196
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a196-0.txt"
+
+x
+--bomb196
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a196-1.txt"
+
+x
+--bomb196
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a196-2.txt"
+
+x
+--bomb196
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a196-3.txt"
+
+x
+--bomb196
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a196-4.txt"
+
+x
+--bomb196
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a196-5.txt"
+
+x
+--bomb196
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a196-6.txt"
+
+x
+--bomb196
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a196-7.txt"
+
+x
+--bomb196
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m196.eml"
+
+From: a@example.test
+Subject: level 195
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb195"
+
+--bomb195
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a195-0.txt"
+
+x
+--bomb195
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a195-1.txt"
+
+x
+--bomb195
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a195-2.txt"
+
+x
+--bomb195
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a195-3.txt"
+
+x
+--bomb195
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a195-4.txt"
+
+x
+--bomb195
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a195-5.txt"
+
+x
+--bomb195
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a195-6.txt"
+
+x
+--bomb195
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a195-7.txt"
+
+x
+--bomb195
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m195.eml"
+
+From: a@example.test
+Subject: level 194
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb194"
+
+--bomb194
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a194-0.txt"
+
+x
+--bomb194
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a194-1.txt"
+
+x
+--bomb194
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a194-2.txt"
+
+x
+--bomb194
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a194-3.txt"
+
+x
+--bomb194
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a194-4.txt"
+
+x
+--bomb194
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a194-5.txt"
+
+x
+--bomb194
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a194-6.txt"
+
+x
+--bomb194
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a194-7.txt"
+
+x
+--bomb194
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m194.eml"
+
+From: a@example.test
+Subject: level 193
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb193"
+
+--bomb193
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a193-0.txt"
+
+x
+--bomb193
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a193-1.txt"
+
+x
+--bomb193
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a193-2.txt"
+
+x
+--bomb193
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a193-3.txt"
+
+x
+--bomb193
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a193-4.txt"
+
+x
+--bomb193
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a193-5.txt"
+
+x
+--bomb193
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a193-6.txt"
+
+x
+--bomb193
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a193-7.txt"
+
+x
+--bomb193
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m193.eml"
+
+From: a@example.test
+Subject: level 192
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb192"
+
+--bomb192
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a192-0.txt"
+
+x
+--bomb192
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a192-1.txt"
+
+x
+--bomb192
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a192-2.txt"
+
+x
+--bomb192
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a192-3.txt"
+
+x
+--bomb192
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a192-4.txt"
+
+x
+--bomb192
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a192-5.txt"
+
+x
+--bomb192
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a192-6.txt"
+
+x
+--bomb192
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a192-7.txt"
+
+x
+--bomb192
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m192.eml"
+
+From: a@example.test
+Subject: level 191
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb191"
+
+--bomb191
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a191-0.txt"
+
+x
+--bomb191
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a191-1.txt"
+
+x
+--bomb191
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a191-2.txt"
+
+x
+--bomb191
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a191-3.txt"
+
+x
+--bomb191
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a191-4.txt"
+
+x
+--bomb191
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a191-5.txt"
+
+x
+--bomb191
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a191-6.txt"
+
+x
+--bomb191
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a191-7.txt"
+
+x
+--bomb191
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m191.eml"
+
+From: a@example.test
+Subject: level 190
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb190"
+
+--bomb190
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a190-0.txt"
+
+x
+--bomb190
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a190-1.txt"
+
+x
+--bomb190
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a190-2.txt"
+
+x
+--bomb190
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a190-3.txt"
+
+x
+--bomb190
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a190-4.txt"
+
+x
+--bomb190
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a190-5.txt"
+
+x
+--bomb190
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a190-6.txt"
+
+x
+--bomb190
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a190-7.txt"
+
+x
+--bomb190
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m190.eml"
+
+From: a@example.test
+Subject: level 189
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb189"
+
+--bomb189
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a189-0.txt"
+
+x
+--bomb189
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a189-1.txt"
+
+x
+--bomb189
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a189-2.txt"
+
+x
+--bomb189
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a189-3.txt"
+
+x
+--bomb189
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a189-4.txt"
+
+x
+--bomb189
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a189-5.txt"
+
+x
+--bomb189
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a189-6.txt"
+
+x
+--bomb189
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a189-7.txt"
+
+x
+--bomb189
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m189.eml"
+
+From: a@example.test
+Subject: level 188
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb188"
+
+--bomb188
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a188-0.txt"
+
+x
+--bomb188
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a188-1.txt"
+
+x
+--bomb188
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a188-2.txt"
+
+x
+--bomb188
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a188-3.txt"
+
+x
+--bomb188
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a188-4.txt"
+
+x
+--bomb188
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a188-5.txt"
+
+x
+--bomb188
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a188-6.txt"
+
+x
+--bomb188
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a188-7.txt"
+
+x
+--bomb188
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m188.eml"
+
+From: a@example.test
+Subject: level 187
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb187"
+
+--bomb187
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a187-0.txt"
+
+x
+--bomb187
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a187-1.txt"
+
+x
+--bomb187
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a187-2.txt"
+
+x
+--bomb187
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a187-3.txt"
+
+x
+--bomb187
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a187-4.txt"
+
+x
+--bomb187
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a187-5.txt"
+
+x
+--bomb187
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a187-6.txt"
+
+x
+--bomb187
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a187-7.txt"
+
+x
+--bomb187
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m187.eml"
+
+From: a@example.test
+Subject: level 186
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb186"
+
+--bomb186
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a186-0.txt"
+
+x
+--bomb186
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a186-1.txt"
+
+x
+--bomb186
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a186-2.txt"
+
+x
+--bomb186
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a186-3.txt"
+
+x
+--bomb186
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a186-4.txt"
+
+x
+--bomb186
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a186-5.txt"
+
+x
+--bomb186
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a186-6.txt"
+
+x
+--bomb186
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a186-7.txt"
+
+x
+--bomb186
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m186.eml"
+
+From: a@example.test
+Subject: level 185
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb185"
+
+--bomb185
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a185-0.txt"
+
+x
+--bomb185
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a185-1.txt"
+
+x
+--bomb185
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a185-2.txt"
+
+x
+--bomb185
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a185-3.txt"
+
+x
+--bomb185
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a185-4.txt"
+
+x
+--bomb185
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a185-5.txt"
+
+x
+--bomb185
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a185-6.txt"
+
+x
+--bomb185
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a185-7.txt"
+
+x
+--bomb185
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m185.eml"
+
+From: a@example.test
+Subject: level 184
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb184"
+
+--bomb184
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a184-0.txt"
+
+x
+--bomb184
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a184-1.txt"
+
+x
+--bomb184
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a184-2.txt"
+
+x
+--bomb184
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a184-3.txt"
+
+x
+--bomb184
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a184-4.txt"
+
+x
+--bomb184
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a184-5.txt"
+
+x
+--bomb184
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a184-6.txt"
+
+x
+--bomb184
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a184-7.txt"
+
+x
+--bomb184
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m184.eml"
+
+From: a@example.test
+Subject: level 183
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb183"
+
+--bomb183
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a183-0.txt"
+
+x
+--bomb183
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a183-1.txt"
+
+x
+--bomb183
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a183-2.txt"
+
+x
+--bomb183
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a183-3.txt"
+
+x
+--bomb183
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a183-4.txt"
+
+x
+--bomb183
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a183-5.txt"
+
+x
+--bomb183
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a183-6.txt"
+
+x
+--bomb183
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a183-7.txt"
+
+x
+--bomb183
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m183.eml"
+
+From: a@example.test
+Subject: level 182
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb182"
+
+--bomb182
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a182-0.txt"
+
+x
+--bomb182
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a182-1.txt"
+
+x
+--bomb182
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a182-2.txt"
+
+x
+--bomb182
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a182-3.txt"
+
+x
+--bomb182
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a182-4.txt"
+
+x
+--bomb182
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a182-5.txt"
+
+x
+--bomb182
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a182-6.txt"
+
+x
+--bomb182
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a182-7.txt"
+
+x
+--bomb182
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m182.eml"
+
+From: a@example.test
+Subject: level 181
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb181"
+
+--bomb181
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a181-0.txt"
+
+x
+--bomb181
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a181-1.txt"
+
+x
+--bomb181
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a181-2.txt"
+
+x
+--bomb181
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a181-3.txt"
+
+x
+--bomb181
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a181-4.txt"
+
+x
+--bomb181
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a181-5.txt"
+
+x
+--bomb181
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a181-6.txt"
+
+x
+--bomb181
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a181-7.txt"
+
+x
+--bomb181
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m181.eml"
+
+From: a@example.test
+Subject: level 180
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb180"
+
+--bomb180
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a180-0.txt"
+
+x
+--bomb180
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a180-1.txt"
+
+x
+--bomb180
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a180-2.txt"
+
+x
+--bomb180
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a180-3.txt"
+
+x
+--bomb180
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a180-4.txt"
+
+x
+--bomb180
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a180-5.txt"
+
+x
+--bomb180
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a180-6.txt"
+
+x
+--bomb180
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a180-7.txt"
+
+x
+--bomb180
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m180.eml"
+
+From: a@example.test
+Subject: level 179
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb179"
+
+--bomb179
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a179-0.txt"
+
+x
+--bomb179
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a179-1.txt"
+
+x
+--bomb179
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a179-2.txt"
+
+x
+--bomb179
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a179-3.txt"
+
+x
+--bomb179
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a179-4.txt"
+
+x
+--bomb179
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a179-5.txt"
+
+x
+--bomb179
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a179-6.txt"
+
+x
+--bomb179
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a179-7.txt"
+
+x
+--bomb179
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m179.eml"
+
+From: a@example.test
+Subject: level 178
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb178"
+
+--bomb178
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a178-0.txt"
+
+x
+--bomb178
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a178-1.txt"
+
+x
+--bomb178
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a178-2.txt"
+
+x
+--bomb178
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a178-3.txt"
+
+x
+--bomb178
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a178-4.txt"
+
+x
+--bomb178
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a178-5.txt"
+
+x
+--bomb178
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a178-6.txt"
+
+x
+--bomb178
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a178-7.txt"
+
+x
+--bomb178
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m178.eml"
+
+From: a@example.test
+Subject: level 177
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb177"
+
+--bomb177
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a177-0.txt"
+
+x
+--bomb177
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a177-1.txt"
+
+x
+--bomb177
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a177-2.txt"
+
+x
+--bomb177
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a177-3.txt"
+
+x
+--bomb177
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a177-4.txt"
+
+x
+--bomb177
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a177-5.txt"
+
+x
+--bomb177
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a177-6.txt"
+
+x
+--bomb177
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a177-7.txt"
+
+x
+--bomb177
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m177.eml"
+
+From: a@example.test
+Subject: level 176
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb176"
+
+--bomb176
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a176-0.txt"
+
+x
+--bomb176
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a176-1.txt"
+
+x
+--bomb176
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a176-2.txt"
+
+x
+--bomb176
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a176-3.txt"
+
+x
+--bomb176
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a176-4.txt"
+
+x
+--bomb176
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a176-5.txt"
+
+x
+--bomb176
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a176-6.txt"
+
+x
+--bomb176
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a176-7.txt"
+
+x
+--bomb176
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m176.eml"
+
+From: a@example.test
+Subject: level 175
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb175"
+
+--bomb175
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a175-0.txt"
+
+x
+--bomb175
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a175-1.txt"
+
+x
+--bomb175
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a175-2.txt"
+
+x
+--bomb175
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a175-3.txt"
+
+x
+--bomb175
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a175-4.txt"
+
+x
+--bomb175
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a175-5.txt"
+
+x
+--bomb175
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a175-6.txt"
+
+x
+--bomb175
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a175-7.txt"
+
+x
+--bomb175
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m175.eml"
+
+From: a@example.test
+Subject: level 174
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb174"
+
+--bomb174
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a174-0.txt"
+
+x
+--bomb174
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a174-1.txt"
+
+x
+--bomb174
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a174-2.txt"
+
+x
+--bomb174
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a174-3.txt"
+
+x
+--bomb174
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a174-4.txt"
+
+x
+--bomb174
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a174-5.txt"
+
+x
+--bomb174
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a174-6.txt"
+
+x
+--bomb174
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a174-7.txt"
+
+x
+--bomb174
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m174.eml"
+
+From: a@example.test
+Subject: level 173
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb173"
+
+--bomb173
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a173-0.txt"
+
+x
+--bomb173
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a173-1.txt"
+
+x
+--bomb173
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a173-2.txt"
+
+x
+--bomb173
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a173-3.txt"
+
+x
+--bomb173
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a173-4.txt"
+
+x
+--bomb173
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a173-5.txt"
+
+x
+--bomb173
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a173-6.txt"
+
+x
+--bomb173
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a173-7.txt"
+
+x
+--bomb173
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m173.eml"
+
+From: a@example.test
+Subject: level 172
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb172"
+
+--bomb172
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a172-0.txt"
+
+x
+--bomb172
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a172-1.txt"
+
+x
+--bomb172
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a172-2.txt"
+
+x
+--bomb172
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a172-3.txt"
+
+x
+--bomb172
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a172-4.txt"
+
+x
+--bomb172
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a172-5.txt"
+
+x
+--bomb172
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a172-6.txt"
+
+x
+--bomb172
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a172-7.txt"
+
+x
+--bomb172
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m172.eml"
+
+From: a@example.test
+Subject: level 171
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb171"
+
+--bomb171
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a171-0.txt"
+
+x
+--bomb171
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a171-1.txt"
+
+x
+--bomb171
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a171-2.txt"
+
+x
+--bomb171
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a171-3.txt"
+
+x
+--bomb171
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a171-4.txt"
+
+x
+--bomb171
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a171-5.txt"
+
+x
+--bomb171
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a171-6.txt"
+
+x
+--bomb171
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a171-7.txt"
+
+x
+--bomb171
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m171.eml"
+
+From: a@example.test
+Subject: level 170
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb170"
+
+--bomb170
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a170-0.txt"
+
+x
+--bomb170
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a170-1.txt"
+
+x
+--bomb170
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a170-2.txt"
+
+x
+--bomb170
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a170-3.txt"
+
+x
+--bomb170
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a170-4.txt"
+
+x
+--bomb170
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a170-5.txt"
+
+x
+--bomb170
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a170-6.txt"
+
+x
+--bomb170
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a170-7.txt"
+
+x
+--bomb170
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m170.eml"
+
+From: a@example.test
+Subject: level 169
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb169"
+
+--bomb169
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a169-0.txt"
+
+x
+--bomb169
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a169-1.txt"
+
+x
+--bomb169
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a169-2.txt"
+
+x
+--bomb169
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a169-3.txt"
+
+x
+--bomb169
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a169-4.txt"
+
+x
+--bomb169
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a169-5.txt"
+
+x
+--bomb169
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a169-6.txt"
+
+x
+--bomb169
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a169-7.txt"
+
+x
+--bomb169
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m169.eml"
+
+From: a@example.test
+Subject: level 168
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb168"
+
+--bomb168
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a168-0.txt"
+
+x
+--bomb168
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a168-1.txt"
+
+x
+--bomb168
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a168-2.txt"
+
+x
+--bomb168
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a168-3.txt"
+
+x
+--bomb168
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a168-4.txt"
+
+x
+--bomb168
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a168-5.txt"
+
+x
+--bomb168
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a168-6.txt"
+
+x
+--bomb168
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a168-7.txt"
+
+x
+--bomb168
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m168.eml"
+
+From: a@example.test
+Subject: level 167
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb167"
+
+--bomb167
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a167-0.txt"
+
+x
+--bomb167
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a167-1.txt"
+
+x
+--bomb167
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a167-2.txt"
+
+x
+--bomb167
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a167-3.txt"
+
+x
+--bomb167
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a167-4.txt"
+
+x
+--bomb167
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a167-5.txt"
+
+x
+--bomb167
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a167-6.txt"
+
+x
+--bomb167
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a167-7.txt"
+
+x
+--bomb167
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m167.eml"
+
+From: a@example.test
+Subject: level 166
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb166"
+
+--bomb166
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a166-0.txt"
+
+x
+--bomb166
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a166-1.txt"
+
+x
+--bomb166
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a166-2.txt"
+
+x
+--bomb166
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a166-3.txt"
+
+x
+--bomb166
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a166-4.txt"
+
+x
+--bomb166
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a166-5.txt"
+
+x
+--bomb166
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a166-6.txt"
+
+x
+--bomb166
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a166-7.txt"
+
+x
+--bomb166
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m166.eml"
+
+From: a@example.test
+Subject: level 165
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb165"
+
+--bomb165
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a165-0.txt"
+
+x
+--bomb165
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a165-1.txt"
+
+x
+--bomb165
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a165-2.txt"
+
+x
+--bomb165
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a165-3.txt"
+
+x
+--bomb165
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a165-4.txt"
+
+x
+--bomb165
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a165-5.txt"
+
+x
+--bomb165
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a165-6.txt"
+
+x
+--bomb165
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a165-7.txt"
+
+x
+--bomb165
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m165.eml"
+
+From: a@example.test
+Subject: level 164
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb164"
+
+--bomb164
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a164-0.txt"
+
+x
+--bomb164
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a164-1.txt"
+
+x
+--bomb164
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a164-2.txt"
+
+x
+--bomb164
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a164-3.txt"
+
+x
+--bomb164
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a164-4.txt"
+
+x
+--bomb164
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a164-5.txt"
+
+x
+--bomb164
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a164-6.txt"
+
+x
+--bomb164
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a164-7.txt"
+
+x
+--bomb164
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m164.eml"
+
+From: a@example.test
+Subject: level 163
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb163"
+
+--bomb163
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a163-0.txt"
+
+x
+--bomb163
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a163-1.txt"
+
+x
+--bomb163
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a163-2.txt"
+
+x
+--bomb163
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a163-3.txt"
+
+x
+--bomb163
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a163-4.txt"
+
+x
+--bomb163
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a163-5.txt"
+
+x
+--bomb163
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a163-6.txt"
+
+x
+--bomb163
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a163-7.txt"
+
+x
+--bomb163
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m163.eml"
+
+From: a@example.test
+Subject: level 162
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb162"
+
+--bomb162
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a162-0.txt"
+
+x
+--bomb162
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a162-1.txt"
+
+x
+--bomb162
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a162-2.txt"
+
+x
+--bomb162
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a162-3.txt"
+
+x
+--bomb162
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a162-4.txt"
+
+x
+--bomb162
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a162-5.txt"
+
+x
+--bomb162
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a162-6.txt"
+
+x
+--bomb162
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a162-7.txt"
+
+x
+--bomb162
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m162.eml"
+
+From: a@example.test
+Subject: level 161
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb161"
+
+--bomb161
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a161-0.txt"
+
+x
+--bomb161
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a161-1.txt"
+
+x
+--bomb161
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a161-2.txt"
+
+x
+--bomb161
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a161-3.txt"
+
+x
+--bomb161
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a161-4.txt"
+
+x
+--bomb161
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a161-5.txt"
+
+x
+--bomb161
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a161-6.txt"
+
+x
+--bomb161
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a161-7.txt"
+
+x
+--bomb161
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m161.eml"
+
+From: a@example.test
+Subject: level 160
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb160"
+
+--bomb160
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a160-0.txt"
+
+x
+--bomb160
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a160-1.txt"
+
+x
+--bomb160
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a160-2.txt"
+
+x
+--bomb160
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a160-3.txt"
+
+x
+--bomb160
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a160-4.txt"
+
+x
+--bomb160
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a160-5.txt"
+
+x
+--bomb160
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a160-6.txt"
+
+x
+--bomb160
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a160-7.txt"
+
+x
+--bomb160
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m160.eml"
+
+From: a@example.test
+Subject: level 159
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb159"
+
+--bomb159
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a159-0.txt"
+
+x
+--bomb159
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a159-1.txt"
+
+x
+--bomb159
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a159-2.txt"
+
+x
+--bomb159
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a159-3.txt"
+
+x
+--bomb159
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a159-4.txt"
+
+x
+--bomb159
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a159-5.txt"
+
+x
+--bomb159
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a159-6.txt"
+
+x
+--bomb159
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a159-7.txt"
+
+x
+--bomb159
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m159.eml"
+
+From: a@example.test
+Subject: level 158
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb158"
+
+--bomb158
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a158-0.txt"
+
+x
+--bomb158
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a158-1.txt"
+
+x
+--bomb158
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a158-2.txt"
+
+x
+--bomb158
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a158-3.txt"
+
+x
+--bomb158
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a158-4.txt"
+
+x
+--bomb158
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a158-5.txt"
+
+x
+--bomb158
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a158-6.txt"
+
+x
+--bomb158
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a158-7.txt"
+
+x
+--bomb158
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m158.eml"
+
+From: a@example.test
+Subject: level 157
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb157"
+
+--bomb157
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a157-0.txt"
+
+x
+--bomb157
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a157-1.txt"
+
+x
+--bomb157
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a157-2.txt"
+
+x
+--bomb157
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a157-3.txt"
+
+x
+--bomb157
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a157-4.txt"
+
+x
+--bomb157
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a157-5.txt"
+
+x
+--bomb157
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a157-6.txt"
+
+x
+--bomb157
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a157-7.txt"
+
+x
+--bomb157
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m157.eml"
+
+From: a@example.test
+Subject: level 156
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb156"
+
+--bomb156
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a156-0.txt"
+
+x
+--bomb156
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a156-1.txt"
+
+x
+--bomb156
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a156-2.txt"
+
+x
+--bomb156
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a156-3.txt"
+
+x
+--bomb156
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a156-4.txt"
+
+x
+--bomb156
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a156-5.txt"
+
+x
+--bomb156
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a156-6.txt"
+
+x
+--bomb156
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a156-7.txt"
+
+x
+--bomb156
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m156.eml"
+
+From: a@example.test
+Subject: level 155
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb155"
+
+--bomb155
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a155-0.txt"
+
+x
+--bomb155
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a155-1.txt"
+
+x
+--bomb155
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a155-2.txt"
+
+x
+--bomb155
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a155-3.txt"
+
+x
+--bomb155
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a155-4.txt"
+
+x
+--bomb155
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a155-5.txt"
+
+x
+--bomb155
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a155-6.txt"
+
+x
+--bomb155
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a155-7.txt"
+
+x
+--bomb155
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m155.eml"
+
+From: a@example.test
+Subject: level 154
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb154"
+
+--bomb154
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a154-0.txt"
+
+x
+--bomb154
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a154-1.txt"
+
+x
+--bomb154
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a154-2.txt"
+
+x
+--bomb154
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a154-3.txt"
+
+x
+--bomb154
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a154-4.txt"
+
+x
+--bomb154
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a154-5.txt"
+
+x
+--bomb154
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a154-6.txt"
+
+x
+--bomb154
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a154-7.txt"
+
+x
+--bomb154
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m154.eml"
+
+From: a@example.test
+Subject: level 153
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb153"
+
+--bomb153
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a153-0.txt"
+
+x
+--bomb153
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a153-1.txt"
+
+x
+--bomb153
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a153-2.txt"
+
+x
+--bomb153
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a153-3.txt"
+
+x
+--bomb153
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a153-4.txt"
+
+x
+--bomb153
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a153-5.txt"
+
+x
+--bomb153
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a153-6.txt"
+
+x
+--bomb153
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a153-7.txt"
+
+x
+--bomb153
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m153.eml"
+
+From: a@example.test
+Subject: level 152
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb152"
+
+--bomb152
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a152-0.txt"
+
+x
+--bomb152
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a152-1.txt"
+
+x
+--bomb152
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a152-2.txt"
+
+x
+--bomb152
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a152-3.txt"
+
+x
+--bomb152
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a152-4.txt"
+
+x
+--bomb152
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a152-5.txt"
+
+x
+--bomb152
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a152-6.txt"
+
+x
+--bomb152
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a152-7.txt"
+
+x
+--bomb152
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m152.eml"
+
+From: a@example.test
+Subject: level 151
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb151"
+
+--bomb151
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a151-0.txt"
+
+x
+--bomb151
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a151-1.txt"
+
+x
+--bomb151
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a151-2.txt"
+
+x
+--bomb151
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a151-3.txt"
+
+x
+--bomb151
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a151-4.txt"
+
+x
+--bomb151
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a151-5.txt"
+
+x
+--bomb151
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a151-6.txt"
+
+x
+--bomb151
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a151-7.txt"
+
+x
+--bomb151
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m151.eml"
+
+From: a@example.test
+Subject: level 150
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb150"
+
+--bomb150
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a150-0.txt"
+
+x
+--bomb150
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a150-1.txt"
+
+x
+--bomb150
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a150-2.txt"
+
+x
+--bomb150
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a150-3.txt"
+
+x
+--bomb150
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a150-4.txt"
+
+x
+--bomb150
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a150-5.txt"
+
+x
+--bomb150
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a150-6.txt"
+
+x
+--bomb150
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a150-7.txt"
+
+x
+--bomb150
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m150.eml"
+
+From: a@example.test
+Subject: level 149
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb149"
+
+--bomb149
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a149-0.txt"
+
+x
+--bomb149
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a149-1.txt"
+
+x
+--bomb149
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a149-2.txt"
+
+x
+--bomb149
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a149-3.txt"
+
+x
+--bomb149
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a149-4.txt"
+
+x
+--bomb149
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a149-5.txt"
+
+x
+--bomb149
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a149-6.txt"
+
+x
+--bomb149
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a149-7.txt"
+
+x
+--bomb149
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m149.eml"
+
+From: a@example.test
+Subject: level 148
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb148"
+
+--bomb148
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a148-0.txt"
+
+x
+--bomb148
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a148-1.txt"
+
+x
+--bomb148
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a148-2.txt"
+
+x
+--bomb148
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a148-3.txt"
+
+x
+--bomb148
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a148-4.txt"
+
+x
+--bomb148
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a148-5.txt"
+
+x
+--bomb148
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a148-6.txt"
+
+x
+--bomb148
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a148-7.txt"
+
+x
+--bomb148
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m148.eml"
+
+From: a@example.test
+Subject: level 147
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb147"
+
+--bomb147
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a147-0.txt"
+
+x
+--bomb147
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a147-1.txt"
+
+x
+--bomb147
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a147-2.txt"
+
+x
+--bomb147
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a147-3.txt"
+
+x
+--bomb147
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a147-4.txt"
+
+x
+--bomb147
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a147-5.txt"
+
+x
+--bomb147
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a147-6.txt"
+
+x
+--bomb147
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a147-7.txt"
+
+x
+--bomb147
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m147.eml"
+
+From: a@example.test
+Subject: level 146
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb146"
+
+--bomb146
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a146-0.txt"
+
+x
+--bomb146
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a146-1.txt"
+
+x
+--bomb146
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a146-2.txt"
+
+x
+--bomb146
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a146-3.txt"
+
+x
+--bomb146
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a146-4.txt"
+
+x
+--bomb146
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a146-5.txt"
+
+x
+--bomb146
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a146-6.txt"
+
+x
+--bomb146
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a146-7.txt"
+
+x
+--bomb146
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m146.eml"
+
+From: a@example.test
+Subject: level 145
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb145"
+
+--bomb145
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a145-0.txt"
+
+x
+--bomb145
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a145-1.txt"
+
+x
+--bomb145
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a145-2.txt"
+
+x
+--bomb145
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a145-3.txt"
+
+x
+--bomb145
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a145-4.txt"
+
+x
+--bomb145
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a145-5.txt"
+
+x
+--bomb145
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a145-6.txt"
+
+x
+--bomb145
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a145-7.txt"
+
+x
+--bomb145
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m145.eml"
+
+From: a@example.test
+Subject: level 144
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb144"
+
+--bomb144
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a144-0.txt"
+
+x
+--bomb144
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a144-1.txt"
+
+x
+--bomb144
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a144-2.txt"
+
+x
+--bomb144
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a144-3.txt"
+
+x
+--bomb144
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a144-4.txt"
+
+x
+--bomb144
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a144-5.txt"
+
+x
+--bomb144
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a144-6.txt"
+
+x
+--bomb144
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a144-7.txt"
+
+x
+--bomb144
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m144.eml"
+
+From: a@example.test
+Subject: level 143
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb143"
+
+--bomb143
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a143-0.txt"
+
+x
+--bomb143
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a143-1.txt"
+
+x
+--bomb143
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a143-2.txt"
+
+x
+--bomb143
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a143-3.txt"
+
+x
+--bomb143
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a143-4.txt"
+
+x
+--bomb143
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a143-5.txt"
+
+x
+--bomb143
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a143-6.txt"
+
+x
+--bomb143
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a143-7.txt"
+
+x
+--bomb143
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m143.eml"
+
+From: a@example.test
+Subject: level 142
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb142"
+
+--bomb142
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a142-0.txt"
+
+x
+--bomb142
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a142-1.txt"
+
+x
+--bomb142
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a142-2.txt"
+
+x
+--bomb142
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a142-3.txt"
+
+x
+--bomb142
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a142-4.txt"
+
+x
+--bomb142
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a142-5.txt"
+
+x
+--bomb142
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a142-6.txt"
+
+x
+--bomb142
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a142-7.txt"
+
+x
+--bomb142
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m142.eml"
+
+From: a@example.test
+Subject: level 141
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb141"
+
+--bomb141
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a141-0.txt"
+
+x
+--bomb141
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a141-1.txt"
+
+x
+--bomb141
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a141-2.txt"
+
+x
+--bomb141
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a141-3.txt"
+
+x
+--bomb141
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a141-4.txt"
+
+x
+--bomb141
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a141-5.txt"
+
+x
+--bomb141
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a141-6.txt"
+
+x
+--bomb141
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a141-7.txt"
+
+x
+--bomb141
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m141.eml"
+
+From: a@example.test
+Subject: level 140
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb140"
+
+--bomb140
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a140-0.txt"
+
+x
+--bomb140
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a140-1.txt"
+
+x
+--bomb140
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a140-2.txt"
+
+x
+--bomb140
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a140-3.txt"
+
+x
+--bomb140
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a140-4.txt"
+
+x
+--bomb140
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a140-5.txt"
+
+x
+--bomb140
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a140-6.txt"
+
+x
+--bomb140
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a140-7.txt"
+
+x
+--bomb140
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m140.eml"
+
+From: a@example.test
+Subject: level 139
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb139"
+
+--bomb139
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a139-0.txt"
+
+x
+--bomb139
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a139-1.txt"
+
+x
+--bomb139
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a139-2.txt"
+
+x
+--bomb139
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a139-3.txt"
+
+x
+--bomb139
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a139-4.txt"
+
+x
+--bomb139
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a139-5.txt"
+
+x
+--bomb139
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a139-6.txt"
+
+x
+--bomb139
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a139-7.txt"
+
+x
+--bomb139
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m139.eml"
+
+From: a@example.test
+Subject: level 138
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb138"
+
+--bomb138
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a138-0.txt"
+
+x
+--bomb138
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a138-1.txt"
+
+x
+--bomb138
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a138-2.txt"
+
+x
+--bomb138
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a138-3.txt"
+
+x
+--bomb138
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a138-4.txt"
+
+x
+--bomb138
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a138-5.txt"
+
+x
+--bomb138
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a138-6.txt"
+
+x
+--bomb138
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a138-7.txt"
+
+x
+--bomb138
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m138.eml"
+
+From: a@example.test
+Subject: level 137
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb137"
+
+--bomb137
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a137-0.txt"
+
+x
+--bomb137
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a137-1.txt"
+
+x
+--bomb137
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a137-2.txt"
+
+x
+--bomb137
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a137-3.txt"
+
+x
+--bomb137
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a137-4.txt"
+
+x
+--bomb137
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a137-5.txt"
+
+x
+--bomb137
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a137-6.txt"
+
+x
+--bomb137
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a137-7.txt"
+
+x
+--bomb137
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m137.eml"
+
+From: a@example.test
+Subject: level 136
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb136"
+
+--bomb136
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a136-0.txt"
+
+x
+--bomb136
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a136-1.txt"
+
+x
+--bomb136
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a136-2.txt"
+
+x
+--bomb136
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a136-3.txt"
+
+x
+--bomb136
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a136-4.txt"
+
+x
+--bomb136
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a136-5.txt"
+
+x
+--bomb136
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a136-6.txt"
+
+x
+--bomb136
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a136-7.txt"
+
+x
+--bomb136
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m136.eml"
+
+From: a@example.test
+Subject: level 135
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb135"
+
+--bomb135
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a135-0.txt"
+
+x
+--bomb135
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a135-1.txt"
+
+x
+--bomb135
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a135-2.txt"
+
+x
+--bomb135
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a135-3.txt"
+
+x
+--bomb135
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a135-4.txt"
+
+x
+--bomb135
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a135-5.txt"
+
+x
+--bomb135
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a135-6.txt"
+
+x
+--bomb135
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a135-7.txt"
+
+x
+--bomb135
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m135.eml"
+
+From: a@example.test
+Subject: level 134
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb134"
+
+--bomb134
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a134-0.txt"
+
+x
+--bomb134
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a134-1.txt"
+
+x
+--bomb134
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a134-2.txt"
+
+x
+--bomb134
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a134-3.txt"
+
+x
+--bomb134
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a134-4.txt"
+
+x
+--bomb134
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a134-5.txt"
+
+x
+--bomb134
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a134-6.txt"
+
+x
+--bomb134
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a134-7.txt"
+
+x
+--bomb134
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m134.eml"
+
+From: a@example.test
+Subject: level 133
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb133"
+
+--bomb133
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a133-0.txt"
+
+x
+--bomb133
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a133-1.txt"
+
+x
+--bomb133
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a133-2.txt"
+
+x
+--bomb133
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a133-3.txt"
+
+x
+--bomb133
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a133-4.txt"
+
+x
+--bomb133
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a133-5.txt"
+
+x
+--bomb133
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a133-6.txt"
+
+x
+--bomb133
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a133-7.txt"
+
+x
+--bomb133
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m133.eml"
+
+From: a@example.test
+Subject: level 132
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb132"
+
+--bomb132
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a132-0.txt"
+
+x
+--bomb132
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a132-1.txt"
+
+x
+--bomb132
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a132-2.txt"
+
+x
+--bomb132
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a132-3.txt"
+
+x
+--bomb132
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a132-4.txt"
+
+x
+--bomb132
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a132-5.txt"
+
+x
+--bomb132
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a132-6.txt"
+
+x
+--bomb132
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a132-7.txt"
+
+x
+--bomb132
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m132.eml"
+
+From: a@example.test
+Subject: level 131
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb131"
+
+--bomb131
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a131-0.txt"
+
+x
+--bomb131
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a131-1.txt"
+
+x
+--bomb131
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a131-2.txt"
+
+x
+--bomb131
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a131-3.txt"
+
+x
+--bomb131
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a131-4.txt"
+
+x
+--bomb131
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a131-5.txt"
+
+x
+--bomb131
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a131-6.txt"
+
+x
+--bomb131
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a131-7.txt"
+
+x
+--bomb131
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m131.eml"
+
+From: a@example.test
+Subject: level 130
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb130"
+
+--bomb130
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a130-0.txt"
+
+x
+--bomb130
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a130-1.txt"
+
+x
+--bomb130
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a130-2.txt"
+
+x
+--bomb130
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a130-3.txt"
+
+x
+--bomb130
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a130-4.txt"
+
+x
+--bomb130
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a130-5.txt"
+
+x
+--bomb130
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a130-6.txt"
+
+x
+--bomb130
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a130-7.txt"
+
+x
+--bomb130
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m130.eml"
+
+From: a@example.test
+Subject: level 129
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb129"
+
+--bomb129
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a129-0.txt"
+
+x
+--bomb129
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a129-1.txt"
+
+x
+--bomb129
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a129-2.txt"
+
+x
+--bomb129
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a129-3.txt"
+
+x
+--bomb129
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a129-4.txt"
+
+x
+--bomb129
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a129-5.txt"
+
+x
+--bomb129
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a129-6.txt"
+
+x
+--bomb129
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a129-7.txt"
+
+x
+--bomb129
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m129.eml"
+
+From: a@example.test
+Subject: level 128
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb128"
+
+--bomb128
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a128-0.txt"
+
+x
+--bomb128
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a128-1.txt"
+
+x
+--bomb128
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a128-2.txt"
+
+x
+--bomb128
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a128-3.txt"
+
+x
+--bomb128
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a128-4.txt"
+
+x
+--bomb128
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a128-5.txt"
+
+x
+--bomb128
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a128-6.txt"
+
+x
+--bomb128
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a128-7.txt"
+
+x
+--bomb128
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m128.eml"
+
+From: a@example.test
+Subject: level 127
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb127"
+
+--bomb127
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a127-0.txt"
+
+x
+--bomb127
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a127-1.txt"
+
+x
+--bomb127
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a127-2.txt"
+
+x
+--bomb127
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a127-3.txt"
+
+x
+--bomb127
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a127-4.txt"
+
+x
+--bomb127
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a127-5.txt"
+
+x
+--bomb127
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a127-6.txt"
+
+x
+--bomb127
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a127-7.txt"
+
+x
+--bomb127
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m127.eml"
+
+From: a@example.test
+Subject: level 126
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb126"
+
+--bomb126
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a126-0.txt"
+
+x
+--bomb126
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a126-1.txt"
+
+x
+--bomb126
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a126-2.txt"
+
+x
+--bomb126
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a126-3.txt"
+
+x
+--bomb126
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a126-4.txt"
+
+x
+--bomb126
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a126-5.txt"
+
+x
+--bomb126
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a126-6.txt"
+
+x
+--bomb126
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a126-7.txt"
+
+x
+--bomb126
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m126.eml"
+
+From: a@example.test
+Subject: level 125
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb125"
+
+--bomb125
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a125-0.txt"
+
+x
+--bomb125
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a125-1.txt"
+
+x
+--bomb125
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a125-2.txt"
+
+x
+--bomb125
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a125-3.txt"
+
+x
+--bomb125
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a125-4.txt"
+
+x
+--bomb125
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a125-5.txt"
+
+x
+--bomb125
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a125-6.txt"
+
+x
+--bomb125
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a125-7.txt"
+
+x
+--bomb125
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m125.eml"
+
+From: a@example.test
+Subject: level 124
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb124"
+
+--bomb124
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a124-0.txt"
+
+x
+--bomb124
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a124-1.txt"
+
+x
+--bomb124
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a124-2.txt"
+
+x
+--bomb124
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a124-3.txt"
+
+x
+--bomb124
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a124-4.txt"
+
+x
+--bomb124
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a124-5.txt"
+
+x
+--bomb124
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a124-6.txt"
+
+x
+--bomb124
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a124-7.txt"
+
+x
+--bomb124
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m124.eml"
+
+From: a@example.test
+Subject: level 123
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb123"
+
+--bomb123
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a123-0.txt"
+
+x
+--bomb123
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a123-1.txt"
+
+x
+--bomb123
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a123-2.txt"
+
+x
+--bomb123
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a123-3.txt"
+
+x
+--bomb123
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a123-4.txt"
+
+x
+--bomb123
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a123-5.txt"
+
+x
+--bomb123
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a123-6.txt"
+
+x
+--bomb123
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a123-7.txt"
+
+x
+--bomb123
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m123.eml"
+
+From: a@example.test
+Subject: level 122
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb122"
+
+--bomb122
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a122-0.txt"
+
+x
+--bomb122
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a122-1.txt"
+
+x
+--bomb122
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a122-2.txt"
+
+x
+--bomb122
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a122-3.txt"
+
+x
+--bomb122
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a122-4.txt"
+
+x
+--bomb122
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a122-5.txt"
+
+x
+--bomb122
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a122-6.txt"
+
+x
+--bomb122
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a122-7.txt"
+
+x
+--bomb122
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m122.eml"
+
+From: a@example.test
+Subject: level 121
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb121"
+
+--bomb121
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a121-0.txt"
+
+x
+--bomb121
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a121-1.txt"
+
+x
+--bomb121
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a121-2.txt"
+
+x
+--bomb121
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a121-3.txt"
+
+x
+--bomb121
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a121-4.txt"
+
+x
+--bomb121
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a121-5.txt"
+
+x
+--bomb121
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a121-6.txt"
+
+x
+--bomb121
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a121-7.txt"
+
+x
+--bomb121
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m121.eml"
+
+From: a@example.test
+Subject: level 120
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb120"
+
+--bomb120
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a120-0.txt"
+
+x
+--bomb120
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a120-1.txt"
+
+x
+--bomb120
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a120-2.txt"
+
+x
+--bomb120
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a120-3.txt"
+
+x
+--bomb120
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a120-4.txt"
+
+x
+--bomb120
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a120-5.txt"
+
+x
+--bomb120
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a120-6.txt"
+
+x
+--bomb120
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a120-7.txt"
+
+x
+--bomb120
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m120.eml"
+
+From: a@example.test
+Subject: level 119
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb119"
+
+--bomb119
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a119-0.txt"
+
+x
+--bomb119
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a119-1.txt"
+
+x
+--bomb119
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a119-2.txt"
+
+x
+--bomb119
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a119-3.txt"
+
+x
+--bomb119
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a119-4.txt"
+
+x
+--bomb119
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a119-5.txt"
+
+x
+--bomb119
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a119-6.txt"
+
+x
+--bomb119
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a119-7.txt"
+
+x
+--bomb119
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m119.eml"
+
+From: a@example.test
+Subject: level 118
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb118"
+
+--bomb118
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a118-0.txt"
+
+x
+--bomb118
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a118-1.txt"
+
+x
+--bomb118
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a118-2.txt"
+
+x
+--bomb118
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a118-3.txt"
+
+x
+--bomb118
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a118-4.txt"
+
+x
+--bomb118
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a118-5.txt"
+
+x
+--bomb118
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a118-6.txt"
+
+x
+--bomb118
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a118-7.txt"
+
+x
+--bomb118
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m118.eml"
+
+From: a@example.test
+Subject: level 117
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb117"
+
+--bomb117
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a117-0.txt"
+
+x
+--bomb117
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a117-1.txt"
+
+x
+--bomb117
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a117-2.txt"
+
+x
+--bomb117
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a117-3.txt"
+
+x
+--bomb117
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a117-4.txt"
+
+x
+--bomb117
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a117-5.txt"
+
+x
+--bomb117
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a117-6.txt"
+
+x
+--bomb117
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a117-7.txt"
+
+x
+--bomb117
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m117.eml"
+
+From: a@example.test
+Subject: level 116
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb116"
+
+--bomb116
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a116-0.txt"
+
+x
+--bomb116
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a116-1.txt"
+
+x
+--bomb116
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a116-2.txt"
+
+x
+--bomb116
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a116-3.txt"
+
+x
+--bomb116
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a116-4.txt"
+
+x
+--bomb116
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a116-5.txt"
+
+x
+--bomb116
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a116-6.txt"
+
+x
+--bomb116
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a116-7.txt"
+
+x
+--bomb116
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m116.eml"
+
+From: a@example.test
+Subject: level 115
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb115"
+
+--bomb115
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a115-0.txt"
+
+x
+--bomb115
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a115-1.txt"
+
+x
+--bomb115
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a115-2.txt"
+
+x
+--bomb115
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a115-3.txt"
+
+x
+--bomb115
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a115-4.txt"
+
+x
+--bomb115
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a115-5.txt"
+
+x
+--bomb115
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a115-6.txt"
+
+x
+--bomb115
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a115-7.txt"
+
+x
+--bomb115
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m115.eml"
+
+From: a@example.test
+Subject: level 114
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb114"
+
+--bomb114
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a114-0.txt"
+
+x
+--bomb114
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a114-1.txt"
+
+x
+--bomb114
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a114-2.txt"
+
+x
+--bomb114
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a114-3.txt"
+
+x
+--bomb114
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a114-4.txt"
+
+x
+--bomb114
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a114-5.txt"
+
+x
+--bomb114
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a114-6.txt"
+
+x
+--bomb114
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a114-7.txt"
+
+x
+--bomb114
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m114.eml"
+
+From: a@example.test
+Subject: level 113
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb113"
+
+--bomb113
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a113-0.txt"
+
+x
+--bomb113
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a113-1.txt"
+
+x
+--bomb113
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a113-2.txt"
+
+x
+--bomb113
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a113-3.txt"
+
+x
+--bomb113
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a113-4.txt"
+
+x
+--bomb113
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a113-5.txt"
+
+x
+--bomb113
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a113-6.txt"
+
+x
+--bomb113
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a113-7.txt"
+
+x
+--bomb113
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m113.eml"
+
+From: a@example.test
+Subject: level 112
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb112"
+
+--bomb112
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a112-0.txt"
+
+x
+--bomb112
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a112-1.txt"
+
+x
+--bomb112
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a112-2.txt"
+
+x
+--bomb112
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a112-3.txt"
+
+x
+--bomb112
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a112-4.txt"
+
+x
+--bomb112
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a112-5.txt"
+
+x
+--bomb112
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a112-6.txt"
+
+x
+--bomb112
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a112-7.txt"
+
+x
+--bomb112
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m112.eml"
+
+From: a@example.test
+Subject: level 111
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb111"
+
+--bomb111
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a111-0.txt"
+
+x
+--bomb111
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a111-1.txt"
+
+x
+--bomb111
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a111-2.txt"
+
+x
+--bomb111
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a111-3.txt"
+
+x
+--bomb111
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a111-4.txt"
+
+x
+--bomb111
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a111-5.txt"
+
+x
+--bomb111
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a111-6.txt"
+
+x
+--bomb111
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a111-7.txt"
+
+x
+--bomb111
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m111.eml"
+
+From: a@example.test
+Subject: level 110
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb110"
+
+--bomb110
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a110-0.txt"
+
+x
+--bomb110
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a110-1.txt"
+
+x
+--bomb110
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a110-2.txt"
+
+x
+--bomb110
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a110-3.txt"
+
+x
+--bomb110
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a110-4.txt"
+
+x
+--bomb110
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a110-5.txt"
+
+x
+--bomb110
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a110-6.txt"
+
+x
+--bomb110
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a110-7.txt"
+
+x
+--bomb110
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m110.eml"
+
+From: a@example.test
+Subject: level 109
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb109"
+
+--bomb109
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a109-0.txt"
+
+x
+--bomb109
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a109-1.txt"
+
+x
+--bomb109
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a109-2.txt"
+
+x
+--bomb109
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a109-3.txt"
+
+x
+--bomb109
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a109-4.txt"
+
+x
+--bomb109
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a109-5.txt"
+
+x
+--bomb109
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a109-6.txt"
+
+x
+--bomb109
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a109-7.txt"
+
+x
+--bomb109
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m109.eml"
+
+From: a@example.test
+Subject: level 108
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb108"
+
+--bomb108
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a108-0.txt"
+
+x
+--bomb108
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a108-1.txt"
+
+x
+--bomb108
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a108-2.txt"
+
+x
+--bomb108
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a108-3.txt"
+
+x
+--bomb108
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a108-4.txt"
+
+x
+--bomb108
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a108-5.txt"
+
+x
+--bomb108
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a108-6.txt"
+
+x
+--bomb108
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a108-7.txt"
+
+x
+--bomb108
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m108.eml"
+
+From: a@example.test
+Subject: level 107
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb107"
+
+--bomb107
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a107-0.txt"
+
+x
+--bomb107
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a107-1.txt"
+
+x
+--bomb107
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a107-2.txt"
+
+x
+--bomb107
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a107-3.txt"
+
+x
+--bomb107
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a107-4.txt"
+
+x
+--bomb107
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a107-5.txt"
+
+x
+--bomb107
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a107-6.txt"
+
+x
+--bomb107
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a107-7.txt"
+
+x
+--bomb107
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m107.eml"
+
+From: a@example.test
+Subject: level 106
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb106"
+
+--bomb106
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a106-0.txt"
+
+x
+--bomb106
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a106-1.txt"
+
+x
+--bomb106
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a106-2.txt"
+
+x
+--bomb106
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a106-3.txt"
+
+x
+--bomb106
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a106-4.txt"
+
+x
+--bomb106
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a106-5.txt"
+
+x
+--bomb106
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a106-6.txt"
+
+x
+--bomb106
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a106-7.txt"
+
+x
+--bomb106
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m106.eml"
+
+From: a@example.test
+Subject: level 105
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb105"
+
+--bomb105
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a105-0.txt"
+
+x
+--bomb105
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a105-1.txt"
+
+x
+--bomb105
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a105-2.txt"
+
+x
+--bomb105
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a105-3.txt"
+
+x
+--bomb105
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a105-4.txt"
+
+x
+--bomb105
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a105-5.txt"
+
+x
+--bomb105
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a105-6.txt"
+
+x
+--bomb105
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a105-7.txt"
+
+x
+--bomb105
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m105.eml"
+
+From: a@example.test
+Subject: level 104
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb104"
+
+--bomb104
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a104-0.txt"
+
+x
+--bomb104
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a104-1.txt"
+
+x
+--bomb104
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a104-2.txt"
+
+x
+--bomb104
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a104-3.txt"
+
+x
+--bomb104
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a104-4.txt"
+
+x
+--bomb104
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a104-5.txt"
+
+x
+--bomb104
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a104-6.txt"
+
+x
+--bomb104
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a104-7.txt"
+
+x
+--bomb104
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m104.eml"
+
+From: a@example.test
+Subject: level 103
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb103"
+
+--bomb103
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a103-0.txt"
+
+x
+--bomb103
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a103-1.txt"
+
+x
+--bomb103
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a103-2.txt"
+
+x
+--bomb103
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a103-3.txt"
+
+x
+--bomb103
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a103-4.txt"
+
+x
+--bomb103
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a103-5.txt"
+
+x
+--bomb103
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a103-6.txt"
+
+x
+--bomb103
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a103-7.txt"
+
+x
+--bomb103
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m103.eml"
+
+From: a@example.test
+Subject: level 102
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb102"
+
+--bomb102
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a102-0.txt"
+
+x
+--bomb102
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a102-1.txt"
+
+x
+--bomb102
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a102-2.txt"
+
+x
+--bomb102
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a102-3.txt"
+
+x
+--bomb102
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a102-4.txt"
+
+x
+--bomb102
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a102-5.txt"
+
+x
+--bomb102
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a102-6.txt"
+
+x
+--bomb102
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a102-7.txt"
+
+x
+--bomb102
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m102.eml"
+
+From: a@example.test
+Subject: level 101
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb101"
+
+--bomb101
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a101-0.txt"
+
+x
+--bomb101
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a101-1.txt"
+
+x
+--bomb101
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a101-2.txt"
+
+x
+--bomb101
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a101-3.txt"
+
+x
+--bomb101
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a101-4.txt"
+
+x
+--bomb101
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a101-5.txt"
+
+x
+--bomb101
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a101-6.txt"
+
+x
+--bomb101
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a101-7.txt"
+
+x
+--bomb101
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m101.eml"
+
+From: a@example.test
+Subject: level 100
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb100"
+
+--bomb100
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a100-0.txt"
+
+x
+--bomb100
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a100-1.txt"
+
+x
+--bomb100
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a100-2.txt"
+
+x
+--bomb100
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a100-3.txt"
+
+x
+--bomb100
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a100-4.txt"
+
+x
+--bomb100
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a100-5.txt"
+
+x
+--bomb100
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a100-6.txt"
+
+x
+--bomb100
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a100-7.txt"
+
+x
+--bomb100
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m100.eml"
+
+From: a@example.test
+Subject: level 99
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb99"
+
+--bomb99
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a99-0.txt"
+
+x
+--bomb99
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a99-1.txt"
+
+x
+--bomb99
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a99-2.txt"
+
+x
+--bomb99
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a99-3.txt"
+
+x
+--bomb99
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a99-4.txt"
+
+x
+--bomb99
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a99-5.txt"
+
+x
+--bomb99
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a99-6.txt"
+
+x
+--bomb99
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a99-7.txt"
+
+x
+--bomb99
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m99.eml"
+
+From: a@example.test
+Subject: level 98
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb98"
+
+--bomb98
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a98-0.txt"
+
+x
+--bomb98
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a98-1.txt"
+
+x
+--bomb98
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a98-2.txt"
+
+x
+--bomb98
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a98-3.txt"
+
+x
+--bomb98
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a98-4.txt"
+
+x
+--bomb98
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a98-5.txt"
+
+x
+--bomb98
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a98-6.txt"
+
+x
+--bomb98
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a98-7.txt"
+
+x
+--bomb98
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m98.eml"
+
+From: a@example.test
+Subject: level 97
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb97"
+
+--bomb97
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a97-0.txt"
+
+x
+--bomb97
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a97-1.txt"
+
+x
+--bomb97
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a97-2.txt"
+
+x
+--bomb97
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a97-3.txt"
+
+x
+--bomb97
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a97-4.txt"
+
+x
+--bomb97
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a97-5.txt"
+
+x
+--bomb97
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a97-6.txt"
+
+x
+--bomb97
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a97-7.txt"
+
+x
+--bomb97
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m97.eml"
+
+From: a@example.test
+Subject: level 96
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb96"
+
+--bomb96
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a96-0.txt"
+
+x
+--bomb96
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a96-1.txt"
+
+x
+--bomb96
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a96-2.txt"
+
+x
+--bomb96
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a96-3.txt"
+
+x
+--bomb96
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a96-4.txt"
+
+x
+--bomb96
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a96-5.txt"
+
+x
+--bomb96
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a96-6.txt"
+
+x
+--bomb96
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a96-7.txt"
+
+x
+--bomb96
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m96.eml"
+
+From: a@example.test
+Subject: level 95
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb95"
+
+--bomb95
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a95-0.txt"
+
+x
+--bomb95
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a95-1.txt"
+
+x
+--bomb95
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a95-2.txt"
+
+x
+--bomb95
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a95-3.txt"
+
+x
+--bomb95
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a95-4.txt"
+
+x
+--bomb95
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a95-5.txt"
+
+x
+--bomb95
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a95-6.txt"
+
+x
+--bomb95
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a95-7.txt"
+
+x
+--bomb95
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m95.eml"
+
+From: a@example.test
+Subject: level 94
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb94"
+
+--bomb94
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a94-0.txt"
+
+x
+--bomb94
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a94-1.txt"
+
+x
+--bomb94
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a94-2.txt"
+
+x
+--bomb94
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a94-3.txt"
+
+x
+--bomb94
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a94-4.txt"
+
+x
+--bomb94
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a94-5.txt"
+
+x
+--bomb94
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a94-6.txt"
+
+x
+--bomb94
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a94-7.txt"
+
+x
+--bomb94
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m94.eml"
+
+From: a@example.test
+Subject: level 93
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb93"
+
+--bomb93
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a93-0.txt"
+
+x
+--bomb93
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a93-1.txt"
+
+x
+--bomb93
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a93-2.txt"
+
+x
+--bomb93
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a93-3.txt"
+
+x
+--bomb93
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a93-4.txt"
+
+x
+--bomb93
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a93-5.txt"
+
+x
+--bomb93
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a93-6.txt"
+
+x
+--bomb93
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a93-7.txt"
+
+x
+--bomb93
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m93.eml"
+
+From: a@example.test
+Subject: level 92
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb92"
+
+--bomb92
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a92-0.txt"
+
+x
+--bomb92
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a92-1.txt"
+
+x
+--bomb92
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a92-2.txt"
+
+x
+--bomb92
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a92-3.txt"
+
+x
+--bomb92
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a92-4.txt"
+
+x
+--bomb92
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a92-5.txt"
+
+x
+--bomb92
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a92-6.txt"
+
+x
+--bomb92
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a92-7.txt"
+
+x
+--bomb92
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m92.eml"
+
+From: a@example.test
+Subject: level 91
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb91"
+
+--bomb91
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a91-0.txt"
+
+x
+--bomb91
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a91-1.txt"
+
+x
+--bomb91
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a91-2.txt"
+
+x
+--bomb91
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a91-3.txt"
+
+x
+--bomb91
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a91-4.txt"
+
+x
+--bomb91
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a91-5.txt"
+
+x
+--bomb91
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a91-6.txt"
+
+x
+--bomb91
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a91-7.txt"
+
+x
+--bomb91
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m91.eml"
+
+From: a@example.test
+Subject: level 90
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb90"
+
+--bomb90
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a90-0.txt"
+
+x
+--bomb90
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a90-1.txt"
+
+x
+--bomb90
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a90-2.txt"
+
+x
+--bomb90
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a90-3.txt"
+
+x
+--bomb90
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a90-4.txt"
+
+x
+--bomb90
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a90-5.txt"
+
+x
+--bomb90
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a90-6.txt"
+
+x
+--bomb90
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a90-7.txt"
+
+x
+--bomb90
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m90.eml"
+
+From: a@example.test
+Subject: level 89
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb89"
+
+--bomb89
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a89-0.txt"
+
+x
+--bomb89
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a89-1.txt"
+
+x
+--bomb89
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a89-2.txt"
+
+x
+--bomb89
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a89-3.txt"
+
+x
+--bomb89
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a89-4.txt"
+
+x
+--bomb89
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a89-5.txt"
+
+x
+--bomb89
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a89-6.txt"
+
+x
+--bomb89
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a89-7.txt"
+
+x
+--bomb89
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m89.eml"
+
+From: a@example.test
+Subject: level 88
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb88"
+
+--bomb88
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a88-0.txt"
+
+x
+--bomb88
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a88-1.txt"
+
+x
+--bomb88
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a88-2.txt"
+
+x
+--bomb88
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a88-3.txt"
+
+x
+--bomb88
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a88-4.txt"
+
+x
+--bomb88
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a88-5.txt"
+
+x
+--bomb88
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a88-6.txt"
+
+x
+--bomb88
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a88-7.txt"
+
+x
+--bomb88
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m88.eml"
+
+From: a@example.test
+Subject: level 87
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb87"
+
+--bomb87
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a87-0.txt"
+
+x
+--bomb87
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a87-1.txt"
+
+x
+--bomb87
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a87-2.txt"
+
+x
+--bomb87
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a87-3.txt"
+
+x
+--bomb87
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a87-4.txt"
+
+x
+--bomb87
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a87-5.txt"
+
+x
+--bomb87
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a87-6.txt"
+
+x
+--bomb87
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a87-7.txt"
+
+x
+--bomb87
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m87.eml"
+
+From: a@example.test
+Subject: level 86
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb86"
+
+--bomb86
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a86-0.txt"
+
+x
+--bomb86
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a86-1.txt"
+
+x
+--bomb86
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a86-2.txt"
+
+x
+--bomb86
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a86-3.txt"
+
+x
+--bomb86
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a86-4.txt"
+
+x
+--bomb86
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a86-5.txt"
+
+x
+--bomb86
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a86-6.txt"
+
+x
+--bomb86
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a86-7.txt"
+
+x
+--bomb86
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m86.eml"
+
+From: a@example.test
+Subject: level 85
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb85"
+
+--bomb85
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a85-0.txt"
+
+x
+--bomb85
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a85-1.txt"
+
+x
+--bomb85
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a85-2.txt"
+
+x
+--bomb85
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a85-3.txt"
+
+x
+--bomb85
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a85-4.txt"
+
+x
+--bomb85
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a85-5.txt"
+
+x
+--bomb85
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a85-6.txt"
+
+x
+--bomb85
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a85-7.txt"
+
+x
+--bomb85
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m85.eml"
+
+From: a@example.test
+Subject: level 84
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb84"
+
+--bomb84
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a84-0.txt"
+
+x
+--bomb84
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a84-1.txt"
+
+x
+--bomb84
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a84-2.txt"
+
+x
+--bomb84
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a84-3.txt"
+
+x
+--bomb84
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a84-4.txt"
+
+x
+--bomb84
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a84-5.txt"
+
+x
+--bomb84
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a84-6.txt"
+
+x
+--bomb84
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a84-7.txt"
+
+x
+--bomb84
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m84.eml"
+
+From: a@example.test
+Subject: level 83
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb83"
+
+--bomb83
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a83-0.txt"
+
+x
+--bomb83
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a83-1.txt"
+
+x
+--bomb83
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a83-2.txt"
+
+x
+--bomb83
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a83-3.txt"
+
+x
+--bomb83
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a83-4.txt"
+
+x
+--bomb83
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a83-5.txt"
+
+x
+--bomb83
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a83-6.txt"
+
+x
+--bomb83
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a83-7.txt"
+
+x
+--bomb83
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m83.eml"
+
+From: a@example.test
+Subject: level 82
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb82"
+
+--bomb82
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a82-0.txt"
+
+x
+--bomb82
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a82-1.txt"
+
+x
+--bomb82
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a82-2.txt"
+
+x
+--bomb82
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a82-3.txt"
+
+x
+--bomb82
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a82-4.txt"
+
+x
+--bomb82
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a82-5.txt"
+
+x
+--bomb82
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a82-6.txt"
+
+x
+--bomb82
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a82-7.txt"
+
+x
+--bomb82
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m82.eml"
+
+From: a@example.test
+Subject: level 81
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb81"
+
+--bomb81
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a81-0.txt"
+
+x
+--bomb81
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a81-1.txt"
+
+x
+--bomb81
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a81-2.txt"
+
+x
+--bomb81
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a81-3.txt"
+
+x
+--bomb81
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a81-4.txt"
+
+x
+--bomb81
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a81-5.txt"
+
+x
+--bomb81
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a81-6.txt"
+
+x
+--bomb81
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a81-7.txt"
+
+x
+--bomb81
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m81.eml"
+
+From: a@example.test
+Subject: level 80
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb80"
+
+--bomb80
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a80-0.txt"
+
+x
+--bomb80
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a80-1.txt"
+
+x
+--bomb80
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a80-2.txt"
+
+x
+--bomb80
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a80-3.txt"
+
+x
+--bomb80
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a80-4.txt"
+
+x
+--bomb80
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a80-5.txt"
+
+x
+--bomb80
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a80-6.txt"
+
+x
+--bomb80
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a80-7.txt"
+
+x
+--bomb80
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m80.eml"
+
+From: a@example.test
+Subject: level 79
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb79"
+
+--bomb79
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a79-0.txt"
+
+x
+--bomb79
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a79-1.txt"
+
+x
+--bomb79
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a79-2.txt"
+
+x
+--bomb79
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a79-3.txt"
+
+x
+--bomb79
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a79-4.txt"
+
+x
+--bomb79
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a79-5.txt"
+
+x
+--bomb79
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a79-6.txt"
+
+x
+--bomb79
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a79-7.txt"
+
+x
+--bomb79
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m79.eml"
+
+From: a@example.test
+Subject: level 78
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb78"
+
+--bomb78
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a78-0.txt"
+
+x
+--bomb78
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a78-1.txt"
+
+x
+--bomb78
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a78-2.txt"
+
+x
+--bomb78
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a78-3.txt"
+
+x
+--bomb78
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a78-4.txt"
+
+x
+--bomb78
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a78-5.txt"
+
+x
+--bomb78
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a78-6.txt"
+
+x
+--bomb78
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a78-7.txt"
+
+x
+--bomb78
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m78.eml"
+
+From: a@example.test
+Subject: level 77
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb77"
+
+--bomb77
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a77-0.txt"
+
+x
+--bomb77
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a77-1.txt"
+
+x
+--bomb77
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a77-2.txt"
+
+x
+--bomb77
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a77-3.txt"
+
+x
+--bomb77
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a77-4.txt"
+
+x
+--bomb77
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a77-5.txt"
+
+x
+--bomb77
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a77-6.txt"
+
+x
+--bomb77
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a77-7.txt"
+
+x
+--bomb77
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m77.eml"
+
+From: a@example.test
+Subject: level 76
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb76"
+
+--bomb76
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a76-0.txt"
+
+x
+--bomb76
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a76-1.txt"
+
+x
+--bomb76
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a76-2.txt"
+
+x
+--bomb76
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a76-3.txt"
+
+x
+--bomb76
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a76-4.txt"
+
+x
+--bomb76
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a76-5.txt"
+
+x
+--bomb76
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a76-6.txt"
+
+x
+--bomb76
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a76-7.txt"
+
+x
+--bomb76
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m76.eml"
+
+From: a@example.test
+Subject: level 75
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb75"
+
+--bomb75
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a75-0.txt"
+
+x
+--bomb75
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a75-1.txt"
+
+x
+--bomb75
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a75-2.txt"
+
+x
+--bomb75
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a75-3.txt"
+
+x
+--bomb75
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a75-4.txt"
+
+x
+--bomb75
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a75-5.txt"
+
+x
+--bomb75
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a75-6.txt"
+
+x
+--bomb75
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a75-7.txt"
+
+x
+--bomb75
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m75.eml"
+
+From: a@example.test
+Subject: level 74
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb74"
+
+--bomb74
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a74-0.txt"
+
+x
+--bomb74
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a74-1.txt"
+
+x
+--bomb74
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a74-2.txt"
+
+x
+--bomb74
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a74-3.txt"
+
+x
+--bomb74
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a74-4.txt"
+
+x
+--bomb74
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a74-5.txt"
+
+x
+--bomb74
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a74-6.txt"
+
+x
+--bomb74
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a74-7.txt"
+
+x
+--bomb74
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m74.eml"
+
+From: a@example.test
+Subject: level 73
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb73"
+
+--bomb73
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a73-0.txt"
+
+x
+--bomb73
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a73-1.txt"
+
+x
+--bomb73
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a73-2.txt"
+
+x
+--bomb73
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a73-3.txt"
+
+x
+--bomb73
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a73-4.txt"
+
+x
+--bomb73
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a73-5.txt"
+
+x
+--bomb73
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a73-6.txt"
+
+x
+--bomb73
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a73-7.txt"
+
+x
+--bomb73
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m73.eml"
+
+From: a@example.test
+Subject: level 72
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb72"
+
+--bomb72
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a72-0.txt"
+
+x
+--bomb72
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a72-1.txt"
+
+x
+--bomb72
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a72-2.txt"
+
+x
+--bomb72
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a72-3.txt"
+
+x
+--bomb72
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a72-4.txt"
+
+x
+--bomb72
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a72-5.txt"
+
+x
+--bomb72
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a72-6.txt"
+
+x
+--bomb72
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a72-7.txt"
+
+x
+--bomb72
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m72.eml"
+
+From: a@example.test
+Subject: level 71
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb71"
+
+--bomb71
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a71-0.txt"
+
+x
+--bomb71
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a71-1.txt"
+
+x
+--bomb71
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a71-2.txt"
+
+x
+--bomb71
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a71-3.txt"
+
+x
+--bomb71
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a71-4.txt"
+
+x
+--bomb71
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a71-5.txt"
+
+x
+--bomb71
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a71-6.txt"
+
+x
+--bomb71
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a71-7.txt"
+
+x
+--bomb71
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m71.eml"
+
+From: a@example.test
+Subject: level 70
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb70"
+
+--bomb70
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a70-0.txt"
+
+x
+--bomb70
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a70-1.txt"
+
+x
+--bomb70
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a70-2.txt"
+
+x
+--bomb70
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a70-3.txt"
+
+x
+--bomb70
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a70-4.txt"
+
+x
+--bomb70
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a70-5.txt"
+
+x
+--bomb70
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a70-6.txt"
+
+x
+--bomb70
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a70-7.txt"
+
+x
+--bomb70
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m70.eml"
+
+From: a@example.test
+Subject: level 69
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb69"
+
+--bomb69
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a69-0.txt"
+
+x
+--bomb69
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a69-1.txt"
+
+x
+--bomb69
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a69-2.txt"
+
+x
+--bomb69
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a69-3.txt"
+
+x
+--bomb69
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a69-4.txt"
+
+x
+--bomb69
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a69-5.txt"
+
+x
+--bomb69
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a69-6.txt"
+
+x
+--bomb69
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a69-7.txt"
+
+x
+--bomb69
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m69.eml"
+
+From: a@example.test
+Subject: level 68
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb68"
+
+--bomb68
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a68-0.txt"
+
+x
+--bomb68
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a68-1.txt"
+
+x
+--bomb68
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a68-2.txt"
+
+x
+--bomb68
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a68-3.txt"
+
+x
+--bomb68
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a68-4.txt"
+
+x
+--bomb68
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a68-5.txt"
+
+x
+--bomb68
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a68-6.txt"
+
+x
+--bomb68
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a68-7.txt"
+
+x
+--bomb68
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m68.eml"
+
+From: a@example.test
+Subject: level 67
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb67"
+
+--bomb67
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a67-0.txt"
+
+x
+--bomb67
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a67-1.txt"
+
+x
+--bomb67
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a67-2.txt"
+
+x
+--bomb67
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a67-3.txt"
+
+x
+--bomb67
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a67-4.txt"
+
+x
+--bomb67
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a67-5.txt"
+
+x
+--bomb67
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a67-6.txt"
+
+x
+--bomb67
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a67-7.txt"
+
+x
+--bomb67
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m67.eml"
+
+From: a@example.test
+Subject: level 66
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb66"
+
+--bomb66
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a66-0.txt"
+
+x
+--bomb66
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a66-1.txt"
+
+x
+--bomb66
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a66-2.txt"
+
+x
+--bomb66
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a66-3.txt"
+
+x
+--bomb66
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a66-4.txt"
+
+x
+--bomb66
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a66-5.txt"
+
+x
+--bomb66
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a66-6.txt"
+
+x
+--bomb66
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a66-7.txt"
+
+x
+--bomb66
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m66.eml"
+
+From: a@example.test
+Subject: level 65
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb65"
+
+--bomb65
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a65-0.txt"
+
+x
+--bomb65
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a65-1.txt"
+
+x
+--bomb65
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a65-2.txt"
+
+x
+--bomb65
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a65-3.txt"
+
+x
+--bomb65
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a65-4.txt"
+
+x
+--bomb65
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a65-5.txt"
+
+x
+--bomb65
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a65-6.txt"
+
+x
+--bomb65
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a65-7.txt"
+
+x
+--bomb65
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m65.eml"
+
+From: a@example.test
+Subject: level 64
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb64"
+
+--bomb64
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a64-0.txt"
+
+x
+--bomb64
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a64-1.txt"
+
+x
+--bomb64
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a64-2.txt"
+
+x
+--bomb64
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a64-3.txt"
+
+x
+--bomb64
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a64-4.txt"
+
+x
+--bomb64
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a64-5.txt"
+
+x
+--bomb64
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a64-6.txt"
+
+x
+--bomb64
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a64-7.txt"
+
+x
+--bomb64
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m64.eml"
+
+From: a@example.test
+Subject: level 63
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb63"
+
+--bomb63
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a63-0.txt"
+
+x
+--bomb63
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a63-1.txt"
+
+x
+--bomb63
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a63-2.txt"
+
+x
+--bomb63
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a63-3.txt"
+
+x
+--bomb63
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a63-4.txt"
+
+x
+--bomb63
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a63-5.txt"
+
+x
+--bomb63
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a63-6.txt"
+
+x
+--bomb63
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a63-7.txt"
+
+x
+--bomb63
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m63.eml"
+
+From: a@example.test
+Subject: level 62
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb62"
+
+--bomb62
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a62-0.txt"
+
+x
+--bomb62
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a62-1.txt"
+
+x
+--bomb62
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a62-2.txt"
+
+x
+--bomb62
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a62-3.txt"
+
+x
+--bomb62
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a62-4.txt"
+
+x
+--bomb62
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a62-5.txt"
+
+x
+--bomb62
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a62-6.txt"
+
+x
+--bomb62
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a62-7.txt"
+
+x
+--bomb62
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m62.eml"
+
+From: a@example.test
+Subject: level 61
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb61"
+
+--bomb61
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a61-0.txt"
+
+x
+--bomb61
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a61-1.txt"
+
+x
+--bomb61
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a61-2.txt"
+
+x
+--bomb61
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a61-3.txt"
+
+x
+--bomb61
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a61-4.txt"
+
+x
+--bomb61
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a61-5.txt"
+
+x
+--bomb61
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a61-6.txt"
+
+x
+--bomb61
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a61-7.txt"
+
+x
+--bomb61
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m61.eml"
+
+From: a@example.test
+Subject: level 60
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb60"
+
+--bomb60
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a60-0.txt"
+
+x
+--bomb60
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a60-1.txt"
+
+x
+--bomb60
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a60-2.txt"
+
+x
+--bomb60
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a60-3.txt"
+
+x
+--bomb60
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a60-4.txt"
+
+x
+--bomb60
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a60-5.txt"
+
+x
+--bomb60
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a60-6.txt"
+
+x
+--bomb60
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a60-7.txt"
+
+x
+--bomb60
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m60.eml"
+
+From: a@example.test
+Subject: level 59
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb59"
+
+--bomb59
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a59-0.txt"
+
+x
+--bomb59
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a59-1.txt"
+
+x
+--bomb59
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a59-2.txt"
+
+x
+--bomb59
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a59-3.txt"
+
+x
+--bomb59
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a59-4.txt"
+
+x
+--bomb59
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a59-5.txt"
+
+x
+--bomb59
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a59-6.txt"
+
+x
+--bomb59
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a59-7.txt"
+
+x
+--bomb59
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m59.eml"
+
+From: a@example.test
+Subject: level 58
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb58"
+
+--bomb58
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a58-0.txt"
+
+x
+--bomb58
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a58-1.txt"
+
+x
+--bomb58
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a58-2.txt"
+
+x
+--bomb58
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a58-3.txt"
+
+x
+--bomb58
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a58-4.txt"
+
+x
+--bomb58
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a58-5.txt"
+
+x
+--bomb58
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a58-6.txt"
+
+x
+--bomb58
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a58-7.txt"
+
+x
+--bomb58
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m58.eml"
+
+From: a@example.test
+Subject: level 57
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb57"
+
+--bomb57
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a57-0.txt"
+
+x
+--bomb57
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a57-1.txt"
+
+x
+--bomb57
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a57-2.txt"
+
+x
+--bomb57
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a57-3.txt"
+
+x
+--bomb57
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a57-4.txt"
+
+x
+--bomb57
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a57-5.txt"
+
+x
+--bomb57
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a57-6.txt"
+
+x
+--bomb57
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a57-7.txt"
+
+x
+--bomb57
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m57.eml"
+
+From: a@example.test
+Subject: level 56
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb56"
+
+--bomb56
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a56-0.txt"
+
+x
+--bomb56
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a56-1.txt"
+
+x
+--bomb56
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a56-2.txt"
+
+x
+--bomb56
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a56-3.txt"
+
+x
+--bomb56
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a56-4.txt"
+
+x
+--bomb56
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a56-5.txt"
+
+x
+--bomb56
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a56-6.txt"
+
+x
+--bomb56
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a56-7.txt"
+
+x
+--bomb56
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m56.eml"
+
+From: a@example.test
+Subject: level 55
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb55"
+
+--bomb55
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a55-0.txt"
+
+x
+--bomb55
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a55-1.txt"
+
+x
+--bomb55
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a55-2.txt"
+
+x
+--bomb55
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a55-3.txt"
+
+x
+--bomb55
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a55-4.txt"
+
+x
+--bomb55
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a55-5.txt"
+
+x
+--bomb55
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a55-6.txt"
+
+x
+--bomb55
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a55-7.txt"
+
+x
+--bomb55
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m55.eml"
+
+From: a@example.test
+Subject: level 54
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb54"
+
+--bomb54
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a54-0.txt"
+
+x
+--bomb54
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a54-1.txt"
+
+x
+--bomb54
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a54-2.txt"
+
+x
+--bomb54
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a54-3.txt"
+
+x
+--bomb54
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a54-4.txt"
+
+x
+--bomb54
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a54-5.txt"
+
+x
+--bomb54
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a54-6.txt"
+
+x
+--bomb54
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a54-7.txt"
+
+x
+--bomb54
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m54.eml"
+
+From: a@example.test
+Subject: level 53
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb53"
+
+--bomb53
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a53-0.txt"
+
+x
+--bomb53
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a53-1.txt"
+
+x
+--bomb53
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a53-2.txt"
+
+x
+--bomb53
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a53-3.txt"
+
+x
+--bomb53
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a53-4.txt"
+
+x
+--bomb53
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a53-5.txt"
+
+x
+--bomb53
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a53-6.txt"
+
+x
+--bomb53
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a53-7.txt"
+
+x
+--bomb53
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m53.eml"
+
+From: a@example.test
+Subject: level 52
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb52"
+
+--bomb52
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a52-0.txt"
+
+x
+--bomb52
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a52-1.txt"
+
+x
+--bomb52
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a52-2.txt"
+
+x
+--bomb52
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a52-3.txt"
+
+x
+--bomb52
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a52-4.txt"
+
+x
+--bomb52
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a52-5.txt"
+
+x
+--bomb52
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a52-6.txt"
+
+x
+--bomb52
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a52-7.txt"
+
+x
+--bomb52
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m52.eml"
+
+From: a@example.test
+Subject: level 51
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb51"
+
+--bomb51
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a51-0.txt"
+
+x
+--bomb51
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a51-1.txt"
+
+x
+--bomb51
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a51-2.txt"
+
+x
+--bomb51
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a51-3.txt"
+
+x
+--bomb51
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a51-4.txt"
+
+x
+--bomb51
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a51-5.txt"
+
+x
+--bomb51
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a51-6.txt"
+
+x
+--bomb51
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a51-7.txt"
+
+x
+--bomb51
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m51.eml"
+
+From: a@example.test
+Subject: level 50
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb50"
+
+--bomb50
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a50-0.txt"
+
+x
+--bomb50
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a50-1.txt"
+
+x
+--bomb50
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a50-2.txt"
+
+x
+--bomb50
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a50-3.txt"
+
+x
+--bomb50
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a50-4.txt"
+
+x
+--bomb50
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a50-5.txt"
+
+x
+--bomb50
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a50-6.txt"
+
+x
+--bomb50
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a50-7.txt"
+
+x
+--bomb50
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m50.eml"
+
+From: a@example.test
+Subject: level 49
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb49"
+
+--bomb49
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a49-0.txt"
+
+x
+--bomb49
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a49-1.txt"
+
+x
+--bomb49
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a49-2.txt"
+
+x
+--bomb49
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a49-3.txt"
+
+x
+--bomb49
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a49-4.txt"
+
+x
+--bomb49
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a49-5.txt"
+
+x
+--bomb49
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a49-6.txt"
+
+x
+--bomb49
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a49-7.txt"
+
+x
+--bomb49
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m49.eml"
+
+From: a@example.test
+Subject: level 48
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb48"
+
+--bomb48
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a48-0.txt"
+
+x
+--bomb48
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a48-1.txt"
+
+x
+--bomb48
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a48-2.txt"
+
+x
+--bomb48
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a48-3.txt"
+
+x
+--bomb48
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a48-4.txt"
+
+x
+--bomb48
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a48-5.txt"
+
+x
+--bomb48
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a48-6.txt"
+
+x
+--bomb48
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a48-7.txt"
+
+x
+--bomb48
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m48.eml"
+
+From: a@example.test
+Subject: level 47
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb47"
+
+--bomb47
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a47-0.txt"
+
+x
+--bomb47
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a47-1.txt"
+
+x
+--bomb47
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a47-2.txt"
+
+x
+--bomb47
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a47-3.txt"
+
+x
+--bomb47
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a47-4.txt"
+
+x
+--bomb47
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a47-5.txt"
+
+x
+--bomb47
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a47-6.txt"
+
+x
+--bomb47
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a47-7.txt"
+
+x
+--bomb47
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m47.eml"
+
+From: a@example.test
+Subject: level 46
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb46"
+
+--bomb46
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a46-0.txt"
+
+x
+--bomb46
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a46-1.txt"
+
+x
+--bomb46
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a46-2.txt"
+
+x
+--bomb46
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a46-3.txt"
+
+x
+--bomb46
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a46-4.txt"
+
+x
+--bomb46
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a46-5.txt"
+
+x
+--bomb46
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a46-6.txt"
+
+x
+--bomb46
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a46-7.txt"
+
+x
+--bomb46
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m46.eml"
+
+From: a@example.test
+Subject: level 45
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb45"
+
+--bomb45
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a45-0.txt"
+
+x
+--bomb45
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a45-1.txt"
+
+x
+--bomb45
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a45-2.txt"
+
+x
+--bomb45
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a45-3.txt"
+
+x
+--bomb45
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a45-4.txt"
+
+x
+--bomb45
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a45-5.txt"
+
+x
+--bomb45
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a45-6.txt"
+
+x
+--bomb45
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a45-7.txt"
+
+x
+--bomb45
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m45.eml"
+
+From: a@example.test
+Subject: level 44
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb44"
+
+--bomb44
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a44-0.txt"
+
+x
+--bomb44
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a44-1.txt"
+
+x
+--bomb44
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a44-2.txt"
+
+x
+--bomb44
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a44-3.txt"
+
+x
+--bomb44
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a44-4.txt"
+
+x
+--bomb44
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a44-5.txt"
+
+x
+--bomb44
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a44-6.txt"
+
+x
+--bomb44
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a44-7.txt"
+
+x
+--bomb44
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m44.eml"
+
+From: a@example.test
+Subject: level 43
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb43"
+
+--bomb43
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a43-0.txt"
+
+x
+--bomb43
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a43-1.txt"
+
+x
+--bomb43
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a43-2.txt"
+
+x
+--bomb43
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a43-3.txt"
+
+x
+--bomb43
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a43-4.txt"
+
+x
+--bomb43
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a43-5.txt"
+
+x
+--bomb43
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a43-6.txt"
+
+x
+--bomb43
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a43-7.txt"
+
+x
+--bomb43
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m43.eml"
+
+From: a@example.test
+Subject: level 42
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb42"
+
+--bomb42
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a42-0.txt"
+
+x
+--bomb42
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a42-1.txt"
+
+x
+--bomb42
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a42-2.txt"
+
+x
+--bomb42
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a42-3.txt"
+
+x
+--bomb42
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a42-4.txt"
+
+x
+--bomb42
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a42-5.txt"
+
+x
+--bomb42
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a42-6.txt"
+
+x
+--bomb42
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a42-7.txt"
+
+x
+--bomb42
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m42.eml"
+
+From: a@example.test
+Subject: level 41
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb41"
+
+--bomb41
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a41-0.txt"
+
+x
+--bomb41
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a41-1.txt"
+
+x
+--bomb41
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a41-2.txt"
+
+x
+--bomb41
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a41-3.txt"
+
+x
+--bomb41
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a41-4.txt"
+
+x
+--bomb41
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a41-5.txt"
+
+x
+--bomb41
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a41-6.txt"
+
+x
+--bomb41
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a41-7.txt"
+
+x
+--bomb41
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m41.eml"
+
+From: a@example.test
+Subject: level 40
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb40"
+
+--bomb40
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a40-0.txt"
+
+x
+--bomb40
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a40-1.txt"
+
+x
+--bomb40
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a40-2.txt"
+
+x
+--bomb40
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a40-3.txt"
+
+x
+--bomb40
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a40-4.txt"
+
+x
+--bomb40
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a40-5.txt"
+
+x
+--bomb40
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a40-6.txt"
+
+x
+--bomb40
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a40-7.txt"
+
+x
+--bomb40
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m40.eml"
+
+From: a@example.test
+Subject: level 39
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb39"
+
+--bomb39
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a39-0.txt"
+
+x
+--bomb39
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a39-1.txt"
+
+x
+--bomb39
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a39-2.txt"
+
+x
+--bomb39
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a39-3.txt"
+
+x
+--bomb39
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a39-4.txt"
+
+x
+--bomb39
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a39-5.txt"
+
+x
+--bomb39
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a39-6.txt"
+
+x
+--bomb39
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a39-7.txt"
+
+x
+--bomb39
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m39.eml"
+
+From: a@example.test
+Subject: level 38
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb38"
+
+--bomb38
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a38-0.txt"
+
+x
+--bomb38
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a38-1.txt"
+
+x
+--bomb38
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a38-2.txt"
+
+x
+--bomb38
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a38-3.txt"
+
+x
+--bomb38
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a38-4.txt"
+
+x
+--bomb38
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a38-5.txt"
+
+x
+--bomb38
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a38-6.txt"
+
+x
+--bomb38
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a38-7.txt"
+
+x
+--bomb38
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m38.eml"
+
+From: a@example.test
+Subject: level 37
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb37"
+
+--bomb37
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a37-0.txt"
+
+x
+--bomb37
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a37-1.txt"
+
+x
+--bomb37
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a37-2.txt"
+
+x
+--bomb37
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a37-3.txt"
+
+x
+--bomb37
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a37-4.txt"
+
+x
+--bomb37
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a37-5.txt"
+
+x
+--bomb37
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a37-6.txt"
+
+x
+--bomb37
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a37-7.txt"
+
+x
+--bomb37
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m37.eml"
+
+From: a@example.test
+Subject: level 36
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb36"
+
+--bomb36
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a36-0.txt"
+
+x
+--bomb36
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a36-1.txt"
+
+x
+--bomb36
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a36-2.txt"
+
+x
+--bomb36
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a36-3.txt"
+
+x
+--bomb36
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a36-4.txt"
+
+x
+--bomb36
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a36-5.txt"
+
+x
+--bomb36
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a36-6.txt"
+
+x
+--bomb36
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a36-7.txt"
+
+x
+--bomb36
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m36.eml"
+
+From: a@example.test
+Subject: level 35
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb35"
+
+--bomb35
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a35-0.txt"
+
+x
+--bomb35
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a35-1.txt"
+
+x
+--bomb35
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a35-2.txt"
+
+x
+--bomb35
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a35-3.txt"
+
+x
+--bomb35
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a35-4.txt"
+
+x
+--bomb35
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a35-5.txt"
+
+x
+--bomb35
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a35-6.txt"
+
+x
+--bomb35
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a35-7.txt"
+
+x
+--bomb35
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m35.eml"
+
+From: a@example.test
+Subject: level 34
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb34"
+
+--bomb34
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a34-0.txt"
+
+x
+--bomb34
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a34-1.txt"
+
+x
+--bomb34
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a34-2.txt"
+
+x
+--bomb34
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a34-3.txt"
+
+x
+--bomb34
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a34-4.txt"
+
+x
+--bomb34
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a34-5.txt"
+
+x
+--bomb34
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a34-6.txt"
+
+x
+--bomb34
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a34-7.txt"
+
+x
+--bomb34
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m34.eml"
+
+From: a@example.test
+Subject: level 33
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb33"
+
+--bomb33
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a33-0.txt"
+
+x
+--bomb33
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a33-1.txt"
+
+x
+--bomb33
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a33-2.txt"
+
+x
+--bomb33
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a33-3.txt"
+
+x
+--bomb33
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a33-4.txt"
+
+x
+--bomb33
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a33-5.txt"
+
+x
+--bomb33
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a33-6.txt"
+
+x
+--bomb33
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a33-7.txt"
+
+x
+--bomb33
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m33.eml"
+
+From: a@example.test
+Subject: level 32
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb32"
+
+--bomb32
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a32-0.txt"
+
+x
+--bomb32
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a32-1.txt"
+
+x
+--bomb32
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a32-2.txt"
+
+x
+--bomb32
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a32-3.txt"
+
+x
+--bomb32
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a32-4.txt"
+
+x
+--bomb32
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a32-5.txt"
+
+x
+--bomb32
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a32-6.txt"
+
+x
+--bomb32
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a32-7.txt"
+
+x
+--bomb32
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m32.eml"
+
+From: a@example.test
+Subject: level 31
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb31"
+
+--bomb31
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a31-0.txt"
+
+x
+--bomb31
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a31-1.txt"
+
+x
+--bomb31
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a31-2.txt"
+
+x
+--bomb31
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a31-3.txt"
+
+x
+--bomb31
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a31-4.txt"
+
+x
+--bomb31
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a31-5.txt"
+
+x
+--bomb31
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a31-6.txt"
+
+x
+--bomb31
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a31-7.txt"
+
+x
+--bomb31
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m31.eml"
+
+From: a@example.test
+Subject: level 30
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb30"
+
+--bomb30
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a30-0.txt"
+
+x
+--bomb30
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a30-1.txt"
+
+x
+--bomb30
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a30-2.txt"
+
+x
+--bomb30
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a30-3.txt"
+
+x
+--bomb30
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a30-4.txt"
+
+x
+--bomb30
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a30-5.txt"
+
+x
+--bomb30
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a30-6.txt"
+
+x
+--bomb30
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a30-7.txt"
+
+x
+--bomb30
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m30.eml"
+
+From: a@example.test
+Subject: level 29
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb29"
+
+--bomb29
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a29-0.txt"
+
+x
+--bomb29
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a29-1.txt"
+
+x
+--bomb29
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a29-2.txt"
+
+x
+--bomb29
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a29-3.txt"
+
+x
+--bomb29
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a29-4.txt"
+
+x
+--bomb29
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a29-5.txt"
+
+x
+--bomb29
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a29-6.txt"
+
+x
+--bomb29
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a29-7.txt"
+
+x
+--bomb29
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m29.eml"
+
+From: a@example.test
+Subject: level 28
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb28"
+
+--bomb28
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a28-0.txt"
+
+x
+--bomb28
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a28-1.txt"
+
+x
+--bomb28
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a28-2.txt"
+
+x
+--bomb28
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a28-3.txt"
+
+x
+--bomb28
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a28-4.txt"
+
+x
+--bomb28
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a28-5.txt"
+
+x
+--bomb28
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a28-6.txt"
+
+x
+--bomb28
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a28-7.txt"
+
+x
+--bomb28
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m28.eml"
+
+From: a@example.test
+Subject: level 27
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb27"
+
+--bomb27
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a27-0.txt"
+
+x
+--bomb27
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a27-1.txt"
+
+x
+--bomb27
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a27-2.txt"
+
+x
+--bomb27
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a27-3.txt"
+
+x
+--bomb27
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a27-4.txt"
+
+x
+--bomb27
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a27-5.txt"
+
+x
+--bomb27
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a27-6.txt"
+
+x
+--bomb27
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a27-7.txt"
+
+x
+--bomb27
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m27.eml"
+
+From: a@example.test
+Subject: level 26
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb26"
+
+--bomb26
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a26-0.txt"
+
+x
+--bomb26
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a26-1.txt"
+
+x
+--bomb26
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a26-2.txt"
+
+x
+--bomb26
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a26-3.txt"
+
+x
+--bomb26
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a26-4.txt"
+
+x
+--bomb26
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a26-5.txt"
+
+x
+--bomb26
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a26-6.txt"
+
+x
+--bomb26
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a26-7.txt"
+
+x
+--bomb26
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m26.eml"
+
+From: a@example.test
+Subject: level 25
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb25"
+
+--bomb25
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a25-0.txt"
+
+x
+--bomb25
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a25-1.txt"
+
+x
+--bomb25
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a25-2.txt"
+
+x
+--bomb25
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a25-3.txt"
+
+x
+--bomb25
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a25-4.txt"
+
+x
+--bomb25
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a25-5.txt"
+
+x
+--bomb25
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a25-6.txt"
+
+x
+--bomb25
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a25-7.txt"
+
+x
+--bomb25
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m25.eml"
+
+From: a@example.test
+Subject: level 24
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb24"
+
+--bomb24
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a24-0.txt"
+
+x
+--bomb24
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a24-1.txt"
+
+x
+--bomb24
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a24-2.txt"
+
+x
+--bomb24
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a24-3.txt"
+
+x
+--bomb24
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a24-4.txt"
+
+x
+--bomb24
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a24-5.txt"
+
+x
+--bomb24
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a24-6.txt"
+
+x
+--bomb24
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a24-7.txt"
+
+x
+--bomb24
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m24.eml"
+
+From: a@example.test
+Subject: level 23
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb23"
+
+--bomb23
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a23-0.txt"
+
+x
+--bomb23
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a23-1.txt"
+
+x
+--bomb23
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a23-2.txt"
+
+x
+--bomb23
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a23-3.txt"
+
+x
+--bomb23
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a23-4.txt"
+
+x
+--bomb23
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a23-5.txt"
+
+x
+--bomb23
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a23-6.txt"
+
+x
+--bomb23
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a23-7.txt"
+
+x
+--bomb23
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m23.eml"
+
+From: a@example.test
+Subject: level 22
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb22"
+
+--bomb22
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a22-0.txt"
+
+x
+--bomb22
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a22-1.txt"
+
+x
+--bomb22
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a22-2.txt"
+
+x
+--bomb22
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a22-3.txt"
+
+x
+--bomb22
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a22-4.txt"
+
+x
+--bomb22
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a22-5.txt"
+
+x
+--bomb22
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a22-6.txt"
+
+x
+--bomb22
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a22-7.txt"
+
+x
+--bomb22
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m22.eml"
+
+From: a@example.test
+Subject: level 21
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb21"
+
+--bomb21
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a21-0.txt"
+
+x
+--bomb21
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a21-1.txt"
+
+x
+--bomb21
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a21-2.txt"
+
+x
+--bomb21
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a21-3.txt"
+
+x
+--bomb21
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a21-4.txt"
+
+x
+--bomb21
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a21-5.txt"
+
+x
+--bomb21
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a21-6.txt"
+
+x
+--bomb21
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a21-7.txt"
+
+x
+--bomb21
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m21.eml"
+
+From: a@example.test
+Subject: level 20
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb20"
+
+--bomb20
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a20-0.txt"
+
+x
+--bomb20
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a20-1.txt"
+
+x
+--bomb20
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a20-2.txt"
+
+x
+--bomb20
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a20-3.txt"
+
+x
+--bomb20
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a20-4.txt"
+
+x
+--bomb20
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a20-5.txt"
+
+x
+--bomb20
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a20-6.txt"
+
+x
+--bomb20
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a20-7.txt"
+
+x
+--bomb20
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m20.eml"
+
+From: a@example.test
+Subject: level 19
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb19"
+
+--bomb19
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a19-0.txt"
+
+x
+--bomb19
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a19-1.txt"
+
+x
+--bomb19
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a19-2.txt"
+
+x
+--bomb19
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a19-3.txt"
+
+x
+--bomb19
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a19-4.txt"
+
+x
+--bomb19
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a19-5.txt"
+
+x
+--bomb19
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a19-6.txt"
+
+x
+--bomb19
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a19-7.txt"
+
+x
+--bomb19
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m19.eml"
+
+From: a@example.test
+Subject: level 18
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb18"
+
+--bomb18
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a18-0.txt"
+
+x
+--bomb18
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a18-1.txt"
+
+x
+--bomb18
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a18-2.txt"
+
+x
+--bomb18
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a18-3.txt"
+
+x
+--bomb18
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a18-4.txt"
+
+x
+--bomb18
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a18-5.txt"
+
+x
+--bomb18
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a18-6.txt"
+
+x
+--bomb18
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a18-7.txt"
+
+x
+--bomb18
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m18.eml"
+
+From: a@example.test
+Subject: level 17
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb17"
+
+--bomb17
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a17-0.txt"
+
+x
+--bomb17
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a17-1.txt"
+
+x
+--bomb17
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a17-2.txt"
+
+x
+--bomb17
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a17-3.txt"
+
+x
+--bomb17
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a17-4.txt"
+
+x
+--bomb17
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a17-5.txt"
+
+x
+--bomb17
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a17-6.txt"
+
+x
+--bomb17
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a17-7.txt"
+
+x
+--bomb17
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m17.eml"
+
+From: a@example.test
+Subject: level 16
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb16"
+
+--bomb16
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a16-0.txt"
+
+x
+--bomb16
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a16-1.txt"
+
+x
+--bomb16
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a16-2.txt"
+
+x
+--bomb16
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a16-3.txt"
+
+x
+--bomb16
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a16-4.txt"
+
+x
+--bomb16
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a16-5.txt"
+
+x
+--bomb16
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a16-6.txt"
+
+x
+--bomb16
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a16-7.txt"
+
+x
+--bomb16
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m16.eml"
+
+From: a@example.test
+Subject: level 15
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb15"
+
+--bomb15
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a15-0.txt"
+
+x
+--bomb15
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a15-1.txt"
+
+x
+--bomb15
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a15-2.txt"
+
+x
+--bomb15
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a15-3.txt"
+
+x
+--bomb15
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a15-4.txt"
+
+x
+--bomb15
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a15-5.txt"
+
+x
+--bomb15
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a15-6.txt"
+
+x
+--bomb15
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a15-7.txt"
+
+x
+--bomb15
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m15.eml"
+
+From: a@example.test
+Subject: level 14
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb14"
+
+--bomb14
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a14-0.txt"
+
+x
+--bomb14
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a14-1.txt"
+
+x
+--bomb14
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a14-2.txt"
+
+x
+--bomb14
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a14-3.txt"
+
+x
+--bomb14
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a14-4.txt"
+
+x
+--bomb14
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a14-5.txt"
+
+x
+--bomb14
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a14-6.txt"
+
+x
+--bomb14
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a14-7.txt"
+
+x
+--bomb14
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m14.eml"
+
+From: a@example.test
+Subject: level 13
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb13"
+
+--bomb13
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a13-0.txt"
+
+x
+--bomb13
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a13-1.txt"
+
+x
+--bomb13
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a13-2.txt"
+
+x
+--bomb13
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a13-3.txt"
+
+x
+--bomb13
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a13-4.txt"
+
+x
+--bomb13
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a13-5.txt"
+
+x
+--bomb13
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a13-6.txt"
+
+x
+--bomb13
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a13-7.txt"
+
+x
+--bomb13
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m13.eml"
+
+From: a@example.test
+Subject: level 12
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb12"
+
+--bomb12
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a12-0.txt"
+
+x
+--bomb12
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a12-1.txt"
+
+x
+--bomb12
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a12-2.txt"
+
+x
+--bomb12
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a12-3.txt"
+
+x
+--bomb12
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a12-4.txt"
+
+x
+--bomb12
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a12-5.txt"
+
+x
+--bomb12
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a12-6.txt"
+
+x
+--bomb12
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a12-7.txt"
+
+x
+--bomb12
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m12.eml"
+
+From: a@example.test
+Subject: level 11
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb11"
+
+--bomb11
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a11-0.txt"
+
+x
+--bomb11
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a11-1.txt"
+
+x
+--bomb11
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a11-2.txt"
+
+x
+--bomb11
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a11-3.txt"
+
+x
+--bomb11
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a11-4.txt"
+
+x
+--bomb11
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a11-5.txt"
+
+x
+--bomb11
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a11-6.txt"
+
+x
+--bomb11
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a11-7.txt"
+
+x
+--bomb11
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m11.eml"
+
+From: a@example.test
+Subject: level 10
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb10"
+
+--bomb10
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a10-0.txt"
+
+x
+--bomb10
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a10-1.txt"
+
+x
+--bomb10
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a10-2.txt"
+
+x
+--bomb10
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a10-3.txt"
+
+x
+--bomb10
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a10-4.txt"
+
+x
+--bomb10
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a10-5.txt"
+
+x
+--bomb10
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a10-6.txt"
+
+x
+--bomb10
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a10-7.txt"
+
+x
+--bomb10
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m10.eml"
+
+From: a@example.test
+Subject: level 9
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb9"
+
+--bomb9
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a9-0.txt"
+
+x
+--bomb9
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a9-1.txt"
+
+x
+--bomb9
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a9-2.txt"
+
+x
+--bomb9
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a9-3.txt"
+
+x
+--bomb9
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a9-4.txt"
+
+x
+--bomb9
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a9-5.txt"
+
+x
+--bomb9
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a9-6.txt"
+
+x
+--bomb9
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a9-7.txt"
+
+x
+--bomb9
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m9.eml"
+
+From: a@example.test
+Subject: level 8
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb8"
+
+--bomb8
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a8-0.txt"
+
+x
+--bomb8
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a8-1.txt"
+
+x
+--bomb8
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a8-2.txt"
+
+x
+--bomb8
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a8-3.txt"
+
+x
+--bomb8
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a8-4.txt"
+
+x
+--bomb8
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a8-5.txt"
+
+x
+--bomb8
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a8-6.txt"
+
+x
+--bomb8
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a8-7.txt"
+
+x
+--bomb8
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m8.eml"
+
+From: a@example.test
+Subject: level 7
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb7"
+
+--bomb7
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a7-0.txt"
+
+x
+--bomb7
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a7-1.txt"
+
+x
+--bomb7
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a7-2.txt"
+
+x
+--bomb7
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a7-3.txt"
+
+x
+--bomb7
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a7-4.txt"
+
+x
+--bomb7
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a7-5.txt"
+
+x
+--bomb7
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a7-6.txt"
+
+x
+--bomb7
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a7-7.txt"
+
+x
+--bomb7
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m7.eml"
+
+From: a@example.test
+Subject: level 6
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb6"
+
+--bomb6
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a6-0.txt"
+
+x
+--bomb6
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a6-1.txt"
+
+x
+--bomb6
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a6-2.txt"
+
+x
+--bomb6
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a6-3.txt"
+
+x
+--bomb6
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a6-4.txt"
+
+x
+--bomb6
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a6-5.txt"
+
+x
+--bomb6
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a6-6.txt"
+
+x
+--bomb6
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a6-7.txt"
+
+x
+--bomb6
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m6.eml"
+
+From: a@example.test
+Subject: level 5
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb5"
+
+--bomb5
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a5-0.txt"
+
+x
+--bomb5
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a5-1.txt"
+
+x
+--bomb5
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a5-2.txt"
+
+x
+--bomb5
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a5-3.txt"
+
+x
+--bomb5
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a5-4.txt"
+
+x
+--bomb5
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a5-5.txt"
+
+x
+--bomb5
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a5-6.txt"
+
+x
+--bomb5
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a5-7.txt"
+
+x
+--bomb5
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m5.eml"
+
+From: a@example.test
+Subject: level 4
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb4"
+
+--bomb4
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a4-0.txt"
+
+x
+--bomb4
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a4-1.txt"
+
+x
+--bomb4
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a4-2.txt"
+
+x
+--bomb4
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a4-3.txt"
+
+x
+--bomb4
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a4-4.txt"
+
+x
+--bomb4
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a4-5.txt"
+
+x
+--bomb4
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a4-6.txt"
+
+x
+--bomb4
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a4-7.txt"
+
+x
+--bomb4
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m4.eml"
+
+From: a@example.test
+Subject: level 3
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb3"
+
+--bomb3
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a3-0.txt"
+
+x
+--bomb3
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a3-1.txt"
+
+x
+--bomb3
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a3-2.txt"
+
+x
+--bomb3
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a3-3.txt"
+
+x
+--bomb3
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a3-4.txt"
+
+x
+--bomb3
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a3-5.txt"
+
+x
+--bomb3
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a3-6.txt"
+
+x
+--bomb3
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a3-7.txt"
+
+x
+--bomb3
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m3.eml"
+
+From: a@example.test
+Subject: level 2
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb2"
+
+--bomb2
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a2-0.txt"
+
+x
+--bomb2
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a2-1.txt"
+
+x
+--bomb2
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a2-2.txt"
+
+x
+--bomb2
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a2-3.txt"
+
+x
+--bomb2
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a2-4.txt"
+
+x
+--bomb2
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a2-5.txt"
+
+x
+--bomb2
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a2-6.txt"
+
+x
+--bomb2
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a2-7.txt"
+
+x
+--bomb2
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m2.eml"
+
+From: a@example.test
+Subject: level 1
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb1"
+
+--bomb1
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a1-0.txt"
+
+x
+--bomb1
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a1-1.txt"
+
+x
+--bomb1
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a1-2.txt"
+
+x
+--bomb1
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a1-3.txt"
+
+x
+--bomb1
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a1-4.txt"
+
+x
+--bomb1
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a1-5.txt"
+
+x
+--bomb1
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a1-6.txt"
+
+x
+--bomb1
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a1-7.txt"
+
+x
+--bomb1
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m1.eml"
+
+From: a@example.test
+Subject: level 0
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bomb0"
+
+--bomb0
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a0-0.txt"
+
+x
+--bomb0
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a0-1.txt"
+
+x
+--bomb0
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a0-2.txt"
+
+x
+--bomb0
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a0-3.txt"
+
+x
+--bomb0
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a0-4.txt"
+
+x
+--bomb0
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a0-5.txt"
+
+x
+--bomb0
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a0-6.txt"
+
+x
+--bomb0
+Content-Type: text/plain
+Content-Disposition: attachment; filename="a0-7.txt"
+
+x
+--bomb0
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="m0.eml"
+
+From: a@example.test
+Subject: leaf
+Content-Type: text/plain
+
+leaf
+
+--bomb0--
+
+--bomb1--
+
+--bomb2--
+
+--bomb3--
+
+--bomb4--
+
+--bomb5--
+
+--bomb6--
+
+--bomb7--
+
+--bomb8--
+
+--bomb9--
+
+--bomb10--
+
+--bomb11--
+
+--bomb12--
+
+--bomb13--
+
+--bomb14--
+
+--bomb15--
+
+--bomb16--
+
+--bomb17--
+
+--bomb18--
+
+--bomb19--
+
+--bomb20--
+
+--bomb21--
+
+--bomb22--
+
+--bomb23--
+
+--bomb24--
+
+--bomb25--
+
+--bomb26--
+
+--bomb27--
+
+--bomb28--
+
+--bomb29--
+
+--bomb30--
+
+--bomb31--
+
+--bomb32--
+
+--bomb33--
+
+--bomb34--
+
+--bomb35--
+
+--bomb36--
+
+--bomb37--
+
+--bomb38--
+
+--bomb39--
+
+--bomb40--
+
+--bomb41--
+
+--bomb42--
+
+--bomb43--
+
+--bomb44--
+
+--bomb45--
+
+--bomb46--
+
+--bomb47--
+
+--bomb48--
+
+--bomb49--
+
+--bomb50--
+
+--bomb51--
+
+--bomb52--
+
+--bomb53--
+
+--bomb54--
+
+--bomb55--
+
+--bomb56--
+
+--bomb57--
+
+--bomb58--
+
+--bomb59--
+
+--bomb60--
+
+--bomb61--
+
+--bomb62--
+
+--bomb63--
+
+--bomb64--
+
+--bomb65--
+
+--bomb66--
+
+--bomb67--
+
+--bomb68--
+
+--bomb69--
+
+--bomb70--
+
+--bomb71--
+
+--bomb72--
+
+--bomb73--
+
+--bomb74--
+
+--bomb75--
+
+--bomb76--
+
+--bomb77--
+
+--bomb78--
+
+--bomb79--
+
+--bomb80--
+
+--bomb81--
+
+--bomb82--
+
+--bomb83--
+
+--bomb84--
+
+--bomb85--
+
+--bomb86--
+
+--bomb87--
+
+--bomb88--
+
+--bomb89--
+
+--bomb90--
+
+--bomb91--
+
+--bomb92--
+
+--bomb93--
+
+--bomb94--
+
+--bomb95--
+
+--bomb96--
+
+--bomb97--
+
+--bomb98--
+
+--bomb99--
+
+--bomb100--
+
+--bomb101--
+
+--bomb102--
+
+--bomb103--
+
+--bomb104--
+
+--bomb105--
+
+--bomb106--
+
+--bomb107--
+
+--bomb108--
+
+--bomb109--
+
+--bomb110--
+
+--bomb111--
+
+--bomb112--
+
+--bomb113--
+
+--bomb114--
+
+--bomb115--
+
+--bomb116--
+
+--bomb117--
+
+--bomb118--
+
+--bomb119--
+
+--bomb120--
+
+--bomb121--
+
+--bomb122--
+
+--bomb123--
+
+--bomb124--
+
+--bomb125--
+
+--bomb126--
+
+--bomb127--
+
+--bomb128--
+
+--bomb129--
+
+--bomb130--
+
+--bomb131--
+
+--bomb132--
+
+--bomb133--
+
+--bomb134--
+
+--bomb135--
+
+--bomb136--
+
+--bomb137--
+
+--bomb138--
+
+--bomb139--
+
+--bomb140--
+
+--bomb141--
+
+--bomb142--
+
+--bomb143--
+
+--bomb144--
+
+--bomb145--
+
+--bomb146--
+
+--bomb147--
+
+--bomb148--
+
+--bomb149--
+
+--bomb150--
+
+--bomb151--
+
+--bomb152--
+
+--bomb153--
+
+--bomb154--
+
+--bomb155--
+
+--bomb156--
+
+--bomb157--
+
+--bomb158--
+
+--bomb159--
+
+--bomb160--
+
+--bomb161--
+
+--bomb162--
+
+--bomb163--
+
+--bomb164--
+
+--bomb165--
+
+--bomb166--
+
+--bomb167--
+
+--bomb168--
+
+--bomb169--
+
+--bomb170--
+
+--bomb171--
+
+--bomb172--
+
+--bomb173--
+
+--bomb174--
+
+--bomb175--
+
+--bomb176--
+
+--bomb177--
+
+--bomb178--
+
+--bomb179--
+
+--bomb180--
+
+--bomb181--
+
+--bomb182--
+
+--bomb183--
+
+--bomb184--
+
+--bomb185--
+
+--bomb186--
+
+--bomb187--
+
+--bomb188--
+
+--bomb189--
+
+--bomb190--
+
+--bomb191--
+
+--bomb192--
+
+--bomb193--
+
+--bomb194--
+
+--bomb195--
+
+--bomb196--
+
+--bomb197--
+
+--bomb198--
+
+--bomb199--

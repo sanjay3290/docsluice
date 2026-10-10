@@ -54,6 +54,9 @@
       ],
       "zip": [
         "dist/zip.d.ts"
+      ],
+      "eml": [
+        "dist/eml.d.ts"
       ]
     }
   },
@@ -113,6 +116,10 @@
     "./zip": {
       "import": "./dist/zip.js",
       "require": "./dist/zip.cjs"
+    },
+    "./eml": {
+      "import": "./dist/eml.js",
+      "require": "./dist/eml.cjs"
     },
     "./package.json": "./package.json"
   },

@@ -1,16 +1,86 @@
 import type { Cell } from '../../core/model.js';
 import type { ReadContext, Reader } from '../../core/reader.js';
-import { decodeMimeText, parseContentType, parseMime, type MimePart } from '../../mime/index.js';
-import { emitHtml } from '../html/index.js';
+import { decodeMimeText, parseMime, type MimePart } from '../../mime/index.js';
+import { emitHtml } from '../../html/index.js';
 
 function cleanHeader(value: string | undefined): string | undefined {
   return value?.replace(/[\r\n\t ]+/g, ' ').trim() || undefined;
 }
 
-function normalizeDate(value: string | undefined): string | undefined {
-  if (!value) return undefined;
-  const time = Date.parse(value);
-  return Number.isFinite(time) ? new Date(time).toISOString() : cleanHeader(value);
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+/** RFC 5322 section 4.3 obsolete zone names, in minutes east of UTC. */
+const ZONES = new Map([
+  ['ut', 0],
+  ['gmt', 0],
+  ['z', 0],
+  ['edt', -240],
+  ['est', -300],
+  ['cdt', -300],
+  ['cst', -360],
+  ['mdt', -360],
+  ['mst', -420],
+  ['pdt', -420],
+  ['pst', -480],
+]);
+
+function digits(token: string | undefined, min: number, max: number): number | undefined {
+  if (token === undefined || token.length < min || token.length > max) return undefined;
+  let value = 0;
+  for (let index = 0; index < token.length; index++) {
+    const code = token.charCodeAt(index);
+    if (code < 0x30 || code > 0x39) return undefined;
+    value = value * 10 + code - 0x30;
+  }
+  return value;
+}
+
+function zoneMinutes(token: string | undefined): number | undefined {
+  if (token === undefined) return undefined;
+  const named = ZONES.get(token.toLowerCase());
+  if (named !== undefined) return named;
+  if (token.length !== 5 || (token[0] !== '+' && token[0] !== '-')) return undefined;
+  const hours = digits(token.slice(1, 3), 2, 2);
+  const minutes = digits(token.slice(3), 2, 2);
+  if (hours === undefined || minutes === undefined || minutes > 59) return undefined;
+  return (token[0] === '-' ? -1 : 1) * (hours * 60 + minutes);
+}
+
+/**
+ * Parse an RFC 5322 date-time (with obsolete two-digit years and zone names) into ISO 8601 UTC.
+ * Hand-written so the result never depends on the engine's `Date.parse` or the host time zone.
+ */
+function rfc5322Date(value: string): string | undefined {
+  const tokens = value.split(' ').filter((token) => token.length > 0);
+  let at = 0;
+  if (tokens[0]?.endsWith(',')) at = 1;
+  const day = digits(tokens[at], 1, 2);
+  const month = MONTHS.indexOf(tokens[at + 1]?.toLowerCase() ?? '');
+  let year = digits(tokens[at + 2], 2, 4);
+  const time = tokens[at + 3]?.split(':') ?? [];
+  const hour = digits(time[0], 2, 2);
+  const minute = digits(time[1], 2, 2);
+  const second = time.length > 2 ? digits(time[2], 2, 2) : 0;
+  const zone = zoneMinutes(tokens[at + 4]);
+  if (
+    day === undefined ||
+    month < 0 ||
+    year === undefined ||
+    time.length > 3 ||
+    hour === undefined ||
+    minute === undefined ||
+    second === undefined ||
+    zone === undefined ||
+    (tokens.length > at + 5 && !tokens[at + 5]!.startsWith('(')) ||
+    hour > 23 ||
+    minute > 59 ||
+    second > 60
+  )
+    return undefined;
+  if (tokens[at + 2]!.length === 2) year += year < 50 ? 2000 : 1900;
+  else if (tokens[at + 2]!.length === 3) year += 1900;
+  const local = Date.UTC(year, month, day, hour, minute, Math.min(second, 59));
+  if (new Date(local).getUTCDate() !== day) return undefined;
+  return new Date(local - zone * 60_000).toISOString();
 }
 
 function safeAttachmentName(
@@ -111,7 +181,7 @@ function emitParts(ctx: ReadContext, parts: MimePart[], cidReferences: ReadonlyM
     if (part.contentType.value === 'text/html') {
       // The parser charges raw HTML bytes to totalUncompressedBytes; only emitted text uses outputChars.
       const html = decodeMimeText(part, ctx.budget, part.bytes?.length ?? 0);
-      emitHtml(ctx, html, false, cidReferences);
+      emitHtml(ctx, html, cidReferences);
     } else {
       const remaining = Math.max(0, ctx.budget.limits.outputChars - ctx.budget.outputChars);
       let text = decodeMimeText(part, ctx.budget, remaining + 1);
@@ -132,9 +202,12 @@ export async function readEml(ctx: ReadContext): Promise<void> {
   const to = cleanHeader(message.headers.get('to'));
   const cc = cleanHeader(message.headers.get('cc'));
   const subject = cleanHeader(message.headers.get('subject'));
-  const date = normalizeDate(message.headers.get('date'));
+  const rawDate = cleanHeader(message.headers.get('date'));
+  // metadata.created is ISO 8601 only; a date we cannot parse stays as text in the header table.
+  const created = rawDate === undefined ? undefined : rfc5322Date(rawDate);
+  const date = created ?? rawDate;
   if (subject) ctx.out.setMetadata({ title: subject });
-  if (date) ctx.out.setMetadata({ created: date });
+  if (created) ctx.out.setMetadata({ created });
   if (from && ctx.options.metadata) ctx.out.setMetadata({ authors: [from] });
   const rows: Cell[][] = [[{ text: 'Field' }, { text: 'Value' }]];
   if (ctx.options.metadata) {
@@ -143,8 +216,6 @@ export async function readEml(ctx: ReadContext): Promise<void> {
     if (cc) rows.push([{ text: 'Cc' }, { text: cc }]);
   }
   if (date) rows.push([{ text: 'Date' }, { text: date }]);
-  else if (message.headers.has('date'))
-    rows.push([{ text: 'Date' }, { text: cleanHeader(message.headers.get('date'))! }]);
   if (subject) rows.push([{ text: 'Subject' }, { text: subject }]);
   if (rows.length > 1) ctx.out.table(rows, 1, ctx.path ? { path: ctx.path } : {});
 
@@ -168,18 +239,8 @@ export async function readEml(ctx: ReadContext): Promise<void> {
   }
   if (hasAttachments) ctx.out.setFeature('hasEmbeddedFiles');
 
-  let bodyParts = topLevelParts(message.parts, ctx.budget);
-  const alt = parseContentType(message.headers.get('content-type'));
-  if (alt.value === 'multipart/alternative') bodyParts = topLevelParts(message.parts, ctx.budget);
-  emitParts(ctx, bodyParts, cidReferences);
+  emitParts(ctx, topLevelParts(message.parts, ctx.budget), cidReferences);
 }
 
-export const reader: Reader = {
-  id: 'eml',
-  mimeTypes: ['message/rfc822'],
-  async read(ctx: ReadContext): Promise<void> {
-    await readEml(ctx);
-  },
-};
-
-export default reader;
+/** The EML reader: headers as a field/value table, one body choice, attachments as child documents. */
+export const emlReader: Reader = { id: 'eml', mimeTypes: ['message/rfc822'], read: readEml };

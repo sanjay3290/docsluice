@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { reader } from '../../../src/readers/eml/index.js';
+import { emlReader } from '../../../src/readers/eml/index.js';
 import { Budget } from '../../../src/core/budget.js';
 import { DocBuilder } from '../../../src/core/builder.js';
 import { DEFAULT_LIMITS } from '../../../src/core/limits.js';
@@ -56,7 +56,7 @@ async function readEmail(
         });
       }),
   };
-  await reader.read(ctx);
+  await emlReader.read(ctx);
   return { document: out.finish(), children };
 }
 
@@ -147,5 +147,27 @@ describe('EML reader', () => {
     expect(inlineResult.document.blocks.filter((block) => block.kind === 'image')).toMatchObject([
       { kind: 'image', ref: 'tiny.png' },
     ]);
+  });
+
+  it('normalizes RFC 5322 dates to UTC without the host time zone, and keeps other dates as table text', async () => {
+    const dated = async (date: string): Promise<{ created: string | undefined; row: unknown }> => {
+      const { document } = await readEmail(`From: a@example.test\r\nDate: ${date}\r\n\r\nBody\r\n`);
+      const table = document.blocks.find((block) => block.kind === 'table');
+      const row =
+        table?.kind === 'table'
+          ? table.rows.find((cells) => cells[0]?.text === 'Date')?.[1]?.text
+          : undefined;
+      return { created: document.metadata.created, row };
+    };
+    for (const [input, iso] of [
+      ['Tue, 6 Oct 2026 09:30:00 +0000', '2026-10-06T09:30:00.000Z'],
+      ['6 Oct 2026 23:45 -0230', '2026-10-07T02:15:00.000Z'],
+      ['Wed, 31 Dec 2025 22:00:05 EST', '2026-01-01T03:00:05.000Z'],
+      ['Mon, 05 Oct 26 08:00:00 GMT', '2026-10-05T08:00:00.000Z'],
+      ['Tue, 6 Oct 2026 09:30:00 +0000 (UTC)', '2026-10-06T09:30:00.000Z'],
+    ])
+      expect(await dated(input!)).toEqual({ created: iso, row: iso });
+    for (const input of ['Tue, 6 Oct 2026 09:30:00', '31 Feb 2026 10:00:00 +0000', 'next Tuesday'])
+      expect(await dated(input)).toEqual({ created: undefined, row: input });
   });
 });
