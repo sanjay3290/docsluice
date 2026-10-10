@@ -82,6 +82,10 @@ Hostile files are made by scripts in `scripts/hostile/` where possible, so the r
 
 CI runs the unit tests on Node 24. The built package then runs one shared contract (ZIP, XML, and `extract()` on CSV, HTML and hostile HTML) on Node 20, 22 and 24, Bun, Deno, Chromium, Firefox and WebKit (Vitest browser mode), and Cloudflare Workers (local `wrangler dev`). The browser and Workers runs trap any access to `globalThis.Buffer`. [testing-runtime.md](testing-runtime.md) has the command for each runtime. A feature that cannot work in one runtime must say so in its docs page and skip that runtime's test with a reason.
 
+## Docs site and recipes
+
+`npm run docs:site` (the last step of `npm run verify`) builds `site/` from every page under `docs/`, fails on any broken internal link or anchor, generates the limits table from `DEFAULT_LIMITS` and the TSDoc in `limits.ts`, and builds the API reference with TypeDoc ([ADR 0013](adr/0013-documentation-site.md)). `scripts/test/docs-site.test.mjs` checks the generator. Recipe code lives in `examples/` and `examples/recipes.test.mjs` runs it against the built package in `npm run test:dist`, so the code shown on recipe pages is tested.
+
 ## Bundle budgets and lazy readers (RT-4, RT-5)
 
 `npm run check:package` (part of `npm run verify` and CI) runs `size-limit` with `packages/docsluice/.size-limit.js`. The config reads the reader subpaths from the package's `exports`, so every reader gets a budget as soon as it gets a subpath: Office readers (`doc`, `docx`, `xlsx`, `pptx`) 40 KB and other readers 25 KB, gzipped, plus 50 KB for `docsluice` itself with the text readers it loads lazily. The core figure leaves out what only non-text formats load: the Office, email, EPUB, archive, image and P1 text-family readers, the source-code language table, the compound-file (OLE) parser and the ZIP-based format classifier that detection imports only for CFB and ZIP files, and opt-in features such as HTML main-content selection (`mainContent: true`). These modules keep their own budgets. Keep at least 1 KB of headroom under the core budget; a reader over its budget fails the job.

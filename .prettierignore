@@ -5,3 +5,4 @@ hostile
 package-lock.json
 *.md
 packages/docsluice/test-runtime/fixtures.generated.mjs
+site

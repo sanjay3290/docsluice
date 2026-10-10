@@ -16,7 +16,7 @@ const NODE_GLOBALS = [
 ];
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/coverage/**', 'corpus/**', 'hostile/**', '**/*.config.*'] },
+  { ignores: ['**/dist/**', '**/coverage/**', 'corpus/**', 'hostile/**', 'site/**', '**/*.config.*'] },
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   regexp.configs['flat/recommended'],
@@ -86,5 +86,10 @@ export default tseslint.config(
     files: ['scripts/**/*.mjs'],
     languageOptions: { globals: { process: 'readonly', console: 'readonly' } },
     rules: { 'no-console': 'off' },
+  },
+  {
+    // Docs recipes run on any runtime with web-standard globals (ADR 0013).
+    files: ['examples/**/*.mjs'],
+    languageOptions: { globals: { AbortSignal: 'readonly', TextEncoder: 'readonly' } },
   },
 );
