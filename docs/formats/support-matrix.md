@@ -12,15 +12,15 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 |---|---|---|---|---|
 | csv | `docsluice/csv` | 4 | 4 | [csv.md](csv.md) |
 | doc | `docsluice/doc` | 2 | 2 | [doc.md](doc.md) |
-| docx | `docsluice/docx` | 13 | 13 | [docx.md](docx.md) |
+| docx | `docsluice/docx` | 14 | 14 | [docx.md](docx.md) |
 | eml | `docsluice/eml` | 8 | 8 | [eml.md](eml.md) |
 | epub | `docsluice/epub` | 4 | 4 | [epub.md](epub.md) |
 | gzip | `docsluice/gzip` | 3 | 3 | [gzip.md](gzip.md) |
-| html | `docsluice/html` | 16 | 16 | [html.md](html.md) |
+| html | `docsluice/html` | 17 | 17 | [html.md](html.md) |
 | ics | `docsluice/ics` | 1 | 1 | [ics.md](ics.md) |
 | image | `docsluice/image` | 8 | 8 | [image.md](image.md) |
 | json | `docsluice/json` | 2 | 2 | [json.md](json.md) |
-| markdown | `docsluice/markdown` | 1 | 1 | [markdown.md](markdown.md) |
+| markdown | `docsluice/markdown` | 2 | 2 | [markdown.md](markdown.md) |
 | msg | `docsluice/msg` | 5 | 5 | [msg.md](msg.md) |
 | ndjson | `docsluice/ndjson` | 1 | 1 | [ndjson.md](ndjson.md) |
 | odp | `docsluice/odp` | 5 | 5 | [odp.md](odp.md) |

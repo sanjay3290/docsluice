@@ -22,6 +22,11 @@ export interface Piece {
   splitRow: boolean;
   path: readonly string[];
   loc: Location;
+  /**
+   * On a table body row: the table's header rows, repeated at the start of a chunk that begins
+   * inside the table (CHK-4). One array per table, shared by its rows.
+   */
+  header?: readonly Piece[];
 }
 
 export interface PieceOptions {
@@ -299,9 +304,21 @@ export function* pieces(document: DocsluiceDocument, options: PieceOptions): Gen
       case 'table': {
         const rows: string[][] = [];
         if (block.caption !== undefined) rows.push([block.caption]);
+        const firstBody = rows.length + Math.max(0, Math.min(block.headerRows, block.rows.length));
         for (const row of block.rows) {
           budget.tick();
           rows.push(row.map((cell) => cell.text));
+        }
+        // The header rows a chunk starting inside this table repeats (CHK-4).
+        const header: Piece[] = [];
+        for (let index = rows.length - block.rows.length; index < firstBody; index++) {
+          budget.tick();
+          header.push({
+            ...base,
+            text: rows[index]!.join('\t'),
+            separator: header.length > 0 ? '\n' : '',
+            strength: LINE,
+          });
         }
         for (let index = 0; index < rows.length; index++) {
           budget.tick();
@@ -309,7 +326,10 @@ export function* pieces(document: DocsluiceDocument, options: PieceOptions): Gen
           const rowText = cells.join('\t');
           const separator = index > 0 ? '\n' : '';
           if (options.count(rowText) <= options.maxSize) {
-            yield* emit([{ text: rowText, separator, strength: LINE }]);
+            const part = { text: rowText, separator, strength: LINE };
+            if (index >= firstBody && header.length > 0) {
+              for (const piece of emit([part])) yield { ...piece, header };
+            } else yield* emit([part]);
             continue;
           }
           // A row longer than maxSize is split at cell boundaries, then inside oversized cells.

@@ -15,8 +15,9 @@ const OFFICE_READERS = new Set(['doc', 'docx', 'xlsx', 'xls', 'xlsb', 'pptx', 'o
 // `code` is the source-code language table the text reader loads only for source file names.
 const TEXT_FAMILY_READERS = ['yaml', 'ndjson', 'ics', 'vcf', 'srt', 'vtt', 'code'];
 const MEDIA_READERS = ['image'];
-// The compound-file parser behind legacy Office and Outlook detection (doc, xls, msg) loads lazily.
-const CONTAINERS = ['ole'];
+// Container classification that only non-text files need loads lazily: the compound-file parser
+// behind legacy Office and Outlook detection, and the ZIP-based format classifier.
+const CONTAINERS = ['ole', 'zip-kind'];
 // Opt-in features of core readers that load only when their option is on.
 const OPT_IN = ['main-content'];
 const EXTERNAL_READERS = [

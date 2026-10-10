@@ -6,6 +6,17 @@ Extracted child documents are omitted by default. Pass `{ children: true }` to a
 
 `toText` processes block data under the default renderer limits for output characters (20 million), table cells (2 million), block nesting (64), child-document depth (3), and elapsed time (60 seconds). It throws the corresponding limit error instead of returning partial text. It also rejects active child-document cycles.
 
+## Inline runs (MOD-3)
+
+With `runs: true`, paragraphs carry `runs`: their text cut into pieces with `bold`, `italic`, `code` and `href`. Runs are off by default to keep output small.
+
+- The runs of a paragraph always join to exactly its `text`. Neighbouring runs with the same formatting are merged, and empty runs are dropped.
+- **HTML:** `b`/`strong` (bold), `i`/`em`/`cite`/`dfn`/`var` (italic), `code`/`kbd`/`samp`/`tt` (code), and `a href` (link).
+- **Markdown:** `**`/`__` (bold) and `*`/`_` (italic), by CommonMark's flanking rules, so `snake_case` and `2 * 3` stay literal. Also code spans, and links, whose labels may hold emphasis.
+- **DOCX:** `w:b` and `w:i`, hyperlinks, and code: a character style whose id or name mentions code or verbatim (`HTMLCode`, `Verbatim Char`), or a monospace font set on the run (`Courier New`, `Consolas`, …).
+- **RTF and ODT:** bold, italic and links (see their format pages).
+- `toMarkdown` writes runs as Markdown (`**bold**`, `*italic*`, `` `code` ``, `[text](href)`); `toText` ignores them.
+
 ## Table records (REN-5)
 
 `toRecords(table)` turns a `table` block into one record per row after its `headerRows` header rows:
@@ -24,7 +35,7 @@ if (table?.kind === 'table') console.log(toRecords(table)); // [{ Item: 'Pump', 
 - Every record has every column as a key; values are the cells' `text`, and missing cells are `''`.
 - Records have a `null` prototype (SEC-6), so a header named `__proto__` or `constructor` is an ordinary key and cannot reach `Object.prototype`. Spread a record (`{ ...record }`) when you need a plain object.
 
-## Chunks (CHK-1, CHK-2, CHK-3)
+## Chunks (CHK-1, CHK-2, CHK-3, CHK-4)
 
 `chunk(doc, options)` splits a document into pieces for search indexes and language models. It returns a lazy generator: chunks are built as you iterate, so a large document never holds all of them at once. The same document and options always give the same chunks.
 
@@ -49,6 +60,7 @@ Options:
 Each chunk is `{ index, text, headingPath, locations, overlap, warnings? }`:
 
 - `text` is a slice of the default `toText(doc)` output (child documents are not included). Removing each chunk's first `overlap` characters and joining the rest gives the `toText` output again, apart from the separators at the cuts.
+- `overlap` is the length of the repeated text at the start: text from the end of the previous chunk, or a table's header rows (CHK-4).
 - `headingPath` lists the enclosing headings and the slide, sheet or part titles, outermost first (`['Chapter 2', 'Pricing']`). It is taken at the chunk's first non-heading text, so a chunk that starts with a heading includes it. A slide's title heading is not listed twice.
 - `locations` are copies of the `loc` of every block the chunk's text comes from, in order.
 
@@ -56,7 +68,8 @@ Cutting rules:
 
 - A chunk is cut at the strongest break near its end, in this order: a section boundary (a heading, or the start of a page, slide or sheet), a block boundary, a sentence end, a line break, a word boundary, and last a hard cut by characters (never inside a surrogate pair). "Near the end" means the first part keeps at least half of `maxSize` when such a break exists.
 - A sentence ends at `.`, `!` or `?` (after any closing quotes or brackets) followed by white space and an upper-case letter or a digit, or at `。`, `！`, `？`. The splitter is a hand-written scanner.
-- Table rows are lines, and a row that fits `maxSize` is never split. A row longer than `maxSize` is split at cell boundaries (and inside cells when one cell is too long), and that chunk carries `warnings: ['A table row longer than maxSize was split at cell boundaries.']`. Repeating header rows in each piece (CHK-4) is not done yet.
+- Table rows are lines, and a row that fits `maxSize` is never split. A row longer than `maxSize` is split at cell boundaries (and inside cells when one cell is too long), and that chunk carries `warnings: ['A table row longer than maxSize was split at cell boundaries.']`.
+- A table split across chunks repeats its header rows (`headerRows`) at the start of every later piece (CHK-4). The repeated rows count in `overlap` and replace the ordinary overlap for that chunk, so every piece of the table reads as a table with its column names. The caption is not repeated. A header longer than half of `maxSize` is not repeated, so a chunk always has room for data.
 - A chunk made only of headings is not cut at the next heading, so a heading stays with its text.
 - Overlap is made of whole sentences (or lines, rows and words when the text was split finer) from the end of the previous chunk, and never crosses a forced section boundary.
 - With a custom `countTokens`, sizes are added piece by piece and every finished chunk is measured again; if a counter is not additive and the whole text is too long, its last pieces move to the next chunk.

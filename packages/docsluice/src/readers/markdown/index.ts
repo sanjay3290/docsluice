@@ -69,6 +69,20 @@ function atxHeading(
   return { level, start: cursor, end };
 }
 
+const isSpace = (character: string): boolean =>
+  character === ' ' || character === '\t' || character === '\n' || character === '\r';
+
+/** ASCII punctuation (CommonMark 2.1). */
+function isPunctuation(character: string): boolean {
+  const code = character.charCodeAt(0);
+  return (
+    (code >= 33 && code <= 47) ||
+    (code >= 58 && code <= 64) ||
+    (code >= 91 && code <= 96) ||
+    (code >= 123 && code <= 126)
+  );
+}
+
 function stripInline(
   source: string,
   runs: boolean,
@@ -81,20 +95,50 @@ function stripInline(
   const resultRuns: Run[] = [];
   let truncated = false;
   let imageAltPending = false;
-  const add = (value: string, href?: string): void => {
+  // Emphasis state (MOD-3): `**`/`__` toggle bold, `*`/`_` toggle italic.
+  let bold = false;
+  let italic = false;
+  const pushFormatted = (value: string, format: Omit<Run, 'text'>): void => {
+    if (!runs || value.length === 0) return;
+    const last = resultRuns.at(-1);
+    if (
+      last &&
+      last.href === format.href &&
+      last.code === format.code &&
+      last.bold === format.bold &&
+      last.italic === format.italic
+    ) {
+      last.text += value;
+      return;
+    }
+    const run: Run = { text: value };
+    if (format.bold) run.bold = true;
+    if (format.italic) run.italic = true;
+    if (format.code) run.code = true;
+    if (format.href) run.href = format.href;
+    resultRuns.push(run);
+  };
+  const pushRun = (value: string, href?: string, code?: boolean): void =>
+    pushFormatted(value, {
+      ...(bold ? { bold: true } : {}),
+      ...(italic ? { italic: true } : {}),
+      ...(code ? { code: true } : {}),
+      ...(href ? { href } : {}),
+    });
+  const add = (value: string, href?: string, code?: boolean): void => {
     if (text.length + value.length > maximum) {
       const part = value.slice(0, Math.max(0, maximum - text.length));
       text += part;
-      if (runs && part.length > 0) resultRuns.push(href ? { text: part, href } : { text: part });
+      pushRun(part, href, code);
       truncated = true;
       return;
     }
     text += value;
-    if (runs && value.length > 0) resultRuns.push(href ? { text: value, href } : { text: value });
+    pushRun(value, href, code);
   };
-  const addRange = (start: number, end: number, href?: string): void => {
+  const addRange = (start: number, end: number, href?: string, code?: boolean): void => {
     const remaining = Math.max(0, maximum - text.length);
-    add(source.slice(start, Math.min(end, start + remaining + 1)), href);
+    add(source.slice(start, Math.min(end, start + remaining + 1)), href, code);
   };
   while (rangeStart < rangeEnd && (source[rangeStart] === ' ' || source[rangeStart] === '\t')) {
     budget.tick();
@@ -158,7 +202,26 @@ function stripInline(
             }
             target = source.slice(labelEnd + 2, targetEnd);
           }
-          addRange(i + 1, labelEnd, imageAlt ? undefined : target);
+          // A label holds no `[`, so reading its emphasis is one nested call, never deeper.
+          const label = stripInline(
+            source,
+            runs,
+            budget,
+            Math.max(0, maximum - text.length),
+            i + 1,
+            labelEnd,
+          );
+          text += label.text;
+          if (label.truncated) truncated = true;
+          for (const run of label.runs ?? []) {
+            budget.tick();
+            pushFormatted(run.text, {
+              ...(bold || run.bold ? { bold: true } : {}),
+              ...(italic || run.italic ? { italic: true } : {}),
+              ...(run.code ? { code: true } : {}),
+              ...(!imageAlt && target ? { href: target } : {}),
+            });
+          }
           i = closeParen;
           continue;
         }
@@ -198,11 +261,43 @@ function stripInline(
         addRange(i, rangeEnd);
         break;
       }
-      addRange(i + ticks, closing);
+      addRange(i + ticks, closing, undefined, true);
       i = closing + ticks;
       continue;
     }
-    if (source[i] === '*' || source[i] === '_' || source[i] === '~') {
+    if (source[i] === '*' || source[i] === '_') {
+      // A delimiter run opens or closes emphasis only when it flanks text (CommonMark 6.2); an
+      // intraword `_` (snake_case) and a spaced `*` (2 * 3) stay literal.
+      const marker = source[i]!;
+      let length = 0;
+      while (source[i + length] === marker) {
+        budget.tick();
+        length++;
+      }
+      const before = i > rangeStart ? source[i - 1]! : ' ';
+      const after = i + length < rangeEnd ? source[i + length]! : ' ';
+      const left = !isSpace(after) && (!isPunctuation(after) || isSpace(before) || isPunctuation(before));
+      const right = !isSpace(before) && (!isPunctuation(before) || isSpace(after) || isPunctuation(after));
+      const canOpen = marker === '*' ? left : left && (!right || isPunctuation(before));
+      const canClose = marker === '*' ? right : right && (!left || isPunctuation(after));
+      let rest = length;
+      if (rest >= 2 && (bold ? canClose : canOpen)) {
+        bold = !bold;
+        rest -= 2;
+      }
+      if (rest >= 1 && (italic ? canClose : canOpen)) {
+        italic = !italic;
+        rest -= 1;
+      }
+      if (rest >= 2 && (bold ? canClose : canOpen)) {
+        bold = !bold;
+        rest -= 2;
+      }
+      if (rest > 0) add(marker.repeat(rest));
+      i += length;
+      continue;
+    }
+    if (source[i] === '~') {
       i++;
       continue;
     }

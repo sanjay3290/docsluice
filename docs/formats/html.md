@@ -26,3 +26,7 @@ Inside the chosen element, chrome is still left out: an in-page `nav`, a comment
 `corpus/html/main-content/` has ten written pages: a blog post, a news article, a docs page with a sidebar, div soup, a link farm, a recipe with ads, a listing of articles, a table layout, hidden and dialog content, and a page with nothing to score. Each page has a reviewed `.main-content.expected.md` golden, and `test/readers/html/main-content.test.ts` checks text that must stay and text that must go. The HTML fuzz target runs every input with and without the option.
 
 Specification references: [WHATWG parsing](https://html.spec.whatwg.org/multipage/parsing.html), [named references](https://html.spec.whatwg.org/entities.json).
+
+## Inline runs (MOD-3)
+
+With `runs: true`, paragraphs keep bold, italic, code and link runs (see [rendering.md](../rendering.md#inline-runs-mod-3)).

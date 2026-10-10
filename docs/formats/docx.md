@@ -103,3 +103,7 @@ An OLE object (`w:object` with `o:OLEObject`) is read as a child document at the
 ## Macro-enabled files
 
 `.docm (and .dotm templates)` files are detected by their macro-enabled main content type and reported with their own format id (`docm`), and are read by this reader with the same blocks as the plain version. A VBA project part (`vbaProject.bin`) sets `features.hasMacros` and adds one `MACROS_PRESENT` warning. Macros are never parsed, extracted or run (SEC-11). `corpus/docx/headings-outline-macros.docm` is made by `scripts/corpus/make-macro-enabled.mjs`.
+
+## Inline runs (MOD-3)
+
+With `runs: true`, paragraphs keep bold, italic, link and code runs. A run is code when its character style mentions code or verbatim, or when it sets a monospace font (see [rendering.md](../rendering.md#inline-runs-mod-3)).

@@ -424,23 +424,73 @@ function plain(node: HtmlNode, ctx: ReadContext, preserve = false): string {
   return normalized;
 }
 
+const BOLD = new Set(['b', 'strong']);
+const ITALIC = new Set(['i', 'em', 'cite', 'dfn', 'var']);
+const CODE = new Set(['code', 'kbd', 'samp', 'tt']);
+
+/**
+ * Inline runs (MOD-3): bold, italic, code and link targets. The text is walked exactly as `plain()`
+ * walks it (line breaks, image alt text) and white space is collapsed the same way across runs, so
+ * the runs join to the paragraph text. Equal neighbours are merged.
+ */
 function inlineRuns(node: HtmlNode, ctx: ReadContext): Run[] {
   const runs: Run[] = [];
-  const pending: Array<{ value: HtmlNode | string; href?: string }> = [{ value: node }];
+  const pending: Array<{ value: HtmlNode | string; format: Omit<Run, 'text'> }> = [
+    { value: node, format: {} },
+  ];
+  let gap = false;
+  let started = false;
+  const append = (text: string, format: Omit<Run, 'text'>): void => {
+    let output = '';
+    for (let i = 0; i < text.length; i++) {
+      ctx.budget.tick();
+      if (space(text.charCodeAt(i))) {
+        // One space where the white space starts, so it stays with the run it was written in.
+        if (!gap && started) output += ' ';
+        gap = true;
+      } else {
+        output += text[i];
+        gap = false;
+        started = true;
+      }
+    }
+    if (output.length === 0) return;
+    const last = runs.at(-1);
+    const { bold, italic, code, href } = format;
+    if (last && last.bold === bold && last.italic === italic && last.code === code && last.href === href)
+      last.text += output;
+    else runs.push({ text: output, ...format });
+  };
   while (pending.length) {
     ctx.budget.tick();
     const frame = pending.pop()!;
     if (typeof frame.value === 'string') {
-      const run: Run = { text: frame.value };
-      if (frame.href !== undefined) run.href = frame.href;
-      runs.push(run);
-    } else {
-      const href = frame.value.tag === 'a' ? frame.value.attrs.get('href') : frame.href;
+      append(frame.value, frame.format);
+      continue;
+    }
+    const tag = frame.value.tag;
+    if (tag === 'br') append('\n', frame.format);
+    else if (tag === 'img') append(decodeEntities(frame.value.attrs.get('alt') ?? '', ctx), frame.format);
+    else {
+      const format = { ...frame.format };
+      if (BOLD.has(tag)) format.bold = true;
+      if (ITALIC.has(tag)) format.italic = true;
+      if (CODE.has(tag)) format.code = true;
+      if (tag === 'a') {
+        const href = frame.value.attrs.get('href');
+        if (href !== undefined) format.href = href;
+      }
       for (let i = frame.value.children.length - 1; i >= 0; i--) {
         ctx.budget.tick();
-        pending.push({ value: frame.value.children[i]!, href });
+        pending.push({ value: frame.value.children[i]!, format });
       }
     }
+  }
+  // `plain()` drops white space at the end.
+  const last = runs.at(-1);
+  if (last && gap && last.text.endsWith(' ')) {
+    last.text = last.text.slice(0, -1);
+    if (last.text.length === 0) runs.pop();
   }
   return runs;
 }

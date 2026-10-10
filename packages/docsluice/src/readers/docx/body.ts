@@ -36,7 +36,7 @@ export interface DocxParagraph {
   level?: 1 | 2 | 3 | 4 | 5 | 6;
   numId?: string;
   ilvl?: number;
-  runs?: Array<{ text: string; bold?: boolean; italic?: boolean; href?: string }>;
+  runs?: Array<{ text: string; bold?: boolean; italic?: boolean; code?: boolean; href?: string }>;
   /** Notes (DOC-5) and images (DOC-8) anchored in this paragraph, in document order. */
   anchors?: DocxAnchor[];
   loc: { path?: string };
@@ -87,7 +87,7 @@ export interface DocxBodyHooks {
 
 interface ParagraphState {
   text: string;
-  runs: Array<{ text: string; bold?: boolean; italic?: boolean; href?: string }>;
+  runs: Array<{ text: string; bold?: boolean; italic?: boolean; code?: boolean; href?: string }>;
   styleId?: string;
   /** Direct `w:outlineLvl` (0-based); it overrides the style's heading level. */
   outlineLevel?: number;
@@ -106,6 +106,34 @@ interface RunState {
   hidden?: boolean;
   /** The run's character style (`w:rStyle`) is hidden. */
   styleHidden?: boolean;
+  /** Code: a character style named for code, or a monospace font (MOD-3). */
+  code?: boolean;
+}
+
+/** Monospace fonts that mark a run as code when set directly (`w:rFonts`). */
+const MONOSPACE_FONTS = new Set([
+  'courier',
+  'courier new',
+  'consolas',
+  'lucida console',
+  'menlo',
+  'monaco',
+  'source code pro',
+  'cascadia code',
+  'cascadia mono',
+  'fira code',
+  'fira mono',
+  'jetbrains mono',
+  'dejavu sans mono',
+  'liberation mono',
+  'roboto mono',
+  'ubuntu mono',
+]);
+
+/** A character style for code: its id or name mentions code or verbatim (`HTMLCode`, `Verbatim Char`). */
+function isCodeStyle(style: DocxStyle | undefined, id: string): boolean {
+  const names = `${id} ${style?.name ?? ''}`.toLowerCase();
+  return names.includes('code') || names.includes('verbatim');
 }
 
 /** Nested fields tracked at most; deeper `begin`/`end` pairs are only counted. */
@@ -256,12 +284,19 @@ function appendRun(
     href ??= frame.hyperlink;
   }
   const previous = paragraph.runs.at(-1);
-  if (previous && previous.bold === run?.bold && previous.italic === run?.italic && previous.href === href) {
+  if (
+    previous &&
+    previous.bold === run?.bold &&
+    previous.italic === run?.italic &&
+    previous.code === (run?.code || undefined) &&
+    previous.href === href
+  ) {
     previous.text += text;
   } else {
     const next: (typeof paragraph.runs)[number] = { text };
     if (run?.bold !== undefined) next.bold = run.bold;
     if (run?.italic !== undefined) next.italic = run.italic;
+    if (run?.code) next.code = true;
     if (href !== undefined) next.href = href;
     paragraph.runs.push(next);
   }
@@ -274,6 +309,7 @@ function cloneRuns(runs: ParagraphState['runs'], budget: XmlContext['budget']): 
     const copy: (typeof copies)[number] = { text: run.text };
     if (run.bold !== undefined) copy.bold = run.bold;
     if (run.italic !== undefined) copy.italic = run.italic;
+    if (run.code) copy.code = true;
     if (run.href !== undefined) copy.href = run.href;
     copies.push(copy);
   }
@@ -612,7 +648,22 @@ export function scanDocxBody(
             const run = frames.at(-2)!.run!;
             const value = wordAttribute(attrs, 'val', frames, namespaceScope, ctx.budget);
             if (info.localName === 'vanish') run.hidden = boolValue(value);
-            else if (value !== undefined) run.styleHidden = styles.get(value)?.hidden === true;
+            else if (value !== undefined) {
+              const style = styles.get(value);
+              run.styleHidden = style?.hidden === true;
+              if (isCodeStyle(style, value)) run.code = true;
+            }
+          }
+          if (
+            !skipped &&
+            isWord &&
+            info.localName === 'rFonts' &&
+            parent?.localName === 'rPr' &&
+            frames.at(-2)?.run
+          ) {
+            const font = wordAttribute(attrs, 'ascii', frames, namespaceScope, ctx.budget);
+            if (font !== undefined && MONOSPACE_FONTS.has(font.trim().toLowerCase()))
+              frames.at(-2)!.run!.code = true;
           }
           if (!skipped && isWord && info.localName === 'fldChar' && revisionVisible()) {
             const type = wordAttribute(attrs, 'fldCharType', frames, namespaceScope, ctx.budget);
