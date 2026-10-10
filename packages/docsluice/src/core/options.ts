@@ -1,5 +1,6 @@
 import type { Block, FormatId, WarningCode } from './model.js';
 import type { Limits } from './limits.js';
+import type { ReaderRegistry } from './registry.js';
 
 /**
  * Options for `extract()` (PRD sections 7-17). Every option has a safe default; none is required.
@@ -44,6 +45,11 @@ export interface ExtractOptions {
   transform?: (block: Block) => Block | null;
   /** Called for each top-level block as it is produced (EXT-2). */
   onBlock?: (block: Block) => void;
+  /**
+   * Readers to use, including any format plugins (EXT-4). Defaults to the shared default registry;
+   * pass one from `createRegistry()` to add plugins without changing global state.
+   */
+  registry?: ReaderRegistry;
 }
 
 /** Effective options shared by the root reader and every nested reader. */

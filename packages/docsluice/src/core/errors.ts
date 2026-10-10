@@ -12,7 +12,8 @@ export type ErrorCode =
   | 'LIMIT_EXCEEDED'
   | 'TIMEOUT'
   | 'ABORTED'
-  | 'STRICT_WARNING';
+  | 'STRICT_WARNING'
+  | 'PLUGIN_INCOMPATIBLE';
 
 export class DocsluiceError extends Error {
   readonly code: ErrorCode;
@@ -81,5 +82,20 @@ export class StrictModeError extends DocsluiceError {
   constructor(warningCode: WarningCode) {
     super('STRICT_WARNING', `Warning "${warningCode}" is forbidden by strict mode.`);
     this.warningCode = warningCode;
+  }
+}
+
+/** A format plugin built for a reader contract this docsluice does not provide (EXT-7). */
+export class PluginContractError extends DocsluiceError {
+  readonly plugin: string;
+  readonly contract: string;
+
+  constructor(plugin: string, contract: string, supported: string) {
+    super(
+      'PLUGIN_INCOMPATIBLE',
+      `Format plugin "${plugin}" needs reader contract ${contract}; this docsluice provides ${supported}.`,
+    );
+    this.plugin = plugin;
+    this.contract = contract;
   }
 }

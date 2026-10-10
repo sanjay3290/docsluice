@@ -21,7 +21,12 @@ export {
   TimeoutError,
   AbortError,
   StrictModeError,
+  PluginContractError,
 } from './core/errors.js';
+export { createRegistry, registerFormat, READER_CONTRACT_VERSION } from './core/registry.js';
+export type { FormatPlugin, ReaderRegistry } from './core/registry.js';
+export type { ReadContext } from './core/reader.js';
+export type { DocBuilder } from './core/builder.js';
 export type { ErrorCode } from './core/errors.js';
 export { parseXml, scanXml } from './xml/index.js';
 export type { XmlContext, XmlElement, XmlElementInfo, XmlHandler } from './xml/index.js';
