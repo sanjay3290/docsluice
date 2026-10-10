@@ -33,6 +33,7 @@ jobs:
             listed-archives,
             ppt,
             ooxml,
+            office-encryption,
             docx,
             vsdx,
             xlsx,

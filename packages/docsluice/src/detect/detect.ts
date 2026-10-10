@@ -1,5 +1,5 @@
 import { Budget } from '../core/budget.js';
-import { EncryptedError } from '../core/errors.js';
+import { EncryptedError, LimitExceededError } from '../core/errors.js';
 import { readInput } from '../core/input.js';
 import { resolvePlugin } from '../core/plugin.js';
 import { resolveLimits } from '../core/limits.js';
@@ -20,9 +20,13 @@ export interface FormatResolution {
   readonly result: DetectResult;
   readonly zip?: ZipArchive;
   readonly cfb?: CfbArchive;
+  /** The bytes to read instead of the input: the decrypted package of an encrypted OOXML file. */
+  readonly bytes?: Uint8Array;
+  /** The input was an encrypted OOXML package, opened with `password`. */
+  readonly encrypted?: boolean;
 }
 
-type FormatHints = Pick<ExtractOptions, 'filename' | 'mimeType' | 'format'>;
+type FormatHints = Pick<ExtractOptions, 'filename' | 'mimeType' | 'format' | 'password'>;
 
 /**
  * Detect a format without parsing its document contents.
@@ -76,6 +80,18 @@ export async function resolveFormat(
     // The compound-file parser serves legacy Office and Outlook files only; it loads on demand.
     const { openCfb } = await import('../ole/index.js');
     const archive = openCfb(bytes, budget);
+    if (hasEncryptedPackage(archive.entries, budget)) {
+      // [MS-OFFCRYPTO]: an OOXML package encrypted with a password; decryption loads on demand.
+      if (options.password === undefined) throw new EncryptedError('password-required');
+      const { decryptOffice } = await import('../office/encryption/index.js');
+      const decrypted = await decryptOffice(archive, options.password, { budget, warnings: budget.warnings });
+      if (decrypted === undefined) {
+        // The shared allowance ran out before the package was decrypted: nothing partial exists.
+        throw new LimitExceededError('totalUncompressedBytes', budget.limits.totalUncompressedBytes);
+      }
+      const inner = await resolveFormat(decrypted, { ...options, password: undefined }, budget);
+      return { ...inner, bytes: decrypted, encrypted: true };
+    }
     const format = classifyCfb(archive.entries, budget);
     const result =
       format === 'ole' ? makeResult(format, magic.confidence, magic.mimeType) : makeResult(format, 0.98);
@@ -255,21 +271,32 @@ function readUtf16Unit(bytes: Uint8Array, offset: number, encoding: 'utf-16le' |
   return encoding === 'utf-16le' ? first | (second << 8) : (first << 8) | second;
 }
 
+/** A root `EncryptedPackage` stream: an encrypted OOXML package ([MS-OFFCRYPTO] 2.3.4.4). */
+function hasEncryptedPackage(entries: CfbArchive['entries'], budget: Budget): boolean {
+  for (const entry of entries) {
+    budget.tick();
+    if (
+      entry.type === 'stream' &&
+      !entry.path.includes('/') &&
+      entry.path.toLowerCase() === 'encryptedpackage'
+    )
+      return true;
+  }
+  return false;
+}
+
 function classifyCfb(entries: CfbArchive['entries'], budget: Budget): FormatId {
   const identities = new Set<FormatId>();
-  let hasEncryptedPackage = false;
 
   for (const entry of entries) {
     budget.tick();
     if (entry.type !== 'stream' || entry.path.includes('/')) continue;
-    if (entry.path === 'EncryptedPackage') hasEncryptedPackage = true;
-    else if (entry.path === 'WordDocument') identities.add('doc');
+    if (entry.path === 'WordDocument') identities.add('doc');
     else if (entry.path === 'Workbook' || entry.path === 'Book') identities.add('xls');
     else if (entry.path === 'PowerPoint Document') identities.add('ppt');
     else if (entry.path === '__properties_version1.0') identities.add('msg');
   }
 
-  if (hasEncryptedPackage) throw new EncryptedError('unsupported-encryption');
   if (identities.size !== 1) return 'ole';
   return identities.values().next().value ?? 'ole';
 }

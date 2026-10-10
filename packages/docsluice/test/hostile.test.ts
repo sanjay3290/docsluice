@@ -12,6 +12,8 @@ interface ManifestEntry {
   file: string;
   /** Forces a reader for attack files that detection routes elsewhere. */
   format?: FormatId;
+  /** The `password` option, for encrypted attack files that must be opened to reach the payload. */
+  password?: string;
   /** An opt-in format plugin (ADR 0014) to register for this file. */
   plugin?: string;
   expect: { error: string } | { warnings: string[] };
@@ -65,6 +67,7 @@ describe('hostile corpus', () => {
       const options = {
         filename: entry.file.slice(entry.file.lastIndexOf('/') + 1),
         ...(entry.format ? { format: entry.format } : {}),
+        ...(entry.password !== undefined ? { password: entry.password } : {}),
         ...(entry.plugin ? { registry: registryWith(entry.plugin) } : {}),
       };
       const started = performance.now();

@@ -1,7 +1,6 @@
 [
   {
     "file": "xml/xxe-file.xml",
-    "format": "xml",
     "expect": {
       "warnings": [
         "DTD_IGNORED",
@@ -14,7 +13,6 @@
   },
   {
     "file": "xml/xxe-url.xml",
-    "format": "xml",
     "expect": {
       "warnings": [
         "DTD_IGNORED",
@@ -27,7 +25,6 @@
   },
   {
     "file": "xml/billion-laughs.xml",
-    "format": "xml",
     "expect": {
       "warnings": [
         "DTD_IGNORED",
@@ -293,7 +290,6 @@
   },
   {
     "file": "xml/xxe-parameter.xml",
-    "format": "xml",
     "expect": {
       "warnings": [
         "DTD_IGNORED"
@@ -748,9 +744,31 @@
     "requirement": "SEC-12"
   },
   {
+    "file": "office/hmac-tampered.cfb",
+    "password": "Public test é😀",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 10000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "office/spin-count-overflow.cfb",
+    "password": "Public test é😀",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 10000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
     "file": "latex/deep-braces.tex",
     "expect": {
-      "warnings": ["DEPTH_LIMIT"]
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
@@ -759,7 +777,9 @@
   {
     "file": "latex/deep-lists.tex",
     "expect": {
-      "warnings": ["DEPTH_LIMIT"]
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
