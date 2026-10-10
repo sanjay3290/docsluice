@@ -2,7 +2,8 @@
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import { basename, extname, join } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { realpathSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import type { ParseArgsOptionsConfig } from 'node:util';
 import { detect } from '../../detect/detect.js';
@@ -303,9 +304,19 @@ export async function runCli(args = process.argv.slice(2)): Promise<number> {
   }
 }
 
+/** True when this file is the program, also when npm runs it through a `bin` symlink. */
 function isMain(): boolean {
   const entry = process.argv[1];
-  return entry !== undefined && import.meta.url === pathToFileURL(entry).href;
+  if (entry === undefined) return false;
+  try {
+    return realpathSync(entry) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
 }
 
-if (isMain()) process.exitCode = await runCli();
+if (isMain()) {
+  void runCli().then((code) => {
+    process.exitCode = code;
+  });
+}

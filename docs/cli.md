@@ -1,16 +1,15 @@
-# CLI behavior and tests
+# Command line (`docsluice`)
 
-The Node CLI source is `src/node/cli/index.ts`. It uses the Node adapter and core extractor directly. The CLI is not yet registered in the package build, public exports, or npm `bin`; those package integration changes are lead-owned.
-
-Once packaged, the command accepts file paths, glob patterns, and `-` for stdin:
+The package installs a `docsluice` command (`bin` → `dist/node/cli.js`, built from `src/node/cli/index.ts`). It accepts file paths, glob patterns, and `-` for stdin (PRD section 18):
 
 ```sh
-docsluice report.doc
-docsluice report.doc --format text
-docsluice data.doc --format json > out.json
-cat file.doc | docsluice - --format markdown
-docsluice detect unknown.bin
-docsluice 'inbox/**/*.doc' --out-dir ./extracted
+npx docsluice report.pdf                       # Markdown to stdout
+npx docsluice report.pdf --format text
+npx docsluice data.xlsx --format json > out.json
+npx docsluice mail.eml --children list
+cat file.docx | npx docsluice - --format markdown
+npx docsluice "inbox/**/*.eml" --out-dir ./extracted
+npx docsluice detect unknown.bin
 ```
 
 The output defaults to Markdown. `--format` accepts `markdown`, `text`, or `json`; `detect <input>` (or `--detect <input>`) prints detection data as JSON without running a reader. Multiple JSON outputs are a JSON array. `--children` accepts `extract`, `list`, or `skip`; `--no-metadata` omits metadata; `--password-env NAME` reads a password from that environment variable. A plain `--password` value is not accepted. Stdin may be specified once.
@@ -38,12 +37,11 @@ Glob expansion is bounded before any document extraction begins. One CLI invocat
 
 The Node 20 fallback matches each path segment with iterative dynamic programming, not a regular expression built from the user-supplied pattern. This avoids backtracking blowups on hostile patterns such as repeated `*a` tokens followed by a non-matching suffix. A spawned regression applies such a pattern to a maximum-length filename with a hard process timeout.
 
-The fallback matches individual path segments with an iterative dynamic-programming matcher rather than converting user-supplied patterns to regular expressions. A hostile-pattern regression spawns the fallback in a child process with a hard timeout to ensure matching stays bounded.
-
-Run spawned CLI tests with:
+## Tests
 
 ```sh
-npm test -- --run test/node/cli.test.ts
+npm test -- --run test/node/cli.test.ts        # source, bundled into a temporary CLI
+node --test packages/docsluice/test-dist/smoke.test.mjs   # the built bin, every PRD example
 ```
 
-The test helper bundles only the CLI entry into a temporary directory with the existing `tsdown` development tool, then invokes it with Node. It leaves shared package build entries and package metadata untouched. The accepted `1b9a871` baseline currently registers only the legacy DOC reader, so spawned extraction tests use `corpus/doc/doc-legacy.doc`; DOCX, CSV, PDF and other PRD examples remain dependent on their lead-owned reader registrations.
+The built-package smoke test runs every PRD section 18 example through `dist/node/cli.js` on each supported Node version, including a run through a `bin` symlink as npm installs it. Until the PDF reader is merged (#45), the `report.pdf` examples run with a DOCX.

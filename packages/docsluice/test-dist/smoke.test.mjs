@@ -2,9 +2,14 @@
 // Vitest needs Node 22+, so this file proves the published output works on Node 20.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import process from 'node:process';
 import { TextEncoder } from 'node:util';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const renderDoc = {
@@ -197,3 +202,103 @@ test('worker subpath extracts in an isolated thread (ESM)', async () => {
 test('worker subpath extracts in an isolated thread (CommonJS)', async () => {
   await checkWorker(require('docsluice/worker'));
 });
+
+// PRD section 18: every example, run through the built `bin` entry. The PDF reader is not merged
+// yet (#45), so the first two examples use a DOCX for report.pdf.
+const cli = fileURLToPath(new URL('../dist/node/cli.js', import.meta.url));
+const corpus = (path) => fileURLToPath(new URL(`../../../corpus/${path}`, import.meta.url));
+const runCli = (args, options = {}) =>
+  spawnSync(process.execPath, [options.entry ?? cli, ...args], {
+    cwd: options.cwd,
+    input: options.input,
+    encoding: 'utf8',
+    timeout: 30_000,
+  });
+
+test('CLI: docsluice report.docx prints Markdown, and --format text prints text', () => {
+  const markdown = runCli([corpus('docx/headings-outline.docx')]);
+  assert.equal(markdown.status, 0, markdown.stderr);
+  assert.match(markdown.stdout, /^# Field Notes: Tidal Gardens/m);
+  assert.equal(markdown.stderr, '');
+  const text = runCli([corpus('docx/headings-outline.docx'), '--format', 'text']);
+  assert.equal(text.status, 0, text.stderr);
+  assert.match(text.stdout, /^Field Notes: Tidal Gardens$/m);
+  assert.doesNotMatch(text.stdout, /^# /m);
+});
+
+test('CLI: docsluice data.xlsx --format json', () => {
+  const result = runCli([corpus('xlsx/workbook-values-formulas.xlsx'), '--format', 'json']);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).format, 'xlsx');
+});
+
+test('CLI: docsluice mail.eml --children list', () => {
+  const result = runCli([corpus('eml/mixed-order-attachments.eml'), '--children', 'list', '--format', 'json']);
+  assert.equal(result.status, 0, result.stderr);
+  const document = JSON.parse(result.stdout);
+  assert.deepEqual(
+    document.children.map((child) => [child.name, child.status]),
+    [
+      ['bundle.zip', 'listed'],
+      ['note.docx', 'listed'],
+    ],
+  );
+});
+
+test('CLI: cat file.docx | docsluice - --format markdown', () => {
+  const result = runCli(['-', '--format', 'markdown'], { input: readFileSync(corpus('docx/headings-outline.docx')) });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /^# Field Notes: Tidal Gardens/m);
+});
+
+test('CLI: docsluice "inbox/**/*.eml" --out-dir ./extracted writes one safe file per input', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'docsluice-cli-'));
+  try {
+    mkdirSync(join(directory, 'inbox', 'nested'), { recursive: true });
+    copyFileSync(corpus('eml/plain.eml'), join(directory, 'inbox', 'plain.eml'));
+    copyFileSync(corpus('eml/html-only.eml'), join(directory, 'inbox', 'nested', 'html-only.eml'));
+    copyFileSync(corpus('eml/plain.eml'), join(directory, 'inbox', 'nested', 'plain.eml'));
+    copyFileSync(corpus('eml/plain.eml'), join(directory, 'inbox', 'nested', 'a b;c.eml'));
+    const result = runCli(['inbox/**/*.eml', '--out-dir', './extracted'], { cwd: directory });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stdout, '');
+    assert.deepEqual(readdirSync(join(directory, 'extracted')).sort(), ['a_b_c.md', 'html-only.md', 'plain-2.md', 'plain.md']);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('CLI: docsluice detect unknown.bin', () => {
+  const result = runCli(['detect', corpus('xlsx/workbook-values-formulas.xlsx')]);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).format, 'xlsx');
+});
+
+test('CLI: exit codes, stderr warnings, --strict-exit and the npm bin symlink', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'docsluice-bin-'));
+  try {
+    const link = join(directory, 'docsluice');
+    symlinkSync(cli, link);
+    const viaLink = runCli(['-', '--format', 'text'], { entry: link, input: 'through the bin link\n' });
+    assert.equal(viaLink.status, 0, viaLink.stderr);
+    assert.equal(viaLink.stdout, 'through the bin link\n');
+    const missing = runCli([join(directory, 'missing.docx')]);
+    assert.equal(missing.status, 1);
+    assert.equal(missing.stdout, '');
+    assert.match(missing.stderr, /^docsluice: /);
+    // An unknown RTF code page always warns: exit 2 only with --strict-exit.
+    const rtf = '{\\rtf1\\ansicpg9999 text\\par}';
+    const strict = runCli(['-', '--strict-exit'], { input: rtf });
+    assert.equal(strict.status, 2);
+    assert.match(strict.stderr, /^docsluice: ENCODING_GUESSED: /m);
+    assert.equal(strict.stdout, 'text\n');
+    assert.equal(runCli(['-'], { input: rtf }).status, 0);
+    const help = runCli(['--help']);
+    assert.equal(help.status, 0);
+    for (const flag of ['--format', '--children', '--out-dir', '--strict-exit', '--no-metadata', '--password-env', '--max-bytes', '--timeout'])
+      assert.ok(help.stdout.includes(flag), flag);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
