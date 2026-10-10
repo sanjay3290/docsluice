@@ -173,8 +173,8 @@ does not include the warning's message or document content.
 `extract(input, options)` snapshots options and limits, reads the input under the
 input-byte allowance, resolves its format, loads that format's reader, finishes
 the builder and assigns text offsets. Built-in readers use lazy imports. Missing
-readers produce `UnsupportedFormatError`; recognized image and media formats
-return empty documents. Detection passes an existing ZIP or CFB index to the
+readers produce `UnsupportedFormatError`; image, audio and video files return
+documents with metadata and no text ([image](formats/image.md), [media](formats/media.md)). Detection passes an existing ZIP or CFB index to the
 reader, so the container entries are counted once.
 
 Child work runs through a microtask queue rather than recursive file traversal.

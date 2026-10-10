@@ -15,6 +15,7 @@ const targetFile = join(packageRoot, 'fuzz/runner/jazzer-target.mjs');
  */
 export const TARGETS = {
   image: { module: 'fuzz/image.fuzz.js', export: 'fuzzImage', seeds: ['corpus/image', 'hostile/image'] },
+  media: { module: 'fuzz/media.fuzz.js', export: 'fuzzMedia', seeds: ['corpus/media', 'hostile/media'] },
   zip: { module: 'fuzz/zip.fuzz.js', export: 'fuzzZip', seeds: ['corpus/zip', 'hostile/zip'] },
   xml: { module: 'fuzz/xml.fuzz.js', export: 'fuzzXml', seeds: ['corpus/xml', 'hostile/xml'] },
   detect: {

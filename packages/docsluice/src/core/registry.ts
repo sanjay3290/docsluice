@@ -115,6 +115,9 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
   const loadDocx = () => import('../readers/docx/index.js').then((module) => module.docxReader);
   // One image reader for every image format: size and EXIF metadata, no text.
   const loadImage = () => import('../readers/image/index.js').then((module) => module.imageReader);
+  // Audio and video container metadata share one module (#248).
+  const loadAudio = () => import('../readers/media/index.js').then((module) => module.audioReader);
+  const loadVideo = () => import('../readers/media/index.js').then((module) => module.videoReader);
   // Each format module loads only when that format is read.
   const builtIns: Array<[FormatId, () => Promise<Reader>]> = [
     ['doc', () => import('../readers/doc/index.js').then((module) => module.docReader)],
@@ -154,6 +157,7 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     ['epub', () => import('../readers/epub/index.js').then((module) => module.epubReader)],
   ];
   for (const id of ['png', 'jpeg', 'gif', 'tiff', 'webp']) builtIns.push([id, loadImage]);
+  builtIns.push(['audio', loadAudio], ['video', loadVideo]);
   for (const [id, load] of builtIns) registry.add({ id, load });
 }
 

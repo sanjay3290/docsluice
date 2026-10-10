@@ -62,6 +62,9 @@
       "ndjson": [
         "dist/ndjson.d.ts"
       ],
+      "media": [
+        "dist/media.d.ts"
+      ],
       "ics": [
         "dist/ics.d.ts"
       ],
@@ -197,6 +200,10 @@
     "./ndjson": {
       "import": "./dist/ndjson.js",
       "require": "./dist/ndjson.cjs"
+    },
+    "./media": {
+      "import": "./dist/media.js",
+      "require": "./dist/media.cjs"
     },
     "./ics": {
       "import": "./dist/ics.js",
