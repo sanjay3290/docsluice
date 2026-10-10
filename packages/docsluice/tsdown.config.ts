@@ -22,6 +22,7 @@ export default defineConfig({
     pptx: 'src/readers/pptx/index.ts',
     odt: 'src/readers/odt/index.ts',
     ods: 'src/readers/ods/index.ts',
+    odp: 'src/readers/odp/index.ts',
     zip: 'src/readers/zip/index.ts',
     gzip: 'src/readers/gzip/index.ts',
     tar: 'src/readers/tar/index.ts',

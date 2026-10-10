@@ -39,6 +39,7 @@ jobs:
             eml,
             msg,
             ods,
+            odp,
             odf,
             odt,
             rtf,

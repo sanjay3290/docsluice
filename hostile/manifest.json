@@ -1116,5 +1116,63 @@
     "maxMs": 2000,
     "maxHeapMB": 128,
     "requirement": "SEC-11"
+  },
+  {
+    "file": "odp/nested-groups.odp",
+    "expect": {
+      "warnings": [
+        "TRUNCATED"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "odp/nested-lists.odp",
+    "expect": {
+      "warnings": [
+        "TRUNCATED"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "odp/table-repeat-flood.odp",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "odp/huge-space-count.odp",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "odp/many-slides.odp",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 5000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "odp/bad-lengths.odp",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
   }
 ]

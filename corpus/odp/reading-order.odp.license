@@ -1,0 +1,3 @@
+SPDX-License-Identifier: CC0-1.0
+Source: converted for docsluice with LibreOffice 24.2.7.2 420(Build:2) from corpus/pptx/reading-order.pptx (soffice --headless --convert-to odp)
+Notes: mirrors the PPTX corpus file. The conversion drops outline levels and bullets of placeholder text, reads the mc:Choice branch and drops the SmartArt diagram, so those blocks differ from the PPTX golden.
