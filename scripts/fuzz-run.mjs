@@ -34,6 +34,20 @@ export const TARGETS = {
     export: 'fuzzCsv',
     seeds: ['corpus/csv', 'corpus/tsv', 'hostile/csv', 'hostile/tsv'],
   },
+  'text-families': {
+    module: 'fuzz/text-families.fuzz.js',
+    export: 'fuzzTextFamilies',
+    seeds: [
+      'corpus/yaml',
+      'corpus/ndjson',
+      'corpus/ics',
+      'corpus/vcf',
+      'corpus/srt',
+      'corpus/vtt',
+      'hostile/yaml',
+      'hostile/ics',
+    ],
+  },
   json: { module: 'fuzz/json.fuzz.js', export: 'fuzzJson', seeds: ['corpus/json', 'hostile/json'] },
   'xml-reader': {
     module: 'fuzz/xml-reader.fuzz.js',

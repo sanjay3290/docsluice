@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice
+Requirements: IN-6
+Notes: WebVTT with a header title, NOTE and STYLE blocks, cue identifiers and settings, voice, class and timestamp tags.

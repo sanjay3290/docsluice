@@ -11,7 +11,19 @@ export const READERS = Object.keys(manifest.exports)
   .filter((subpath) => !NOT_READERS.has(subpath))
   .map((subpath) => subpath.slice(2));
 const OFFICE_READERS = new Set(['doc', 'docx', 'xlsx', 'xls', 'xlsb', 'pptx', 'odt', 'ods', 'odp']);
-const EXTERNAL_READERS = [...OFFICE_READERS, 'eml', 'msg', 'rtf', 'epub', 'gzip', 'tar'];
+// The P1 text families (issue #68) load lazily like the office readers and keep their own budgets.
+// `code` is the source-code language table the text reader loads only for source file names.
+const TEXT_FAMILY_READERS = ['yaml', 'ndjson', 'ics', 'vcf', 'srt', 'vtt', 'code'];
+const EXTERNAL_READERS = [
+  ...OFFICE_READERS,
+  ...TEXT_FAMILY_READERS,
+  'eml',
+  'msg',
+  'rtf',
+  'epub',
+  'gzip',
+  'tar',
+];
 const externalReader = new RegExp(`/(?:${EXTERNAL_READERS.join('|')})\\.js$`);
 
 export default [

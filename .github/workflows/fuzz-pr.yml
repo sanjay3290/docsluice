@@ -24,6 +24,7 @@ jobs:
             markdown,
             csv,
             json,
+            text-families,
             xml-reader,
             html,
             doc,

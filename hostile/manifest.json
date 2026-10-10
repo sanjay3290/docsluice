@@ -1234,5 +1234,146 @@
     "maxMs": 3000,
     "maxHeapMB": 128,
     "requirement": "SEC-12"
+  },
+  {
+    "file": "yaml/alias-bomb.yaml",
+    "format": "yaml",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-5"
+  },
+  {
+    "file": "yaml/block-scalar-flood.yaml",
+    "format": "yaml",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "yaml/dash-chain.yaml",
+    "format": "yaml",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "yaml/deep-nesting.yaml",
+    "format": "yaml",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "ndjson/deep-records.ndjson",
+    "format": "ndjson",
+    "expect": {
+      "warnings": [
+        "TRUNCATED",
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "ndjson/many-records.ndjson",
+    "format": "ndjson",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "ics/fold-bomb.ics",
+    "format": "ics",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "ics/semicolon-params.ics",
+    "format": "ics",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-7"
+  },
+  {
+    "file": "ics/unbalanced-begin.ics",
+    "format": "ics",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "vcf/many-cards.vcf",
+    "format": "vcf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "srt/bad-timing.srt",
+    "format": "srt",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "srt/many-cues.srt",
+    "format": "srt",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "vtt/tag-soup.vtt",
+    "format": "vtt",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-7"
   }
 ]

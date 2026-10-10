@@ -1,0 +1,12 @@
+1
+00:00:01,000 --> 00:00:04,200
+The tide turns <i>early</i> today.
+
+2
+00:00:05,000 --> 00:00:08,500
+Check the north inlet first,
+then the south bank.
+
+3
+00:01:02,250 --> 00:01:05,000
+<font color="#ffff00">Herons &amp; wrens</font> were counted.

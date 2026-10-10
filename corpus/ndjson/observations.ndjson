@@ -1,0 +1,6 @@
+{"site":"north-inlet","species":"heron","count":4,"seen":true}
+{"site":"south-bank","species":"kingfisher","count":1,"notes":null}
+
+{"site":"old-orchard","species":"wren","count":12,"tags":["dawn","song"]}
+not json at all
+[1,2,3]
