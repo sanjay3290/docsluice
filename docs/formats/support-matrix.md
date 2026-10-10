@@ -12,7 +12,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 |---|---|---|---|---|
 | csv | `docsluice/csv` | 4 | 4 | [csv.md](csv.md) |
 | doc | `docsluice/doc` | 2 | 2 | [doc.md](doc.md) |
-| docx | `docsluice/docx` | 9 | 9 | [docx.md](docx.md) |
+| docx | `docsluice/docx` | 13 | 13 | [docx.md](docx.md) |
 | eml | `docsluice/eml` | 8 | 8 | [eml.md](eml.md) |
 | epub | `docsluice/epub` | 4 | 4 | [epub.md](epub.md) |
 | gzip | `docsluice/gzip` | 3 | 3 | [gzip.md](gzip.md) |
@@ -77,7 +77,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | MOD-1 | The model is a public, versioned, documented contract. A breaking change is a major version. | Not covered | — |
 | MOD-4 | Metadata extraction can be turned off as a whole or per field (author names are personal data). | `image/gradient-be.tif`<br>`image/gradient-exif.jpg`<br>`image/gradient-exif.png`<br>`image/gradient-le.tif`<br>`image/gradient-lossless-exif.webp`<br>`image/gradient-lossy.webp`<br>`image/gradient.gif`<br>`image/gradient.png` | — |
 | MOD-5 | Report document features found but not run: `hasMacros`, `hasExternalLinks`, `hasEmbeddedFiles`, `isEncrypted`, `hasJavaScript`. | `docx/headings-outline-macros.docm`<br>`image/gradient-be.tif`<br>`image/gradient-exif.jpg`<br>`image/gradient-exif.png`<br>`image/gradient-le.tif`<br>`image/gradient-lossless-exif.webp`<br>`image/gradient-lossy.webp`<br>`image/gradient.gif`<br>`image/gradient.png`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 4 |
-| NST-1 | Read children with the **same shared budget** as the parent. A child cannot reset the byte, time or entry limits. | `gzip/multi-member.txt.gz`<br>`gzip/optional-header.gz`<br>`gzip/scores.csv.gz`<br>`msg/embedded-message.msg`<br>`tar/gnu-long-name.tar`<br>`tar/nested-folders.tar`<br>`tar/nested-folders.tar.gz`<br>`tar/pax-long-path.tar`<br>`zip/bundle.zip`<br>`zip/hello.odt`<br>`zip/zip-cli.zip` | 2 |
+| NST-1 | Read children with the **same shared budget** as the parent. A child cannot reset the byte, time or entry limits. | `docx/embedded-objects.docx`<br>`gzip/multi-member.txt.gz`<br>`gzip/optional-header.gz`<br>`gzip/scores.csv.gz`<br>`msg/embedded-message.msg`<br>`tar/gnu-long-name.tar`<br>`tar/nested-folders.tar`<br>`tar/nested-folders.tar.gz`<br>`tar/pax-long-path.tar`<br>`zip/bundle.zip`<br>`zip/hello.odt`<br>`zip/zip-cli.zip` | 3 |
 | NST-2 | Maximum nesting depth (default 3). Deeper files are listed but not opened, with a warning. | Not covered | 1 |
 | NST-3 | Each child has a path (`report.zip/q3.docx/embedded.xlsx`) used in every location inside it. | `zip/bundle.zip` | — |
 | NST-4 | Option `children: 'extract' \| 'list' \| 'skip'`. Default `extract`. | `zip/bundle.zip` | 1 |
@@ -108,7 +108,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | SEC-1 | **Zip bomb** — a 40 KB file that expands to many gigabytes. \| Count bytes as they decompress. Stop at the total-uncompressed limit and at a compression-ratio limit. Never trust the sizes written in the zip header. | Not covered | 12 |
 | SEC-10 | **Network calls** — linked images, remote templates, external relationships in Office files, PDF remote actions. \| docsluice never fetches anything. External targets are reported as data only (`hasExternalLinks`). | Not covered | 4 |
 | SEC-11 | **Running content** — macros, PDF JavaScript, HTML scripts, formulas. \| Never run. Report presence only. Formula text is returned as a string. | `docx/headings-outline-macros.docm`<br>`ods/formulas.ods`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/formulas.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 2 |
-| SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 44 |
+| SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 45 |
 | SEC-14 | **Supply-chain attack** through a dependency. \| Few dependencies, pinned with a lockfile, reviewed on update. No install scripts. Publish with npm provenance. | Not covered | — |
 | SEC-2 | **Too many entries** — a zip with a million tiny files. \| Entry-count limit, checked before reading entries. | Not covered | 4 |
 | SEC-3 | **Path tricks** — entry names like `../../etc/passwd`. \| docsluice never writes to disk. Entry names are treated as plain strings and cleaned before they appear in paths. | Not covered | 4 |
@@ -116,7 +116,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | SEC-5 | **Billion laughs** — XML entities that expand to huge text. \| No entity expansion beyond the five built-in XML entities. Element-depth and text-size limits. | `xml/internal-entity-expansion.xml` | 3 |
 | SEC-6 | **Prototype pollution** — a key named `__proto__` in a file changes JavaScript objects across the app. (This is SheetJS's open advisory.) \| Never use file data as plain-object keys. Use `Map` or `Object.create(null)`. A lint rule and a test file full of `__proto__`, `constructor` and `prototype` keys in every format. | `json/dangerous-keys.json`<br>`yaml/survey-config.yaml` | 9 |
 | SEC-7 | **Slow regular expressions (ReDoS)** — text built to make a pattern run for minutes. \| No regular expression with nested repeats on file data. Static check in CI (for example `eslint-plugin-regexp`). Hand-written scanners for hot paths. | Not covered | 5 |
-| SEC-8 | **Deep nesting** — tables in tables, lists in lists, 10,000 levels deep, to crash the stack. \| Depth limit everywhere. Iterative code, not recursion, for tree walks over file data. | Not covered | 22 |
+| SEC-8 | **Deep nesting** — tables in tables, lists in lists, 10,000 levels deep, to crash the stack. \| Depth limit everywhere. Iterative code, not recursion, for tree walks over file data. | Not covered | 23 |
 | SEC-9 | **Endless loops** — PDF objects or zip parts that point at each other. \| Visited sets on every reference graph. A global time budget. | Not covered | 17 |
 | XLS-1 | Read every sheet in workbook order, with its name and state (visible, hidden, very hidden). | `ods/cell-types.ods`<br>`ods/workbook-hidden-sparse.ods`<br>`xls/workbook-hidden-sparse.xls`<br>`xlsb/workbook-hidden-sparse.xlsb`<br>`xlsx/cell-types.xlsx`<br>`xlsx/workbook-hidden-sparse.xlsx` | — |
 | XLS-2 | Resolve shared strings, inline strings and rich-text runs. | `ods/cell-types.ods`<br>`ods/workbook-merged-richstrings.ods`<br>`ods/workbook-values-formulas.ods`<br>`xls/workbook-merged-richstrings.xls`<br>`xls/workbook-values-formulas.xls`<br>`xlsb/workbook-merged-richstrings.xlsb`<br>`xlsb/workbook-values-formulas.xlsb`<br>`xlsx/cell-types.xlsx`<br>`xlsx/workbook-merged-richstrings.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm`<br>`xlsx/workbook-values-formulas.xlsx` | — |

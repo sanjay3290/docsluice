@@ -13,8 +13,10 @@ import { scanDocxBody } from './body.js';
 import { DocxLists } from './lists.js';
 import { readDocxNotes, readDocxStoryText } from './stories.js';
 import type { DocxNoteText } from './stories.js';
-import type { DocxAnchor, DocxImageRef } from './body.js';
+import type { DocxAnchor, DocxImageRef, DocxObjectRef } from './body.js';
+import { openCfb } from '../../ole/index.js';
 import type { ChildDocument } from '../../core/model.js';
+import { CorruptFileError } from '../../core/errors.js';
 import { parseDocxNumbering } from './numbering.js';
 import type { DocxNumbering } from './numbering.js';
 import { parseDocxStyles } from './styles.js';
@@ -173,6 +175,50 @@ async function readImageParts(
   return images;
 }
 
+const CFB_SIGNATURE = [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1];
+
+/**
+ * Embedded objects (DOC-12) as child documents sharing this budget (NST-1). A package part
+ * (`embeddings/*.xlsx`, `*.docx`) is read as it is. An OLE `.bin` compound file is read through its
+ * `Package` stream when it has one (an Office document embedded by an OLE server), else whole.
+ * Linked objects are never fetched (SEC-10); each part is read once.
+ */
+async function readObjects(
+  ctx: ReadContext,
+  parts: OoxmlParts,
+  objects: readonly DocxObjectRef[],
+  relationships: ReadonlyMap<string, OoxmlRelationship>,
+  contentTypes: Awaited<ReturnType<typeof readContentTypes>>,
+): Promise<void> {
+  if (ctx.options.children === 'skip') return;
+  const seen = new Set<string>();
+  for (const object of objects) {
+    ctx.budget.tick();
+    const relationship = relationships.get(object.relationshipId);
+    if (!relationship || relationship.external || !relationship.part || seen.has(relationship.part)) continue;
+    seen.add(relationship.part);
+    const bytes = await parts.read(relationship.part);
+    if (!bytes) continue;
+    let name = relationship.part;
+    let data = bytes;
+    let mimeType = contentTypes.mimeType(relationship.part);
+    if (CFB_SIGNATURE.every((value, index) => bytes[index] === value)) {
+      mimeType = undefined;
+      try {
+        const cfb = openCfb(bytes, ctx.budget);
+        if (cfb.entries.some((entry) => entry.type === 'stream' && entry.path === 'Package')) {
+          data = cfb.read('Package');
+          name = `${relationship.part}/Package`;
+        }
+      } catch (error) {
+        // A damaged compound file is still offered whole; its own reader reports the damage.
+        if (!(error instanceof CorruptFileError)) throw error;
+      }
+    }
+    await ctx.extractChild(name, data, mimeType === undefined ? undefined : { mimeType });
+  }
+}
+
 function location(prefix: string, part: string): { path: string } {
   return { path: pathWithPrefix(prefix, part) };
 }
@@ -277,12 +323,17 @@ export const docxReader: Reader = {
       }
       ctx.out.image(block, location(ctx.path, main.path));
     };
+    const objects: DocxObjectRef[] = [];
     const emittedNotes = new Set<string>();
     const emitAnchors = (anchors: readonly DocxAnchor[]): void => {
       for (const ref of anchors) {
         ctx.budget.tick();
         if (ref.role === 'image') {
           emitImage(ref);
+          continue;
+        }
+        if (ref.role === 'object') {
+          objects.push(ref);
           continue;
         }
         const key = `${ref.role}:${ref.id}`;
@@ -322,5 +373,6 @@ export const docxReader: Reader = {
     );
     lists.flush();
     emitStories('footer');
+    await readObjects(ctx, parts, objects, mainRelationships, contentTypes);
   },
 };

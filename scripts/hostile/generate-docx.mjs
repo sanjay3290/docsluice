@@ -93,3 +93,61 @@ await writeFile(
     ),
   ),
 );
+
+// Word P1 (issue #70). Office Math nested 120 levels deep beside 8,000 fractions in one equation.
+const M = 'http://schemas.openxmlformats.org/officeDocument/2006/math';
+const deepMath = `${'<m:f><m:num>'.repeat(120)}<m:r><m:t>x</m:t></m:r>${'</m:num><m:den><m:r><m:t>y</m:t></m:r></m:den></m:f>'.repeat(120)}`;
+const wideMath = '<m:f><m:num><m:r><m:t>a+b</m:t></m:r></m:num><m:den><m:r><m:t>2</m:t></m:r></m:den></m:f>'.repeat(8_000);
+await writeFile(
+  new URL('math-deep-and-wide.docx', directory),
+  docx(
+    `<w:document xmlns:w="${W}" xmlns:m="${M}"><w:body><w:p><m:oMath>${deepMath}</m:oMath></w:p><w:p><m:oMath>${wideMath}</m:oMath></w:p><w:p><m:e><m:r><m:t>stray</m:t></m:r></m:e></w:p>${para('after')}</w:body></w:document>`,
+  ),
+);
+
+// 10,000 field begins that never end, 10,000 stray ends, and a character style chain of 5,000
+// basedOn links ending in a cycle. Text after each flood must survive.
+const fieldChar = (type) => `<w:r><w:fldChar w:fldCharType="${type}"/></w:r>`;
+const chain = Array.from(
+  { length: 5_000 },
+  (_, index) =>
+    `<w:style w:type="character" w:styleId="s${index}"><w:basedOn w:val="s${(index + 1) % 5_000}"/></w:style>`,
+).join('');
+await writeFile(
+  new URL('field-and-style-floods.docx', directory),
+  docx(
+    body(
+      `<w:p>${fieldChar('begin').repeat(10_000)}<w:r><w:t>code</w:t></w:r></w:p>${para('after begins')}` +
+        `<w:p>${fieldChar('end').repeat(10_000)}<w:r><w:t>after ends</w:t></w:r></w:p>` +
+        `<w:p><w:r><w:rPr><w:rStyle w:val="s0"/></w:rPr><w:t>styled</w:t></w:r></w:p>`,
+    ),
+    {
+      'word/styles.xml': `<w:styles xmlns:w="${W}">${chain}</w:styles>`,
+      'word/_rels/document.xml.rels': `<Relationships xmlns="${PKG}"><Relationship Id="s" Type="${R}/styles" Target="styles.xml"/></Relationships>`,
+    },
+  ),
+);
+
+// Embedded objects: a chain of DOCX packages each embedding the next (past childDepth), an object
+// pointing at the main part, prototype-named and missing relationship ids, and an external link.
+const objectRun = (id) =>
+  `<w:r><w:object><o:OLEObject xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="${R}" Type="Embed" r:id="${id}"/></w:object></w:r>`;
+let nested = docx(body(para('innermost')));
+for (let level = 0; level < 6; level++) {
+  nested = docx(body(`<w:p>${objectRun('next')}<w:r><w:t>level ${level}</w:t></w:r></w:p>`), {
+    'word/_rels/document.xml.rels': `<Relationships xmlns="${PKG}"><Relationship Id="next" Type="${R}/package" Target="embeddings/next.docx"/></Relationships>`,
+    'word/embeddings/next.docx': nested,
+  });
+}
+await writeFile(
+  new URL('object-oddities.docx', directory),
+  docx(
+    body(
+      `<w:p>${objectRun('next')}${objectRun('self')}${objectRun('__proto__')}${objectRun('missing')}${objectRun('remote')}<w:r><w:t>objects</w:t></w:r></w:p>`,
+    ),
+    {
+      'word/_rels/document.xml.rels': `<Relationships xmlns="${PKG}"><Relationship Id="next" Type="${R}/package" Target="embeddings/next.docx"/><Relationship Id="self" Type="${R}/oleObject" Target="document.xml"/><Relationship Id="__proto__" Type="${R}/oleObject" Target="../[Content_Types].xml"/><Relationship Id="remote" Type="${R}/oleObject" Target="https://example.invalid/x.bin" TargetMode="External"/></Relationships>`,
+      'word/embeddings/next.docx': nested,
+    },
+  ),
+);

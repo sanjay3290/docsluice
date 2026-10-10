@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-docx-p1.mjs
+Requirements: DOC-9
+Notes: w:vanish on runs, through a character style and its basedOn child, through a paragraph style, and turned off directly.
