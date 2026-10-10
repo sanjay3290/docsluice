@@ -40,6 +40,7 @@ jobs:
             odf,
             odt,
             rtf,
+            epub,
           ]
     steps:
       - uses: actions/checkout@v7

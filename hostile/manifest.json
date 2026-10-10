@@ -784,5 +784,65 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-7"
+  },
+  {
+    "file": "epub/path-escapes.epub",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-3"
+  },
+  {
+    "file": "epub/huge-spine.epub",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-2"
+  },
+  {
+    "file": "epub/deep-ncx.epub",
+    "expect": {
+      "warnings": [
+        "TRUNCATED"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "epub/chapter-bomb.epub",
+    "expect": {
+      "error": "LIMIT_EXCEEDED"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "epub/drm-encrypted.epub",
+    "expect": {
+      "error": "ENCRYPTED"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "MOD-5"
+  },
+  {
+    "file": "epub/container-escape.epub",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-3"
   }
 ]

@@ -134,7 +134,8 @@ function canonicalDate(value: string): string | undefined {
   if (text.length <= 10) return `${date}T00:00:00.000Z`;
   const hour = digitsAt(text, 11, 2);
   const minute = digitsAt(text, 14, 2);
-  if (text[10] !== 'T' || text[13] !== ':' || hour < 0 || hour > 23 || minute < 0 || minute > 59) return undefined;
+  if (text[10] !== 'T' || text[13] !== ':' || hour < 0 || hour > 23 || minute < 0 || minute > 59)
+    return undefined;
   let index = 16;
   let second = 0;
   if (text[index] === ':') {
@@ -165,8 +166,13 @@ function canonicalDate(value: string): string | undefined {
   return Number.isFinite(parsed) ? new Date(parsed).toISOString() : undefined;
 }
 
+/** Documents that already carry the warning: one warning per book, however many parts fail. */
+const warnedDocuments = new WeakSet<ReadContext['out']>();
+
 function addUnreadable(ctx: ReadContext): void {
-  ctx.warnings.add({ code: 'UNREADABLE_PART', message: 'An EPUB package part could not be read.' });
+  if (warnedDocuments.has(ctx.out)) return;
+  warnedDocuments.add(ctx.out);
+  ctx.warnings.add({ code: 'UNREADABLE_PART', message: 'Some EPUB package parts could not be read.' });
 }
 
 /** Font obfuscation (IDPF and Adobe) hides font files from copying; it is not encryption of content. */
@@ -419,7 +425,9 @@ export const epubReader: Reader = {
       .filter((item): item is ManifestItem => item !== undefined);
     if (
       linearChapters.length > 0 &&
-      linearChapters.every((item) => encryptedPaths.has(item.path) || byName.get(item.path)?.isEncrypted === true)
+      linearChapters.every(
+        (item) => encryptedPaths.has(item.path) || byName.get(item.path)?.isEncrypted === true,
+      )
     )
       throw new EncryptedError('unsupported-encryption');
 
@@ -468,4 +476,3 @@ export const epubReader: Reader = {
     }
   },
 };
-

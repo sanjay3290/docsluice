@@ -63,6 +63,9 @@
       ],
       "eml": [
         "dist/eml.d.ts"
+      ],
+      "epub": [
+        "dist/epub.d.ts"
       ]
     }
   },
@@ -134,6 +137,10 @@
     "./eml": {
       "import": "./dist/eml.js",
       "require": "./dist/eml.cjs"
+    },
+    "./epub": {
+      "import": "./dist/epub.js",
+      "require": "./dist/epub.cjs"
     },
     "./package.json": "./package.json"
   },

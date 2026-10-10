@@ -413,6 +413,16 @@
       "sha256": "534eea6a3d7a58e1cff933fdd5d58ebde875036f4e8ea52b221eea27e63c23da",
       "file": "corpus/rtf/hyperlinks-image.rtf",
       "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/gettysburg-address.fodt",
+      "requirements": [
+        "HTM-1"
+      ],
+      "sizeBytes": 3622,
+      "sha256": "c5e2d0323e68d506b283c50ae725d4435be87c541b9df17b62f47c3b7c4a21a8",
+      "file": "corpus/epub/gettysburg-address.epub",
+      "goldenStatus": "unreviewed"
     }
   ]
 }

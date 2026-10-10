@@ -373,4 +373,47 @@ describe('EPUB reader', () => {
     await fuzzEpub(new Uint8Array([0, 80, 75, 3, 4, 255]));
     await fuzzEpub(enc('PK\u0003\u0004 <container><rootfile full-path="../../bad.opf"/></container>'));
   });
+
+  it('reads only ISO 8601 OPF dates, in UTC, and rejects impossible ones', async () => {
+    const book = (date: string) =>
+      makeZip([
+        { name: 'META-INF/container.xml', data: enc('<container><rootfile full-path="b.opf"/></container>') },
+        {
+          name: 'b.opf',
+          data: enc(
+            `<package><metadata><dc:date xmlns:dc="d">${date}</dc:date></metadata><manifest><item id="c" href="c.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="c"/></spine></package>`,
+          ),
+        },
+        { name: 'c.xhtml', data: enc('<p>x</p>') },
+      ]);
+    const created = async (date: string) => (await parse(book(date))).doc.metadata.created;
+    expect(await created('1863')).toBe('1863-01-01T00:00:00.000Z');
+    expect(await created('1863-11')).toBe('1863-11-01T00:00:00.000Z');
+    expect(await created('1863-11-19')).toBe('1863-11-19T00:00:00.000Z');
+    expect(await created('2024-02-29T10:30')).toBe('2024-02-29T10:30:00.000Z');
+    expect(await created('2024-02-29T10:30:15.123456+02:00')).toBe('2024-02-29T08:30:15.123Z');
+    for (const bad of ['2023-02-29', '2024-13-01', 'November 19, 1863', '1863-11-19T25:00', '19/11/1863'])
+      expect(await created(bad)).toBeUndefined();
+  });
+
+  it('takes EPUB 3 chapter titles from the toc nav, not from landmarks', async () => {
+    const bytes = makeZip([
+      { name: 'META-INF/container.xml', data: enc('<container><rootfile full-path="b.opf"/></container>') },
+      {
+        name: 'b.opf',
+        data: enc(
+          '<package><manifest><item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/><item id="c" href="c.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="c"/></spine></package>',
+        ),
+      },
+      {
+        name: 'nav.xhtml',
+        data: enc(
+          '<html><body><nav epub:type="landmarks"><a href="c.xhtml">Begin Reading</a></nav><nav epub:type="toc"><a href="c.xhtml">Chapter One</a><a href="c.xhtml#s2">Section Two</a></nav></body></html>',
+        ),
+      },
+      { name: 'c.xhtml', data: enc('<p>Text.</p>') },
+    ]);
+    const { doc } = await parse(bytes);
+    expect(doc.blocks).toMatchObject([{ kind: 'section', role: 'part', title: 'Chapter One' }]);
+  });
 });

@@ -69,5 +69,10 @@
     "formats": ["pdf"],
     "requirements": ["PDF-5"],
     "pdfPassword": "docsluice-fixture-only"
+  },
+  {
+    "source": "src/gettysburg-address.fodt",
+    "formats": ["epub"],
+    "requirements": ["HTM-1"]
   }
 ]
