@@ -14,7 +14,39 @@ const ZIP64_EXTRA_ID = 0x0001;
 const EOCD_MIN_SIZE = 22;
 const MAX_EOCD_SEARCH = EOCD_MIN_SIZE + 0xffff;
 const SIZE_LIE_SLACK = 64 * 1024;
-const INFLATE_INPUT_CHUNK = 63;
+/** DEFLATE expands at most about 1032:1, so this many input bytes yield at most 64 KiB of output. */
+const INFLATE_MIN_SLICE = 63;
+/** Largest input slice; it is only reached when every bound below allows it. */
+const INFLATE_MAX_SLICE = 4096;
+const DEFLATE_MAX_RATIO = 1032;
+
+/**
+ * Compressed bytes to push next. Each push copies the inflater's 32 KiB window, so a fixed 63-byte
+ * slice makes large entries slow. A slice may grow only while its worst-case output keeps the
+ * entry within 64 KiB of every bound: the declared size, the compression ratio checked after the
+ * push, and the shared uncompressed-byte budget. Near any bound it is 63 bytes, as before.
+ */
+function inflateSlice(
+  budget: Budget,
+  declaredSize: number,
+  compressedFed: number,
+  outputSize: number,
+): number {
+  const { compressionRatio, totalUncompressedBytes } = budget.limits;
+  let room = (declaredSize + SIZE_LIE_SLACK - outputSize) / DEFLATE_MAX_RATIO;
+  room = Math.min(
+    room,
+    (totalUncompressedBytes - budget.totalUncompressedBytes + SIZE_LIE_SLACK) / DEFLATE_MAX_RATIO,
+  );
+  if (compressionRatio < DEFLATE_MAX_RATIO) {
+    room = Math.min(
+      room,
+      (compressionRatio * compressedFed + SIZE_LIE_SLACK - outputSize) /
+        (DEFLATE_MAX_RATIO - compressionRatio),
+    );
+  }
+  return Math.min(INFLATE_MAX_SLICE, Math.max(INFLATE_MIN_SLICE, Math.floor(room)));
+}
 
 /** A file listed in the central directory. Names are display-safe plain strings. */
 export interface ZipEntry {
@@ -212,11 +244,15 @@ function makeArchive(
           if (compressed.length === 0) {
             badStream = true;
           } else {
-            for (let offset = 0; offset < compressed.length && !stopped; offset += INFLATE_INPUT_CHUNK) {
+            for (let offset = 0; offset < compressed.length && !stopped;) {
               budget.tick();
-              const end = Math.min(offset + INFLATE_INPUT_CHUNK, compressed.length);
+              const end = Math.min(
+                offset + inflateSlice(budget, data.uncompressedSize, compressedFed, outputSize),
+                compressed.length,
+              );
               compressedFed = end;
               inflater.push(compressed.subarray(offset, end), end === compressed.length);
+              offset = end;
             }
           }
         }
