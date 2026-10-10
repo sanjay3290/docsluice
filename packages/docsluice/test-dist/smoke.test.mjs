@@ -3,6 +3,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import process from 'node:process';
+import { TextEncoder } from 'node:util';
 
 const require = createRequire(import.meta.url);
 const renderDoc = {
@@ -166,4 +168,32 @@ test('EPUB reader subpath loads lazily', async () => {
 test('chunk is exported from the main entry', async () => {
   const docsluice = await import('docsluice');
   assert.equal(typeof docsluice.chunk, 'function');
+});
+
+/** A heap-size flag in the shell overrides worker resourceLimits; the pool then refuses to run. */
+const heapFlagSet = [...process.execArgv, process.env.NODE_OPTIONS ?? ''].some((argument) =>
+  /--max[-_]old[-_]space[-_]size/.test(argument),
+);
+
+async function checkWorker(mod) {
+  const extractor = mod.createExtractor({ poolSize: 2, timeMs: 30_000 });
+  try {
+    const result = extractor.extract(new TextEncoder().encode('hello from a worker'));
+    if (heapFlagSet) await assert.rejects(result, mod.WorkerIsolationError);
+    else {
+      const document = await result;
+      assert.equal(document.format, 'txt');
+      assert.equal(document.blocks[0].text, 'hello from a worker');
+    }
+  } finally {
+    await extractor.close();
+  }
+}
+
+test('worker subpath extracts in an isolated thread (ESM)', async () => {
+  await checkWorker(await import('docsluice/worker'));
+});
+
+test('worker subpath extracts in an isolated thread (CommonJS)', async () => {
+  await checkWorker(require('docsluice/worker'));
 });

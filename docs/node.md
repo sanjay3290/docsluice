@@ -16,3 +16,5 @@ const fromStream = await extract(fs.createReadStream('notes.md'), { filename: 'n
 ## Node `Readable` and `Buffer` input
 
 The Node `extract` also accepts a Node `Readable` and a `Buffer`. A `Readable` is converted with `Readable.toWeb`, and each chunk is copied into a plain `Uint8Array`, so no `Buffer` reaches the core. The core stream reader enforces `inputBytes` and observes `options.signal`. On overflow, abort, a non-byte (object-mode) chunk, or a setup error, the adapter cancels the web stream and destroys the `Readable`. Every other input passes to the core `extract` unchanged.
+
+For extraction in an isolated worker thread with heap and time limits, see [worker.md](worker.md) (`docsluice/worker`, SEC-13).
