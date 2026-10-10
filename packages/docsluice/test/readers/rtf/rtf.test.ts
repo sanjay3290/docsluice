@@ -6,7 +6,7 @@ import { resolveLimits } from '../../../src/core/limits.js';
 import type { ReadContext } from '../../../src/core/reader.js';
 import type { ResolvedOptions } from '../../../src/core/options.js';
 import { WarningSink } from '../../../src/core/warnings.js';
-import reader, { deencapsulateRtfHtml } from '../../../src/readers/rtf/index.js';
+import { deencapsulateRtfHtml, rtfReader as reader } from '../../../src/readers/rtf/index.js';
 import { fuzzRtf } from '../../../fuzz/rtf.fuzz.js';
 
 async function parse(
@@ -33,30 +33,24 @@ async function parse(
   return { doc: out.finish(), warnings: warnings.warnings, budget };
 }
 
-function expectBlockDepthAvailable(budget: Budget, maximum: number): void {
+function expectXmlDepthAvailable(budget: Budget, maximum: number): void {
   let attempts = 0;
   try {
     for (; attempts < maximum;) {
       attempts += 1;
-      expect(budget.enterDepth('block')).toBe(true);
+      expect(budget.enterDepth('xml')).toBe(true);
     }
   } finally {
     while (attempts > 0) {
-      budget.exitDepth('block');
+      budget.exitDepth('xml');
       attempts -= 1;
     }
   }
 }
 
 describe('RTF reader', () => {
-  it('detects only the RTF document signature', () => {
-    const detect = reader.detect?.bind(reader);
-    expect(detect).toBeDefined();
-    if (!detect) throw new Error('RTF reader has no detector');
-    expect(detect(new TextEncoder().encode(String.raw`{\rtf1 text}`))).toBe(1);
-    expect(detect(new TextEncoder().encode(String.raw`{\RTF1 text}`))).toBe(0);
-    expect(detect(new Uint8Array([123, 92, 114, 116]))).toBe(0);
-    expect(reader.mimeTypes).toEqual(['application/rtf']);
+  it('registers the RTF media types', () => {
+    expect(reader.mimeTypes).toEqual(['application/rtf', 'text/rtf']);
   });
 
   it('reads the authored corpus fixtures for Unicode, lists, tables, and damaged binary data', async () => {
@@ -129,7 +123,7 @@ describe('RTF reader', () => {
     bytes.set(suffix, prefix.length + 4);
     const binaryBudget = new Budget(resolveLimits(), { warnings: new WarningSink() });
     expect(deencapsulateRtfHtml(bytes, binaryBudget)).toBe('<p>ab</p>');
-    expectBlockDepthAvailable(binaryBudget, binaryBudget.limits.blockDepth);
+    expectXmlDepthAvailable(binaryBudget, binaryBudget.limits.blockDepth);
   });
 
   it('returns no HTML when its shared output budget is exhausted and balances depth', () => {
@@ -140,7 +134,7 @@ describe('RTF reader', () => {
         budget,
       ),
     ).toBeUndefined();
-    expectBlockDepthAvailable(budget, budget.limits.blockDepth);
+    expectXmlDepthAvailable(budget, budget.limits.xmlDepth);
   });
 
   it('recognizes HTML in the initial token window, tracks helper font code pages and cleans up depth limits', () => {
@@ -169,7 +163,7 @@ describe('RTF reader', () => {
         limitedBudget,
       ),
     ).toBeUndefined();
-    expectBlockDepthAvailable(limitedBudget, limitedBudget.limits.blockDepth);
+    expectXmlDepthAvailable(limitedBudget, limitedBudget.limits.blockDepth);
     const invalidHeaderBudget = new Budget(resolveLimits(), { warnings: new WarningSink() });
     expect(deencapsulateRtfHtml(new TextEncoder().encode('not RTF'), invalidHeaderBudget)).toBeUndefined();
   });
@@ -229,26 +223,30 @@ describe('RTF reader', () => {
     const { doc } = await parse(
       String.raw`{\rtf1{\colortbl;\red0\green0\blue0;}{\stylesheet{\s0 Normal;}}{\header Header text}{\footer Footer text}Body\par{\pict\pngblip\bin4 data}After}`,
     );
+    // Footers follow the body, as in the DOCX and ODT readers; the picture follows its paragraph.
     expect(doc.blocks.map(({ kind }) => kind)).toEqual([
       'header',
-      'footer',
+      'paragraph',
       'paragraph',
       'image',
-      'paragraph',
+      'footer',
     ]);
     expect(doc.blocks[0]).toMatchObject({ kind: 'header', text: 'Header text' });
-    expect(doc.blocks[1]).toMatchObject({ kind: 'footer', text: 'Footer text' });
-    expect(doc.blocks[3]).toMatchObject({ kind: 'image', mimeType: 'image/unknown' });
+    expect(doc.blocks[3]).toMatchObject({ kind: 'image', mimeType: 'image/png', ref: 'image1.png' });
+    expect(doc.blocks[4]).toMatchObject({ kind: 'footer', text: 'Footer text' });
+    expect(doc.children).toMatchObject([
+      { name: 'image1.png', status: 'listed', sizeBytes: 4, mimeType: 'image/png' },
+    ]);
   });
 
   it('supports style headings, escaped characters, and malformed hex safely', async () => {
     const { doc, warnings } = await parse(
-      String.raw`{\rtf1\s1 One\par\s6 Six\par\outlinelevel-4 Clamp\par\pard Escaped \{brace\} \\slash\~space\_join\-opt \'xz\par}`,
+      String.raw`{\rtf1{\stylesheet{\s1 heading 1;}{\s6\snext0 Heading 6;}{\s7 Custom;}}\s1 One\par\s6 Six\par\s7\outlinelevel1 Clamp\par\pard Escaped \{brace\} \\slash\~space\_join\-opt \'xz\par}`,
     );
     expect(doc.blocks.slice(0, 3)).toMatchObject([
       { kind: 'heading', level: 1, text: 'One' },
       { kind: 'heading', level: 6, text: 'Six' },
-      { kind: 'heading', level: 1, text: 'Clamp' },
+      { kind: 'heading', level: 2, text: 'Clamp' },
     ]);
     expect(doc.blocks[3]).toMatchObject({
       kind: 'paragraph',
@@ -295,7 +293,7 @@ describe('RTF reader', () => {
     );
     expect(doc.blocks[0]).toMatchObject({
       kind: 'table',
-      rows: [[{ text: 'Merged', colSpan: 2 }]],
+      rows: [[{ text: 'Merged', colSpan: 2 }, { text: '' }]],
     });
   });
 
@@ -305,7 +303,10 @@ describe('RTF reader', () => {
     );
     expect(doc.blocks[0]).toMatchObject({
       kind: 'table',
-      rows: [[{ text: 'Vertical', rowSpan: 2 }, { text: 'A' }], [{ text: 'B' }]],
+      rows: [
+        [{ text: 'Vertical', rowSpan: 2 }, { text: 'A' }],
+        [{ text: '' }, { text: 'B' }],
+      ],
     });
   });
 
@@ -361,13 +362,13 @@ describe('RTF reader', () => {
 
   it('bounds deeply nested groups and safely returns text before an unterminated group', async () => {
     const deep = `{\\rtf1 before ${'{'.repeat(100_000)}too deep${'}'.repeat(100_000)} after`;
-    const nested = await parse(deep, { blockDepth: 12 });
+    const nested = await parse(deep, { xmlDepth: 12 });
     expect(JSON.stringify(nested.doc)).toContain('before');
-    expect(nested.warnings.map(({ code }) => code)).toContain('DEPTH_LIMIT');
+    expect(nested.warnings.map(({ code }) => code)).toContain('TRUNCATED');
     const malformed = await parse('{\\rtf1 readable\\par {\\b unfinished');
     expect(malformed.doc.blocks[0]).toMatchObject({ kind: 'paragraph', text: 'readable' });
     expect(malformed.warnings.map(({ code }) => code)).toContain('UNREADABLE_PART');
-    expectBlockDepthAvailable(malformed.budget, malformed.budget.limits.blockDepth);
+    expectXmlDepthAvailable(malformed.budget, malformed.budget.limits.xmlDepth);
   });
 
   it('skips control words, escaped braces and binary payloads inside an over-depth group', async () => {
@@ -377,11 +378,11 @@ describe('RTF reader', () => {
     bytes.set(prefix);
     bytes.set([123, 125, 92, 123], prefix.length);
     bytes.set(suffix, prefix.length + 4);
-    const { doc, warnings, budget } = await parse(bytes, { blockDepth: 2 });
+    const { doc, warnings, budget } = await parse(bytes, { xmlDepth: 2 });
     expect(doc.blocks[0]).toMatchObject({ kind: 'paragraph', text: 'keep' });
-    expect(warnings.map(({ code }) => code)).toContain('DEPTH_LIMIT');
+    expect(warnings.map(({ code }) => code)).toContain('TRUNCATED');
     expect(warnings.map(({ code }) => code)).not.toContain('UNREADABLE_PART');
-    expectBlockDepthAvailable(budget, budget.limits.blockDepth);
+    expectXmlDepthAvailable(budget, budget.limits.xmlDepth);
   });
 
   it('stops when the shared output budget is exhausted without exposing source text', async () => {
@@ -404,7 +405,7 @@ describe('RTF reader', () => {
 
   it('balances attempted depth entries when the depth limit throws', async () => {
     const warnings = new WarningSink();
-    const budget = new Budget(resolveLimits({ blockDepth: 2 }), { warnings, onLimit: 'throw' });
+    const budget = new Budget(resolveLimits({ xmlDepth: 2 }), { warnings, onLimit: 'throw' });
     const options = { limits: budget.limits, runs: false } as ResolvedOptions;
     const out = new DocBuilder('rtf', 'application/rtf', budget, options);
     const ctx = {
@@ -417,13 +418,13 @@ describe('RTF reader', () => {
       extractChild: async () => {},
     } as ReadContext;
     await expect((async () => reader.read(ctx))()).rejects.toMatchObject({ code: 'LIMIT_EXCEEDED' });
-    expectBlockDepthAvailable(budget, budget.limits.blockDepth);
+    expectXmlDepthAvailable(budget, budget.limits.xmlDepth);
   });
 
   it('balances group depth when output truncation stops parsing inside nested groups', async () => {
     const truncated = await parse(String.raw`{\rtf1{first\par second}}`, { outputChars: 2 });
     expect(truncated.doc.stats.truncated).toBe(true);
-    expectBlockDepthAvailable(truncated.budget, truncated.budget.limits.blockDepth);
+    expectXmlDepthAvailable(truncated.budget, truncated.budget.limits.xmlDepth);
   });
 
   it('balances group depth when abort occurs after a block is emitted', async () => {
@@ -454,11 +455,120 @@ describe('RTF reader', () => {
       extractChild: async () => {},
     } as ReadContext;
     await expect((async () => reader.read(ctx))()).rejects.toMatchObject({ code: 'ABORTED' });
-    expectBlockDepthAvailable(budget, budget.limits.blockDepth);
+    expectXmlDepthAvailable(budget, budget.limits.xmlDepth);
   });
 
   it('runs the bounded fuzz entry point on arbitrary and malformed bytes', async () => {
     await fuzzRtf(new Uint8Array([0, 123, 92, 114, 116, 102, 49, 125, 255]));
     await fuzzRtf(new TextEncoder().encode(String.raw`{\rtf1{\bin999999999 x}}`));
+  });
+
+  it('emits footnotes, endnotes and comments after the paragraph that anchors them', async () => {
+    const { doc } = await parse(
+      String.raw`{\rtf1 Lead\par Inspect{\*\atnid x}{\*\atnauthor Casey}\chatn{\*\annotation{\*\atndate 1}Check it.}\par Safety{\super\chftn{\*\footnote\chftn\pard\plain\tab Gauge note.}}\par End{\super\chftn{\*\footnote\ftnalt\chftn Closing note.}}\par}`,
+    );
+    expect(doc.blocks.map((block) => [block.kind, 'text' in block ? block.text : ''])).toEqual([
+      ['paragraph', 'Lead'],
+      ['paragraph', 'Inspect'],
+      ['note', 'Check it.'],
+      ['paragraph', 'Safety'],
+      ['note', 'Gauge note.'],
+      ['paragraph', 'End'],
+      ['note', 'Closing note.'],
+    ]);
+    expect(doc.blocks.filter((block) => block.kind === 'note')).toMatchObject([
+      { role: 'comment', author: 'Casey' },
+      { role: 'footnote' },
+      { role: 'endnote' },
+    ]);
+  });
+
+  it('applies tracked insertions and deletions in each revisions mode and hides \v text', async () => {
+    const source = String.raw`{\rtf1 Keep{\revised  added}{\deleted  removed}{\v  hidden}.\par}`;
+    const read = async (revisions: 'accept' | 'reject' | 'show', includeHidden = false) => {
+      const warnings = new WarningSink();
+      const budget = new Budget(resolveLimits({}), { warnings });
+      const options = { limits: budget.limits, runs: false, revisions, includeHidden } as ResolvedOptions;
+      const out = new DocBuilder('rtf', 'application/rtf', budget, options);
+      const ctx = {
+        bytes: new TextEncoder().encode(source),
+        options,
+        budget,
+        warnings,
+        out,
+        path: '',
+        extractChild: async () => {},
+      } as ReadContext;
+      await reader.read(ctx);
+      return { doc: out.finish(), codes: warnings.warnings.map(({ code }) => code) };
+    };
+    expect((await read('accept')).doc.blocks[0]).toMatchObject({ text: 'Keep added.' });
+    expect((await read('reject')).doc.blocks[0]).toMatchObject({ text: 'Keep removed.' });
+    expect((await read('show')).doc.blocks[0]).toMatchObject({ text: 'Keep[+ added+][- removed-].' });
+    expect((await read('accept', true)).doc.blocks[0]).toMatchObject({ text: 'Keep added hidden.' });
+    expect((await read('accept')).codes).toEqual(['HIDDEN_CONTENT', 'HIDDEN_CONTENT']);
+  });
+
+  it('builds the table grid from cell boundaries and folds nested tables into their cell', async () => {
+    const { doc } = await parse(
+      String.raw`{\rtf1 Before\par\trowd\cellx2000\cellx3000\pard\intbl Wide\cell\pard\intbl Right\cell\row\trowd\cellx1000\cellx2000\cellx3000\pard\intbl Outer\par\pard\intbl\itap2 Inner A\nestcell Inner B\nestcell{\*\nesttableprops\trowd\cellx500\cellx1000\nestrow}{\nonesttables\par}\cell\pard\intbl Mid\cell\pard\intbl End\cell\row\pard After\par}`,
+    );
+    expect(doc.blocks).toMatchObject([
+      { kind: 'paragraph', text: 'Before' },
+      {
+        kind: 'table',
+        rows: [
+          [{ text: 'Wide', colSpan: 2 }, { text: '' }, { text: 'Right' }],
+          [{ text: 'Outer\nInner A\nInner B' }, { text: 'Mid' }, { text: 'End' }],
+        ],
+      },
+      { kind: 'table', rows: [[{ text: 'Inner A' }, { text: 'Inner B' }]] },
+      { kind: 'paragraph', text: 'After' },
+    ]);
+  });
+
+  it('takes list markers from listtext, maps symbol-font bullets and keeps lists before following tables', async () => {
+    const { doc } = await parse(
+      // The \u escape is spelled as a plain string: Vitest's transform cooks \u inside String.raw.
+      String.raw`{\rtf1{\listtext\pard\plain 1.\tab}\ls1\ilvl0 One\par{\listtext\pard\plain a)\tab}\ls1\ilvl1 Sub\par\pard{\listtext ` +
+        '\\u61623?' +
+        String.raw`\tab}\ls2 Dot\par\trowd\cellx1000\pard\intbl Cell\cell\row\pard Tail\par}`,
+    );
+    expect(doc.blocks).toMatchObject([
+      {
+        kind: 'list',
+        ordered: true,
+        items: [{ text: 'One', marker: '1.', items: [{ text: 'Sub', marker: 'a)' }] }],
+      },
+      { kind: 'list', ordered: false, items: [{ text: 'Dot', marker: '•' }] },
+      { kind: 'table', rows: [[{ text: 'Cell' }]] },
+      { kind: 'paragraph', text: 'Tail' },
+    ]);
+  });
+
+  it('reads field results and Unicode copies, and skips duplicate picture and object data', async () => {
+    const { doc } = await parse(
+      String.raw`{\rtf1{\field{\*\fldinst HYPERLINK "https://example.invalid"}{\fldrslt Link}} and {\upr{ANSI}{\*\ud{Wide}}} {\object\objemb{\*\objdata 01ff}{\result Shown}}{\*\shppict{\pict\jpegblip ffd8}}{\nonshppict{\pict\wmetafile8 0102}}\par}`,
+    );
+    expect(doc.blocks).toMatchObject([
+      { kind: 'paragraph', text: 'Link and Wide Shown' },
+      { kind: 'image', mimeType: 'image/jpeg', ref: 'image1.jpg' },
+    ]);
+    expect(doc.children).toHaveLength(1);
+    expect(doc.features.hasEmbeddedFiles).toBe(true);
+  });
+
+  it('never lists a picture whose binary data runs past the end, and ignores out-of-range Unicode values', async () => {
+    const { doc, warnings } = await parse(
+      '{\\rtf1 start {\\*\\shppict{\\pict\\pngblip\\bin4294967295 ABCD}}}',
+    );
+    expect(doc.children).toEqual([]);
+    expect(doc.blocks).toMatchObject([
+      { kind: 'paragraph', text: 'start' },
+      { kind: 'image', mimeType: 'image/png' },
+    ]);
+    expect(warnings.map(({ code }) => code)).toContain('UNREADABLE_PART');
+    const unicode = await parse('{\\rtf1 a\\u-99999 b\\u65536 c\\u-3 d\\par}');
+    expect(unicode.doc.blocks[0]).toMatchObject({ text: 'abc\uFFFD' });
   });
 });

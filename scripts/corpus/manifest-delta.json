@@ -369,6 +369,50 @@
       "sha256": "1e14ffbd6434f3775d4386bddab5c908e7a2eb351f8c55279f02d843d82ccb63",
       "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pdf/encrypted-document.pdf",
       "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/headings-outline.fodt",
+      "requirements": [
+        "DOC-2",
+        "DOC-7"
+      ],
+      "sizeBytes": 11320,
+      "sha256": "edf82ad0134fb55b12ce58e8cd3d8e1442596f044d43946e0e4c23375cacc7cb",
+      "file": "corpus/rtf/headings-outline.rtf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/lists-tables.fodt",
+      "requirements": [
+        "DOC-3",
+        "DOC-4"
+      ],
+      "sizeBytes": 8575,
+      "sha256": "30d06dfd1e31444cacf7711689e60f458eda183088a86e002f3045e904818646",
+      "file": "corpus/rtf/lists-tables.rtf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/notes-comments-revisions.fodt",
+      "requirements": [
+        "DOC-5",
+        "DOC-6"
+      ],
+      "sizeBytes": 5496,
+      "sha256": "df672f4a82a6ac8475726d22ba5e2b283c7b046bf8f4c36c34276f4b0155ff19",
+      "file": "corpus/rtf/notes-comments-revisions.rtf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/hyperlinks-image.fodt",
+      "requirements": [
+        "DOC-7",
+        "DOC-8"
+      ],
+      "sizeBytes": 4421,
+      "sha256": "534eea6a3d7a58e1cff933fdd5d58ebde875036f4e8ea52b221eea27e63c23da",
+      "file": "corpus/rtf/hyperlinks-image.rtf",
+      "goldenStatus": "unreviewed"
     }
   ]
 }

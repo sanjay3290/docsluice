@@ -1,22 +1,22 @@
 [
   {
     "source": "src/headings-outline.fodt",
-    "formats": ["docx", "odt", "pdf"],
+    "formats": ["docx", "odt", "rtf", "pdf"],
     "requirements": ["DOC-2", "DOC-7"]
   },
   {
     "source": "src/lists-tables.fodt",
-    "formats": ["docx", "odt", "pdf"],
+    "formats": ["docx", "odt", "rtf", "pdf"],
     "requirements": ["DOC-3", "DOC-4"]
   },
   {
     "source": "src/notes-comments-revisions.fodt",
-    "formats": ["docx", "odt", "pdf"],
+    "formats": ["docx", "odt", "rtf", "pdf"],
     "requirements": ["DOC-5", "DOC-6"]
   },
   {
     "source": "src/hyperlinks-image.fodt",
-    "formats": ["docx", "odt", "pdf"],
+    "formats": ["docx", "odt", "rtf", "pdf"],
     "requirements": ["DOC-7", "DOC-8"]
   },
   {

@@ -13,6 +13,7 @@ const conversions = new Map([
     new Map([
       ['docx', 'docx:Office Open XML Text'],
       ['odt', 'odt:writer8'],
+      ['rtf', 'rtf:Rich Text Format'],
       ['pdf', 'pdf:writer_pdf_Export'],
     ]),
   ],
@@ -114,7 +115,9 @@ function assertSignature(bytes, format) {
   const valid =
     format === 'pdf'
       ? bytes.subarray(0, 5).equals(Buffer.from('%PDF-'))
-      : bytes.subarray(0, 4).equals(Buffer.from([0x50, 0x4b, 0x03, 0x04]));
+      : format === 'rtf'
+        ? bytes.subarray(0, 5).equals(Buffer.from('{\\rtf'))
+        : bytes.subarray(0, 4).equals(Buffer.from([0x50, 0x4b, 0x03, 0x04]));
   if (!valid) throw new Error('Invalid ' + format + ' output signature');
 }
 
