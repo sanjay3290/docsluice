@@ -62,7 +62,11 @@ export interface ExtractOptions {
    * Thunderbird). Default `'keep'`. Attachments, forwarded messages and other formats are not changed.
    */
   quotedReplies?: 'keep' | 'drop';
-  /** Password for encrypted files (PDF-5). */
+  /**
+   * Password for encrypted files: password-protected DOCX, XLSX and PPTX ([MS-OFFCRYPTO] Agile and
+   * Standard encryption, decrypted with Web Crypto) and PDF (PDF-5). Without it, such files fail with
+   * `EncryptedError` (`password-required`); a wrong one gives `wrong-password`.
+   */
   password?: string;
 
   /** Runs on every block before any renderer (EXT-3). Return null to drop the block. */

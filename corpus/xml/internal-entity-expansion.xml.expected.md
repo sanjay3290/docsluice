@@ -1,1 +1,1 @@
-&lt;!DOCTYPE lolz [&lt;!ENTITY a "ha"&gt;&lt;!ENTITY b "&a;&a;&a;&a;"&gt;]>&lt;root&gt;&b;&lt;/root&gt;
+&b;

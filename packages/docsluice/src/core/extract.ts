@@ -245,18 +245,20 @@ async function runExtraction(
     }
 
     async function readDocument(job: Job): Promise<DocsluiceDocument> {
-      const { bytes, budget: activeBudget, options: activeOptions, path } = job;
+      const { bytes: input, budget: activeBudget, options: activeOptions, path } = job;
       activeBudget.tick();
       const readerWarnings = job.warnings;
       setBudgetWarnings(activeBudget, readerWarnings);
       const activeRegistry = activeOptions.registry ?? registry;
       const resolution = resolvePlugin(
         activeRegistry,
-        bytes,
+        input,
         activeOptions,
-        await resolveFormat(bytes, activeOptions, activeBudget),
+        await resolveFormat(input, activeOptions, activeBudget),
         activeBudget,
       );
+      // An encrypted OOXML package opened with `password` is read as its decrypted ZIP (#90).
+      const bytes = resolution.bytes ?? input;
       const out = new DocBuilder(
         resolution.result.format,
         resolution.result.mimeType,
@@ -265,6 +267,7 @@ async function runExtraction(
         path === '' && job.ancestors.length === 0 ? stream?.drain.bind(stream) : undefined,
       );
       if (resolution.result.encoding) out.setEncoding(resolution.result.encoding);
+      if (resolution.encrypted) out.setFeature('isEncrypted');
       const children: Array<Promise<void>> = [];
       let ancestorHash: number | undefined;
 

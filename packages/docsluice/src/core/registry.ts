@@ -130,6 +130,7 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     ['json', () => import('../readers/json/index.js').then((module) => module.jsonReader)],
     ['yaml', () => import('../readers/yaml/index.js').then((module) => module.yamlReader)],
     ['ndjson', () => import('../readers/ndjson/index.js').then((module) => module.ndjsonReader)],
+    ['latex', () => import('../readers/latex/index.js').then((module) => module.latexReader)],
     ['ics', () => import('../readers/ics/index.js').then((module) => module.icsReader)],
     ['vcf', () => import('../readers/vcf/index.js').then((module) => module.vcfReader)],
     ['srt', () => import('../readers/srt/index.js').then((module) => module.srtReader)],

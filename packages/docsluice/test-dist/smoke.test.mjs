@@ -144,6 +144,8 @@ test('JSON and XML reader subpaths load lazily', async () => {
   assert.equal(yaml.yamlReader.id, 'yaml');
   const ndjson = await import('docsluice/ndjson');
   assert.equal(ndjson.ndjsonReader.id, 'ndjson');
+  const latex = await import('docsluice/latex');
+  assert.equal(latex.latexReader.id, 'latex');
   const media = await import('docsluice/media');
   assert.equal(media.audioReader.id, 'audio');
   assert.equal(media.videoReader.id, 'video');
