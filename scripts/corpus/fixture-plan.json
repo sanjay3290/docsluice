@@ -21,22 +21,22 @@
   },
   {
     "source": "src/workbook-values-formulas.fods",
-    "formats": ["xlsx", "ods"],
+    "formats": ["xlsx", "xls", "ods"],
     "requirements": ["XLS-2", "XLS-3", "XLS-4"]
   },
   {
     "source": "src/workbook-hidden-sparse.fods",
-    "formats": ["xlsx", "ods"],
+    "formats": ["xlsx", "xls", "ods"],
     "requirements": ["XLS-1", "XLS-5"]
   },
   {
     "source": "src/workbook-merged-richstrings.fods",
-    "formats": ["xlsx", "ods"],
+    "formats": ["xlsx", "xls", "ods"],
     "requirements": ["XLS-2", "XLS-5"]
   },
   {
     "source": "src/workbook-1904-note.fods",
-    "formats": ["xlsx", "ods"],
+    "formats": ["xlsx", "xls", "ods"],
     "requirements": ["XLS-3"]
   },
   {

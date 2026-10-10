@@ -10,7 +10,7 @@ import {
 import type { OoxmlRelationship } from '../../ooxml/index.js';
 import { openZip } from '../../zip/index.js';
 import type { XmlContext } from '../../xml/index.js';
-import { rangeName, regionRows, sheetRegions } from './layout.js';
+import { emitSheetTables } from './emit.js';
 import { parseSharedStrings } from './shared-strings.js';
 import type { XlsxSharedStrings } from './shared-strings.js';
 import { parseWorksheet } from './sheet.js';
@@ -187,43 +187,7 @@ export const xlsxReader: Reader = {
           });
         },
       });
-      let gridRows = 0;
-      let gridCells = 0;
-      let keptRows = 0;
-      let keptCells = 0;
-      let open = true;
-      for (const region of sheetRegions(sheet, ctx.budget)) {
-        ctx.budget.tick();
-        const height = region.range.bottom - region.range.top + 1;
-        gridRows += height;
-        gridCells += height * (region.range.right - region.range.left + 1);
-        if (!open) continue;
-        const table = regionRows(sheet, region, ctx.budget);
-        keptRows += table.rows.length;
-        keptCells += table.cells;
-        if (table.rows.length < height) open = false;
-        const tableLoc: Location = {};
-        if (loc.sheet !== undefined) tableLoc.sheet = loc.sheet;
-        tableLoc.range = rangeName(region.range);
-        if (table.rows.length > 0 && !ctx.out.table(table.rows, 0, tableLoc)) open = false;
-      }
-      if (sheet.missingCachedValues > 0) {
-        ctx.warnings.add({
-          code: 'UNREADABLE_PART',
-          message: `Sheet ${index + 1}: ${sheet.missingCachedValues} formula cells have no cached value and are empty; formulas are never calculated.`,
-          loc: { path },
-        });
-      }
-      if (sheet.skippedCells > 0) ctx.budget.addCells(sheet.skippedCells);
-      const skippedRows = gridRows - keptRows + sheet.skippedRows;
-      const skippedCells = gridCells - keptCells + sheet.skippedCells;
-      if (skippedCells > 0) {
-        ctx.warnings.add({
-          code: 'TRUNCATED',
-          message: `Sheet ${index + 1}: kept ${keptRows} rows and ${keptCells} cells; skipped ${skippedRows} rows and ${skippedCells} cells.`,
-          loc: { path },
-        });
-      }
+      emitSheetTables(ctx, sheet, index, loc.sheet, path);
       if (!ctx.out.closeSection()) break;
     }
   },

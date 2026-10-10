@@ -844,5 +844,67 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-3"
+  },
+  {
+    "file": "xls/sst-count-lie.xls",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "xls/continue-abuse.xls",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "xls/record-length-lies.xls",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "xls/sheet-offset-abuse.xls",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "xls/filepass.xls",
+    "expect": {
+      "error": "ENCRYPTED"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "MOD-5"
+  },
+  {
+    "file": "xls/biff5.xls",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "R2"
   }
 ]

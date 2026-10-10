@@ -164,6 +164,11 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     load: () => import('../readers/xlsx/index.js').then((module) => module.xlsxReader),
   });
   registry.add({
+    id: 'xls',
+    mimeTypes: ['application/vnd.ms-excel'],
+    load: () => import('../readers/xls/index.js').then((module) => module.xlsReader),
+  });
+  registry.add({
     id: 'pptx',
     mimeTypes: ['application/vnd.openxmlformats-officedocument.presentationml.presentation'],
     load: () => import('../readers/pptx/index.js').then((module) => module.pptxReader),

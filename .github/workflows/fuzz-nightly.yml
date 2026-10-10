@@ -41,6 +41,7 @@ jobs:
             odt,
             rtf,
             epub,
+            xls,
           ]
     steps:
       - uses: actions/checkout@v7
