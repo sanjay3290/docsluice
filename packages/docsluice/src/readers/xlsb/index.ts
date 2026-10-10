@@ -4,9 +4,17 @@ import { OoxmlParts, readProperties, readRelationships, scanFeatures } from '../
 import type { OoxmlRelationship } from '../../ooxml/index.js';
 import { openZip } from '../../zip/index.js';
 import type { XmlContext } from '../../xml/index.js';
-import { emitSheetTables } from '../xlsx/emit.js';
+import { emitSheetNotes, emitSheetTables } from '../xlsx/emit.js';
+import type { SheetNote, XlsxNamedRange } from '../xlsx/emit.js';
 import { GENERAL_STYLES } from '../xlsx/styles.js';
-import { parseXlsbSheet, parseXlsbStrings, parseXlsbStyles, parseXlsbWorkbook } from './parse.js';
+import {
+  parseXlsbComments,
+  parseXlsbSheet,
+  parseXlsbStrings,
+  parseXlsbStyles,
+  parseXlsbTable,
+  parseXlsbWorkbook,
+} from './parse.js';
 import type { XlsbStrings } from './parse.js';
 
 const XLSB_MIME = 'application/vnd.ms-excel.sheet.binary.macroEnabled.12';
@@ -112,7 +120,34 @@ export const xlsbReader: Reader = {
       });
       if (result.damaged) damaged = true;
       if (result.badSharedString) badSharedString = true;
-      emitSheetTables(ctx, result.sheet, index, loc.sheet, path);
+      // Table parts and comments hang off the sheet part's relationships (XLS-9).
+      const named: XlsxNamedRange[] = [];
+      const notes: SheetNote[] = [];
+      const sheetRelationships = await readRelationships(parts, part!, mainContext);
+      for (const extra of sheetRelationships.values()) {
+        ctx.budget.tick();
+        if (extra.external || !extra.part) continue;
+        const kind = isRelationship(extra, 'table')
+          ? 'table'
+          : isRelationship(extra, 'comments')
+            ? 'comments'
+            : undefined;
+        if (!kind) continue;
+        const extraBytes = await parts.read(extra.part);
+        if (!extraBytes) continue;
+        if (kind === 'table') {
+          const table = parseXlsbTable(extraBytes, ctx.budget);
+          if (table) named.push(table);
+        } else {
+          for (const note of parseXlsbComments(extraBytes, ctx.budget)) notes.push(note);
+        }
+      }
+      for (const name of workbook.names) {
+        ctx.budget.tick();
+        if (name.sheet === index) named.push({ name: name.name, range: name.range });
+      }
+      emitSheetTables(ctx, result.sheet, index, loc.sheet, path, named);
+      emitSheetNotes(ctx, notes, loc.sheet, path);
       if (!ctx.out.closeSection()) break;
       // Each sheet is one top-level block; a streaming consumer can apply backpressure here (EXT-2).
       await ctx.out.flush();
