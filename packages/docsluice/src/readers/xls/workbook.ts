@@ -2,7 +2,8 @@ import type { Budget } from '../../core/budget.js';
 import { EncryptedError } from '../../core/errors.js';
 import type { WarningSink } from '../../core/warnings.js';
 import { builtInNumberFormat, formatGeneral, formatNumber } from '../xlsx/numfmt.js';
-import type { XlsxCell, XlsxSheet } from '../xlsx/sheet.js';
+import type { SheetNote } from '../xlsx/emit.js';
+import type { XlsxCell, XlsxRange, XlsxSheet } from '../xlsx/sheet.js';
 import { ContinuedReader, RECORD, RecordReader, f64, recordString, rkNumber, u16, u32 } from './biff.js';
 
 /** BIFF8 grid limits: 65,536 rows and 256 columns. */
@@ -31,8 +32,18 @@ export interface XlsSheetEntry {
   kind: number;
 }
 
+/** A defined name that is one area of one sheet (XLS-9). */
+export interface XlsDefinedName {
+  name: string;
+  /** Index into `XlsWorkbook.sheets`. */
+  sheet: number;
+  range: XlsxRange;
+}
+
 export interface XlsWorkbook {
   sheets: XlsSheetEntry[];
+  /** Defined names that refer to one area of one sheet, in file order. */
+  names: XlsDefinedName[];
   strings: string[];
   /** The SST declared more strings than it held, or its data ran out. */
   stringsDamaged: boolean;
@@ -81,8 +92,27 @@ export function parseGlobals(stream: Uint8Array, ctx: XlsContext): XlsWorkbook |
   const cellFormats: number[] = [];
   let date1904 = false;
   let stringsDamaged = false;
+  /** EXTERNSHEET entries: the first and last sheet each `ixti` refers to. */
+  const externSheets: Array<{ first: number; last: number }> = [];
+  const rawNames: Array<{ name: string; ixti: number; range: XlsxRange }> = [];
   for (let record = records.next(); record && record.type !== RECORD.EOF; record = records.next()) {
     switch (record.type) {
+      case RECORD.EXTERNSHEET: {
+        const count = u16(record.data, 0) ?? 0;
+        for (let index = 0; index < count; index++) {
+          ctx.budget.tick();
+          const first = u16(record.data, 4 + index * 6);
+          const last = u16(record.data, 6 + index * 6);
+          if (first === undefined || last === undefined) break;
+          externSheets.push({ first, last });
+        }
+        break;
+      }
+      case RECORD.NAME: {
+        const name = definedName(record.data);
+        if (name && rawNames.length < MAX_FORMATS) rawNames.push(name);
+        break;
+      }
       case RECORD.FILEPASS:
         throw new EncryptedError('password-required');
       case RECORD.DATEMODE:
@@ -128,8 +158,16 @@ export function parseGlobals(stream: Uint8Array, ctx: XlsContext): XlsWorkbook |
         break;
     }
   }
+  const names: XlsDefinedName[] = [];
+  for (const raw of rawNames) {
+    ctx.budget.tick();
+    const target = externSheets[raw.ixti];
+    if (!target || target.first !== target.last || target.first >= sheets.length) continue;
+    names.push({ name: raw.name, sheet: target.first, range: raw.range });
+  }
   return {
     sheets,
+    names,
     strings,
     stringsDamaged,
     date1904,
@@ -143,8 +181,58 @@ export function parseGlobals(stream: Uint8Array, ctx: XlsContext): XlsWorkbook |
   };
 }
 
+/**
+ * A `NAME` (Lbl, [MS-XLS] 2.4.150) whose formula is one 3-D area or cell reference (`PtgArea3d`,
+ * `PtgRef3d`). Built-in names (print areas, filters) and function names are skipped.
+ */
+function definedName(data: Uint8Array): { name: string; ixti: number; range: XlsxRange } | undefined {
+  const flags = u16(data, 0);
+  const length = data[3];
+  const formulaSize = u16(data, 4);
+  const wide = data[14];
+  if (flags === undefined || length === undefined || formulaSize === undefined || wide === undefined)
+    return undefined;
+  if ((flags & 0x0022) !== 0 || length === 0) return undefined;
+  const nameEnd = 15 + length * ((wide & 1) === 1 ? 2 : 1);
+  if (nameEnd + formulaSize > data.length) return undefined;
+  let name = '';
+  for (let index = 0; index < length; index++) {
+    const at = 15 + index * ((wide & 1) === 1 ? 2 : 1);
+    name += String.fromCharCode((wide & 1) === 1 ? data[at]! | (data[at + 1]! << 8) : data[at]!);
+  }
+  const ptg = data[nameEnd]!;
+  const ixti = u16(data, nameEnd + 1);
+  if (ixti === undefined) return undefined;
+  if (formulaSize === 11 && (ptg === 0x3b || ptg === 0x5b || ptg === 0x7b)) {
+    const top = u16(data, nameEnd + 3);
+    const bottom = u16(data, nameEnd + 5);
+    const left = u16(data, nameEnd + 7);
+    const right = u16(data, nameEnd + 9);
+    if (top === undefined || bottom === undefined || left === undefined || right === undefined)
+      return undefined;
+    const range = {
+      top: top + 1,
+      bottom: bottom + 1,
+      left: (left & 0x3fff) + 1,
+      right: (right & 0x3fff) + 1,
+    };
+    if (range.bottom < range.top || range.right < range.left) return undefined;
+    return { name, ixti, range };
+  }
+  if (formulaSize === 7 && (ptg === 0x3a || ptg === 0x5a || ptg === 0x7a)) {
+    const row = u16(data, nameEnd + 3);
+    const column = u16(data, nameEnd + 5);
+    if (row === undefined || column === undefined) return undefined;
+    const cell = { top: row + 1, bottom: row + 1, left: (column & 0x3fff) + 1, right: (column & 0x3fff) + 1 };
+    return { name, ixti, range: cell };
+  }
+  return undefined;
+}
+
 export interface SheetResult {
   sheet: XlsxSheet;
+  /** Cell comments from NOTE records with their TXO text (XLS-9). */
+  comments: SheetNote[];
   /** A `LABELSST` index pointed past the shared strings. */
   badSharedString: boolean;
   damaged: boolean;
@@ -168,7 +256,7 @@ export function parseSheet(
     skippedRows: 0,
     missingCachedValues: 0,
   };
-  const result: SheetResult = { sheet, badSharedString: false, damaged: false };
+  const result: SheetResult = { sheet, comments: [], badSharedString: false, damaged: false };
   const records = new RecordReader(stream, entry.offset, ctx.budget);
   const first = records.next();
   const bof = first && first.type === RECORD.BOF ? bofInfo(first.data) : undefined;
@@ -178,6 +266,11 @@ export function parseSheet(
   }
   let full = false;
   const skippedRowNumbers = new Set<number>();
+  const hiddenRows = new Set<number>();
+  const hiddenColumns: Array<{ start: number; end: number }> = [];
+  /** Comment text by object id: an OBJ record of a note, then its TXO and CONTINUE records. */
+  const noteText = new Map<number, string>();
+  let noteObject: number | undefined;
 
   const formatText = (text: string, xf: number): XlsxCell => {
     const code = workbook.formatOf(xf);
@@ -310,9 +403,68 @@ export function parseSheet(
         }
         break;
       }
+      case RECORD.ROW:
+        // fDyZero: the row is hidden (XLS-10).
+        if (row !== undefined && row < MAX_BIFF8_ROW && ((u16(data, 12) ?? 0) & 0x20) !== 0)
+          hiddenRows.add(row + 1);
+        break;
+      case RECORD.COLINFO: {
+        const last = u16(data, 2);
+        if (row === undefined || last === undefined || last < row || row >= MAX_BIFF8_COLUMN) break;
+        if (((u16(data, 8) ?? 0) & 1) !== 0 && hiddenColumns.length < MAX_BIFF8_COLUMN)
+          hiddenColumns.push({ start: row + 1, end: Math.min(MAX_BIFF8_COLUMN, last + 1) });
+        break;
+      }
+      case RECORD.OBJ:
+        // ftCmo: object type 0x19 is a comment; its id links the TXO text to a NOTE.
+        noteObject = u16(data, 0) === 0x15 && u16(data, 4) === 0x19 ? u16(data, 6) : undefined;
+        break;
+      case RECORD.TXO: {
+        const length = u16(data, 10) ?? 0;
+        const segments: Uint8Array[] = [];
+        while (records.peekType() === RECORD.CONTINUE) {
+          ctx.budget.tick();
+          const next = records.next();
+          if (!next) break;
+          segments.push(next.data);
+        }
+        if (noteObject === undefined || length === 0 || noteText.size >= MAX_FORMATS) break;
+        const reader = new ContinuedReader(segments, ctx.budget);
+        const flags = reader.u8();
+        const text = flags === undefined ? undefined : reader.characters(length, (flags & 1) === 1);
+        if (text !== undefined) noteText.set(noteObject, text);
+        noteObject = undefined;
+        break;
+      }
+      case RECORD.NOTE: {
+        const text = noteText.get(u16(data, 6) ?? -1);
+        if (row === undefined || column === undefined || text === undefined || text.trim().length === 0)
+          break;
+        const author = recordString(data, 8, 2)?.text.trim();
+        const note: SheetNote = {
+          row: row + 1,
+          column: column + 1,
+          text: text.replaceAll('\r\n', '\n').trim(),
+        };
+        if (author) note.author = author;
+        result.comments.push(note);
+        break;
+      }
       default:
         break;
     }
+  }
+  if (hiddenRows.size > 0) sheet.hiddenRows = hiddenRows;
+  if (hiddenColumns.length > 0) {
+    hiddenColumns.sort((a, b) => a.start - b.start);
+    const merged: Array<{ start: number; end: number }> = [];
+    for (const range of hiddenColumns) {
+      ctx.budget.tick();
+      const last = merged.at(-1);
+      if (last && range.start <= last.end + 1) last.end = Math.max(last.end, range.end);
+      else merged.push({ ...range });
+    }
+    sheet.hiddenColumns = merged;
   }
   sheet.skippedRows = skippedRowNumbers.size;
   result.damaged = records.damaged;

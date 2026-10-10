@@ -26,7 +26,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | msg | `docsluice/msg` | 5 | 5 | [msg.md](msg.md) |
 | ndjson | `docsluice/ndjson` | 1 | 1 | [ndjson.md](ndjson.md) |
 | odp | `docsluice/odp` | 5 | 5 | [odp.md](odp.md) |
-| ods | `docsluice/ods` | 7 | 7 | [ods.md](ods.md) |
+| ods | `docsluice/ods` | 8 | 8 | [ods.md](ods.md) |
 | odt | `docsluice/odt` | 4 | 4 | [odt.md](odt.md) |
 | ole | no reader | 4 | 4 | [ole.md](ole.md) |
 | pdf | no reader | 10 | 0 | — |
@@ -41,9 +41,9 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | vcf | `docsluice/vcf` | 1 | 1 | [vcf.md](vcf.md) |
 | vsdx | `docsluice/vsdx` | 6 | 6 | [vsdx.md](vsdx.md) |
 | vtt | `docsluice/vtt` | 1 | 1 | [vtt.md](vtt.md) |
-| xls | `docsluice/xls` | 4 | 4 | [xls.md](xls.md) |
-| xlsb | `docsluice/xlsb` | 4 | 4 | [xlsb.md](xlsb.md) |
-| xlsx | `docsluice/xlsx` | 12 | 12 | [xlsx.md](xlsx.md) |
+| xls | `docsluice/xls` | 5 | 5 | [xls.md](xls.md) |
+| xlsb | `docsluice/xlsb` | 5 | 5 | [xlsb.md](xlsb.md) |
+| xlsx | `docsluice/xlsx` | 13 | 13 | [xlsx.md](xlsx.md) |
 | xml | `docsluice/xml` | 3 | 3 | [xml.md](xml.md) |
 | yaml | `docsluice/yaml` | 1 | 1 | [yaml.md](yaml.md) |
 | zip | `docsluice/zip` | 3 | 3 | [zip.md](zip.md) |
