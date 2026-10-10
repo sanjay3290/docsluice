@@ -1,7 +1,9 @@
 import type { XmlContext } from '../../xml/index.js';
 import { scanXml } from '../../xml/index.js';
+import { formatGeneral, formatNumber } from './numfmt.js';
 import { StringItemText } from './shared-strings.js';
 import type { XlsxSharedStrings } from './shared-strings.js';
+import type { XlsxStyles } from './styles.js';
 import {
   MAX_COLUMN,
   MAX_ROW,
@@ -10,6 +12,8 @@ import {
   parseRangeReference,
   SHEET_NAMESPACES,
 } from './spreadsheetml.js';
+
+const MAX_STYLE = 0xffff;
 
 /** A cell that holds a value. Cells without a value (style only) are not stored. */
 export interface XlsxCell {
@@ -40,24 +44,20 @@ export interface SheetContext extends XmlContext {
   sharedStrings: XlsxSharedStrings;
   /** Called once per workbook for a shared-string index that does not exist. */
   onBadSharedString: () => void;
+  /** Number formats by cell style; absent means every cell is General. */
+  styles?: XlsxStyles;
+  /** `workbookPr date1904`: serial 0 is 1904-01-01 instead of 1899-12-31 (XLS-3). */
+  date1904?: boolean;
 }
 
 interface OpenCell {
   row: number;
   column: number | undefined;
   type: string | undefined;
+  style: number;
   value: string;
   inValue: boolean;
   inline: StringItemText | undefined;
-}
-
-/** Excel's General format: up to 15 significant digits, without binary noise like 0.30000000000000004. */
-export function formatGeneral(value: number): string {
-  if (Object.is(value, -0)) return '0';
-  if (Number.isInteger(value) && Math.abs(value) < 1e15) return String(value);
-  const text = String(Number(value.toPrecision(15)));
-  const exponent = text.indexOf('e');
-  return exponent < 0 ? text : `${text.slice(0, exponent)}E${text.slice(exponent + 1)}`;
 }
 
 /** An `xsd:double` lexical value: digits with an optional sign, point and exponent. No hex, no spaces. */
@@ -89,7 +89,16 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
   let rowSkipped = 0;
   let cell: OpenCell | undefined;
 
+  // A text format (a fourth section, or `@` with literals) can decorate stored text; `raw` keeps it.
+  const formatText = (text: string, style: number): XlsxCell => {
+    const code = ctx.styles?.formatOf(style);
+    if (code === undefined) return { text };
+    const shown = formatNumber(text, code, ctx.date1904, ctx.budget);
+    return shown === text ? { text } : { text: shown, raw: text };
+  };
+
   const finishCell = (open: OpenCell): void => {
+    if (open.column === undefined) return;
     let value: XlsxCell | undefined;
     switch (open.type) {
       case 's': {
@@ -98,11 +107,11 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
         const text = index === undefined ? undefined : ctx.sharedStrings.strings[index];
         if (text === undefined && !(ctx.sharedStrings.truncated && index !== undefined))
           ctx.onBadSharedString();
-        value = { text: text ?? '' };
+        value = formatText(text ?? '', open.style);
         break;
       }
       case 'inlineStr':
-        if (open.inline) value = { text: open.inline.take() };
+        if (open.inline) value = formatText(open.inline.take(), open.style);
         break;
       case 'b':
         if (open.value.length > 0) {
@@ -110,18 +119,27 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
           value = { text: truth ? 'TRUE' : 'FALSE', raw: truth };
         }
         break;
-      case 'e':
       case 'str':
+        if (open.value.length > 0) value = formatText(open.value, open.style);
+        break;
+      case 'e':
       case 'd':
         if (open.value.length > 0) value = { text: open.value };
         break;
       default: {
         if (open.value.length === 0) break;
         const number = isDecimal(open.value, ctx.budget) ? Number(open.value) : Number.NaN;
-        value = Number.isFinite(number) ? { text: formatGeneral(number), raw: number } : { text: open.value };
+        if (!Number.isFinite(number)) {
+          value = { text: open.value };
+          break;
+        }
+        const code = ctx.styles?.formatOf(open.style);
+        const text =
+          code === undefined ? formatGeneral(number) : formatNumber(number, code, ctx.date1904, ctx.budget);
+        value = { text, raw: number };
       }
     }
-    if (!value || open.column === undefined) return;
+    if (!value) return;
     if (full || ctx.budget.cells >= ctx.budget.limits.cells) {
       full = true;
       sheet.skippedCells++;
@@ -176,6 +194,7 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
             row,
             column: row >= 1 && row <= MAX_ROW && column <= MAX_COLUMN ? column : undefined,
             type: attrs.get('t'),
+            style: parseIndex(attrs.get('s'), MAX_STYLE) ?? 0,
             value: '',
             inValue: false,
             inline: undefined,

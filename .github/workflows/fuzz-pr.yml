@@ -30,6 +30,7 @@ jobs:
             ooxml,
             docx,
             xlsx,
+            xlsx-numfmt,
           ]
     steps:
       - uses: actions/checkout@v7

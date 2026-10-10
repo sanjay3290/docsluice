@@ -167,8 +167,17 @@ export function formatNumber(
   return result.length <= MAX_OUTPUT_LENGTH ? result : general(value);
 }
 
+/** Excel's General format: up to 15 significant digits, without binary noise like 0.30000000000000004. */
+export function formatGeneral(value: number): string {
+  if (Object.is(value, -0)) return '0';
+  if (Number.isInteger(value) && Math.abs(value) < 1e15) return String(value);
+  const text = String(Number(value.toPrecision(15)));
+  const exponent = text.indexOf('e');
+  return exponent < 0 ? text : `${text.slice(0, exponent)}E${text.slice(exponent + 1)}`;
+}
+
 function general(value: number | string): string {
-  return typeof value === 'number' ? String(value) : value;
+  return typeof value === 'number' ? formatGeneral(value) : value;
 }
 
 function splitSections(code: string, budget?: Budget): string[] | null {
@@ -775,7 +784,9 @@ function renderDate(value: number, tokens: Token[], date1904: boolean, budget?: 
   if (Math.abs(value) > 10_000_000) return general(value);
   const wholeDays = Math.floor(value);
   const fraction = value - wholeDays;
-  let milliseconds = Math.floor(fraction * DAY_MILLISECONDS);
+  // Excel rounds the time to the precision the format shows: whole seconds, or `ss.0` to `ss.000`.
+  const unit = 10 ** (3 - fractionalSecondDigits(tokens, budget));
+  let milliseconds = Math.round(Math.round(fraction * DAY_MILLISECONDS) / unit) * unit;
   let day = wholeDays;
   if (milliseconds >= DAY_MILLISECONDS) {
     day += 1;
@@ -854,6 +865,24 @@ function renderDate(value: number, tokens: Token[], date1904: boolean, budget?: 
     }
   }
   return output;
+}
+
+/** Placeholders after a decimal point that follows a seconds field (`ss.00` → 2), at most 3. */
+function fractionalSecondDigits(tokens: Token[], budget?: Budget): number {
+  for (let index = 1; index < tokens.length; index += 1) {
+    budget?.tick();
+    const token = tokens[index]!;
+    const previous = tokens[index - 1]!;
+    if (token.kind !== 'decimal' || previous.kind !== 'date' || previous.text[0]!.toLowerCase() !== 's')
+      continue;
+    let count = 0;
+    while (tokens[index + 1 + count]?.kind === 'placeholder' && count < 3) {
+      budget?.tick();
+      count += 1;
+    }
+    return count;
+  }
+  return 0;
 }
 
 function classifyDateToken(

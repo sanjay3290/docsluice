@@ -556,5 +556,14 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-6"
+  },
+  {
+    "file": "xlsx/format-oddities.xlsx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "XLS-3"
   }
 ]

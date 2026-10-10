@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { AbortError } from '../../../src/core/errors.js';
-import { Budget } from '../../../src/core/budget.js';
-import { DEFAULT_LIMITS } from '../../../src/core/limits.js';
-import { builtInNumberFormat, formatNumber } from '../../../src/readers/xlsx/numfmt.js';
+import { AbortError } from '../../src/core/errors.js';
+import { Budget } from '../../src/core/budget.js';
+import { DEFAULT_LIMITS } from '../../src/core/limits.js';
+import { builtInNumberFormat, formatNumber } from '../../src/readers/xlsx/numfmt.js';
 
 type ReferenceCase = {
   id: string;
@@ -162,6 +162,17 @@ describe('XLSX number formats', () => {
 
   it('renders five m tokens as the first letter of the month', () => {
     expect(formatNumber(1, 'mmmmm')).toBe('J');
+  });
+
+  it('rounds times to the precision the format shows, as Excel does', () => {
+    // 0.0423611111 days is 3659.99999 seconds: Excel shows 1:01:00, not 1:00:59.
+    expect(formatNumber(0.0423611111, 'mm:ss')).toBe('01:00');
+    expect(formatNumber(0.0423611111, 'h:mm:ss')).toBe('1:01:00');
+    expect(formatNumber(0.0423611111, '[s]')).toBe('3660');
+    expect(formatNumber(1.5 / 86_400, 'ss.0')).toBe('01.5');
+    expect(formatNumber(1.004 / 86_400, 'ss.00')).toBe('01.00');
+    // Serial 45000 is 2023-03-15; a time that rounds up to midnight moves to the next day.
+    expect(formatNumber(45_000.9999999, 'yyyy-mm-dd hh:mm:ss')).toBe('2023-03-16 00:00:00');
   });
 
   it('handles a fixed denominator of ten as a basic fraction format', () => {
