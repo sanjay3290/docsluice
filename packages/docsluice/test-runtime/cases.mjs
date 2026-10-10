@@ -1,4 +1,13 @@
-import { Budget, DEFAULT_LIMITS, openZip, parseXml, WarningSink } from '../dist/index.js';
+import {
+  Budget,
+  DEFAULT_LIMITS,
+  extract,
+  openZip,
+  parseXml,
+  toMarkdown,
+  toText,
+  WarningSink,
+} from '../dist/index.js';
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -10,7 +19,7 @@ function xmlContext() {
 }
 
 /** Run runtime-neutral checks against the installed/built public package entry. */
-export async function runRuntimeContract({ validZip, traversalZip, hostileXml }) {
+export async function runRuntimeContract({ validZip, traversalZip, hostileXml, csv, html, hostileHtml }) {
   const validArchive = openZip(validZip, new Budget(DEFAULT_LIMITS));
   assert(validArchive.entries.length > 0, 'valid ZIP should expose entries');
   const contentXml = validArchive.entries.find((entry) => entry.name === 'content.xml');
@@ -40,4 +49,24 @@ export async function runRuntimeContract({ validZip, traversalZip, hostileXml })
     }
   }
   assert(text === '&e;', 'external entity content must not be expanded');
+
+  // Full extraction loads each reader with a lazy import() in this runtime.
+  const table = await extract(csv, { filename: 'data.csv' });
+  assert(table.format === 'csv', 'CSV should be detected');
+  const rows = table.blocks[0]?.kind === 'table' ? table.blocks[0].rows : [];
+  assert(rows.length === 4 && rows[2]?.[1]?.text === 'two lines\nsecond line', 'CSV quoting should survive');
+
+  const page = await extract(html, { filename: 'post.html' });
+  assert(page.format === 'html', 'HTML should be detected');
+  assert(
+    toMarkdown(page).includes('\n# Notes from the north garden\n'),
+    'HTML headings should render as Markdown headings',
+  );
+
+  const hostilePage = await extract(hostileHtml, { filename: 'hostile.html' });
+  assert(hostilePage.features.hasJavaScript, 'scripts should be reported');
+  assert(
+    toText(hostilePage) === 'visible',
+    'script, style, noscript, template and comment text must be dropped',
+  );
 }

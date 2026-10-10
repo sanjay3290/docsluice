@@ -7,18 +7,13 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { generateFixtureModule } from '../runtime-fixtures.mjs';
+import { fixtureSources as sources, generateFixtureModule } from '../runtime-fixtures.mjs';
 import {
   loadRuntimeFixtures,
   runtimeFixtureSourceHashes,
 } from '../../packages/docsluice/test-runtime/fixtures.generated.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const sources = {
-  validZip: 'corpus/zip/hello.odt',
-  traversalZip: 'hostile/zip/path-traversal.zip',
-  hostileXml: 'hostile/xml/xxe-file.xml',
-};
 
 test('embedded browser/Worker fixtures are byte-identical to authoritative sources and hashed', async () => {
   const fixtures = loadRuntimeFixtures();

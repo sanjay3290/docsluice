@@ -123,7 +123,9 @@ export async function runWorkersRuntime() {
   const stateDirectory = await createWranglerStateDirectory();
   const configDirectory = path.join(stateDirectory, 'config');
   const cacheDirectory = path.join(stateDirectory, 'cache');
-  const wrangler = path.join(repoRoot, 'node_modules/.bin/wrangler');
+  // CI installs a pinned Wrangler outside the workspace: its esbuild and workerd dependencies carry
+  // install scripts, which the repository's dev-dependency policy does not allow (ADR 0011).
+  const wrangler = process.env.DOCSLUICE_WRANGLER_BIN ?? path.join(repoRoot, 'node_modules/.bin/wrangler');
   let child;
   let output = '';
   try {
