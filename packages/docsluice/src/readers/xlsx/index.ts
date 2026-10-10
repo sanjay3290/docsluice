@@ -10,7 +10,12 @@ import {
 import type { OoxmlRelationship } from '../../ooxml/index.js';
 import { openZip } from '../../zip/index.js';
 import type { XmlContext } from '../../xml/index.js';
+import { parseComments, parsePersons, parseThreadedComments } from './comments.js';
+import type { XlsxComment } from './comments.js';
 import { emitSheetTables } from './emit.js';
+import type { XlsxNamedRange } from './emit.js';
+import { columnName, parseCellReference } from './spreadsheetml.js';
+import { parseTablePart } from './tables.js';
 import { parseSharedStrings } from './shared-strings.js';
 import type { XlsxSharedStrings } from './shared-strings.js';
 import { parseWorksheet } from './sheet.js';
@@ -30,6 +35,9 @@ const REL_BASES = [
   'http://schemas.openxmlformats.org/officeDocument/2006/relationships/',
   'http://purl.oclc.org/ooxml/officeDocument/relationships/',
 ];
+
+const THREADED_COMMENT_REL = 'http://schemas.microsoft.com/office/2017/10/relationships/threadedComment';
+const PERSON_REL = 'http://schemas.microsoft.com/office/2017/10/relationships/person';
 
 function isRelationship(relationship: { type: string }, kind: string): boolean {
   return REL_BASES.some((base) => relationship.type === `${base}${kind}`);
@@ -103,6 +111,62 @@ async function readStyles(
   });
 }
 
+interface SheetExtras {
+  tables: XlsxNamedRange[];
+  /** Comments with the path of the part they came from: threaded ones, then notes on other cells. */
+  comments: Array<XlsxComment & { path: string }>;
+}
+
+/** Excel tables and comments of one sheet, from the sheet part's relationships (XLS-9). */
+async function readSheetExtras(
+  parts: OoxmlParts,
+  part: string,
+  ctx: XmlContext,
+  prefix: string,
+  persons: () => Promise<ReadonlyMap<string, string>>,
+): Promise<SheetExtras> {
+  const extras: SheetExtras = { tables: [], comments: [] };
+  const relationships = await readRelationships(parts, part, ctx);
+  const notes: Array<{ path: string; comments: XlsxComment[] }> = [];
+  const threadedRefs = new Set<string>();
+  for (const relationship of relationships.values()) {
+    ctx.budget.tick();
+    if (relationship.external || !relationship.part) continue;
+    const kind = isRelationship(relationship, 'table')
+      ? 'table'
+      : isRelationship(relationship, 'comments')
+        ? 'comments'
+        : relationship.type === THREADED_COMMENT_REL
+          ? 'threaded'
+          : undefined;
+    if (!kind) continue;
+    const bytes = await parts.read(relationship.part);
+    if (!bytes) continue;
+    const path = pathWithPrefix(prefix, relationship.part);
+    const partContext: XmlContext = { budget: ctx.budget, warnings: ctx.warnings, path };
+    if (kind === 'table') {
+      const table = parseTablePart(bytes, partContext);
+      if (table) extras.tables.push(table);
+    } else if (kind === 'comments') {
+      notes.push({ path, comments: parseComments(bytes, partContext) });
+    } else {
+      for (const comment of parseThreadedComments(bytes, partContext, await persons())) {
+        ctx.budget.tick();
+        threadedRefs.add(comment.ref);
+        extras.comments.push({ ...comment, path });
+      }
+    }
+  }
+  // Excel also writes each threaded comment as a legacy note for older versions; keep one copy.
+  for (const { path, comments } of notes) {
+    for (const comment of comments) {
+      ctx.budget.tick();
+      if (!threadedRefs.has(comment.ref)) extras.comments.push({ ...comment, path });
+    }
+  }
+  return extras;
+}
+
 /** Reader for SpreadsheetML `.xlsx` workbooks: every sheet is a `section` of tables (XLS-1). */
 export const xlsxReader: Reader = {
   id: 'xlsx',
@@ -146,6 +210,28 @@ export const xlsxReader: Reader = {
     const sharedStrings = await readSharedStrings(parts, relationships, xmlContext, ctx.path);
     const styles = await readStyles(parts, relationships, xmlContext, ctx.path);
 
+    let personList: Promise<ReadonlyMap<string, string>> | undefined;
+    const persons = (): Promise<ReadonlyMap<string, string>> =>
+      (personList ??= (async () => {
+        for (const relationship of relationships.values()) {
+          ctx.budget.tick();
+          if (relationship.type !== PERSON_REL || relationship.external || !relationship.part) continue;
+          const bytes = await parts.read(relationship.part);
+          if (bytes) return parsePersons(bytes, xmlContext);
+        }
+        return new Map<string, string>();
+      })());
+
+    // Defined names grouped by sheet once, so many sheets and many names do not multiply.
+    const namesBySheet = new Map<string, XlsxNamedRange[]>();
+    for (const name of workbook.definedNames) {
+      ctx.budget.tick();
+      const list = namesBySheet.get(name.sheet);
+      const range = { name: name.name, range: name.range };
+      if (list) list.push(range);
+      else namesBySheet.set(name.sheet, [range]);
+    }
+
     let badSharedString = false;
     for (let index = 0; index < workbook.sheets.length; index++) {
       ctx.budget.tick();
@@ -187,7 +273,17 @@ export const xlsxReader: Reader = {
           });
         },
       });
-      emitSheetTables(ctx, sheet, index, loc.sheet, path);
+      const extras = await readSheetExtras(parts, part!, xmlContext, ctx.path, persons);
+      const named = [...extras.tables, ...((entry.name && namesBySheet.get(entry.name)) || [])];
+      emitSheetTables(ctx, sheet, index, loc.sheet, path, named);
+      for (const comment of extras.comments) {
+        ctx.budget.tick();
+        const noteLoc: Location = { path: comment.path };
+        if (loc.sheet !== undefined) noteLoc.sheet = loc.sheet;
+        const cell = parseCellReference(comment.ref);
+        if (cell) noteLoc.range = `${columnName(cell.column)}${cell.row}`;
+        if (!ctx.out.note('comment', comment.text, noteLoc, comment.author)) break;
+      }
       if (!ctx.out.closeSection()) break;
       // Each sheet is one top-level block; a streaming consumer can apply backpressure here (EXT-2).
       await ctx.out.flush();

@@ -38,7 +38,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | vtt | `docsluice/vtt` | 1 | 1 | [vtt.md](vtt.md) |
 | xls | `docsluice/xls` | 4 | 4 | [xls.md](xls.md) |
 | xlsb | `docsluice/xlsb` | 4 | 4 | [xlsb.md](xlsb.md) |
-| xlsx | `docsluice/xlsx` | 8 | 8 | [xlsx.md](xlsx.md) |
+| xlsx | `docsluice/xlsx` | 12 | 12 | [xlsx.md](xlsx.md) |
 | xml | `docsluice/xml` | 3 | 3 | [xml.md](xml.md) |
 | yaml | `docsluice/yaml` | 1 | 1 | [yaml.md](yaml.md) |
 | zip | `docsluice/zip` | 3 | 3 | [zip.md](zip.md) |
@@ -114,7 +114,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | SEC-3 | **Path tricks** — entry names like `../../etc/passwd`. \| docsluice never writes to disk. Entry names are treated as plain strings and cleaned before they appear in paths. | Not covered | 4 |
 | SEC-4 | **XML external entities (XXE)** — XML that asks the parser to read local files or URLs. \| One shared XML parser with DTD, external entities and processing instructions **off and not switchable**. | `xml/external-entity.xml` | 3 |
 | SEC-5 | **Billion laughs** — XML entities that expand to huge text. \| No entity expansion beyond the five built-in XML entities. Element-depth and text-size limits. | `xml/internal-entity-expansion.xml` | 3 |
-| SEC-6 | **Prototype pollution** — a key named `__proto__` in a file changes JavaScript objects across the app. (This is SheetJS's open advisory.) \| Never use file data as plain-object keys. Use `Map` or `Object.create(null)`. A lint rule and a test file full of `__proto__`, `constructor` and `prototype` keys in every format. | `json/dangerous-keys.json`<br>`yaml/survey-config.yaml` | 9 |
+| SEC-6 | **Prototype pollution** — a key named `__proto__` in a file changes JavaScript objects across the app. (This is SheetJS's open advisory.) \| Never use file data as plain-object keys. Use `Map` or `Object.create(null)`. A lint rule and a test file full of `__proto__`, `constructor` and `prototype` keys in every format. | `json/dangerous-keys.json`<br>`yaml/survey-config.yaml` | 10 |
 | SEC-7 | **Slow regular expressions (ReDoS)** — text built to make a pattern run for minutes. \| No regular expression with nested repeats on file data. Static check in CI (for example `eslint-plugin-regexp`). Hand-written scanners for hot paths. | Not covered | 5 |
 | SEC-8 | **Deep nesting** — tables in tables, lists in lists, 10,000 levels deep, to crash the stack. \| Depth limit everywhere. Iterative code, not recursion, for tree walks over file data. | Not covered | 23 |
 | SEC-9 | **Endless loops** — PDF objects or zip parts that point at each other. \| Visited sets on every reference graph. A global time budget. | Not covered | 17 |

@@ -43,6 +43,10 @@ export interface XlsxSheet {
   skippedRows: number;
   /** Formula cells saved without a cached value; they are empty (XLS-4). */
   missingCachedValues: number;
+  /** Rows marked hidden (XLS-10). */
+  hiddenRows?: ReadonlySet<number>;
+  /** Hidden column ranges, sorted and disjoint (`start`..`end`, 1-based). */
+  hiddenColumns?: ReadonlyArray<{ start: number; end: number }>;
 }
 
 export interface SheetContext extends XmlContext {
@@ -102,6 +106,8 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
   const sharedFormulas = new Map<string, { text: string; row: number; column: number }>();
   const names: Array<string | undefined> = [];
   const maxMerges = ctx.budget.limits.cells;
+  const hiddenRows = new Set<number>();
+  const hiddenColumns: Array<{ start: number; end: number }> = [];
   let full = false;
   let row = 0;
   let column = 0;
@@ -228,6 +234,8 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
           // Rows without `r` follow the previous row, as Excel writes them.
           row = parseIndex(attrs.get('r'), MAX_ROW) ?? row + 1;
           column = 0;
+          if (isTrue(attrs.get('hidden')) && row >= 1 && row <= MAX_ROW && hiddenRows.size < maxMerges)
+            hiddenRows.add(row);
           rowStored = 0;
           rowSkipped = 0;
         } else if (local === 'c' && parent === 'row') {
@@ -250,6 +258,18 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
             formula: undefined,
             inFormula: false,
           };
+        } else if (local === 'col' && parent === 'cols' && isTrue(attrs.get('hidden'))) {
+          // Each `col` covers at least one column, so more entries than columns are repeats.
+          const start = parseIndex(attrs.get('min'), MAX_COLUMN);
+          const end = parseIndex(attrs.get('max'), MAX_COLUMN);
+          if (
+            start !== undefined &&
+            start >= 1 &&
+            end !== undefined &&
+            end >= start &&
+            hiddenColumns.length < MAX_COLUMN
+          )
+            hiddenColumns.push({ start, end });
         } else if (local === 'mergeCell' && parent === 'mergeCells') {
           const range = parseRangeReference(attrs.get('ref'));
           if (
@@ -290,5 +310,30 @@ export function parseWorksheet(input: Uint8Array, ctx: SheetContext): XlsxSheet 
     },
     ctx,
   );
+  if (hiddenRows.size > 0) sheet.hiddenRows = hiddenRows;
+  if (hiddenColumns.length > 0) sheet.hiddenColumns = uniteColumns(hiddenColumns, ctx.budget);
   return sheet;
+}
+
+function isTrue(value: string | undefined): boolean {
+  return value === '1' || value === 'true';
+}
+
+/** Sort column ranges and merge the ones that overlap or touch. */
+function uniteColumns(
+  ranges: Array<{ start: number; end: number }>,
+  budget: XmlContext['budget'],
+): Array<{ start: number; end: number }> {
+  ranges.sort((a, b) => {
+    budget.tick();
+    return a.start - b.start || a.end - b.end;
+  });
+  const united: Array<{ start: number; end: number }> = [];
+  for (const range of ranges) {
+    budget.tick();
+    const last = united.at(-1);
+    if (last && range.start <= last.end + 1) last.end = Math.max(last.end, range.end);
+    else united.push({ start: range.start, end: range.end });
+  }
+  return united;
 }

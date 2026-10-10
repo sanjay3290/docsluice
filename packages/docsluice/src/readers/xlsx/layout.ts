@@ -162,18 +162,24 @@ export interface XlsxTableRows {
  * A merged range's top-left cell gets `rowSpan`/`colSpan` and the cells it covers become empty
  * placeholders; a merge that overlaps an earlier one is ignored. Value cells were charged to the
  * `cells` budget when the sheet was parsed; each row charges its other grid cells before it is
- * kept, and the table stops at the limit.
+ * kept, and the table stops at the limit. `chargeValues` charges value cells again, for a range
+ * emitted a second time (a named range or Excel table that is not one of the sheet's regions).
+ * Cells in hidden rows and columns get `hidden: true` (XLS-10).
  */
 export function regionRows(
   sheet: XlsxSheet,
   { range: region, merges: regionMerges }: XlsxRegion,
   budget: Budget,
+  chargeValues = false,
 ): XlsxTableRows {
   const width = region.right - region.left + 1;
   const letters: string[] = [];
+  const hiddenColumn: boolean[] = [];
+  const hiddenColumns = sheet.hiddenColumns ?? [];
   for (let column = region.left; column <= region.right; column++) {
     budget.tick();
     letters.push(columnName(column));
+    hiddenColumn.push(hiddenColumns.length > 0 && findInterval(hiddenColumns, column, budget) >= 0);
   }
   const merges = [...regionMerges].sort((a, b) => {
     budget.tick();
@@ -237,7 +243,14 @@ export function regionRows(
       }
       output.push(cell);
     }
-    if (!budget.addCells(width - charged)) break;
+    if (!budget.addCells(chargeValues ? width : width - charged)) break;
+    const hiddenRow = sheet.hiddenRows?.has(row) === true;
+    if (hiddenRow || hiddenColumns.length > 0) {
+      for (let index = 0; index < width; index++) {
+        budget.tick();
+        if (hiddenRow || hiddenColumn[index]) output[index]!.hidden = true;
+      }
+    }
     rows.push(output);
     emitted += width;
   }

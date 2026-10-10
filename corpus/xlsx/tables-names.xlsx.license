@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-xlsx-p1.mjs
+Requirements: XLS-9
+Notes: an Excel table matching a region, one with no header row, defined names matching a region, inside a region, on a quoted sheet name and outside the used cells, and names that are not one range (built-in, hidden, two areas, a constant, #REF!).
