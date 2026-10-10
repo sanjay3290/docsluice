@@ -48,3 +48,14 @@ await writeFile(
     },
   ),
 );
+
+// A level whose lvlText repeats %1 50,000 times on 500 items: markers alone exceed outputChars.
+const flood = `<w:numbering xmlns:w="${W}"><w:abstractNum w:abstractNumId="1"><w:lvl w:ilvl="0"><w:numFmt w:val="decimal"/><w:lvlText w:val="${'%1'.repeat(50_000)}"/></w:lvl></w:abstractNum><w:num w:numId="1"><w:abstractNumId w:val="1"/></w:num></w:numbering>`;
+const items = '<w:p><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>item</w:t></w:r></w:p>'.repeat(500);
+await writeFile(
+  new URL('numbering-marker-flood.docx', directory),
+  docx(body(items), {
+    'word/numbering.xml': flood,
+    'word/_rels/document.xml.rels': `<Relationships xmlns="${PKG}"><Relationship Id="n" Type="${R}/numbering" Target="numbering.xml"/></Relationships>`,
+  }),
+);

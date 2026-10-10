@@ -472,5 +472,14 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-6"
+  },
+  {
+    "file": "docx/numbering-marker-flood.docx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
   }
 ]
