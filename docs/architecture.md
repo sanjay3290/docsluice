@@ -75,6 +75,8 @@ Rules for every reader:
 - Never allocate from sizes written in the file. Grow as you read, under the budget.
 - Every location carries `path` from `ctx.path` when inside a child (NST-3).
 
+Format plugins (EXT-4, EXT-7) use the same `ReadContext`. They are registered with `registry.registerFormat(plugin)` on a registry from `createRegistry()` (passed as `extract(input, { registry })`), or with `registerFormat(plugin)` on the default registry. A plugin declares the reader contract it was built for; `READER_CONTRACT_VERSION` is `1.0.0`, and an incompatible plugin is refused with `PluginContractError` (code `PLUGIN_INCOMPATIBLE`). See [plugins.md](plugins.md).
+
 `DocBuilder` is the only writer for the document model. It normalizes emitted text
 to NFC and LF, removes C0 controls other than tab and line feed, trims trailing
 horizontal whitespace on each line, and keeps at most one blank line in a run.

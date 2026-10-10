@@ -1,6 +1,7 @@
 import { Budget } from '../core/budget.js';
 import { EncryptedError } from '../core/errors.js';
 import { readInput } from '../core/input.js';
+import { resolvePlugin } from '../core/plugin.js';
 import { resolveLimits } from '../core/limits.js';
 import type { DetectResult, FormatId } from '../core/model.js';
 import type { ExtractOptions } from '../core/options.js';
@@ -41,7 +42,8 @@ export async function detect(input: unknown, options: ExtractOptions = {}): Prom
   });
   const bytes = await readInput(input, budget);
   const resolved = await resolveFormat(bytes, options, budget);
-  return resolved.result;
+  if (!options.registry) return resolved.result;
+  return resolvePlugin(options.registry, bytes, options, resolved, budget).result;
 }
 
 /** Resolve an already-read byte array; the caller's Budget already includes input bytes. */

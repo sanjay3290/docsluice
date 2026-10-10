@@ -13,6 +13,7 @@ import type { Block, ChildDocument, DocsluiceDocument, Location, Warning } from 
 import type { ExtractOptions, ResolvedOptions } from './options.js';
 import type { ReadContext } from './reader.js';
 import { defaultRegistry } from './registry.js';
+import { resolvePlugin } from './plugin.js';
 import type { ReaderRegistry } from './registry.js';
 import { WarningSink } from './warnings.js';
 import { resolveFormat } from '../detect/detect.js';
@@ -214,7 +215,14 @@ export function createExtractor(
       activeBudget.tick();
       const readerWarnings = job.warnings;
       setBudgetWarnings(activeBudget, readerWarnings);
-      const resolution = await resolveFormat(bytes, activeOptions, activeBudget);
+      const activeRegistry = activeOptions.registry ?? registry;
+      const resolution = resolvePlugin(
+        activeRegistry,
+        bytes,
+        activeOptions,
+        await resolveFormat(bytes, activeOptions, activeBudget),
+        activeBudget,
+      );
       const out = new DocBuilder(
         resolution.result.format,
         resolution.result.mimeType,
@@ -297,7 +305,7 @@ export function createExtractor(
       };
 
       if (!EMPTY_FORMATS.has(resolution.result.format)) {
-        const loading = registry.load(resolution.result.format);
+        const loading = activeRegistry.load(resolution.result.format);
         if (!loading) throw new UnsupportedFormatError(resolution.result.format);
         const reader = await loading;
         activeBudget.tick();
