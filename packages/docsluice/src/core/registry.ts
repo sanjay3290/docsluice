@@ -184,6 +184,11 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     load: () => import('../readers/ods/index.js').then((module) => module.odsReader),
   });
   registry.add({
+    id: 'odp',
+    mimeTypes: ['application/vnd.oasis.opendocument.presentation'],
+    load: () => import('../readers/odp/index.js').then((module) => module.odpReader),
+  });
+  registry.add({
     id: 'zip',
     mimeTypes: ['application/zip'],
     load: () => import('../readers/zip/index.js').then((module) => module.zipReader),
