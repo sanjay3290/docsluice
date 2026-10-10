@@ -25,12 +25,19 @@ Node transfers an owned `ArrayBuffer` to the worker without copying it. This det
 
 `transform` and `onBlock` are function callbacks and cannot cross the worker boundary, so worker extraction rejects either option with `TypeError` before it reads or transfers input. `signal` remains supported: aborting a queued job removes it from the queue; aborting a running job terminates and replaces its worker, then rejects with `AbortError`. Calling `close()` rejects pending work, terminates the pool, and makes later `extract()` calls reject.
 
-The parent maps a worker timeout to `TimeoutError` and an unexpected worker exit, including V8 worker heap exhaustion, to `LimitExceededError` with `limit: "memory"`. `maxOldGenerationSizeMb` limits V8's JavaScript heap only. It does not cap total RSS or external allocations such as `ArrayBuffer` memory, and a process-wide out-of-memory condition can still terminate Node. To keep the requested old-generation cap effective, the pool filters inherited `--max-old-space-size` flags while preserving other Node flags, including permission flags. See the [Node.js v24 Worker documentation](https://nodejs.org/docs/latest-v24.x/api/worker_threads.html#worker-constructor-options) for the exact `resourceLimits` boundary and [transfer-list behavior](https://nodejs.org/docs/latest-v24.x/api/worker_threads.html#portpostmessagevalue-transferlist).
+The parent maps a worker timeout to `TimeoutError` and an unexpected worker exit, including V8 worker heap exhaustion, to `LimitExceededError` with `limit: "memory"`. `maxOldGenerationSizeMb` limits V8's JavaScript heap only. It does not cap total RSS or external allocations such as `ArrayBuffer` memory, and a process-wide out-of-memory condition can still terminate Node. See the [Node.js Worker documentation](https://nodejs.org/docs/latest-v24.x/api/worker_threads.html#worker-constructor-options) for the exact `resourceLimits` boundary and [transfer-list behavior](https://nodejs.org/docs/latest-v24.x/api/worker_threads.html#portpostmessagevalue-transferlist).
+
+## When the heap cap cannot be enforced
+
+A `--max-old-space-size` flag, on the command line or in `NODE_OPTIONS`, applies to the whole process and overrides every worker's `resourceLimits.maxOldGenerationSizeMb` (a documented Node behaviour). Isolation would then be pretended: a runaway parser could use the full process heap. Each worker therefore reports the heap limit V8 actually gave it. When that limit is more than 512 MB above the requested cap, the pool refuses to run, and every `extract()` call rejects with `WorkerIsolationError`, which names the flag. Remove the flag for the process that runs the pool, or raise `maxOldGenerationSizeMb` to match it. (V8 adds about 192 MB of young-generation space to the cap, hence the margin.)
+
+Workers inherit `execArgv` with Node's default rules, which drop per-process options. Permission-model flags apply to the whole process, so workers stay inside the same permissions.
 
 Run the worker tests with:
 
 ```sh
 npm test -- --run test/node/worker.test.ts
+node --test packages/docsluice/test-dist/smoke.test.mjs   # the built worker, ESM and CommonJS
 ```
 
-The OOM, timeout, and pool tests use a test-only `.mjs` worker fixture and reader. They are not included in the package and do not accept document data as code.
+The OOM, timeout and pool tests use a test-only `.mjs` worker fixture and reader. They are not included in the package and do not accept document data as code. The memory tests assert `LimitExceededError` normally, and `WorkerIsolationError` when the test process itself carries a heap flag; the built-package smoke test runs a real extraction through `docsluice/worker`.

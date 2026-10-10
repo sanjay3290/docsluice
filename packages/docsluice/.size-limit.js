@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { URL } from 'node:url';
 
 const manifest = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
-const NOT_READERS = new Set(['.', './node', './package.json']);
+const NOT_READERS = new Set(['.', './node', './worker', './package.json']);
 export const READERS = Object.keys(manifest.exports)
   .filter((subpath) => !NOT_READERS.has(subpath))
   .map((subpath) => subpath.slice(2));
@@ -24,6 +24,14 @@ export default [
       ...config,
       external: (id, importer) => importer !== undefined && externalReader.test(id),
     }),
+  },
+  {
+    // The worker pool alone; the thread entry loads the core in its own isolate.
+    name: 'worker pool (Node)',
+    path: 'dist/worker.js',
+    limit: '10 KB',
+    gzip: true,
+    modifyRolldownConfig: (config) => ({ ...config, external: (id) => id.startsWith('node:') }),
   },
   ...READERS.map((reader) => ({
     name: `${reader} reader`,

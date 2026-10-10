@@ -5,11 +5,7 @@ import { Readable } from 'node:stream';
 import { markAsUntransferable } from 'node:worker_threads';
 import { AbortError, TimeoutError } from '../../src/core/errors.js';
 import type { LimitExceededError } from '../../src/core/errors.js';
-import {
-  createExtractorWithWorkerEntry,
-  WorkerIsolationError,
-  workerExecArgv,
-} from '../../src/node/worker/pool.js';
+import { createExtractorWithWorkerEntry, WorkerIsolationError } from '../../src/node/worker/pool.js';
 
 /** Whether this test process carries a heap-size flag, which every worker inherits. */
 const heapFlagSet = [...process.execArgv, process.env.NODE_OPTIONS ?? ''].some((argument) =>
@@ -26,7 +22,13 @@ function makeExtractor(
   // The heap check is exercised by the memory tests only, so a heap flag in the developer's shell does
   // not fail unrelated tests.
   const enforceHeapLimit = workerMode === 'oom' || options.maxOldGenerationSizeMb === 16;
-  const extractor = createExtractorWithWorkerEntry(options, workerUrl, { mode: workerMode }, undefined, enforceHeapLimit);
+  const extractor = createExtractorWithWorkerEntry(
+    options,
+    workerUrl,
+    { mode: workerMode },
+    undefined,
+    enforceHeapLimit,
+  );
   extractors.push(extractor);
   return extractor;
 }
@@ -107,18 +109,6 @@ describe('worker extractor', () => {
     expect(() => makeExtractor('echo', { maxOldGenerationSizeMb: 0 })).toThrow(RangeError);
     expect(() => makeExtractor('echo', { timeMs: 0 })).toThrow(RangeError);
     expect(() => makeExtractor('echo', { poolSize: 0 })).toThrow(RangeError);
-  });
-
-  it('keeps inherited Node permissions but removes flags that bypass resourceLimits or break file workers', () => {
-    expect(
-      workerExecArgv([
-        '--permission',
-        '--allow-fs-read=*',
-        '--input-type=module',
-        '--max-old-space-size=4096',
-        '--max-semi-space-size=16',
-      ]),
-    ).toEqual(['--permission', '--allow-fs-read=*', '--max-semi-space-size=16']);
   });
 
   it('maps an actual worker heap exhaustion to a memory limit error and keeps the parent alive', async () => {

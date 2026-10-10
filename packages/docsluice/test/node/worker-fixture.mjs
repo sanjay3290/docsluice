@@ -13,4 +13,7 @@ parentPort.on('message', ({ id, buffer, byteOffset, byteLength }) => {
   parentPort.postMessage({ id, ok: true, result: readTestInput(workerData.mode, bytes) });
 });
 
-parentPort.postMessage({ type: 'ready', heapLimitMb: Math.round(getHeapStatistics().heap_size_limit / 2 ** 20) });
+parentPort.postMessage({
+  type: 'ready',
+  heapLimitMb: Math.round(getHeapStatistics().heap_size_limit / 2 ** 20),
+});

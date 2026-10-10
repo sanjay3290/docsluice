@@ -145,24 +145,6 @@ function validateOptions(options: WorkerExtractorOptions): NormalizedOptions {
   return { maxOldGenerationSizeMb, timeMs, poolSize };
 }
 
-export function workerExecArgv(args: readonly string[]): string[] {
-  const filtered: string[] = [];
-  for (let index = 0; index < args.length; index++) {
-    const argument = args[index]!;
-    if (
-      argument === '--input-type' ||
-      argument === '--max-old-space-size' ||
-      argument === '--max_old_space_size'
-    ) {
-      index++;
-      continue;
-    }
-    if (/^--(?:input-type|max[-_]old[-_]space[-_]size)=/.test(argument)) continue;
-    filtered.push(argument);
-  }
-  return filtered;
-}
-
 function reviveError(error: SerializedError): Error {
   switch (error.code) {
     case 'LIMIT_EXCEEDED':
@@ -322,8 +304,9 @@ function makeWorkerExtractor(
 
   function createSlot(): WorkerSlot {
     const worker = new Worker(construction.workerEntry, {
+      // execArgv is left to Node's default inheritance, which drops per-process options. A process-wide
+      // --max-old-space-size flag still overrides resourceLimits; the ready check catches that.
       resourceLimits: { maxOldGenerationSizeMb: settings.maxOldGenerationSizeMb },
-      execArgv: workerExecArgv(process.execArgv),
       ...(construction.workerData ? { workerData: construction.workerData } : {}),
     });
     const slot: WorkerSlot = { worker, ready: false, retiring: false };
