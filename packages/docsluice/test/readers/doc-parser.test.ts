@@ -185,7 +185,7 @@ describe('MS-DOC parser', () => {
     const expected = JSON.parse(
       new TextDecoder().decode(
         readFileSync(
-          fileURLToPath(new URL('../../../../corpus/doc/doc-legacy.doc.expected.json', import.meta.url)),
+          fileURLToPath(new URL('../../../../corpus/doc/doc-legacy.doc.blocks.json', import.meta.url)),
         ),
       ),
     ) as unknown;
