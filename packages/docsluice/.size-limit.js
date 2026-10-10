@@ -15,10 +15,13 @@ const OFFICE_READERS = new Set(['doc', 'docx', 'xlsx', 'xls', 'xlsb', 'pptx', 'o
 // `code` is the source-code language table the text reader loads only for source file names.
 const TEXT_FAMILY_READERS = ['yaml', 'ndjson', 'ics', 'vcf', 'srt', 'vtt', 'code'];
 const MEDIA_READERS = ['image'];
+// The compound-file parser behind legacy Office and Outlook detection (doc, xls, msg) loads lazily.
+const CONTAINERS = ['ole'];
 const EXTERNAL_READERS = [
   ...OFFICE_READERS,
   ...TEXT_FAMILY_READERS,
   ...MEDIA_READERS,
+  ...CONTAINERS,
   'eml',
   'msg',
   'rtf',
