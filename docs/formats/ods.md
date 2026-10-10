@@ -34,3 +34,7 @@ Not supported: hidden rows and columns, comments (annotations), named ranges, ch
 ## Corpus and generators
 
 `corpus/ods` holds LibreOffice exports of the XLSX corpus workbooks. The four `workbook-*` files come from the same `.fods` sources as their XLSX and XLS versions. `cell-types`, `formulas` and `number-formats` are converted from the XLSX files. On those three, LibreOffice recalculates formulas and stores the ISO date text cell as a number, so a few cells differ from the XLSX goldens. `scripts/hostile/generate-ods.mjs` writes `hostile/ods`.
+
+## Header rows (XLS-8)
+
+Tables get `headerRows` from the `headerRow` option, guessed the same way as for XLSX (see [xlsx.md](xlsx.md#header-rows-xls-8)). Hidden rows and columns, comments and named ranges are not read yet (#231).

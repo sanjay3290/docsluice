@@ -26,3 +26,7 @@ Strings follow the BIFF8 rules: 8-bit characters are Latin-1 (the low byte of UT
 - Formula text: the `formulas` option has no effect, because BIFF8 stores formulas as parsed tokens, and these are not decompiled.
 - Document properties (`\x05SummaryInformation`), so XLS metadata is empty where XLSX fills `language` and similar fields.
 - Charts, drawings, comments, hyperlinks and hidden rows and columns.
+
+## Header rows (XLS-8)
+
+Tables get `headerRows` from the `headerRow` option, guessed the same way as for XLSX (see [xlsx.md](xlsx.md#header-rows-xls-8)). Hidden rows and columns, comments and named ranges are not read yet (#231).

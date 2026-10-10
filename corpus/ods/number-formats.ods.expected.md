@@ -1,8 +1,7 @@
 ## Sheet: Formats
 
-|  |  |  |
-| --- | --- | --- |
 | Kind | Format | Shown |
+| --- | --- | --- |
 | General | built-in 0 | 1234.5678 |
 | Integer (1) | built-in 1 | 1235 |
 | Decimals (2) | built-in 2 | 1234.57 |

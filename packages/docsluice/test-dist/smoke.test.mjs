@@ -54,6 +54,15 @@ test('ESM entry loads', async () => {
     [['image', 'image/png']],
   );
   assert.equal(mod.toText(renderDoc), 'Title\n\na\tb');
+  assert.deepEqual(
+    mod
+      .toRecords({
+        ...renderDoc.blocks[1],
+        rows: [...renderDoc.blocks[1].rows, [{ text: '1' }, { text: '2' }]],
+      })
+      .map((record) => ({ ...record })),
+    [{ a: '1', b: '2' }],
+  );
   assert.equal(typeof mod.toJSON, 'function');
   assert.equal(
     (await mod.detect(Uint8Array.of(123, 34, 111, 107, 34, 58, 116, 114, 117, 101, 125))).format,
@@ -69,6 +78,7 @@ test('CJS entry loads', () => {
   const mod = require('../dist/index.cjs');
   assert.equal(typeof mod.resolveLimits, 'function');
   assert.equal(mod.toText(renderDoc), 'Title\n\na\tb');
+  assert.equal(typeof mod.toRecords, 'function');
   assert.equal(typeof mod.toJSON, 'function');
 });
 
