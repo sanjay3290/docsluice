@@ -38,3 +38,7 @@ The XLSX reader turns every sheet of a SpreadsheetML workbook (`.xlsx`, `.xlsm`,
 Performance: a 50,000-row, 200,000-cell workbook (a 6.7 MB worksheet part) extracts in about 2.0–2.3 s on a development machine (target: under 3 s); the test bound is 6 s for loaded CI runners. Most of the remaining time is in the XML tokenizer and in block copying: the builder copies each table when it is emitted, again when its sheet section closes, and again at the end (#182).
 
 Hostile samples in `hostile/xlsx/`: a sheet claiming the full 1,048,576 × 16,384 grid through `dimension` and one merge (one cell out), values in the four corners of the grid (four one-cell tables), three million shared strings in a small archive (`LIMIT_EXCEEDED` from the compression-ratio check), and prototype-named sheets, relationship ids and references (inert; one `UNREADABLE_PART`), and number-format oddities: a 3,000-character code, nested brackets, a huge elapsed serial, 400-digit exponents and 300-digit fractions, prototype-named format ids and style indexes past the end (General fallbacks, no warnings).
+
+## Macro-enabled files
+
+`.xlsm` files are detected by their macro-enabled main content type and reported with their own format id (`xlsm`), and are read by this reader with the same blocks as the plain version. A VBA project part (`vbaProject.bin`) sets `features.hasMacros` and adds one `MACROS_PRESENT` warning. Macros are never parsed, extracted or run (SEC-11). `corpus/xlsx/workbook-values-formulas-macros.xlsm` is made by `scripts/corpus/make-macro-enabled.mjs`.

@@ -12,7 +12,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 |---|---|---|---|---|
 | csv | `docsluice/csv` | 4 | 4 | [csv.md](csv.md) |
 | doc | `docsluice/doc` | 2 | 2 | [doc.md](doc.md) |
-| docx | `docsluice/docx` | 8 | 8 | [docx.md](docx.md) |
+| docx | `docsluice/docx` | 9 | 9 | [docx.md](docx.md) |
 | eml | `docsluice/eml` | 8 | 8 | [eml.md](eml.md) |
 | epub | `docsluice/epub` | 4 | 4 | [epub.md](epub.md) |
 | gzip | `docsluice/gzip` | 3 | 3 | [gzip.md](gzip.md) |
@@ -25,13 +25,13 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | odt | `docsluice/odt` | 4 | 4 | [odt.md](odt.md) |
 | ole | no reader | 4 | 3 | [ole.md](ole.md) |
 | pdf | no reader | 10 | 0 | — |
-| pptx | `docsluice/pptx` | 5 | 5 | [pptx.md](pptx.md) |
+| pptx | `docsluice/pptx` | 6 | 6 | [pptx.md](pptx.md) |
 | rtf | `docsluice/rtf` | 8 | 8 | [rtf.md](rtf.md) |
 | tar | `docsluice/tar` | 4 | 4 | [tar.md](tar.md) |
 | tsv | `docsluice/tsv` | 1 | 1 | [tsv.md](tsv.md) |
 | txt | `docsluice/txt` | 3 | 3 | [txt.md](txt.md) |
 | xls | `docsluice/xls` | 4 | 4 | [xls.md](xls.md) |
-| xlsx | `docsluice/xlsx` | 7 | 7 | [xlsx.md](xlsx.md) |
+| xlsx | `docsluice/xlsx` | 8 | 8 | [xlsx.md](xlsx.md) |
 | xml | `docsluice/xml` | 3 | 3 | [xml.md](xml.md) |
 | zip | `docsluice/zip` | 3 | 3 | [zip.md](zip.md) |
 
@@ -45,12 +45,12 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | CSV-1 | Guess the delimiter (comma, semicolon, tab, pipe), handle quoted fields with line breaks, and skip a BOM. | `csv/pipe-ragged.csv`<br>`csv/rfc4180-crlf.csv`<br>`csv/semicolon.csv`<br>`csv/unterminated-quote.csv`<br>`tsv/bom-tabs.tsv` | — |
 | DET-1 | Deterministic output: same bytes and options give byte-identical JSON for the same docsluice version. | Not covered | — |
 | DOC-1 | Read paragraphs in document order, including inside tables, text boxes and content controls. | `docx/edge-cases.docx` | — |
-| DOC-2 | Find headings from built-in heading styles **and** from outline levels on custom styles. | `docx/edge-cases.docx`<br>`docx/headings-outline.docx`<br>`odt/headings-outline.odt`<br>`pdf/headings-outline.pdf (no golden)`<br>`rtf/headings-outline.rtf` | — |
+| DOC-2 | Find headings from built-in heading styles **and** from outline levels on custom styles. | `docx/edge-cases.docx`<br>`docx/headings-outline-macros.docm`<br>`docx/headings-outline.docx`<br>`odt/headings-outline.odt`<br>`pdf/headings-outline.pdf (no golden)`<br>`rtf/headings-outline.rtf` | — |
 | DOC-3 | Rebuild list numbering ("1.", "a)", bullets) and nesting from the numbering definitions. | `docx/lists-tables.docx`<br>`docx/numbering.docx`<br>`odt/lists-tables.odt`<br>`pdf/lists-tables.pdf (no golden)`<br>`rtf/lists-tables.rtf` | — |
 | DOC-4 | Read tables with merged cells (horizontal and vertical) and nested tables. | `docx/lists-tables.docx`<br>`docx/tables.docx`<br>`odt/lists-tables.odt`<br>`pdf/lists-tables.pdf (no golden)`<br>`rtf/lists-tables.rtf` | — |
 | DOC-5 | Read headers, footers, footnotes, endnotes and comments. Each is its own block kind, so callers can keep or drop it. | `docx/notes-comments-revisions.docx`<br>`odt/notes-comments-revisions.odt`<br>`pdf/notes-comments-revisions.pdf (no golden)`<br>`rtf/notes-comments-revisions.rtf` | — |
 | DOC-6 | Tracked changes: option `revisions: 'accept' \| 'reject' \| 'show'`. Default `accept` (the text as it would read once all changes are accepted). | `docx/notes-comments-revisions.docx`<br>`docx/revisions-images.docx`<br>`odt/notes-comments-revisions.odt`<br>`pdf/notes-comments-revisions.pdf (no golden)`<br>`rtf/notes-comments-revisions.rtf` | — |
-| DOC-7 | Hyperlinks keep their target URL. Bookmarks and cross-references keep their visible text. | `docx/edge-cases.docx`<br>`docx/headings-outline.docx`<br>`docx/hyperlinks-image.docx`<br>`odt/headings-outline.odt`<br>`odt/hyperlinks-image.odt`<br>`pdf/headings-outline.pdf (no golden)`<br>`pdf/hyperlinks-image.pdf (no golden)`<br>`rtf/headings-outline.rtf`<br>`rtf/hyperlinks-image.rtf` | — |
+| DOC-7 | Hyperlinks keep their target URL. Bookmarks and cross-references keep their visible text. | `docx/edge-cases.docx`<br>`docx/headings-outline-macros.docm`<br>`docx/headings-outline.docx`<br>`docx/hyperlinks-image.docx`<br>`odt/headings-outline.odt`<br>`odt/hyperlinks-image.odt`<br>`pdf/headings-outline.pdf (no golden)`<br>`pdf/hyperlinks-image.pdf (no golden)`<br>`rtf/headings-outline.rtf`<br>`rtf/hyperlinks-image.rtf` | — |
 | DOC-8 | Images become image blocks with alt text, size and an optional reference to their bytes. | `docx/hyperlinks-image.docx`<br>`docx/revisions-images.docx`<br>`odt/hyperlinks-image.odt`<br>`pdf/hyperlinks-image.pdf (no golden)`<br>`rtf/hyperlinks-image.rtf` | — |
 | EXT-1 | `signal: AbortSignal` on every call. | Not covered | — |
 | EXT-3 | `transform(block)` hook that runs on every block before any renderer. Use cases: redact personal data before text goes to an LLM vendor, normalise whitespace, drop blocks. | Not covered | — |
@@ -68,7 +68,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | IN-9 | Expose detection alone: `detect(bytes)` returns format, MIME type, confidence and encoding, without full parsing. | Not covered | — |
 | MOD-1 | The model is a public, versioned, documented contract. A breaking change is a major version. | Not covered | — |
 | MOD-4 | Metadata extraction can be turned off as a whole or per field (author names are personal data). | Not covered | — |
-| MOD-5 | Report document features found but not run: `hasMacros`, `hasExternalLinks`, `hasEmbeddedFiles`, `isEncrypted`, `hasJavaScript`. | Not covered | 4 |
+| MOD-5 | Report document features found but not run: `hasMacros`, `hasExternalLinks`, `hasEmbeddedFiles`, `isEncrypted`, `hasJavaScript`. | `docx/headings-outline-macros.docm`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 4 |
 | NST-1 | Read children with the **same shared budget** as the parent. A child cannot reset the byte, time or entry limits. | `gzip/multi-member.txt.gz`<br>`gzip/optional-header.gz`<br>`gzip/scores.csv.gz`<br>`msg/embedded-message.msg`<br>`tar/gnu-long-name.tar`<br>`tar/nested-folders.tar`<br>`tar/nested-folders.tar.gz`<br>`tar/pax-long-path.tar`<br>`zip/bundle.zip`<br>`zip/hello.odt`<br>`zip/zip-cli.zip` | 2 |
 | NST-2 | Maximum nesting depth (default 3). Deeper files are listed but not opened, with a warning. | Not covered | 1 |
 | NST-3 | Each child has a path (`report.zip/q3.docx/embedded.xlsx`) used in every location inside it. | `zip/bundle.zip` | — |
@@ -83,7 +83,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | PPT-1 | Slide order comes from the presentation's relationship list, **not** from file names (`slide10.xml` can come before `slide2.xml`). | `odp/deck-12-slides.odp`<br>`odp/deck-slide-order.odp`<br>`odp/reading-order.odp`<br>`pdf/deck-12-slides.pdf (no golden)`<br>`pdf/deck-slide-order.pdf (no golden)`<br>`pptx/deck-12-slides.pptx`<br>`pptx/deck-slide-order.pptx`<br>`pptx/reading-order.pptx` | — |
 | PPT-2 | Find each slide's title from its title placeholder. | `odp/deck-12-slides.odp`<br>`odp/reading-order.odp`<br>`pdf/deck-12-slides.pdf (no golden)`<br>`pptx/deck-12-slides.pptx`<br>`pptx/reading-order.pptx` | — |
 | PPT-3 | Read text frames in a sensible reading order (top to bottom, left to right), plus tables, grouped shapes and SmartArt text. | `odp/deck-12-slides.odp`<br>`odp/deck-groups-table.odp`<br>`odp/reading-order.odp`<br>`pdf/deck-12-slides.pdf (no golden)`<br>`pdf/deck-groups-table.pdf (no golden)`<br>`pptx/deck-12-slides.pptx`<br>`pptx/deck-groups-table.pptx`<br>`pptx/reading-order.pptx` | — |
-| PPT-4 | Read speaker notes as their own block kind. | `odp/deck-12-slides.odp`<br>`odp/deck-hidden-notes.odp`<br>`odp/reading-order.odp`<br>`pdf/deck-12-slides.pdf (no golden)`<br>`pdf/deck-hidden-notes.pdf (no golden)`<br>`pptx/deck-12-slides.pptx`<br>`pptx/deck-hidden-notes.pptx`<br>`pptx/reading-order.pptx` | — |
+| PPT-4 | Read speaker notes as their own block kind. | `odp/deck-12-slides.odp`<br>`odp/deck-hidden-notes.odp`<br>`odp/reading-order.odp`<br>`pdf/deck-12-slides.pdf (no golden)`<br>`pdf/deck-hidden-notes.pdf (no golden)`<br>`pptx/deck-12-slides.pptx`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`pptx/deck-hidden-notes.pptx`<br>`pptx/reading-order.pptx` | — |
 | QA-1 | A test corpus of real-world files per format, from sources with clear licences (for example files made by LibreOffice, Microsoft Office, Google Docs export, Apple Pages export, and public PDF test suites). Each file's licence is recorded beside it. | Not covered | — |
 | QA-2 | Golden snapshot tests: each corpus file has a checked-in expected JSON and Markdown output. A change in output must be reviewed. | Not covered | — |
 | QA-3 | The hostile corpus (section 14.3) runs on every pull request. | Not covered | — |
@@ -99,7 +99,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | RT-4 | Each format is its own subpath export (`docsluice/pdf`, `docsluice/xlsx`). Importing `docsluice` with the default set loads readers lazily. | Not covered | — |
 | SEC-1 | **Zip bomb** — a 40 KB file that expands to many gigabytes. \| Count bytes as they decompress. Stop at the total-uncompressed limit and at a compression-ratio limit. Never trust the sizes written in the zip header. | Not covered | 12 |
 | SEC-10 | **Network calls** — linked images, remote templates, external relationships in Office files, PDF remote actions. \| docsluice never fetches anything. External targets are reported as data only (`hasExternalLinks`). | Not covered | 4 |
-| SEC-11 | **Running content** — macros, PDF JavaScript, HTML scripts, formulas. \| Never run. Report presence only. Formula text is returned as a string. | `ods/formulas.ods`<br>`xlsx/formulas.xlsx` | 2 |
+| SEC-11 | **Running content** — macros, PDF JavaScript, HTML scripts, formulas. \| Never run. Report presence only. Formula text is returned as a string. | `docx/headings-outline-macros.docm`<br>`ods/formulas.ods`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/formulas.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 2 |
 | SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 27 |
 | SEC-14 | **Supply-chain attack** through a dependency. \| Few dependencies, pinned with a lockfile, reviewed on update. No install scripts. Publish with npm provenance. | Not covered | — |
 | SEC-2 | **Too many entries** — a zip with a million tiny files. \| Entry-count limit, checked before reading entries. | Not covered | 4 |
@@ -111,9 +111,9 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | SEC-8 | **Deep nesting** — tables in tables, lists in lists, 10,000 levels deep, to crash the stack. \| Depth limit everywhere. Iterative code, not recursion, for tree walks over file data. | Not covered | 18 |
 | SEC-9 | **Endless loops** — PDF objects or zip parts that point at each other. \| Visited sets on every reference graph. A global time budget. | Not covered | 14 |
 | XLS-1 | Read every sheet in workbook order, with its name and state (visible, hidden, very hidden). | `ods/cell-types.ods`<br>`ods/workbook-hidden-sparse.ods`<br>`xls/workbook-hidden-sparse.xls`<br>`xlsx/cell-types.xlsx`<br>`xlsx/workbook-hidden-sparse.xlsx` | — |
-| XLS-2 | Resolve shared strings, inline strings and rich-text runs. | `ods/cell-types.ods`<br>`ods/workbook-merged-richstrings.ods`<br>`ods/workbook-values-formulas.ods`<br>`xls/workbook-merged-richstrings.xls`<br>`xls/workbook-values-formulas.xls`<br>`xlsx/cell-types.xlsx`<br>`xlsx/workbook-merged-richstrings.xlsx`<br>`xlsx/workbook-values-formulas.xlsx` | — |
-| XLS-3 | Apply number formats to give the value a person sees: dates (both 1900 and 1904 date systems), percentages, currency, thousands separators. Keep the raw value too. | `ods/number-formats.ods`<br>`ods/workbook-1904-note.ods`<br>`ods/workbook-values-formulas.ods`<br>`xls/workbook-1904-note.xls`<br>`xls/workbook-values-formulas.xls`<br>`xlsx/number-formats.xlsx`<br>`xlsx/workbook-1904-note.xlsx`<br>`xlsx/workbook-values-formulas.xlsx` | 1 |
-| XLS-4 | Formulas: return the **cached value** saved in the file, plus the formula text as an option. Never calculate formulas. | `ods/formulas.ods`<br>`ods/workbook-values-formulas.ods`<br>`xls/workbook-values-formulas.xls`<br>`xlsx/formulas.xlsx`<br>`xlsx/workbook-values-formulas.xlsx` | — |
+| XLS-2 | Resolve shared strings, inline strings and rich-text runs. | `ods/cell-types.ods`<br>`ods/workbook-merged-richstrings.ods`<br>`ods/workbook-values-formulas.ods`<br>`xls/workbook-merged-richstrings.xls`<br>`xls/workbook-values-formulas.xls`<br>`xlsx/cell-types.xlsx`<br>`xlsx/workbook-merged-richstrings.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm`<br>`xlsx/workbook-values-formulas.xlsx` | — |
+| XLS-3 | Apply number formats to give the value a person sees: dates (both 1900 and 1904 date systems), percentages, currency, thousands separators. Keep the raw value too. | `ods/number-formats.ods`<br>`ods/workbook-1904-note.ods`<br>`ods/workbook-values-formulas.ods`<br>`xls/workbook-1904-note.xls`<br>`xls/workbook-values-formulas.xls`<br>`xlsx/number-formats.xlsx`<br>`xlsx/workbook-1904-note.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm`<br>`xlsx/workbook-values-formulas.xlsx` | 1 |
+| XLS-4 | Formulas: return the **cached value** saved in the file, plus the formula text as an option. Never calculate formulas. | `ods/formulas.ods`<br>`ods/workbook-values-formulas.ods`<br>`xls/workbook-values-formulas.xls`<br>`xlsx/formulas.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm`<br>`xlsx/workbook-values-formulas.xlsx` | — |
 | XLS-5 | Merged cells, used range, and sparse sheets (a value in A1 and one in Z90000 must not create 2 million empty cells). | `ods/cell-types.ods`<br>`ods/workbook-hidden-sparse.ods`<br>`ods/workbook-merged-richstrings.ods`<br>`xls/workbook-hidden-sparse.xls`<br>`xls/workbook-merged-richstrings.xls`<br>`xlsx/cell-types.xlsx`<br>`xlsx/workbook-hidden-sparse.xlsx`<br>`xlsx/workbook-merged-richstrings.xlsx` | 2 |
 | XLS-6 | Limits on rows, columns and cells per sheet and per workbook, with a `TRUNCATED` warning that says how much was skipped. | Not covered | — |
 | XLS-7 | Each cell has an address (`Sheet2!B7`) for citations. | `ods/cell-types.ods`<br>`xlsx/cell-types.xlsx` | — |

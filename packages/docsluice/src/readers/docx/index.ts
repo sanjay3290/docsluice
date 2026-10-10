@@ -21,7 +21,13 @@ import { parseDocxStyles } from './styles.js';
 import type { DocxStyle } from './styles.js';
 
 const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-const MAIN_PART_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml';
+/** Main part content types for documents, templates and their macro-enabled forms. */
+const MAIN_PART_TYPES: ReadonlySet<string> = new Set([
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml',
+  'application/vnd.ms-word.document.macroEnabled.main+xml',
+  'application/vnd.ms-word.template.macroEnabledTemplate.main+xml',
+]);
 const OFFICE_DOCUMENT_REL =
   'http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument';
 const STYLES_REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles';
@@ -207,7 +213,7 @@ export const docxReader: Reader = {
       return;
     }
     const mainType = contentTypes.mimeType(main.path);
-    if (mainType !== undefined && mainType !== MAIN_PART_TYPE) {
+    if (mainType !== undefined && !MAIN_PART_TYPES.has(mainType)) {
       ctx.warnings.add({
         code: 'FORMAT_MISMATCH',
         message: 'The DOCX main part has an unexpected content type.',

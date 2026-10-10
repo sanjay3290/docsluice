@@ -158,9 +158,21 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     mimeTypes: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
     load: () => import('../readers/docx/index.js').then((module) => module.docxReader),
   });
+  // Macro-enabled files are read like their plain version; macros are flagged, never read or run.
+  registry.add({
+    id: 'docm',
+    mimeTypes: ['application/vnd.ms-word.document.macroEnabled.12'],
+    load: () => import('../readers/docx/index.js').then((module) => module.docxReader),
+  });
   registry.add({
     id: 'xlsx',
     mimeTypes: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+    load: () => import('../readers/xlsx/index.js').then((module) => module.xlsxReader),
+  });
+  // Macro-enabled files are read like their plain version; macros are flagged, never read or run.
+  registry.add({
+    id: 'xlsm',
+    mimeTypes: ['application/vnd.ms-excel.sheet.macroEnabled.12'],
     load: () => import('../readers/xlsx/index.js').then((module) => module.xlsxReader),
   });
   registry.add({
@@ -171,6 +183,12 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
   registry.add({
     id: 'pptx',
     mimeTypes: ['application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+    load: () => import('../readers/pptx/index.js').then((module) => module.pptxReader),
+  });
+  // Macro-enabled files are read like their plain version; macros are flagged, never read or run.
+  registry.add({
+    id: 'pptm',
+    mimeTypes: ['application/vnd.ms-powerpoint.presentation.macroEnabled.12'],
     load: () => import('../readers/pptx/index.js').then((module) => module.pptxReader),
   });
   registry.add({

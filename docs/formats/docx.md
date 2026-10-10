@@ -59,3 +59,7 @@ Each picture becomes an `image` block at its place in the document, after the pa
 - An embedded picture (`r:embed`, `r:id`) gets `mimeType` from `[Content_Types].xml` and `ref` naming a listed child (`children`) at the image part's path. Bytes are included only with `childBytes: true`. `children: 'skip'` leaves out `ref` and the child list.
 - A linked picture (`r:link` to an external target) has no `ref`; docsluice never fetches it.
 - Values that cannot be parsed are left out; the block stays.
+
+## Macro-enabled files
+
+`.docm (and .dotm templates)` files are detected by their macro-enabled main content type and reported with their own format id (`docm`), and are read by this reader with the same blocks as the plain version. A VBA project part (`vbaProject.bin`) sets `features.hasMacros` and adds one `MACROS_PRESENT` warning. Macros are never parsed, extracted or run (SEC-11). `corpus/docx/headings-outline-macros.docm` is made by `scripts/corpus/make-macro-enabled.mjs`.
