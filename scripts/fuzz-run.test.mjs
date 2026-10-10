@@ -223,10 +223,13 @@ test('both fuzz workflows run every registered target', async () => {
   const expected = Object.keys(TARGETS).sort();
   for (const workflow of ['fuzz-pr.yml', 'fuzz-nightly.yml']) {
     const text = await readFile(join(root, '.github/workflows', workflow), 'utf8');
-    const line = text.split('\n').find((row) => row.trim().startsWith('target: ['));
-    assert.ok(line, `${workflow} has a target matrix`);
-    const listed = line
-      .slice(line.indexOf('[') + 1, line.indexOf(']'))
+    // The matrix may be inline or wrapped onto the next line by Prettier.
+    const key = text.indexOf('target:');
+    const open = text.indexOf('[', key);
+    const close = text.indexOf(']', open);
+    assert.ok(key >= 0 && open > key && close > open, `${workflow} has a target matrix`);
+    const listed = text
+      .slice(open + 1, close)
       .split(',')
       .map((name) => name.trim())
       .sort();
