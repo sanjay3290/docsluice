@@ -1,0 +1,73 @@
+[
+  {
+    "source": "src/headings-outline.fodt",
+    "formats": ["docx", "odt", "pdf"],
+    "requirements": ["DOC-2", "DOC-7"]
+  },
+  {
+    "source": "src/lists-tables.fodt",
+    "formats": ["docx", "odt", "pdf"],
+    "requirements": ["DOC-3", "DOC-4"]
+  },
+  {
+    "source": "src/notes-comments-revisions.fodt",
+    "formats": ["docx", "odt", "pdf"],
+    "requirements": ["DOC-5", "DOC-6"]
+  },
+  {
+    "source": "src/hyperlinks-image.fodt",
+    "formats": ["docx", "odt", "pdf"],
+    "requirements": ["DOC-7", "DOC-8"]
+  },
+  {
+    "source": "src/workbook-values-formulas.fods",
+    "formats": ["xlsx", "ods"],
+    "requirements": ["XLS-2", "XLS-3", "XLS-4"]
+  },
+  {
+    "source": "src/workbook-hidden-sparse.fods",
+    "formats": ["xlsx", "ods"],
+    "requirements": ["XLS-1", "XLS-5"]
+  },
+  {
+    "source": "src/workbook-merged-richstrings.fods",
+    "formats": ["xlsx", "ods"],
+    "requirements": ["XLS-2", "XLS-5"]
+  },
+  {
+    "source": "src/workbook-1904-note.fods",
+    "formats": ["xlsx", "ods"],
+    "requirements": ["XLS-3"]
+  },
+  {
+    "source": "src/deck-12-slides.fodp",
+    "formats": ["pptx", "odp", "pdf"],
+    "requirements": ["PPT-1", "PPT-2", "PPT-3", "PPT-4"]
+  },
+  {
+    "source": "src/deck-groups-table.fodp",
+    "formats": ["pptx", "odp", "pdf"],
+    "requirements": ["PPT-3"]
+  },
+  {
+    "source": "src/deck-hidden-notes.fodp",
+    "formats": ["pptx", "odp", "pdf"],
+    "requirements": ["PPT-4"]
+  },
+  {
+    "source": "src/deck-slide-order.fodp",
+    "formats": ["pptx", "odp", "pdf"],
+    "requirements": ["PPT-1"]
+  },
+  {
+    "source": "src/scanned-image-only.fodt",
+    "formats": ["pdf"],
+    "requirements": ["PDF-4"]
+  },
+  {
+    "source": "src/encrypted-document.fodt",
+    "formats": ["pdf"],
+    "requirements": ["PDF-5"],
+    "pdfPassword": "docsluice-fixture-only"
+  }
+]

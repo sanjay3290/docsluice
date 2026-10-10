@@ -1,0 +1,374 @@
+{
+  "version": "LibreOffice 24.2.7.2 420(Build:2)",
+  "outputs": [
+    {
+      "source": "scripts/corpus/src/headings-outline.fodt",
+      "requirements": [
+        "DOC-2",
+        "DOC-7"
+      ],
+      "sizeBytes": 7591,
+      "sha256": "b83d41be9c64e16caecab76d196132e8529fb693095e399abe062c5660be8cf1",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/docx/headings-outline.docx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/headings-outline.fodt",
+      "requirements": [
+        "DOC-2",
+        "DOC-7"
+      ],
+      "sizeBytes": 11352,
+      "sha256": "d80083df4450ecf2b0a449cd3945cbcc5e900b025c40548d60fde5a0dc681866",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/odt/headings-outline.odt",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/headings-outline.fodt",
+      "requirements": [
+        "DOC-2",
+        "DOC-7"
+      ],
+      "sizeBytes": 45684,
+      "sha256": "f9983c6cddf55f103a901ea6214dd40642427647eff97afc6f00d2d41ae745df",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pdf/headings-outline.pdf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/lists-tables.fodt",
+      "requirements": [
+        "DOC-3",
+        "DOC-4"
+      ],
+      "sizeBytes": 6333,
+      "sha256": "43490d664b8318b7436b7241f0c30bfd4df46971d934fd67c1cc807a1883412f",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/docx/lists-tables.docx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/lists-tables.fodt",
+      "requirements": [
+        "DOC-3",
+        "DOC-4"
+      ],
+      "sizeBytes": 12794,
+      "sha256": "e8ce3ce1e9d3758fc57752d9efb9c365651e4bb154fac66225e41411f8a76fed",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/odt/lists-tables.odt",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/lists-tables.fodt",
+      "requirements": [
+        "DOC-3",
+        "DOC-4"
+      ],
+      "sizeBytes": 29735,
+      "sha256": "aecde83f5cec243b468e5bb75fce28c42eff435328fd6e7c46f7ebbc31d8110e",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pdf/lists-tables.pdf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/notes-comments-revisions.fodt",
+      "requirements": [
+        "DOC-5",
+        "DOC-6"
+      ],
+      "sizeBytes": 8023,
+      "sha256": "c6daa262befbe8c6926e73a9dc1405cc23736bdfda63969f29a25f9e38359585",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/docx/notes-comments-revisions.docx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/notes-comments-revisions.fodt",
+      "requirements": [
+        "DOC-5",
+        "DOC-6"
+      ],
+      "sizeBytes": 12191,
+      "sha256": "928162d1c285579e3e81c1d1359924be0d8df769201a1a5454e6c0b7048b4785",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/odt/notes-comments-revisions.odt",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/notes-comments-revisions.fodt",
+      "requirements": [
+        "DOC-5",
+        "DOC-6"
+      ],
+      "sizeBytes": 24917,
+      "sha256": "59489436b77017415dec374f6495e8620dce3c067f46b6836ac4c17d0ff41695",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pdf/notes-comments-revisions.pdf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/hyperlinks-image.fodt",
+      "requirements": [
+        "DOC-7",
+        "DOC-8"
+      ],
+      "sizeBytes": 6360,
+      "sha256": "b64b2b6c7aaa2e074162831b297ffd436726dfe079c4e32ba20f957dee5ae53b",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/docx/hyperlinks-image.docx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/hyperlinks-image.fodt",
+      "requirements": [
+        "DOC-7",
+        "DOC-8"
+      ],
+      "sizeBytes": 11374,
+      "sha256": "4b85ce4057c83497fa1f6b744b40ab599d285374e10a5155f220208c78eb466e",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/odt/hyperlinks-image.odt",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/hyperlinks-image.fodt",
+      "requirements": [
+        "DOC-7",
+        "DOC-8"
+      ],
+      "sizeBytes": 19913,
+      "sha256": "7acfff0e401fdfbfaa73766412794da754ce7f8a6167bd0da97424317c6e032c",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pdf/hyperlinks-image.pdf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-values-formulas.fods",
+      "requirements": [
+        "XLS-2",
+        "XLS-3",
+        "XLS-4"
+      ],
+      "sizeBytes": 6827,
+      "sha256": "d5ae3a6dfea940c113107cb2b40c6bdf96e80c0ab5bbe2aff4cd962b526ae24e",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/xlsx/workbook-values-formulas.xlsx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-values-formulas.fods",
+      "requirements": [
+        "XLS-2",
+        "XLS-3",
+        "XLS-4"
+      ],
+      "sizeBytes": 11342,
+      "sha256": "a8c3355af773bbd36b8f58fc28a083c89f153d648f755b5f36f0ca414665dd25",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/ods/workbook-values-formulas.ods",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-hidden-sparse.fods",
+      "requirements": [
+        "XLS-1",
+        "XLS-5"
+      ],
+      "sizeBytes": 7771,
+      "sha256": "37ea3271a44623fe4f7b05fb8a87574a6a25621b2df2e99e2c01fbe785129de4",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/xlsx/workbook-hidden-sparse.xlsx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-hidden-sparse.fods",
+      "requirements": [
+        "XLS-1",
+        "XLS-5"
+      ],
+      "sizeBytes": 8716,
+      "sha256": "fcfebd33a21a1043a22aacc1f3a840678e2b951e0ea565ec8b73d6d47d35c060",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/ods/workbook-hidden-sparse.ods",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-merged-richstrings.fods",
+      "requirements": [
+        "XLS-2",
+        "XLS-5"
+      ],
+      "sizeBytes": 5643,
+      "sha256": "f8811d17c7c8d7357ed88988a18d9cb422ab1789d646e7c60bc5b80d605935af",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/xlsx/workbook-merged-richstrings.xlsx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-merged-richstrings.fods",
+      "requirements": [
+        "XLS-2",
+        "XLS-5"
+      ],
+      "sizeBytes": 11400,
+      "sha256": "37ec5bd665a2323c149a9a01be638fea50de118584448d5d194e8de5cbd35387",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/ods/workbook-merged-richstrings.ods",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-1904-note.fods",
+      "requirements": [
+        "XLS-3"
+      ],
+      "sizeBytes": 5524,
+      "sha256": "42eb1f3928a4e5ae2514ef0fdd4c2ea3a131cc33ba2e8d589bbc1ec7981bea9c",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/xlsx/workbook-1904-note.xlsx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-1904-note.fods",
+      "requirements": [
+        "XLS-3"
+      ],
+      "sizeBytes": 9780,
+      "sha256": "708bb462241b84d9155628da7d4fd19d59f19e9917d5540f0616a9ba990af9e3",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/ods/workbook-1904-note.ods",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-12-slides.fodp",
+      "requirements": [
+        "PPT-1",
+        "PPT-2",
+        "PPT-3",
+        "PPT-4"
+      ],
+      "sizeBytes": 26715,
+      "sha256": "d3e6f2b6772327e3b922f9cae4441aead0f5a49075e048d8134209708b1e2641",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pptx/deck-12-slides.pptx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-12-slides.fodp",
+      "requirements": [
+        "PPT-1",
+        "PPT-2",
+        "PPT-3",
+        "PPT-4"
+      ],
+      "sizeBytes": 16023,
+      "sha256": "2e9167e85d72ea7e650900ca4dc9dffd3700c94be16f15e6dcb570560069736e",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/odp/deck-12-slides.odp",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-12-slides.fodp",
+      "requirements": [
+        "PPT-1",
+        "PPT-2",
+        "PPT-3",
+        "PPT-4"
+      ],
+      "sizeBytes": 44242,
+      "sha256": "6afae529dc272da2c9e3318bf19b95134e09fe7f03a444b3623850e3b4b5ad0a",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pdf/deck-12-slides.pdf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-groups-table.fodp",
+      "requirements": [
+        "PPT-3"
+      ],
+      "sizeBytes": 10419,
+      "sha256": "7a3ccffa5c51fa5e8dfe7c9ab302da969bf5e39d823b04152a663d6a21e4725f",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pptx/deck-groups-table.pptx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-groups-table.fodp",
+      "requirements": [
+        "PPT-3"
+      ],
+      "sizeBytes": 15936,
+      "sha256": "89a6395de04aa0dcb4ae0391c169caab070a789618115e225718aa79de02cb48",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/odp/deck-groups-table.odp",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-groups-table.fodp",
+      "requirements": [
+        "PPT-3"
+      ],
+      "sizeBytes": 23485,
+      "sha256": "a6e5e98a730577842cb8fc539fd4fab7419434008233b9036b63bd1d875f907f",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pdf/deck-groups-table.pdf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-hidden-notes.fodp",
+      "requirements": [
+        "PPT-4"
+      ],
+      "sizeBytes": 13892,
+      "sha256": "9c53e54962851a381ce900504b7fdc72943f280338fd8931fcecea8c8c100fe3",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pptx/deck-hidden-notes.pptx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-hidden-notes.fodp",
+      "requirements": [
+        "PPT-4"
+      ],
+      "sizeBytes": 11233,
+      "sha256": "1d8bab7343c77256dd5babd5960dcda4e3c12a74cf71d3239fb61512c75b62c5",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/odp/deck-hidden-notes.odp",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-hidden-notes.fodp",
+      "requirements": [
+        "PPT-4"
+      ],
+      "sizeBytes": 13037,
+      "sha256": "b69129f3fa79b9fae9bb21dae5660c206ef7e1f3bad702e1176e75988cc8d232",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pdf/deck-hidden-notes.pdf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-slide-order.fodp",
+      "requirements": [
+        "PPT-1"
+      ],
+      "sizeBytes": 22951,
+      "sha256": "eec9876c96f1e13de5460adc45e66268bcff566dfc25154f9fe5b7409e97966d",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pptx/deck-slide-order.pptx",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-slide-order.fodp",
+      "requirements": [
+        "PPT-1"
+      ],
+      "sizeBytes": 15053,
+      "sha256": "eee1ebfa37f6d513a99934166726ba6f60b4ae9e117ca6f2416634660b2b42c5",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/odp/deck-slide-order.odp",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/deck-slide-order.fodp",
+      "requirements": [
+        "PPT-1"
+      ],
+      "sizeBytes": 38306,
+      "sha256": "61386c1fc1b95f596293e4c1ae81bed3f3a95a7b866042abc5dc15d5cb178f32",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pdf/deck-slide-order.pdf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/scanned-image-only.fodt",
+      "requirements": [
+        "PDF-4"
+      ],
+      "sizeBytes": 94236,
+      "sha256": "79510217b939e0a8e47651a43a72ed982e98aaa24035468b112f38ee9438f08e",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pdf/scanned-image-only.pdf",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/encrypted-document.fodt",
+      "requirements": [
+        "PDF-5"
+      ],
+      "sizeBytes": 17726,
+      "sha256": "1e14ffbd6434f3775d4386bddab5c908e7a2eb351f8c55279f02d843d82ccb63",
+      "file": "../../../tmp/claude-0/-home-user-docsluice/053149bd-5c3e-5528-ba5b-76ec75a3245c/scratchpad/lo2/pdf/encrypted-document.pdf",
+      "goldenStatus": "unreviewed"
+    }
+  ]
+}

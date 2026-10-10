@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: made for docsluice with LibreOffice 24.2.7.2 420(Build:2) from scripts/corpus/src/headings-outline.fodt
+Requirements: DOC-2, DOC-7
+Notes: Synthetic fixture; requirement association needs reader-owner golden review.

@@ -19,7 +19,7 @@
     "fuzz": "node scripts/fuzz-run.mjs",
     "test:dist": "npm run build && node --test packages/*/test-dist/*.test.mjs",
     "check:package": "npm run check:package --workspace packages/docsluice",
-    "test:runtime-tools": "node scripts/runtime-fixtures.mjs --check && node --test scripts/test/*.test.mjs packages/docsluice/test-runtime/workers/buffer-trap.test.mjs",
+    "test:runtime-tools": "node scripts/runtime-fixtures.mjs --check && node --test scripts/test/*.test.mjs scripts/corpus/build.test.mjs packages/docsluice/test-runtime/workers/buffer-trap.test.mjs",
     "test:browser": "vitest run --config packages/docsluice/test-runtime/browser/vitest.config.mjs",
     "verify": "npm run lint && npm run typecheck && npm run test && npm run test:runtime-tools && npm run build && npm run check:package && npm run test:dist"
   },
