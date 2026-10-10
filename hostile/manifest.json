@@ -1461,5 +1461,34 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-9"
+  },
+  {
+    "file": "docx/math-deep-and-wide.docx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "docx/field-and-style-floods.docx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "docx/object-oddities.docx",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "NST-1"
   }
 ]

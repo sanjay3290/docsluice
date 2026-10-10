@@ -2,7 +2,7 @@
 
 The DOCX reader extracts Word paragraphs in document order, including paragraphs inside tables, content controls, and text boxes. Built-in heading styles (`Heading 1` through `Heading 6`, plus `Title`), localized heading names, and custom styles with inherited outline levels become heading blocks. A paragraph's own `w:outlineLvl` overrides its style: levels 0–5 are headings 1–6, and any other level (9 is body text) is a paragraph. Hyperlinks retain their relationship target; bookmark links retain visible text. Set `runs: true` to retain bold, italic, and hyperlink details in paragraph runs.
 
-The body is read from the `word/document.xml` part with the shared SAX XML scanner. Markup compatibility `AlternateContent` emits one branch: a supported `Choice` or its `Fallback`. Textbox paragraphs appear at their anchor position; surrounding anchor text is kept in ordered paragraph segments. Field instruction text is never returned.
+The body is read from the `word/document.xml` part with the shared SAX XML scanner. Markup compatibility `AlternateContent` emits one branch: a supported `Choice` or its `Fallback`. Textbox paragraphs appear at their anchor position; surrounding anchor text is kept in ordered paragraph segments. Field instruction text is never returned (see Fields below).
 
 XML depth and staged output are governed by the shared `Budget`. A caller's abort signal, strict warning policy, output-character limit, and XML depth limit therefore apply while scanning the DOCX body.
 
@@ -10,7 +10,7 @@ XML depth and staged output are governed by the shared `Budget`. A caller's abor
 
 Performance (PERF-1): a 5.5 MB DOCX with about 40,000 paragraphs extracts in 0.75–0.94 s on a development machine. #182 tracks more headroom.
 
-Hostile samples in `hostile/docx/`: 10,000 nested content controls (stopped by the XML depth budget with `TRUNCATED`), a 40 MB `document.xml` in a small archive (`LIMIT_EXCEEDED` from the compression-ratio check), prototype-named style ids (inert), and images with prototype-named alt text, nonsense extents and relationship ids plus nested revisions (inert, `HIDDEN_CONTENT`).
+Hostile samples in `hostile/docx/`: 10,000 nested content controls (stopped by the XML depth budget with `TRUNCATED`), a 40 MB `document.xml` in a small archive (`LIMIT_EXCEEDED` from the compression-ratio check), prototype-named style ids (inert), images with prototype-named alt text, nonsense extents and relationship ids plus nested revisions (inert, `HIDDEN_CONTENT`), Office Math nested 120 levels deep beside 8,000 fractions (`math-deep-and-wide.docx`), 10,000 unterminated field begins, 10,000 stray field ends and a 5,000-link cyclic style chain (`field-and-style-floods.docx`, text after each flood survives), and objects embedding each other past `childDepth`, pointing at the main part, with prototype-named and missing ids and an external link (`object-oddities.docx`, `DEPTH_LIMIT`).
 
 ## Lists (DOC-3)
 
@@ -59,6 +59,46 @@ Each picture becomes an `image` block at its place in the document, after the pa
 - An embedded picture (`r:embed`, `r:id`) gets `mimeType` from `[Content_Types].xml` and `ref` naming a listed child (`children`) at the image part's path. Bytes are included only with `childBytes: true`. `children: 'skip'` leaves out `ref` and the child list.
 - A linked picture (`r:link` to an external target) has no `ref`; docsluice never fetches it.
 - Values that cannot be parsed are left out; the block stays.
+
+## Hidden text (DOC-9)
+
+Run text formatted as hidden (`w:vanish`) is left out unless `includeHidden: true`, with one `HIDDEN_CONTENT` warning ("Hidden text was left out; set includeHidden to keep it."). Hidden is resolved as Word does: a run's own `w:vanish` (including `w:val="0"` to turn it off) wins over its character style (`w:rStyle`), which wins over the paragraph style; styles inherit `w:vanish` through `basedOn`. Hidden tabs and breaks go with their run. A paragraph whose text is all hidden produces no block. A hidden paragraph mark alone (`w:pPr/w:rPr/w:vanish`) hides nothing. Headers, footers and notes do not apply hidden formatting yet.
+
+`corpus/docx/hidden-text.docx` (from `scripts/corpus/make-docx-p1.mjs`) has goldens for the default and, as `hidden-text.docx.include-hidden.expected.*`, for `includeHidden: true`.
+
+## Fields (DOC-10)
+
+Fields give their last shown value, never their code. For complex fields (`w:fldChar` `begin`, `separate`, `end`), only the runs between `separate` and `end` are text; everything between `begin` and `separate` is code, including the results of fields nested in the code (an `IF` around a `MERGEFIELD` shows only the `IF` result). A field without a result shows nothing. A simple field (`w:fldSimple`) shows its child runs. Results may span paragraphs (a table of contents). Page numbers, dates and merge fields show the value saved in the file; nothing is recalculated.
+
+Damage is contained: a field whose code does not end in its paragraph is closed at the paragraph's end, so a stray `begin` cannot hide the rest of the document, and stray `separate`/`end` characters are ignored. Field characters inside a hidden revision (a deleted `w:del` in `accept` mode) are ignored. Up to 64 nested fields are tracked; deeper ones are only counted so the nesting stays balanced.
+
+## Equations (DOC-11)
+
+Office Math (`m:oMath`, `m:oMathPara`) becomes a linear text form in the paragraph:
+
+| Structure | Text |
+| --- | --- |
+| fraction `m:f` | `a/b`, with parentheses around anything longer than one character or a number: `(a+b)/(2a)` |
+| scripts `m:sSup`, `m:sSub`, `m:sSubSup`, `m:sPre` | `x^2`, `x_i`, `a_i^2`, `_1^2X` |
+| radical `m:rad` | `√(x)`, `∛(x)`, `∜(x)`, `√[n](x)` |
+| n-ary `m:nary` | `∑_(i=1)^n i`; the operator defaults to `∫`; hidden limits are left out |
+| delimiter `m:d` | `(a\|b)` with the file's begin, separator and end characters |
+| matrix `m:m` | row by row, `[1, 0; 0, 1]`; a matrix alone in a delimiter takes its brackets: `(1, 0; 0, 1)` |
+| function `m:func` | `sin(θ)` |
+| limits `m:limLow`, `m:limUpp` | `lim_(n→∞)`, `max^k` |
+| accent `m:acc` | the base with the accent as a combining mark (`x̂`) |
+| equation array `m:eqArr`, several equations in `m:oMathPara` | one line each |
+
+Boxes, bars, group characters and phantoms keep their content. Properties (`m:*Pr`) are never text. Nesting is handled with an explicit stack. LaTeX output is not available yet (P2).
+
+## Embedded objects (DOC-12)
+
+An OLE object (`w:object` with `o:OLEObject`) is read as a child document at the part its `r:id` names, in document order, sharing the parent's budget (NST-1):
+
+- A package part (`word/embeddings/Microsoft_Excel_Worksheet.xlsx`, `.docx`, `.pptx`) is read as it is.
+- An OLE `.bin` compound file with a `Package` stream (an Office document embedded through OLE) is read through that stream; the child's path is `word/embeddings/oleObject1.bin/Package`. Any other compound file is offered whole, so a legacy `.doc` or `.xls` object is read and an unknown OLE server's data is reported as a failed child.
+- A linked object (`Type="Link"`, an external relationship) is never opened or fetched (SEC-10). A part referenced several times is read once.
+- `children: 'list'` lists objects without reading them; `children: 'skip'` leaves them out. The object's preview picture is an ordinary `image` block.
 
 ## Macro-enabled files
 

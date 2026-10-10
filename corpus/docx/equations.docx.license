@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-docx-p1.mjs
+Requirements: DOC-11
+Notes: Office Math: fraction, radicals with and without a degree, sum and integral, scripts, delimiters, a matrix, a function, a lower limit and an accent, inline and in an oMathPara.
