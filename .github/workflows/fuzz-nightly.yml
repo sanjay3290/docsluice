@@ -33,6 +33,7 @@ jobs:
             docx,
             xlsx,
             xlsx-numfmt,
+            pptx,
           ]
     steps:
       - uses: actions/checkout@v7

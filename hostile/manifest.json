@@ -565,5 +565,32 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "XLS-3"
+  },
+  {
+    "file": "pptx/deep-groups-1000.pptx",
+    "expect": {
+      "warnings": ["TRUNCATED", "DEPTH_LIMIT"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "pptx/smartart-cycle.pptx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "pptx/proto-names-spans.pptx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-6"
   }
 ]
