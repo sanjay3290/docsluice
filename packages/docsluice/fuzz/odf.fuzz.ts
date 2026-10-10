@@ -1,3 +1,4 @@
+import { DocsluiceError } from '../src/core/errors.js';
 import { Budget } from '../src/core/budget.js';
 import { DEFAULT_LIMITS } from '../src/core/limits.js';
 import { WarningSink } from '../src/core/warnings.js';
@@ -20,7 +21,12 @@ function context(): XmlContext {
 /** Fuzz all ODF metadata helpers with arbitrary, bounded XML part bytes. */
 export function fuzzOdf(input: Uint8Array): void {
   if (input.byteLength > 1_000_000) return;
-  parseOdfMetadata(input, context());
-  parseOdfStyles(input, context());
-  parseOdfManifest(input, context());
+  for (const parse of [parseOdfMetadata, parseOdfStyles, parseOdfManifest]) {
+    try {
+      parse(input, context());
+    } catch (error) {
+      // Malformed XML and resource limits are ordinary outcomes; anything else is a finding.
+      if (!(error instanceof DocsluiceError)) throw error;
+    }
+  }
 }

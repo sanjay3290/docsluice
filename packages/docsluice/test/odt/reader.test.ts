@@ -96,8 +96,24 @@ describe('ODT reader', () => {
     });
     expect(result.blocks[3]).toMatchObject({
       kind: 'table',
-      rows: [[{ text: 'A', colSpan: 2 }, { text: 'B' }]],
+      rows: [[{ text: 'A', colSpan: 2 }, { text: '' }, { text: 'B' }]],
     });
+  });
+  it('keeps covered cells as empty grid positions, repeats cells and folds nested table text into its cell', async () => {
+    const result = await doc(
+      root(
+        `<table:table><table:table-row><table:table-cell table:number-rows-spanned="2"><text:p>Outer</text:p><table:table><table:table-row><table:table-cell><text:p>Inner</text:p></table:table-cell></table:table-row></table:table></table:table-cell><table:table-cell table:number-columns-repeated="2"><text:p>R</text:p></table:table-cell></table:table-row><table:table-row><table:covered-table-cell/><table:table-cell><text:p>B</text:p></table:table-cell><table:table-cell><text:p>C</text:p></table:table-cell></table:table-row></table:table>`,
+      ),
+    );
+    expect(result.blocks.filter((block) => block.kind === 'table')).toMatchObject([
+      {
+        rows: [
+          [{ text: 'Outer\nInner', rowSpan: 2 }, { text: 'R' }, { text: 'R' }],
+          [{ text: '' }, { text: 'B' }, { text: 'C' }],
+        ],
+      },
+      { rows: [[{ text: 'Inner' }]] },
+    ]);
   });
 
   it('keeps notes and annotations and strips annotation authors when metadata is disabled', async () => {
@@ -111,9 +127,9 @@ describe('ODT reader', () => {
     expect(result.blocks).toContainEqual(
       expect.objectContaining({ kind: 'note', role: 'footnote', text: 'Foot text' }),
     );
-    const annotation = result.blocks.find((block) => block.kind === 'note' && block.role === 'annotation');
-    expect(annotation).toMatchObject({ kind: 'note', role: 'annotation', text: 'Comment' });
-    expect(annotation).not.toHaveProperty('author');
+    const comment = result.blocks.find((block) => block.kind === 'note' && block.role === 'comment');
+    expect(comment).toMatchObject({ kind: 'note', role: 'comment', text: 'Comment' });
+    expect(comment).not.toHaveProperty('author');
   });
 
   it('lists internal images with alt text and dimensions and never fetches external links', async () => {

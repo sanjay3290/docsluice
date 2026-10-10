@@ -1,3 +1,4 @@
+import { DocsluiceError } from '../src/core/errors.js';
 import { Budget } from '../src/core/budget.js';
 import { DocBuilder } from '../src/core/builder.js';
 import { DEFAULT_LIMITS } from '../src/core/limits.js';
@@ -41,7 +42,10 @@ export async function fuzzOdt(bytes: Uint8Array): Promise<void> {
       zip,
     };
     await odtReader.read(context as never);
-  } catch {
-    // Malformed archives and expected limit/encryption errors are ordinary fuzz outcomes.
+    context.out.finish();
+  } catch (error) {
+    // Malformed archives, limits and encryption are ordinary outcomes; anything else is a finding.
+    if (error instanceof DocsluiceError) return;
+    throw error;
   }
 }

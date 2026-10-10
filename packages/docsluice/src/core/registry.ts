@@ -164,6 +164,11 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     load: () => import('../readers/pptx/index.js').then((module) => module.pptxReader),
   });
   registry.add({
+    id: 'odt',
+    mimeTypes: ['application/vnd.oasis.opendocument.text'],
+    load: () => import('../readers/odt/index.js').then((module) => module.odtReader),
+  });
+  registry.add({
     id: 'zip',
     mimeTypes: ['application/zip'],
     load: () => import('../readers/zip/index.js').then((module) => module.zipReader),

@@ -19,6 +19,8 @@ const DRAW_NS = 'urn:oasis:names:tc:opendocument:xmlns:drawing:1.0';
 const SVG_NS = 'urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0';
 const XLINK_NS = 'http://www.w3.org/1999/xlink';
 const MIMETYPE = 'application/vnd.oasis.opendocument.text';
+/** `number-columns-repeated` is honoured up to this many copies per cell; each copy is charged to `cells`. */
+const MAX_REPEATED_CELLS = 1024;
 const KNOWN_ODF_NAMESPACES = new Set([
   ODF_OFFICE_NS,
   TEXT_NS,
@@ -204,7 +206,6 @@ export const odtReader: Reader = {
   },
 };
 
-export default odtReader;
 
 function warn(ctx: ReadContext, code: string, message: string, path?: string): void {
   ctx.warnings.add({ code, message, loc: { path: path ?? 'content.xml' } });
@@ -903,17 +904,26 @@ function addTable(
         (cell.localName !== 'table-cell' && cell.localName !== 'covered-table-cell')
       )
         continue;
-      if (cell.localName === 'covered-table-cell') continue;
-      ctx.budget.addCells(1);
-      const rawColSpan = attr(cell, scopes, TABLE_NS, 'number-columns-spanned', ctx);
-      const rawRowSpan = attr(cell, scopes, TABLE_NS, 'number-rows-spanned', ctx);
-      const textValue = cellText(cell, scopes, trackedChanges, ctx);
-      const output: Cell = { text: textValue };
-      const colSpan = rawColSpan ? boundedNumber(rawColSpan, 1, ctx.budget.limits.cells, ctx) : 1;
-      const rowSpan = rawRowSpan ? boundedNumber(rawRowSpan, 1, ctx.budget.limits.cells, ctx) : 1;
-      if (colSpan > 1) output.colSpan = colSpan;
-      if (rowSpan > 1) output.rowSpan = rowSpan;
-      cells.push(output);
+      const rawRepeat = attr(cell, scopes, TABLE_NS, 'number-columns-repeated', ctx);
+      const repeat = rawRepeat
+        ? Math.min(boundedNumber(rawRepeat, 1, Number.MAX_SAFE_INTEGER, ctx), MAX_REPEATED_CELLS)
+        : 1;
+      // A covered cell keeps its grid position, as in DOCX: the spanning cell carries the span.
+      let output: Cell = { text: '' };
+      if (cell.localName === 'table-cell') {
+        const rawColSpan = attr(cell, scopes, TABLE_NS, 'number-columns-spanned', ctx);
+        const rawRowSpan = attr(cell, scopes, TABLE_NS, 'number-rows-spanned', ctx);
+        output = { text: cellText(cell, scopes, trackedChanges, ctx) };
+        const colSpan = rawColSpan ? boundedNumber(rawColSpan, 1, ctx.budget.limits.cells, ctx) : 1;
+        const rowSpan = rawRowSpan ? boundedNumber(rawRowSpan, 1, ctx.budget.limits.cells, ctx) : 1;
+        if (colSpan > 1) output.colSpan = colSpan;
+        if (rowSpan > 1) output.rowSpan = rowSpan;
+      }
+      if (!ctx.budget.addCells(repeat)) break;
+      for (let copy = 0; copy < repeat; copy += 1) {
+        ctx.budget.tick();
+        cells.push(copy === 0 ? output : { ...output });
+      }
     }
     rows.push(cells);
   }
@@ -926,15 +936,25 @@ function cellText(
   trackedChanges: ReadonlyMap<string, TrackedChange>,
   ctx: ReadContext,
 ): string {
+  // Paragraphs anywhere in the cell, nested tables and lists included, in document order (as DOCX).
   const pieces: string[] = [];
-  for (const child of cell.children) {
+  const stack: XmlElement[] = [];
+  for (let index = cell.children.length - 1; index >= 0; index -= 1) {
+    const child = cell.children[index];
+    if (child && typeof child !== 'string') stack.push(child);
+  }
+  while (stack.length > 0) {
     ctx.budget.tick();
-    if (
-      typeof child !== 'string' &&
-      child.namespaceURI === TEXT_NS &&
-      (child.localName === 'p' || child.localName === 'h')
-    )
+    const child = stack.pop()!;
+    if (child.namespaceURI === TEXT_NS && (child.localName === 'p' || child.localName === 'h')) {
       pieces.push(trackedText(child, ctx, scopes, trackedChanges));
+      continue;
+    }
+    if (!KNOWN_ODF_NAMESPACES.has(child.namespaceURI ?? '')) continue;
+    for (let index = child.children.length - 1; index >= 0; index -= 1) {
+      const nested = child.children[index];
+      if (nested && typeof nested !== 'string') stack.push(nested);
+    }
   }
   return pieces.filter(Boolean).join('\n');
 }
@@ -981,7 +1001,7 @@ function addAnnotation(element: XmlElement, scopes: Map<XmlElement, OdfElement>,
     }
   }
   const content = paragraphs.filter(Boolean).join('\n');
-  if (content) ctx.out.note('annotation', content, location('content.xml'), author);
+  if (content) ctx.out.note('comment', content, location('content.xml'), author);
 }
 
 function emitDescendantNotes(
