@@ -171,6 +171,8 @@ test('GZIP and TAR reader subpaths load lazily', async () => {
 test('EML reader subpath loads lazily', async () => {
   const eml = await import('docsluice/eml');
   assert.equal(eml.emlReader.id, 'eml');
+  const msg = await import('docsluice/msg');
+  assert.equal(msg.msgReader.id, 'msg');
 });
 
 test('EPUB reader subpath loads lazily', async () => {

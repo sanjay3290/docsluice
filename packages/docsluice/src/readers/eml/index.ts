@@ -2,6 +2,7 @@ import type { Cell } from '../../core/model.js';
 import type { ReadContext, Reader } from '../../core/reader.js';
 import { decodeMimeText, parseMime, type MimePart } from '../../mime/index.js';
 import { emitHtml } from '../../html/index.js';
+import { emitPlain, safeAttachmentName } from './shared.js';
 
 function cleanHeader(value: string | undefined): string | undefined {
   return value?.replace(/[\r\n\t ]+/g, ' ').trim() || undefined;
@@ -83,32 +84,6 @@ function rfc5322Date(value: string): string | undefined {
   return new Date(local - zone * 60_000).toISOString();
 }
 
-function safeAttachmentName(
-  source: string | undefined,
-  contentId: string | undefined,
-  budget: ReadContext['budget'],
-): string {
-  const name = source ?? (contentId ? `inline-${contentId}` : 'attachment');
-  let safe = '';
-  for (let index = 0; index < name.length; index++) {
-    budget.tick();
-    const code = name.charCodeAt(index);
-    const char = name[index]!;
-    safe += code < 0x20 || code === 0x7f || char === '/' || char === '\\' ? '_' : char;
-  }
-  let start = 0;
-  let end = safe.length;
-  while (start < end && (safe[start] === ' ' || safe[start] === '\t' || safe[start] === '.')) {
-    budget.tick();
-    start++;
-  }
-  while (end > start && (safe[end - 1] === ' ' || safe[end - 1] === '\t' || safe[end - 1] === '.')) {
-    budget.tick();
-    end--;
-  }
-  return start < end ? safe.slice(start, end) : 'attachment';
-}
-
 function topLevelParts(parts: MimePart[], budget: ReadContext['budget']): MimePart[] {
   const selected: MimePart[] = [];
   const stack = [...parts].reverse();
@@ -151,28 +126,6 @@ function allParts(parts: MimePart[], budget: ReadContext['budget']): MimePart[] 
     for (let index = part.parts.length - 1; index >= 0; index--) stack.push(part.parts[index]!);
   }
   return result;
-}
-
-function emitPlain(ctx: ReadContext, text: string): void {
-  let start = 0;
-  while (start < text.length) {
-    ctx.budget.tick();
-    let end = start;
-    while (
-      end < text.length &&
-      !(text.charCodeAt(end) === 10 && (end + 1 === text.length || text.charCodeAt(end + 1) === 10))
-    ) {
-      ctx.budget.tick();
-      end++;
-    }
-    const paragraph = text.slice(start, end).trim();
-    if (paragraph && !ctx.out.paragraph(paragraph, ctx.path ? { path: ctx.path } : {})) return;
-    start = end;
-    while (start < text.length && (text[start] === '\n' || text[start] === '\r')) {
-      ctx.budget.tick();
-      start++;
-    }
-  }
 }
 
 function emitParts(ctx: ReadContext, parts: MimePart[], cidReferences: ReadonlyMap<string, string>): void {

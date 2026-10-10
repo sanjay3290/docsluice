@@ -35,6 +35,7 @@ jobs:
             zip-container,
             mime,
             eml,
+            msg,
             odf,
             odt,
             rtf,

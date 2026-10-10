@@ -199,6 +199,11 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     load: () => import('../readers/eml/index.js').then((module) => module.emlReader),
   });
   registry.add({
+    id: 'msg',
+    mimeTypes: ['application/vnd.ms-outlook'],
+    load: () => import('../readers/msg/index.js').then((module) => module.msgReader),
+  });
+  registry.add({
     id: 'epub',
     mimeTypes: ['application/epub+zip'],
     load: () => import('../readers/epub/index.js').then((module) => module.epubReader),

@@ -991,5 +991,69 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-3"
+  },
+  {
+    "file": "msg/lzfu-bomb.msg",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART",
+        "ENCODING_GUESSED",
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "msg/lzfu-size-lie.msg",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART",
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "msg/attachment-loop.msg",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "msg/embedded-nesting.msg",
+    "expect": {
+      "warnings": [
+        "TRUNCATED",
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 5000,
+    "maxHeapMB": 256,
+    "requirement": "NST-2"
+  },
+  {
+    "file": "msg/many-attachments.msg",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 5000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "msg/junk-properties.msg",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
   }
 ]
