@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { URL } from 'node:url';
 
 const manifest = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
-const NOT_READERS = new Set(['.', './node', './worker', './package.json']);
+const NOT_READERS = new Set(['.', './node', './worker', './schema.json', './package.json']);
 export const READERS = Object.keys(manifest.exports)
   .filter((subpath) => !NOT_READERS.has(subpath))
   .map((subpath) => subpath.slice(2));

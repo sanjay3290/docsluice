@@ -9,7 +9,8 @@
     "node": ">=20"
   },
   "files": [
-    "dist"
+    "dist",
+    "schema.json"
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -250,10 +251,11 @@
       "import": "./dist/epub.js",
       "require": "./dist/epub.cjs"
     },
+    "./schema.json": "./schema.json",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown && node scripts/generate-schema.mjs",
     "typecheck": "tsc -p tsconfig.json && tsc -p src/node/tsconfig.json && tsc -p test/node/tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",

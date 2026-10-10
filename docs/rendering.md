@@ -6,6 +6,19 @@ Extracted child documents are omitted by default. Pass `{ children: true }` to a
 
 `toText` processes block data under the default renderer limits for output characters (20 million), table cells (2 million), block nesting (64), child-document depth (3), and elapsed time (60 seconds). It throws the corresponding limit error instead of returning partial text. It also rejects active child-document cycles.
 
+## JSON and its schema (REN-4, MOD-2)
+
+`toJSON(doc)` writes the document with a stable key order. `{ stable: true }` sets `stats.durationMs` to 0 for snapshots, and `{ bytes: 'base64' }` includes raw child bytes, which are left out by default. The output follows a JSON Schema (draft 2020-12) shipped with the package as `docsluice/schema.json`, so tools in any language can validate docsluice JSON:
+
+```js
+import schema from 'docsluice/schema.json' with { type: 'json' };
+```
+
+- The schema is generated from `src/core/model.ts` at build time (`scripts/generate-schema.mjs`), with the TSDoc comments as `description`s, so it cannot drift from the types.
+- `$id` names the model's major version (`urn:docsluice:schema:document:v0`); a breaking model change is a new major version (MOD-1).
+- Objects reject unknown properties. Format ids and warning codes are open strings, because plugins add their own; the known values are listed as `examples`. Child `bytes` are base64 strings.
+- Every reviewed golden JSON file in the corpus validates against it in CI (`test/core/schema.test.ts`, with Ajv).
+
 ## Inline runs (MOD-3)
 
 With `runs: true`, paragraphs carry `runs`: their text cut into pieces with `bold`, `italic`, `code` and `href`. Runs are off by default to keep output small.
