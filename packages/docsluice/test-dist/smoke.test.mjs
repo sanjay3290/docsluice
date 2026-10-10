@@ -3,13 +3,21 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
+import {
+  copyFileSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+} from 'node:fs';
 import { createRequire } from 'node:module';
 import process from 'node:process';
 import { TextEncoder } from 'node:util';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { URL, fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const renderDoc = {
@@ -233,7 +241,13 @@ test('CLI: docsluice data.xlsx --format json', () => {
 });
 
 test('CLI: docsluice mail.eml --children list', () => {
-  const result = runCli([corpus('eml/mixed-order-attachments.eml'), '--children', 'list', '--format', 'json']);
+  const result = runCli([
+    corpus('eml/mixed-order-attachments.eml'),
+    '--children',
+    'list',
+    '--format',
+    'json',
+  ]);
   assert.equal(result.status, 0, result.stderr);
   const document = JSON.parse(result.stdout);
   assert.deepEqual(
@@ -246,7 +260,9 @@ test('CLI: docsluice mail.eml --children list', () => {
 });
 
 test('CLI: cat file.docx | docsluice - --format markdown', () => {
-  const result = runCli(['-', '--format', 'markdown'], { input: readFileSync(corpus('docx/headings-outline.docx')) });
+  const result = runCli(['-', '--format', 'markdown'], {
+    input: readFileSync(corpus('docx/headings-outline.docx')),
+  });
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /^# Field Notes: Tidal Gardens/m);
 });
@@ -262,7 +278,12 @@ test('CLI: docsluice "inbox/**/*.eml" --out-dir ./extracted writes one safe file
     const result = runCli(['inbox/**/*.eml', '--out-dir', './extracted'], { cwd: directory });
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.stdout, '');
-    assert.deepEqual(readdirSync(join(directory, 'extracted')).sort(), ['a_b_c.md', 'html-only.md', 'plain-2.md', 'plain.md']);
+    assert.deepEqual(readdirSync(join(directory, 'extracted')).sort(), [
+      'a_b_c.md',
+      'html-only.md',
+      'plain-2.md',
+      'plain.md',
+    ]);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
@@ -295,10 +316,18 @@ test('CLI: exit codes, stderr warnings, --strict-exit and the npm bin symlink', 
     assert.equal(runCli(['-'], { input: rtf }).status, 0);
     const help = runCli(['--help']);
     assert.equal(help.status, 0);
-    for (const flag of ['--format', '--children', '--out-dir', '--strict-exit', '--no-metadata', '--password-env', '--max-bytes', '--timeout'])
+    for (const flag of [
+      '--format',
+      '--children',
+      '--out-dir',
+      '--strict-exit',
+      '--no-metadata',
+      '--password-env',
+      '--max-bytes',
+      '--timeout',
+    ])
       assert.ok(help.stdout.includes(flag), flag);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
 });
-
