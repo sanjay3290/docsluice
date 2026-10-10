@@ -1,4 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
+import { readdirSync, readFileSync } from 'node:fs';
+import { extract } from '../../src/core/extract.js';
+import { toMarkdown } from '../../src/render/markdown.js';
 import { Budget } from '../../src/core/budget.js';
 import { resolveLimits } from '../../src/core/limits.js';
 import type { Limits } from '../../src/core/limits.js';
@@ -44,7 +47,8 @@ describe('DocBuilder', () => {
         kind: 'paragraph',
         text: ' é\n\n\t x',
         loc: {},
-        runs: [{ text: 'run\nnext\n\n' }],
+        // Runs that do not join to the paragraph text become one plain run of it.
+        runs: [{ text: ' é\n\n\t x' }],
       },
       { kind: 'list', ordered: false, items: [{ text: 'item\n\n next' }], loc: {} },
       { kind: 'table', rows: [[{ text: 'cell\n\n value' }]], headerRows: 0, caption: 'caption', loc: {} },
@@ -53,6 +57,24 @@ describe('DocBuilder', () => {
       { kind: 'header', text: 'header', loc: {} },
       { kind: 'image', alt: 'alt', loc: {} },
     ]);
+  });
+
+  it('keeps the spaces between runs, drops empty runs, and joins runs to the paragraph text', () => {
+    const { builder } = createBuilder({}, { runs: true });
+    builder.paragraph('Open the guide now.', {}, [
+      { text: 'Open ' },
+      { text: '', bold: true },
+      { text: 'the guide', href: '/g' },
+      { text: ' now.  ' },
+    ]);
+    builder.paragraph('a\nb', {}, [{ text: 'a  ' }, { text: '\nb' }]);
+    const [first, second] = builder.finish().blocks;
+    expect(first).toMatchObject({
+      text: 'Open the guide now.',
+      runs: [{ text: 'Open ' }, { text: 'the guide', href: '/g' }, { text: ' now.' }],
+    });
+    // A line end between runs: normalized apart they would keep 'a  ', so they become one run.
+    expect(second).toMatchObject({ text: 'a\nb', runs: [{ text: 'a\nb' }] });
   });
 
   it('applies transform once to every block, drops nulls, and calls onBlock in top-level order', () => {
@@ -516,5 +538,36 @@ describe('DocBuilder', () => {
     });
     expect(() => builder.paragraph('x'.repeat(10_000))).toThrow(AbortError);
     expect(ticks).toBe(9);
+  });
+});
+
+describe('runs over the corpus (MOD-3, #204)', () => {
+  const corpus = new URL('../../../../corpus/', import.meta.url);
+  const files = readdirSync(corpus, { recursive: true })
+    .map((name) => String(name).replaceAll('\\', '/'))
+    .filter((name) => /^(?:docx|html|markdown|rtf|odt)\/[^/]+\.(?:docx|html|md|rtf|odt)$/.test(name))
+    .sort();
+
+  it.each(files)('%s: every paragraph’s runs join to its text', async (name) => {
+    const doc = await extract(new Uint8Array(readFileSync(new URL(name, corpus))), {
+      filename: name.slice(name.indexOf('/') + 1),
+      runs: true,
+    });
+    const stack = [...doc.blocks];
+    while (stack.length > 0) {
+      const block = stack.pop()!;
+      if (block.kind === 'section') stack.push(...block.blocks);
+      if (block.kind === 'paragraph' && block.runs) {
+        expect(block.runs.map((run) => run.text).join('')).toBe(block.text);
+        expect(block.runs.every((run) => run.text.length > 0)).toBe(true);
+      }
+    }
+  });
+
+  it('keeps the space before a link in Markdown', async () => {
+    const doc = await extract(new Uint8Array(readFileSync(new URL('docx/hyperlinks-image.docx', corpus))), {
+      runs: true,
+    });
+    expect(toMarkdown(doc)).toContain('Open [the transect protocol](');
   });
 });
