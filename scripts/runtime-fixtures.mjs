@@ -12,6 +12,7 @@ export const fixtureSources = Object.freeze({
   csv: 'corpus/csv/rfc4180-crlf.csv',
   html: 'corpus/html/blog-post.html',
   hostileHtml: 'hostile/html/script-and-handlers.html',
+  pdf: 'corpus/pdf/labels-outline-links.pdf',
 });
 const outputRelative = 'packages/docsluice/test-runtime/fixtures.generated.mjs';
 

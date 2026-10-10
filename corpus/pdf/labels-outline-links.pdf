@@ -1,0 +1,105 @@
+%PDF-1.7
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R /Outlines 5 0 R /PageMode /UseOutlines /Lang (en-GB) /PageLabels << /Nums [0 << /S /r >> 2 << /S /D /P (A-) /St 1 >>] >> >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [11 0 R 12 0 R 13 0 R 14 0 R 15 0 R] /Count 5 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Title (Estuary Survey) /Author (Synthetic Author) /CreationDate (D:20260401093000+02'00') /ModDate (D:20260402Z) /Producer (docsluice fixture) >>
+endobj
+5 0 obj
+<< /Type /Outlines /First 6 0 R /Last 8 0 R /Count 3 >>
+endobj
+6 0 obj
+<< /Title (Methods) /Parent 5 0 R /Next 8 0 R /First 7 0 R /Last 7 0 R /Count 1 /Dest [13 0 R /Fit] >>
+endobj
+7 0 obj
+<< /Title (Results section) /Parent 6 0 R /Dest [14 0 R /XYZ 72 760 0] >>
+endobj
+8 0 obj
+<< /Title (Notes) /Parent 5 0 R /Prev 6 0 R /Dest [15 0 R /Fit] >>
+endobj
+9 0 obj
+<< /Type /Annot /Subtype /Link /Rect [70 740 330 758] /Border [0 0 0] /A << /S /URI /URI (https://example.invalid/protocol) >> >>
+endobj
+10 0 obj
+<< /Type /Annot /Subtype /Link /Rect [70 724 200 742] /Border [0 0 0] /A << /S /GoToR /F (appendix.pdf) /D [0 /Fit] >> >>
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 18 0 R /Annots [9 0 R 10 0 R] >>
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 20 0 R >>
+endobj
+16 0 obj
+<<  /Length 96 >>
+stream
+BT /F1 12 Tf 72 760 Td 16 TL (Preface) Tj T* (This survey was made for parser testing.) Tj T* ET
+endstream
+endobj
+17 0 obj
+<<  /Length 84 >>
+stream
+BT /F1 12 Tf 72 760 Td 16 TL (Contents) Tj T* (Methods and results follow.) Tj T* ET
+endstream
+endobj
+18 0 obj
+<<  /Length 117 >>
+stream
+BT /F1 12 Tf 72 760 Td 16 TL (Methods) Tj T* (Read the protocol online for details.) Tj T* (Remote appendix) Tj T* ET
+endstream
+endobj
+19 0 obj
+<<  /Length 89 >>
+stream
+BT /F1 12 Tf 72 760 Td 16 TL (Results) Tj T* (Salinity rose along the transect.) Tj T* ET
+endstream
+endobj
+20 0 obj
+<<  /Length 79 >>
+stream
+BT /F1 12 Tf 72 760 Td 16 TL (Notes) Tj T* (All values are synthetic.) Tj T* ET
+endstream
+endobj
+xref
+0 21
+0000000000 65535 f 
+0000000019 00000 n 
+0000000189 00000 n 
+0000000275 00000 n 
+0000000372 00000 n 
+0000000537 00000 n 
+0000000608 00000 n 
+0000000726 00000 n 
+0000000815 00000 n 
+0000000897 00000 n 
+0000001042 00000 n 
+0000001180 00000 n 
+0000001308 00000 n 
+0000001436 00000 n 
+0000001587 00000 n 
+0000001715 00000 n 
+0000001843 00000 n 
+0000001991 00000 n 
+0000002127 00000 n 
+0000002297 00000 n 
+0000002438 00000 n 
+trailer
+<< /Size 21 /Root 1 0 R /Info 4 0 R >>
+startxref
+2569
+%%EOF

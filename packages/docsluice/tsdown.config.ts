@@ -55,11 +55,4 @@ export default defineConfig({
     mbox: 'src/readers/mbox/index.ts',
     msg: 'src/readers/msg/index.ts',
     epub: 'src/readers/epub/index.ts',
-  },
-  format: ['esm', 'cjs'],
-  platform: 'neutral',
-  target: 'es2022',
-  dts: true,
-  sourcemap: true,
-  clean: true,
-});
+    pdf: 'src/readers/pdf/index.ts',

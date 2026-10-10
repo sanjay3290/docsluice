@@ -121,7 +121,9 @@
   {
     "file": "zip/overlap.zip",
     "expect": {
-      "warnings": ["UNREADABLE_PART"]
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
     },
     "maxMs": 1000,
     "maxHeapMB": 64,
@@ -389,7 +391,9 @@
   {
     "file": "zip/nested-chain-8.zip",
     "expect": {
-      "warnings": ["DEPTH_LIMIT"]
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 64,
@@ -407,7 +411,9 @@
   {
     "file": "zip/zip64-count-lie.zip",
     "expect": {
-      "warnings": ["TRUNCATED"]
+      "warnings": [
+        "TRUNCATED"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 64,
@@ -511,7 +517,9 @@
   {
     "file": "docx/image-and-revision-oddities.docx",
     "expect": {
-      "warnings": ["HIDDEN_CONTENT"]
+      "warnings": [
+        "HIDDEN_CONTENT"
+      ]
     },
     "maxMs": 1000,
     "maxHeapMB": 64,
@@ -547,7 +555,9 @@
   {
     "file": "xlsx/proto-names.xlsx",
     "expect": {
-      "warnings": ["UNREADABLE_PART"]
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
     },
     "maxMs": 1000,
     "maxHeapMB": 64,
@@ -565,7 +575,9 @@
   {
     "file": "ppt/deep-drawing-1000.ppt",
     "expect": {
-      "warnings": ["DEPTH_LIMIT"]
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
@@ -592,7 +604,9 @@
   {
     "file": "ppt/orphan-slides-5000.ppt",
     "expect": {
-      "warnings": ["UNREADABLE_PART"]
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
@@ -611,7 +625,9 @@
     "file": "7z/entries-12000.7z",
     "plugin": "7z",
     "expect": {
-      "warnings": ["TRUNCATED"]
+      "warnings": [
+        "TRUNCATED"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
@@ -661,7 +677,9 @@
     "file": "rar/rar4-size-lie.rar",
     "plugin": "rar",
     "expect": {
-      "warnings": ["UNREADABLE_PART"]
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
@@ -671,7 +689,9 @@
     "file": "rar/rar5-crc-damage.rar",
     "plugin": "rar",
     "expect": {
-      "warnings": ["UNREADABLE_PART"]
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
@@ -691,7 +711,9 @@
     "file": "rar/rar5-entries-12000.rar",
     "plugin": "rar",
     "expect": {
-      "warnings": ["TRUNCATED"]
+      "warnings": [
+        "TRUNCATED"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
@@ -710,7 +732,9 @@
   {
     "file": "mbox/messages-6000.mbox",
     "expect": {
-      "warnings": ["TRUNCATED"]
+      "warnings": [
+        "TRUNCATED"
+      ]
     },
     "maxMs": 5000,
     "maxHeapMB": 256,
@@ -728,7 +752,9 @@
   {
     "file": "vsdx/nested-shapes-1000.vsdx",
     "expect": {
-      "warnings": ["TRUNCATED"]
+      "warnings": [
+        "TRUNCATED"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
@@ -737,7 +763,9 @@
   {
     "file": "vsdx/duplicate-ids-20000.vsdx",
     "expect": {
-      "warnings": ["UNREADABLE_PART"]
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
@@ -745,7 +773,7 @@
   },
   {
     "file": "office/hmac-tampered.cfb",
-    "password": "Public test é😀",
+    "password": "Public test \u00e9\ud83d\ude00",
     "expect": {
       "error": "CORRUPT_FILE"
     },
@@ -755,7 +783,7 @@
   },
   {
     "file": "office/spin-count-overflow.cfb",
-    "password": "Public test é😀",
+    "password": "Public test \u00e9\ud83d\ude00",
     "expect": {
       "error": "CORRUPT_FILE"
     },
@@ -896,7 +924,10 @@
   {
     "file": "pptx/deep-groups-1000.pptx",
     "expect": {
-      "warnings": ["TRUNCATED", "DEPTH_LIMIT"]
+      "warnings": [
+        "TRUNCATED",
+        "DEPTH_LIMIT"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
@@ -932,7 +963,9 @@
   {
     "file": "zip/nested-entries-10001.zip",
     "expect": {
-      "warnings": ["TRUNCATED"]
+      "warnings": [
+        "TRUNCATED"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
@@ -941,7 +974,9 @@
   {
     "file": "zip/junk-and-encrypted.zip",
     "expect": {
-      "warnings": ["UNREADABLE_PART"]
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
     },
     "maxMs": 1000,
     "maxHeapMB": 64,
@@ -1835,5 +1870,52 @@
     "maxMs": 3000,
     "maxHeapMB": 256,
     "requirement": "SEC-6"
+  },
+  {
+    "file": "pdf/openaction-javascript.pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "PDF-10"
+  },
+  {
+    "file": "pdf/launch-and-remote.pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "PDF-10"
+  },
+  {
+    "file": "pdf/xref-loop.pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "PDF-9"
+  },
+  {
+    "file": "pdf/pages-100000-shared.pdf",
+    "expect": {
+      "warnings": [
+        "TRUNCATED"
+      ]
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "pdf/deep-page-tree-2000.pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
   }
 ]

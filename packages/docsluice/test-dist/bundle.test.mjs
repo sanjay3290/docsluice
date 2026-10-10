@@ -44,6 +44,12 @@ test('importing extract from docsluice loads every reader lazily (RT-4)', async 
       assert.ok(owner, `${reader} reader is bundled`);
       assert.ok(owner.isDynamicEntry, `${reader} reader is a dynamically imported chunk`);
     }
+    // The PDF engine (unpdf's pdf.js build) loads only when a PDF arrives (ADR 0009).
+    const engineModules = (chunk) => chunk.moduleIds.filter((id) => id.includes('/node_modules/unpdf/'));
+    assert.equal(engineModules(entry).length, 0, 'the PDF engine is not in the entry chunk');
+    const engine = chunks.find((chunk) => engineModules(chunk).length > 0);
+    assert.ok(engine, 'the PDF engine is bundled');
+    assert.ok(engine.isDynamicEntry || !engine.isEntry, 'the PDF engine is a lazily loaded chunk');
   } finally {
     await rm(directory, { recursive: true, force: true });
   }

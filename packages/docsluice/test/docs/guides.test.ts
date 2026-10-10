@@ -15,6 +15,7 @@ const FILES = new Map([
   ['letter.docx', 'corpus/docx/hyperlinks-image.docx'],
   ['deck.pptx', 'corpus/pptx/reading-order.pptx'],
   ['uploads.zip', 'corpus/zip/bundle.zip'],
+  ['report.pdf', 'corpus/pdf/labels-outline-links.pdf'],
 ]);
 const directory = mkdtempSync(join(tmpdir(), 'docsluice-guides-'));
 afterAll(() => rmSync(directory, { recursive: true, force: true }));

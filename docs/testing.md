@@ -25,7 +25,7 @@ corpus/
 
 - The golden runner (`packages/docsluice/test/golden.test.ts`, part of `npm test`) walks `corpus/`, extracts each file with its name as the `filename` hint, and compares `toJSON(doc, { stable: true })` and `toMarkdown(doc)` byte for byte with the expected files (no trailing newline). A mismatch fails with a diff.
 - A file whose expected outputs are missing fails with instructions; CI never creates them. A corpus file for a format that has no reader yet must still fail with `UNSUPPORTED_FORMAT` and must have no expected files. Adding the reader therefore fails the run until its goldens are reviewed and committed.
-- Every input needs a `.license` with an `SPDX-License-Identifier:` line, or the run fails. Other sidecars that the runner ignores: `.blocks.json` and `.native.txt` (reader-specific fixtures).
+- Every input needs a `.license` with an `SPDX-License-Identifier:` line, or the run fails. An input whose reviewed outcome is an error has a `.expected.error` sidecar holding the error code (for example `ENCRYPTED` for a password-protected file opened without its password) instead of `.expected.json`/`.expected.md`. Other sidecars that the runner ignores: `.blocks.json` and `.native.txt` (reader-specific fixtures).
 - `UPDATE_GOLDEN=1 npm test` rewrites the expected files. Read every diff before you commit it. A golden change in a PR must be explained in the PR body.
 - `.license` file format:
 

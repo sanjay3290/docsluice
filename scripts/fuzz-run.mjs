@@ -78,6 +78,7 @@ export const TARGETS = {
     export: 'fuzzZipContainer',
     seeds: ['corpus/zip', 'hostile/zip'],
   },
+  pdf: { module: 'fuzz/pdf.fuzz.js', export: 'fuzzPdf', seeds: ['corpus/pdf', 'hostile/pdf'] },
   pptx: { module: 'fuzz/pptx.fuzz.js', export: 'fuzzPptx', seeds: ['corpus/pptx', 'hostile/pptx'] },
   'xlsx-numfmt': {
     module: 'fuzz/xlsx-numfmt.fuzz.js',

@@ -34,7 +34,9 @@ const MEDIA_READERS = ['image', 'media'];
 const CONTAINERS = ['ole', 'zip-kind', 'office-encryption'];
 // Opt-in features of core readers that load only when their option is on.
 const OPT_IN = ['main-content'];
+const LARGE_READERS = new Map([['pdf', '500 KB']]);
 const EXTERNAL_READERS = [
+  ...LARGE_READERS.keys(),
   ...OFFICE_READERS,
   ...TEXT_FAMILY_READERS,
   ...MEDIA_READERS,
@@ -72,7 +74,7 @@ export default [
   ...READERS.map((reader) => ({
     name: `${reader} reader`,
     path: `dist/${reader}.js`,
-    limit: OFFICE_READERS.has(reader) ? '40 KB' : '25 KB',
+    limit: LARGE_READERS.get(reader) ?? (OFFICE_READERS.has(reader) ? '40 KB' : '25 KB'),
     gzip: true,
   })),
 ];

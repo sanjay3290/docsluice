@@ -120,6 +120,7 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
   const loadVideo = () => import('../readers/media/index.js').then((module) => module.videoReader);
   // Each format module loads only when that format is read.
   const builtIns: Array<[FormatId, () => Promise<Reader>]> = [
+    ['pdf', () => import('../readers/pdf/index.js').then((module) => module.pdfReader)],
     ['doc', () => import('../readers/doc/index.js').then((module) => module.docReader)],
     ['vsdx', () => import('../readers/vsdx/index.js').then((module) => module.vsdxReader)],
     ['ppt', () => import('../readers/ppt/index.js').then((module) => module.pptReader)],

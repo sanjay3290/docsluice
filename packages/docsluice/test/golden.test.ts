@@ -9,7 +9,14 @@ const update =
   (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.UPDATE_GOLDEN ===
   '1';
 const root = new URL('../../../corpus/', import.meta.url);
-const SIDECARS = ['.license', '.expected.json', '.expected.md', '.blocks.json', '.native.txt'];
+const SIDECARS = [
+  '.license',
+  '.expected.json',
+  '.expected.md',
+  '.expected.error',
+  '.blocks.json',
+  '.native.txt',
+];
 const METADATA = new Set(['README.md', '.gitattributes']);
 const INSTRUCTIONS =
   'Review the output, then run `UPDATE_GOLDEN=1 npm test` locally and commit the expected files.';
@@ -42,19 +49,29 @@ describe('golden corpus', () => {
     );
     const jsonPath = new URL(`${input}.expected.json`, root);
     const markdownPath = new URL(`${input}.expected.md`, root);
+    const errorPath = new URL(`${input}.expected.error`, root);
     const bytes = new Uint8Array(readFileSync(new URL(input, root)));
     const name = input.slice(input.lastIndexOf('/') + 1);
     let doc;
     try {
       doc = await extract(bytes, { filename: name });
     } catch (error) {
+      const code = (error as { code?: string }).code;
+      // An input whose reviewed outcome is an error (for example ENCRYPTED without a password).
+      if (existsSync(errorPath)) {
+        expect(code, `${input} must fail with its .expected.error code`).toBe(
+          readFileSync(errorPath, 'utf8').trim(),
+        );
+        return;
+      }
       // A corpus file for a format without a reader yet. Adding the reader makes this fail until goldens exist.
-      expect((error as { code?: string }).code, `${input} failed to extract`).toBe('UNSUPPORTED_FORMAT');
+      expect(code, `${input} failed to extract`).toBe('UNSUPPORTED_FORMAT');
       expect(existsSync(jsonPath) || existsSync(markdownPath), `${input} has goldens but no reader`).toBe(
         false,
       );
       return;
     }
+    expect(existsSync(errorPath), `${input} has an .expected.error but extracted`).toBe(false);
     const json = toJSON(doc, { stable: true });
     const markdown = toMarkdown(doc);
     if (update) {

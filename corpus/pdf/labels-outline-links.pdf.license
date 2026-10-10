@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-pdf-labels-outline.mjs
+Requirements: PDF-1, PDF-6, PDF-10
+Notes: five pages labelled i, ii, A-1, A-2, A-3; a nested outline; a web link and a remote GoToR link; Info title, author and dates; catalog language.
