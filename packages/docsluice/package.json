@@ -39,6 +39,9 @@
       ],
       "xml": [
         "dist/xml.d.ts"
+      ],
+      "html": [
+        "dist/html.d.ts"
       ]
     }
   },
@@ -78,6 +81,10 @@
     "./xml": {
       "import": "./dist/xml.js",
       "require": "./dist/xml.cjs"
+    },
+    "./html": {
+      "import": "./dist/html.js",
+      "require": "./dist/html.cjs"
     },
     "./package.json": "./package.json"
   },

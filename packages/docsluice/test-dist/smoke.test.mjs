@@ -84,3 +84,8 @@ test('JSON and XML reader subpaths load lazily', async () => {
   const xml = await import('docsluice/xml');
   assert.equal(xml.xmlReader.id, 'xml');
 });
+
+test('HTML reader subpath loads lazily', async () => {
+  const html = await import('docsluice/html');
+  assert.equal(html.htmlReader.id, 'html');
+});

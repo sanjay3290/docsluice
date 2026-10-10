@@ -256,5 +256,43 @@
     "maxMs": 2000,
     "maxHeapMB": 64,
     "requirement": "SEC-8"
+  },
+  {
+    "file": "html/deep-div-100000.html",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "html/unclosed-mixed-50000.html",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "html/script-and-handlers.html",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-11"
+  },
+  {
+    "file": "html/entity-flood.html",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-9"
   }
 ]

@@ -1,0 +1,15 @@
+# HTML
+
+The HTML reader uses an iterative lenient tokenizer and tree builder. It emits headings, paragraphs, lists, tables with row/column spans and captions, preformatted code, anchor text, and image alt text. Adjacent inline text remains one paragraph. Implied paragraph, list-item, table-row/cell and option endings work through formatting elements. Unknown wrappers preserve their contents. It drops head text, script/style raw text, noscript/template contents, comments and declarations. Content is never executed or fetched.
+
+Character-set priority is BOM, actual meta declaration in the first 1024 bytes, charset in the caller's MIME hint, then the shared encoding detector. Invalid labels produce `ENCODING_GUESSED`. Numeric entities and 253 common named references are supported. Unknown references and references without a semicolon remain literal. The generated common-name table is 1,613 bytes gzipped in this source snapshot; the full WHATWG table is not bundled. The list is the common HTML 4 set plus `apos`; additional WHATWG names are a compatibility gap. Entity output is bounded after decoding, so an exact-fitting sequence is retained.
+
+`runs: true` retains hrefs on paragraph runs. Ordinary anchors do not set `hasExternalLinks`; external image/link/iframe/source resources do. Script tags and `on*` attributes set `hasJavaScript`. Images are placeholders with alt text; CID images can resolve to extracted mail-child paths through the shared helper's explicit CID map.
+
+Every file scan checks the budget. Elements nested deeper than `blockDepth` are flattened: their tags become transparent, their text joins the nearest kept ancestor, and one `DEPTH_LIMIT` warning is added. Parsing continues after the deep region, and hidden containers stay hidden at any depth. Output staging uses the shared character allowance, and table cells use the shared cell allowance. Attributes are capped at 256 per tag, names at 128 characters, and the staged visible tree at 100,000 nodes. The node cap reports `UNREADABLE_PART` and skips later content. This is a parser safety cap; it does not currently set the core truncated statistic. The tokenizer is intentionally smaller than a browser's full HTML parsing algorithm: malformed adoption-agency formatting, CSS visibility/layout, form controls and complex nested tables are approximate.
+
+Table rows follow the output model's grid. A cell starts at the next column not covered by an earlier `rowspan`, and covered positions hold empty cells, so `rows[r][c]` is always grid column `c`. `colspan` is capped at 1,000 and `rowspan` at 65,534, as in the HTML table model. Placeholder cells count toward `cells`.
+
+`extract()` loads this reader lazily for `html` input. It is also available as the `docsluice/html` subpath (`htmlReader`). A page whose `<meta>` declares Windows-1252 decodes with that charset; when its bytes are not valid UTF-8, detection still reports a generic `ENCODING_GUESSED` before the reader sees the declaration.
+
+Specification references: [WHATWG parsing](https://html.spec.whatwg.org/multipage/parsing.html), [named references](https://html.spec.whatwg.org/entities.json).
