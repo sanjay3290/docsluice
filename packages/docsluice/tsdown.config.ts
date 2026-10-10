@@ -19,6 +19,7 @@ export default defineConfig({
     docx: 'src/readers/docx/index.ts',
     xlsx: 'src/readers/xlsx/index.ts',
     xls: 'src/readers/xls/index.ts',
+    xlsb: 'src/readers/xlsb/index.ts',
     pptx: 'src/readers/pptx/index.ts',
     odt: 'src/readers/odt/index.ts',
     ods: 'src/readers/ods/index.ts',

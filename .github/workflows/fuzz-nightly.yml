@@ -45,6 +45,7 @@ jobs:
             rtf,
             epub,
             xls,
+            xlsb,
             gzip,
             tar,
           ]
