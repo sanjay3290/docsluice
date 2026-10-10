@@ -44,6 +44,7 @@ export const TARGETS = {
   doc: { module: 'fuzz/doc.fuzz.js', export: 'fuzzDoc', seeds: ['corpus/doc', 'corpus/ole', 'hostile/doc'] },
   docx: { module: 'fuzz/docx.fuzz.js', export: 'fuzzDocx', seeds: ['corpus/docx', 'hostile/docx'] },
   xlsx: { module: 'fuzz/xlsx.fuzz.js', export: 'fuzzXlsx', seeds: ['corpus/xlsx', 'hostile/xlsx'] },
+  pptx: { module: 'fuzz/pptx.fuzz.js', export: 'fuzzPptx', seeds: ['corpus/pptx', 'hostile/pptx'] },
   'xlsx-numfmt': {
     module: 'fuzz/xlsx-numfmt.fuzz.js',
     export: 'fuzzXlsxNumberFormat',

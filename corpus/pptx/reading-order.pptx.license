@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-pptx-reading-order.mjs
+Requirements: PPT-1, PPT-2, PPT-3
+Notes: slide part names out of slide order; title and body placeholders positioned by the layout; two columns written right first; bullets, levels, numbering and symbol bullets; a scaled group; a table with spans; SmartArt; footer, date and slide-number placeholders; alternate content.

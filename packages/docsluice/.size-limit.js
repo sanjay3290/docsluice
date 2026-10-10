@@ -1,5 +1,5 @@
 // Bundle budgets (RT-5). Office readers load lazily, so the core check treats them as external.
-const OFFICE_READERS = ['doc', 'docx', 'xlsx'];
+const OFFICE_READERS = ['doc', 'docx', 'xlsx', 'pptx'];
 const officeReader = new RegExp(`/(?:${OFFICE_READERS.join('|')})\\.js$`);
 
 export default [
