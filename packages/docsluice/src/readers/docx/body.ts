@@ -9,6 +9,12 @@ import type { DocxStyle } from './styles.js';
 const WORD_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const REL_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 const MC_NS = 'http://schemas.openxmlformats.org/markup-compatibility/2006';
+const WP_NS = 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing';
+const A_NS = 'http://schemas.openxmlformats.org/drawingml/2006/main';
+const VML_NS = 'urn:schemas-microsoft-com:vml';
+const OFFICE_NS = 'urn:schemas-microsoft-com:office:office';
+/** English Metric Units per pixel at 96 dpi. */
+const EMU_PER_PIXEL = 9525;
 const UNDERSTOOD_NAMESPACES = new Set([WORD_NS, REL_NS, MC_NS]);
 
 /** Resolved relationship data, supplied by the shared OOXML relationships parser. */
@@ -29,12 +35,26 @@ export interface DocxParagraph {
   numId?: string;
   ilvl?: number;
   runs?: Array<{ text: string; bold?: boolean; italic?: boolean; href?: string }>;
-  /** Footnotes, endnotes and comments anchored in this paragraph, in reference order (DOC-5). */
-  notes?: DocxNoteRef[];
+  /** Notes (DOC-5) and images (DOC-8) anchored in this paragraph, in document order. */
+  anchors?: DocxAnchor[];
   loc: { path?: string };
 }
 
 /** A footnote, endnote or comment referenced from the body by its `w:id`. */
+/** An image anchored in the body: a DrawingML `w:drawing` or a VML picture (DOC-8). */
+export interface DocxImageRef {
+  role: 'image';
+  /** Relationship id of the picture (`r:embed`, `r:link` or `v:imagedata r:id`). */
+  relationshipId?: string;
+  alt?: string;
+  /** Pixels at 96 dpi. */
+  width?: number;
+  height?: number;
+}
+
+/** Something emitted right after the block that anchors it. */
+export type DocxAnchor = DocxNoteRef | DocxImageRef;
+
 export interface DocxNoteRef {
   role: 'footnote' | 'endnote' | 'comment';
   id: string;
@@ -48,8 +68,8 @@ export interface DocxBodyHooks {
   onParagraph?: DocxParagraphHandler;
   /** Called before each table block is emitted. */
   onTable?: () => void;
-  /** Called after a paragraph or table is emitted, with the notes it references. */
-  onNotes?: (notes: readonly DocxNoteRef[]) => void;
+  /** Called after a paragraph or table is emitted, with the notes and images it anchors. */
+  onAnchors?: (anchors: readonly DocxAnchor[]) => void;
   /** Called for each section `w:headerReference`/`w:footerReference` relationship id. */
   onSectionReference?: (kind: 'header' | 'footer', relationshipId: string) => void;
   /** Called once after the scan and before any body block is emitted. */
@@ -64,7 +84,10 @@ interface ParagraphState {
   outlineLevel?: number;
   numId?: string;
   ilvl?: number;
-  notes?: DocxNoteRef[];
+  anchors?: DocxAnchor[];
+  /** Paragraph-mark revisions (`w:pPr/w:rPr/w:del|w:ins`). */
+  markDeleted?: boolean;
+  markInserted?: boolean;
 }
 
 interface RunState {
@@ -89,14 +112,14 @@ interface TableState {
   cell?: CellState;
   /** Tables nested in this one, in document order, emitted right after it. */
   nested: TableEvent[];
-  /** Notes referenced from any cell, emitted after the outermost table. */
-  notes: DocxNoteRef[];
+  /** Notes and images anchored in any cell, emitted after the outermost table. */
+  anchors: DocxAnchor[];
 }
 
 interface TableEvent {
   table: { rows: Cell[][]; headerRows: number };
   loc: { path?: string };
-  notes?: DocxNoteRef[];
+  anchors?: DocxAnchor[];
 }
 
 type BodyEvent = DocxParagraph | TableEvent;
@@ -126,11 +149,17 @@ interface Frame {
   /** Set on a kept `w:tbl`; flattened tables past `blockDepth` set `flattenedTable` instead. */
   table?: TableState;
   flattenedTable?: boolean;
+  /** Set on `wp:inline`/`wp:anchor` and `v:shape`: the picture being read. */
+  image?: DocxImageRef;
+  /** Set on run-level `w:ins`/`w:moveTo` ('ins') and `w:del`/`w:moveFrom` ('del'). */
+  revision?: 'ins' | 'del';
+  /** In `show` mode, whether this revision's opening marker has been written. */
+  revisionMarked?: boolean;
 }
 
 interface BodyContext extends XmlContext {
   out: DocBuilder;
-  options: Pick<ResolvedOptions, 'runs'>;
+  options: Pick<ResolvedOptions, 'runs'> & Partial<Pick<ResolvedOptions, 'revisions'>>;
 }
 
 const STOP = new Error('DOCX output limit reached.');
@@ -271,10 +300,31 @@ export function scanDocxBody(
   hooks: DocxBodyHooks = {},
 ): void {
   const ctx = context as BodyContext;
-  const { onParagraph, onTable, onNotes } = hooks;
+  const { onParagraph, onTable, onAnchors } = hooks;
   // References that appear between paragraphs (a comment range start) attach to the next one.
-  const pendingNotes: DocxNoteRef[] = [];
+  const pendingAnchors: DocxAnchor[] = [];
   const seenComments = new Set<string>();
+  const revisions = ctx.options.revisions ?? 'accept';
+  let insertedDepth = 0;
+  let deletedDepth = 0;
+  let revisionWarned = false;
+  // A paragraph whose mark is removed under the chosen mode joins the next paragraph.
+  let carry: ParagraphState | undefined;
+  const noteRevision = (): void => {
+    if (revisionWarned) return;
+    revisionWarned = true;
+    ctx.warnings.add({
+      code: 'HIDDEN_CONTENT',
+      message: `The document has tracked changes; they were applied in "${revisions}" mode.`,
+    });
+  };
+  const revisionVisible = (): boolean =>
+    revisions === 'show' || (revisions === 'accept' ? deletedDepth === 0 : insertedDepth === 0);
+  const anchor = (item: DocxAnchor): void => {
+    const paragraph = paragraphs.at(-1);
+    if (paragraph) (paragraph.anchors ??= []).push(item);
+    else pendingAnchors.push(item);
+  };
   const frames: Frame[] = [];
   const paragraphs: ParagraphState[] = [];
   let activeTextDepth = 0;
@@ -297,9 +347,21 @@ export function scanDocxBody(
     ctx.warnings.add({ code: 'UNREADABLE_PART', message: 'The Word document body part could not be read.' });
   };
 
-  const append = (text: string): void => {
+  /** Write the opening markers of `show`-mode revisions that are about to receive text. */
+  const openRevisionMarkers = (): void => {
+    for (const frame of frames) {
+      if (frame.revision && !frame.revisionMarked) {
+        frame.revisionMarked = true;
+        append(frame.revision === 'ins' ? '[+' : '[-', true);
+      }
+    }
+  };
+
+  const append = (text: string, marker = false): void => {
     const paragraph = paragraphs.at(-1);
     if (text.length === 0 || outputStopped || !paragraph) return;
+    if (!marker && !revisionVisible()) return;
+    if (!marker && revisions === 'show' && (insertedDepth > 0 || deletedDepth > 0)) openRevisionMarkers();
     ctx.budget.tick();
     if (!ctx.budget.checkOutputChars(stagedOutputChars + text.length)) {
       outputStopped = true;
@@ -309,13 +371,32 @@ export function scanDocxBody(
     appendRun(paragraph, text, frames, ctx.options.runs, ctx.budget);
   };
 
-  const finishParagraph = (paragraph: ParagraphState): void => {
+  const finishParagraph = (incoming: ParagraphState): void => {
+    let paragraph = incoming;
+    if (carry) {
+      // The previous paragraph's mark was removed: its content flows into this paragraph.
+      paragraph = {
+        ...paragraph,
+        text: carry.text + paragraph.text,
+        runs: [...carry.runs, ...paragraph.runs],
+      };
+      const anchors = [...(carry.anchors ?? []), ...(paragraph.anchors ?? [])];
+      if (anchors.length > 0) paragraph.anchors = anchors;
+      carry = undefined;
+    }
+    if (
+      (revisions === 'accept' && paragraph.markDeleted) ||
+      (revisions === 'reject' && paragraph.markInserted)
+    ) {
+      carry = paragraph;
+      return;
+    }
     const cell = tables.at(-1)?.cell;
     if (cell) {
       // Cell paragraphs become the cell's text, one line each (DOC-4).
       if (paragraph.text.length > 0)
         cell.text += cell.text.length > 0 ? `\n${paragraph.text}` : paragraph.text;
-      if (paragraph.notes) tables[0]!.notes.push(...paragraph.notes);
+      if (paragraph.anchors) tables[0]!.anchors.push(...paragraph.anchors);
       return;
     }
     const baseLoc = location(ctx);
@@ -336,9 +417,9 @@ export function scanDocxBody(
     if (paragraph.numId !== undefined) event.numId = paragraph.numId;
     if (paragraph.ilvl !== undefined) event.ilvl = paragraph.ilvl;
     if (ctx.options.runs) event.runs = cloneRuns(paragraph.runs, ctx.budget);
-    if (paragraph.notes) event.notes = paragraph.notes;
+    if (paragraph.anchors) event.anchors = paragraph.anchors;
     if (paragraph.text.length === 0) {
-      if (paragraph.notes) events.push({ text: '', loc: baseLoc, notes: paragraph.notes });
+      if (paragraph.anchors) events.push({ text: '', loc: baseLoc, anchors: paragraph.anchors });
       if (onParagraph) emptyParagraphPending = true;
       return;
     }
@@ -425,7 +506,7 @@ export function scanDocxBody(
             localName: info.localName,
             namespaceScope,
             skipped,
-            textElement: isWord && info.localName === 't',
+            textElement: isWord && (info.localName === 't' || info.localName === 'delText'),
             alternate,
             inBody,
             paragraphProperties: isWord && info.localName === 'pPr' && parent?.paragraph !== undefined,
@@ -434,7 +515,7 @@ export function scanDocxBody(
           if (skipped) skippedDepth++;
           if (isWord && info.localName === 'p') {
             frame.paragraph = { text: '', runs: [] };
-            if (pendingNotes.length > 0) frame.paragraph.notes = pendingNotes.splice(0);
+            if (pendingAnchors.length > 0) frame.paragraph.anchors = pendingAnchors.splice(0);
             paragraphs.push(frame.paragraph);
           }
           if (!skipped && isWord) {
@@ -450,9 +531,7 @@ export function scanDocxBody(
             // A comment has a range start and a reference; it is placed once, at whichever comes first.
             if (role && id !== undefined && !(role === 'comment' && seenComments.has(id))) {
               if (role === 'comment') seenComments.add(id);
-              const paragraph = paragraphs.at(-1);
-              if (paragraph) (paragraph.notes ??= []).push({ role, id });
-              else pendingNotes.push({ role, id });
+              anchor({ role, id });
             }
             if (info.localName === 'headerReference' || info.localName === 'footerReference') {
               const relationshipId = relationshipAttribute(attrs, 'id', frames, namespaceScope, ctx.budget);
@@ -516,7 +595,7 @@ export function scanDocxBody(
                 });
               }
             } else {
-              frame.table = { rows: [], nested: [], notes: [] };
+              frame.table = { rows: [], nested: [], anchors: [] };
               tables.push(frame.table);
             }
           }
@@ -541,6 +620,35 @@ export function scanDocxBody(
               table.cell.vMerge = value === 'restart' ? 'restart' : 'continue';
             }
           }
+          if (!skipped && isWord && (info.localName === 'ins' || info.localName === 'del')) {
+            if (parent?.localName === 'rPr' && frames.at(-2)?.paragraphProperties) {
+              // A revised paragraph mark (w:pPr/w:rPr/w:ins|w:del).
+              noteRevision();
+              const paragraph = paragraphs.at(-1);
+              if (paragraph && info.localName === 'del') paragraph.markDeleted = true;
+              else if (paragraph) paragraph.markInserted = true;
+            } else if (
+              parent?.localName !== 'rPr' &&
+              parent?.localName !== 'trPr' &&
+              parent?.localName !== 'tcPr'
+            ) {
+              frame.revision = info.localName;
+            }
+          }
+          if (!skipped && isWord && (info.localName === 'moveTo' || info.localName === 'moveFrom')) {
+            frame.revision = info.localName === 'moveTo' ? 'ins' : 'del';
+          }
+          if (frame.revision) {
+            noteRevision();
+            if (frame.revision === 'ins') insertedDepth++;
+            else deletedDepth++;
+          }
+          if (
+            !skipped &&
+            (info.namespaceURI === WP_NS || info.namespaceURI === A_NS || info.namespaceURI === VML_NS)
+          ) {
+            readImageElement(frame, parent, attrs, info, frames, namespaceScope, ctx.budget);
+          }
           if (!skipped && isWord && info.localName === 'tab') append('\t');
           if (!skipped && isWord && info.localName === 'br') append('\n');
           frames.push(frame);
@@ -555,6 +663,14 @@ export function scanDocxBody(
           if (!frame) return;
           if (frame.textElement) activeTextDepth--;
           if (frame.skipped) skippedDepth--;
+          if (frame.revision) {
+            if (frame.revisionMarked) append(frame.revision === 'ins' ? '+]' : '-]', true);
+            if (frame.revision === 'ins') insertedDepth--;
+            else deletedDepth--;
+          }
+          if (frame.image && (frame.image.relationshipId !== undefined || frame.image.alt !== undefined)) {
+            if (revisionVisible()) anchor(frame.image);
+          }
           if (info.namespaceURI === WORD_NS && info.localName === 'p' && frame.paragraph) {
             const paragraph = paragraphs.pop();
             if (paragraph && !frame.skipped) finishParagraph(paragraph);
@@ -576,7 +692,7 @@ export function scanDocxBody(
               }
               parent.nested.push(event, ...frame.table.nested);
             } else {
-              if (frame.table.notes.length > 0) event.notes = frame.table.notes;
+              if (frame.table.anchors.length > 0) event.anchors = frame.table.anchors;
               events.push(event, ...frame.table.nested);
             }
           }
@@ -588,9 +704,16 @@ export function scanDocxBody(
     if (error !== STOP) throw error;
   }
 
+  if (carry) {
+    const last = carry;
+    carry = undefined;
+    // Nothing follows a removed final paragraph mark: keep the paragraph as it is.
+    finishParagraph({ ...last, markDeleted: false, markInserted: false });
+  }
   if (!rootSeen || !validRoot || !bodySeen) warnUnreadableRoot();
   if (emptyParagraphPending) events.push({ text: '', loc: location(ctx) });
-  if (pendingNotes.length > 0) events.push({ text: '', loc: location(ctx), notes: pendingNotes.splice(0) });
+  if (pendingAnchors.length > 0)
+    events.push({ text: '', loc: location(ctx), anchors: pendingAnchors.splice(0) });
   hooks.beforeEmit?.();
   for (let index = 0; index < events.length; index++) {
     ctx.budget.tick();
@@ -600,13 +723,13 @@ export function scanDocxBody(
       onTable?.();
       if (next.table.rows.length > 0 && !ctx.out.table(next.table.rows, next.table.headerRows, next.loc))
         break;
-      if (next.notes) onNotes?.(next.notes);
+      if (next.anchors) onAnchors?.(next.anchors);
       continue;
     }
     const event = next;
     if (onParagraph?.(event) === true) continue;
     if (event.text.length === 0) {
-      if (event.notes) onNotes?.(event.notes);
+      if (event.anchors) onAnchors?.(event.anchors);
       continue;
     }
     const level = event.level;
@@ -617,7 +740,7 @@ export function scanDocxBody(
           ? ctx.out.paragraph(event.text, event.loc, event.runs)
           : ctx.out.paragraph(event.text, event.loc);
     if (!emitted) break;
-    if (event.notes) onNotes?.(event.notes);
+    if (event.anchors) onAnchors?.(event.anchors);
   }
 }
 
@@ -742,4 +865,114 @@ function flattenTable(rows: readonly Cell[][], budget: XmlContext['budget']): st
     if (parts.length > 0) lines.push(parts.join('\t'));
   }
   return lines.join('\n');
+}
+
+function emuToPixels(value: string | undefined, budget: XmlContext['budget']): number | undefined {
+  // EMU values are non-negative integers; 12 digits covers any real page size.
+  if (value === undefined || value.length === 0 || value.length > 12) return undefined;
+  let emu = 0;
+  for (let index = 0; index < value.length; index++) {
+    budget.tick();
+    const code = value.charCodeAt(index);
+    if (code < 48 || code > 57) return undefined;
+    emu = emu * 10 + code - 48;
+  }
+  return emu === 0 ? undefined : Math.max(1, Math.round(emu / EMU_PER_PIXEL));
+}
+
+/** A VML style length (`96pt`, `2in`, `120px`) in pixels at 96 dpi. */
+function vmlLength(style: string, property: string): number | undefined {
+  const start = style.indexOf(`${property}:`);
+  if (start < 0 || (start > 0 && style[start - 1] !== ';' && style[start - 1] !== ' ')) return undefined;
+  let end = style.indexOf(';', start);
+  if (end < 0) end = style.length;
+  const value = style.slice(start + property.length + 1, end).trim();
+  const unit = value.slice(-2);
+  const number = Number(value.slice(0, -2));
+  if (!Number.isFinite(number) || number <= 0) return undefined;
+  const factor =
+    unit === 'pt'
+      ? 96 / 72
+      : unit === 'in'
+        ? 96
+        : unit === 'px'
+          ? 1
+          : unit === 'cm'
+            ? 96 / 2.54
+            : unit === 'mm'
+              ? 96 / 25.4
+              : 0;
+  return factor > 0 ? Math.max(1, Math.round(number * factor)) : undefined;
+}
+
+/** Collect picture details from DrawingML (`wp:inline`, `wp:anchor`) and VML (`v:shape`) markup. */
+function readImageElement(
+  frame: Frame,
+  parent: Frame | undefined,
+  attrs: Map<string, string>,
+  info: XmlElementInfo,
+  frames: readonly Frame[],
+  scope: Map<string, string>,
+  budget: XmlContext['budget'],
+): void {
+  const local = info.localName;
+  if (info.namespaceURI === WP_NS && (local === 'inline' || local === 'anchor')) {
+    frame.image = { role: 'image' };
+    return;
+  }
+  if (info.namespaceURI === VML_NS && local === 'shape') {
+    frame.image = { role: 'image' };
+    const alt = attrs.get('alt') ?? namespacedAttribute(attrs, 'title', OFFICE_NS, frames, scope, budget);
+    if (alt !== undefined && alt.length > 0) frame.image.alt = alt;
+    const style = attrs.get('style') ?? '';
+    const width = vmlLength(style, 'width');
+    const height = vmlLength(style, 'height');
+    if (width !== undefined) frame.image.width = width;
+    if (height !== undefined) frame.image.height = height;
+    return;
+  }
+  let image: DocxImageRef | undefined;
+  for (let index = frames.length - 1; index >= 0 && !image; index--) {
+    budget.tick();
+    image = frames[index]!.image;
+  }
+  if (!image) return;
+  if (info.namespaceURI === WP_NS && local === 'extent' && parent?.image) {
+    const width = emuToPixels(attrs.get('cx'), budget);
+    const height = emuToPixels(attrs.get('cy'), budget);
+    if (width !== undefined) image.width = width;
+    if (height !== undefined) image.height = height;
+  } else if (info.namespaceURI === WP_NS && local === 'docPr') {
+    const alt = attrs.get('descr') || attrs.get('title');
+    if (alt !== undefined && alt.length > 0) image.alt = alt;
+  } else if (info.namespaceURI === A_NS && local === 'blip' && image.relationshipId === undefined) {
+    const id =
+      relationshipAttribute(attrs, 'embed', frames, scope, budget) ??
+      relationshipAttribute(attrs, 'link', frames, scope, budget);
+    if (id !== undefined) image.relationshipId = id;
+  } else if (info.namespaceURI === VML_NS && local === 'imagedata' && image.relationshipId === undefined) {
+    const id = relationshipAttribute(attrs, 'id', frames, scope, budget);
+    if (id !== undefined) image.relationshipId = id;
+    if (image.alt === undefined) {
+      const title = namespacedAttribute(attrs, 'title', OFFICE_NS, frames, scope, budget);
+      if (title !== undefined && title.length > 0) image.alt = title;
+    }
+  }
+}
+
+function namespacedAttribute(
+  attrs: Map<string, string>,
+  localName: string,
+  namespace: string,
+  frames: readonly Frame[],
+  current: Map<string, string>,
+  budget: XmlContext['budget'],
+): string | undefined {
+  for (const [qualifiedName, value] of attrs) {
+    budget.tick();
+    const colon = qualifiedName.indexOf(':');
+    if (colon < 0 || qualifiedName.slice(colon + 1) !== localName) continue;
+    if (lookupNamespace(qualifiedName.slice(0, colon), frames, current, budget) === namespace) return value;
+  }
+  return undefined;
 }

@@ -80,3 +80,16 @@ await writeFile(
     'word/_rels/document.xml.rels': `<Relationships xmlns="${PKG}"><Relationship Id="f" Type="${R}/footnotes" Target="footnotes.xml"/><Relationship Id="c" Type="${R}/comments" Target="comments.xml"/></Relationships>`,
   }),
 );
+
+// Odd picture markup and 100 nested revisions: prototype-named alt text, a 30-digit extent, a missing
+// relationship, a non-finite VML size.
+const nestedRevisions = `${'<w:ins w:id="1"><w:del w:id="2">'.repeat(50)}<w:r><w:t>nested</w:t></w:r>${'</w:del></w:ins>'.repeat(50)}`;
+await writeFile(
+  new URL('image-and-revision-oddities.docx', directory),
+  docx(
+    body(
+      `<w:p>${nestedRevisions}<w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${'9'.repeat(30)}" cy="-5"/><wp:docPr id="1" name="x" descr="__proto__"/><a:blip xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="${R}" r:embed="missing"/></wp:inline></w:drawing></w:r>` +
+        `<w:r><w:pict><v:shape xmlns:v="urn:schemas-microsoft-com:vml" style="width:1e309pt;height:-5in;width:3pt" alt="constructor"/></w:pict></w:r></w:p>`,
+    ),
+  ),
+);
