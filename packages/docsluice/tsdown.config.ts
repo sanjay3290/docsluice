@@ -8,6 +8,7 @@ export default defineConfig({
     'worker-thread': 'src/node/worker/worker.ts',
     'node/cli': 'src/node/cli/index.ts',
     doc: 'src/readers/doc/index.ts',
+    vsdx: 'src/readers/vsdx/index.ts',
     // Opt-in format plugins (ADR 0014): not registered by default.
     '7z': 'src/readers/7z/index.ts',
     rar: 'src/readers/rar/index.ts',

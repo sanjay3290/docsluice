@@ -35,6 +35,7 @@ jobs:
             ppt,
             ooxml,
             docx,
+            vsdx,
             xlsx,
             xlsx-numfmt,
             pptx,

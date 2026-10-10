@@ -26,6 +26,9 @@
       "doc": [
         "dist/doc.d.ts"
       ],
+      "vsdx": [
+        "dist/vsdx.d.ts"
+      ],
       "7z": [
         "dist/7z.d.ts"
       ],
@@ -146,6 +149,10 @@
     "./doc": {
       "import": "./dist/doc.js",
       "require": "./dist/doc.cjs"
+    },
+    "./vsdx": {
+      "import": "./dist/vsdx.js",
+      "require": "./dist/vsdx.cjs"
     },
     "./7z": {
       "import": "./dist/7z.js",

@@ -63,6 +63,7 @@ export const TARGETS = {
   },
   doc: { module: 'fuzz/doc.fuzz.js', export: 'fuzzDoc', seeds: ['corpus/doc', 'corpus/ole', 'hostile/doc'] },
   ppt: { module: 'fuzz/ppt.fuzz.js', export: 'fuzzPpt', seeds: ['corpus/ppt', 'corpus/ole', 'hostile/ppt'] },
+  vsdx: { module: 'fuzz/vsdx.fuzz.js', export: 'fuzzVsdx', seeds: ['corpus/vsdx', 'hostile/vsdx'] },
   docx: { module: 'fuzz/docx.fuzz.js', export: 'fuzzDocx', seeds: ['corpus/docx', 'hostile/docx'] },
   xlsx: { module: 'fuzz/xlsx.fuzz.js', export: 'fuzzXlsx', seeds: ['corpus/xlsx', 'hostile/xlsx'] },
   'zip-container': {
