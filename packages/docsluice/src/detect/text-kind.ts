@@ -39,6 +39,11 @@ export function detectTextKindCandidates(text: string): readonly FormatId[] {
   if (isEmailHeaderBlock(sample)) return ['eml'];
   if (startsAsciiInsensitive(sample, start, '<!doctype html')) return ['html'];
   if (startsAsciiInsensitive(sample, start, '<?xml')) return ['xml'];
+  if (startsAsciiInsensitive(sample, start, '<!doctype')) {
+    // A non-HTML DOCTYPE (DTD and internal subset included) before an XML root element (#172).
+    const after = skipDoctype(sample, start);
+    if (after >= 0 && hasXmlRoot(sample, skipMisc(sample, after))) return ['xml'];
+  }
   if (hasKnownHtmlRoot(sample, start)) return ['html'];
   if (hasXmlRoot(sample, start)) return ['xml'];
   if (containsHtmlTag(sample)) return ['html'];
@@ -133,6 +138,49 @@ function hasKnownHtmlRoot(text: string, start: number): boolean {
     if (next === 0x3e || next === 0x2f || isWhitespace(next)) return true;
   }
   return false;
+}
+
+/**
+ * The index after a `<!DOCTYPE …>` declaration that starts at `start`, or -1 when it does not end
+ * inside `text`. Quotes, the `[ … ]` internal subset, and comments inside it are skipped without
+ * reading or evaluating any declaration. One linear pass over the bounded detection sample.
+ */
+function skipDoctype(text: string, start: number): number {
+  let i = start + 9;
+  let subset = false;
+  while (i < text.length) {
+    const code = text.charCodeAt(i);
+    if (code === 0x22 || code === 0x27) {
+      const end = text.indexOf(text[i]!, i + 1);
+      if (end < 0) return -1;
+      i = end + 1;
+      continue;
+    }
+    if (subset && code === 0x3c && text.startsWith('<!--', i)) {
+      const end = text.indexOf('-->', i + 4);
+      if (end < 0) return -1;
+      i = end + 3;
+      continue;
+    }
+    if (code === 0x5b && !subset) subset = true;
+    else if (code === 0x5d && subset) subset = false;
+    else if (code === 0x3e && !subset) return i + 1;
+    i += 1;
+  }
+  return -1;
+}
+
+/** Skip whitespace, comments and processing instructions between the prolog and the root. */
+function skipMisc(text: string, from: number): number {
+  let i = skipWhitespace(text, from);
+  while (i < text.length) {
+    const close = text.startsWith('<!--', i) ? '-->' : text.startsWith('<?', i) ? '?>' : undefined;
+    if (close === undefined) return i;
+    const end = text.indexOf(close, i + 2);
+    if (end < 0) return text.length;
+    i = skipWhitespace(text, end + close.length);
+  }
+  return i;
 }
 
 function hasXmlRoot(text: string, start: number): boolean {

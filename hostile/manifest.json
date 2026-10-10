@@ -1,7 +1,6 @@
 [
   {
     "file": "xml/xxe-file.xml",
-    "format": "xml",
     "expect": {
       "warnings": [
         "DTD_IGNORED",
@@ -14,7 +13,6 @@
   },
   {
     "file": "xml/xxe-url.xml",
-    "format": "xml",
     "expect": {
       "warnings": [
         "DTD_IGNORED",
@@ -27,7 +25,6 @@
   },
   {
     "file": "xml/billion-laughs.xml",
-    "format": "xml",
     "expect": {
       "warnings": [
         "DTD_IGNORED",
@@ -293,7 +290,6 @@
   },
   {
     "file": "xml/xxe-parameter.xml",
-    "format": "xml",
     "expect": {
       "warnings": [
         "DTD_IGNORED"
