@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 import test from 'node:test';
 import { rolldown } from 'rolldown';
-import sizeLimits, { READERS } from '../.size-limit.js';
+import sizeLimits, { PLUGINS, READERS } from '../.size-limit.js';
 
 const packageRoot = fileURLToPath(new URL('..', import.meta.url));
 const dist = join(packageRoot, 'dist');
@@ -34,7 +34,11 @@ test('importing extract from docsluice loads every reader lazily (RT-4)', async 
     const entry = chunks.find((chunk) => chunk.isEntry);
     assert.ok(entry, 'the app has an entry chunk');
     const readerFile = (reader) => join(dist, `${reader}.js`);
-    for (const reader of READERS) {
+    for (const plugin of PLUGINS) {
+      const owner = chunks.find((chunk) => chunk.moduleIds.includes(readerFile(plugin)));
+      assert.equal(owner, undefined, `${plugin} plugin is opt-in and never bundled`);
+    }
+    for (const reader of READERS.filter((name) => !PLUGINS.includes(name))) {
       assert.ok(!entry.moduleIds.includes(readerFile(reader)), `${reader} reader is not in the entry chunk`);
       const owner = chunks.find((chunk) => chunk.moduleIds.includes(readerFile(reader)));
       assert.ok(owner, `${reader} reader is bundled`);

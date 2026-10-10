@@ -25,8 +25,13 @@ Strings follow the BIFF8 rules: 8-bit characters are Latin-1 (the low byte of UT
 - BIFF5 and older workbooks (Excel 95 and earlier, stream `Book`): reported with `UNREADABLE_PART` and no content.
 - Formula text: the `formulas` option has no effect, because BIFF8 stores formulas as parsed tokens, and these are not decompiled.
 - Document properties (`\x05SummaryInformation`), so XLS metadata is empty where XLSX fills `language` and similar fields.
-- Charts, drawings, comments, hyperlinks and hidden rows and columns.
+- Charts, drawings and hyperlinks.
 
 ## Header rows (XLS-8)
 
-Tables get `headerRows` from the `headerRow` option, guessed the same way as for XLSX (see [xlsx.md](xlsx.md#header-rows-xls-8)). Hidden rows and columns, comments and named ranges are not read yet (#231).
+Tables get `headerRows` from the `headerRow` option, guessed the same way as for XLSX (see [xlsx.md](xlsx.md#header-rows-xls-8)). ## Hidden rows and columns, comments, names (XLS-9, XLS-10)
+
+- `ROW` records with `fDyZero` and `COLINFO` records with `fHidden` mark their cells `hidden: true`, as in XLSX.
+- Comments are `note` blocks (`role: 'comment'`) after the sheet's tables. Each has the cell in `loc.range` and the `NOTE` author. The text comes from the comment object's `TXO` and `CONTINUE` records, linked through the `OBJ` id.
+- `NAME` records whose formula is one 3-D area or cell (`PtgArea3d`, `PtgRef3d`), resolved through `EXTERNSHEET` to one sheet, name the table region they cover exactly (`caption`). Built-in names (print areas, filters) and function names are skipped.
+- LibreOffice's XLS export keeps named ranges but drops database ranges, which the XLSX export writes as tables. `corpus/xls/workbook-comments-hidden-names.xls` therefore has one named table fewer than its XLSX and ODS siblings.

@@ -23,6 +23,13 @@ export const RECORD = {
   FORMULA: 0x0006,
   STRING: 0x0207,
   MERGECELLS: 0x00e5,
+  ROW: 0x0208,
+  COLINFO: 0x007d,
+  NOTE: 0x001c,
+  OBJ: 0x005d,
+  TXO: 0x01b6,
+  NAME: 0x0018,
+  EXTERNSHEET: 0x0017,
 } as const;
 
 export interface BiffRecord {

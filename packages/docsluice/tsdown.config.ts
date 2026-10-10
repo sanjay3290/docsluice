@@ -8,6 +8,10 @@ export default defineConfig({
     'worker-thread': 'src/node/worker/worker.ts',
     'node/cli': 'src/node/cli/index.ts',
     doc: 'src/readers/doc/index.ts',
+    vsdx: 'src/readers/vsdx/index.ts',
+    // Opt-in format plugins (ADR 0014): not registered by default.
+    '7z': 'src/readers/7z/index.ts',
+    rar: 'src/readers/rar/index.ts',
     ppt: 'src/readers/ppt/index.ts',
     txt: 'src/readers/txt/index.ts',
     markdown: 'src/readers/markdown/index.ts',
@@ -20,6 +24,8 @@ export default defineConfig({
     'readers/code': 'src/readers/code/index.ts',
     // Not a package subpath: the compound-file (OLE) parser that detection loads for legacy files.
     ole: 'src/ole/index.ts',
+    // Not a package subpath: OOXML decryption, loaded only for encrypted packages opened with `password`.
+    'office-encryption': 'src/office/encryption/index.ts',
     // Not a package subpath: ZIP-based format classification that detection loads for ZIP files.
     'zip-kind': 'src/detect/zip-kind.ts',
     // Not a package subpath: HTML main-content selection, loaded only with `mainContent: true`.
@@ -44,6 +50,7 @@ export default defineConfig({
     gzip: 'src/readers/gzip/index.ts',
     tar: 'src/readers/tar/index.ts',
     eml: 'src/readers/eml/index.ts',
+    mbox: 'src/readers/mbox/index.ts',
     msg: 'src/readers/msg/index.ts',
     epub: 'src/readers/epub/index.ts',
   },

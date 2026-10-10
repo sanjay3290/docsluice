@@ -3,7 +3,8 @@ import type { Location } from '../../core/model.js';
 import type { Reader, ReadContext } from '../../core/reader.js';
 import { openCfb } from '../../ole/index.js';
 import type { CfbArchive } from '../../ole/index.js';
-import { emitSheetTables } from '../xlsx/emit.js';
+import { emitSheetNotes, emitSheetTables } from '../xlsx/emit.js';
+import type { XlsxNamedRange } from '../xlsx/emit.js';
 import { parseGlobals, parseSheet } from './workbook.js';
 
 const XLS_MIME = 'application/vnd.ms-excel';
@@ -80,7 +81,13 @@ export const xlsReader: Reader = {
       const result = parseSheet(stream, entry, workbook, xlsContext);
       if (result.damaged) damaged = true;
       if (result.badSharedString) badSharedString = true;
-      emitSheetTables(ctx, result.sheet, index, loc.sheet, path);
+      const named: XlsxNamedRange[] = [];
+      for (const name of workbook.names) {
+        ctx.budget.tick();
+        if (name.sheet === index) named.push({ name: name.name, range: name.range });
+      }
+      emitSheetTables(ctx, result.sheet, index, loc.sheet, path, named);
+      emitSheetNotes(ctx, result.comments, loc.sheet, path);
       if (!ctx.out.closeSection()) break;
       // Each sheet is one top-level block; a streaming consumer can apply backpressure here (EXT-2).
       await ctx.out.flush();

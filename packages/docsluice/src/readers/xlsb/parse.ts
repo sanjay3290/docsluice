@@ -1,7 +1,8 @@
 import type { Budget } from '../../core/budget.js';
 import { rkNumber } from '../xls/biff.js';
 import { builtInNumberFormat, formatGeneral, formatNumber } from '../xlsx/numfmt.js';
-import type { XlsxCell, XlsxSheet } from '../xlsx/sheet.js';
+import type { SheetNote, XlsxNamedRange } from '../xlsx/emit.js';
+import type { XlsxCell, XlsxRange, XlsxSheet } from '../xlsx/sheet.js';
 import { MAX_COLUMN, MAX_ROW } from '../xlsx/spreadsheetml.js';
 import type { XlsxStyles } from '../xlsx/styles.js';
 import { BRT, f64, u16, u32, wideString, XlsbRecords } from './records.js';
@@ -29,8 +30,18 @@ export interface XlsbSheetEntry {
   state: number;
 }
 
+/** A defined name that is one area of one sheet (XLS-9). */
+export interface XlsbName {
+  name: string;
+  /** Index into `XlsbWorkbook.sheets`. */
+  sheet: number;
+  range: XlsxRange;
+}
+
 export interface XlsbWorkbook {
   sheets: XlsbSheetEntry[];
+  /** `BrtName` records that refer to one area of one sheet, in file order. */
+  names: XlsbName[];
   date1904: boolean;
   damaged: boolean;
 }
@@ -38,9 +49,23 @@ export interface XlsbWorkbook {
 /** `workbook.bin`: the sheets in `BrtBundleSh` order and the date system from `BrtWbProp`. */
 export function parseXlsbWorkbook(bytes: Uint8Array, budget: Budget): XlsbWorkbook {
   const records = new XlsbRecords(bytes, budget);
-  const workbook: XlsbWorkbook = { sheets: [], date1904: false, damaged: false };
+  const workbook: XlsbWorkbook = { sheets: [], names: [], date1904: false, damaged: false };
+  const externSheets: Array<{ first: number; last: number }> = [];
+  const rawNames: Array<{ name: string; ixti: number; range: XlsxRange }> = [];
   for (let record = records.next(); record; record = records.next()) {
-    if (record.type === BRT.WbProp) {
+    if (record.type === BRT.ExternSheet) {
+      const count = u32(record.data, 0) ?? 0;
+      for (let index = 0; index < count && externSheets.length < MAX_FORMATS; index++) {
+        budget.tick();
+        const first = u32(record.data, 8 + index * 12);
+        const last = u32(record.data, 12 + index * 12);
+        if (first === undefined || last === undefined) break;
+        externSheets.push({ first, last });
+      }
+    } else if (record.type === BRT.Name) {
+      const name = definedName(record.data);
+      if (name && rawNames.length < MAX_FORMATS) rawNames.push(name);
+    } else if (record.type === BRT.WbProp) {
       workbook.date1904 = ((record.data[0] ?? 0) & 1) === 1;
     } else if (record.type === BRT.BundleSh) {
       const state = u32(record.data, 0);
@@ -55,7 +80,108 @@ export function parseXlsbWorkbook(bytes: Uint8Array, budget: Budget): XlsbWorkbo
     }
   }
   if (records.damaged) workbook.damaged = true;
+  for (const raw of rawNames) {
+    budget.tick();
+    const target = externSheets[raw.ixti];
+    if (!target || target.first !== target.last || target.first >= workbook.sheets.length) continue;
+    workbook.names.push({ name: raw.name, sheet: target.first, range: raw.range });
+  }
   return workbook;
+}
+
+/**
+ * A `BrtName` ([MS-XLSB] 2.4.687) whose formula is one 3-D area or cell reference (`PtgArea3d`,
+ * `PtgRef3d`). Built-in names (print areas, filters) and function names are skipped.
+ */
+function definedName(data: Uint8Array): { name: string; ixti: number; range: XlsxRange } | undefined {
+  const flags = u32(data, 0);
+  const name = wideString(data, 9);
+  if (flags === undefined || !name || !name.text || (flags & 0x22) !== 0) return undefined;
+  const size = u32(data, name.end);
+  const at = name.end + 4;
+  if (size === undefined || at + size > data.length) return undefined;
+  const ptg = data[at]!;
+  const ixti = u16(data, at + 1);
+  if (ixti === undefined) return undefined;
+  if (size === 15 && (ptg === 0x3b || ptg === 0x5b || ptg === 0x7b)) {
+    const top = u32(data, at + 3);
+    const bottom = u32(data, at + 7);
+    const left = u16(data, at + 11);
+    const right = u16(data, at + 13);
+    if (top === undefined || bottom === undefined || left === undefined || right === undefined)
+      return undefined;
+    const range = {
+      top: top + 1,
+      bottom: bottom + 1,
+      left: (left & 0x3fff) + 1,
+      right: (right & 0x3fff) + 1,
+    };
+    if (range.bottom < range.top || range.right < range.left || range.bottom > MAX_ROW) return undefined;
+    return { name: name.text, ixti, range };
+  }
+  if (size === 9 && (ptg === 0x3a || ptg === 0x5a || ptg === 0x7a)) {
+    const row = u32(data, at + 3);
+    const column = u16(data, at + 7);
+    if (row === undefined || column === undefined || row >= MAX_ROW) return undefined;
+    const cell = { top: row + 1, bottom: row + 1, left: (column & 0x3fff) + 1, right: (column & 0x3fff) + 1 };
+    return { name: name.text, ixti, range: cell };
+  }
+  return undefined;
+}
+
+/** A comments part (`commentsN.bin`, [MS-XLSB] 2.1.7.8): each comment's cell, author and text. */
+export function parseXlsbComments(bytes: Uint8Array, budget: Budget): SheetNote[] {
+  const records = new XlsbRecords(bytes, budget);
+  const authors: string[] = [];
+  const notes: SheetNote[] = [];
+  let open: { row: number; column: number; author?: string } | undefined;
+  for (let record = records.next(); record; record = records.next()) {
+    if (record.type === BRT.CommentAuthor) {
+      if (authors.length < MAX_FORMATS) authors.push(wideString(record.data, 0)?.text ?? '');
+    } else if (record.type === BRT.BeginComment) {
+      const author = u32(record.data, 0);
+      const row = u32(record.data, 4);
+      const column = u32(record.data, 12);
+      open =
+        row === undefined || column === undefined || row >= MAX_ROW || column >= MAX_COLUMN
+          ? undefined
+          : { row: row + 1, column: column + 1 };
+      const name = author === undefined ? undefined : authors[author]?.trim();
+      if (open && name) open.author = name;
+    } else if (record.type === BRT.CommentText && open) {
+      // A RichStr: one flags byte, then the text as an XLWideString.
+      const text = wideString(record.data, 1)?.text?.replaceAll('\r\n', '\n').trim();
+      if (text && notes.length < budget.limits.cells) notes.push({ ...open, text });
+      open = undefined;
+    }
+  }
+  return notes;
+}
+
+/** A table part (`tableN.bin`, `BrtBeginList`): display name, range and header row count. */
+export function parseXlsbTable(bytes: Uint8Array, budget: Budget): XlsxNamedRange | undefined {
+  const records = new XlsbRecords(bytes, budget);
+  for (let record = records.next(); record; record = records.next()) {
+    if (record.type !== BRT.BeginList) continue;
+    const data = record.data;
+    const top = u32(data, 0);
+    const bottom = u32(data, 4);
+    const left = u32(data, 8);
+    const right = u32(data, 12);
+    const headerRows = u32(data, 24);
+    const name = wideString(data, 64);
+    const display = name ? wideString(data, name.end) : undefined;
+    const title = display?.text ?? name?.text;
+    if (top === undefined || bottom === undefined || left === undefined || right === undefined)
+      return undefined;
+    if (!title || bottom < top || right < left || bottom >= MAX_ROW || right >= MAX_COLUMN) return undefined;
+    return {
+      name: title,
+      range: { top: top + 1, bottom: bottom + 1, left: left + 1, right: right + 1 },
+      headerRows: Math.min(headerRows ?? 1, 1_000),
+    };
+  }
+  return undefined;
 }
 
 export interface XlsbStrings {
@@ -145,6 +271,8 @@ export function parseXlsbSheet(bytes: Uint8Array, ctx: XlsbSheetContext): XlsbSh
   let full = false;
   let row = -1;
   let column = -1;
+  const hiddenRows = new Set<number>();
+  const hiddenColumns: Array<{ start: number; end: number }> = [];
 
   const formatText = (text: string, style: number): XlsxCell => {
     const code = ctx.styles.formatOf(style);
@@ -185,6 +313,17 @@ export function parseXlsbSheet(bytes: Uint8Array, ctx: XlsbSheetContext): XlsbSh
       if (rw === undefined) result.damaged = true;
       else row = rw;
       column = -1;
+      // fDyZero: the row is hidden (XLS-10).
+      if (rw !== undefined && rw < MAX_ROW && ((u16(data, 10) ?? 0) & 0x1000) !== 0) hiddenRows.add(rw + 1);
+      continue;
+    }
+    if (type === BRT.ColInfo) {
+      const first = u32(data, 0);
+      const last = u32(data, 4);
+      if (first !== undefined && last !== undefined && first <= last && first < MAX_COLUMN) {
+        if (((u16(data, 16) ?? 0) & 1) !== 0 && hiddenColumns.length < MAX_COLUMN)
+          hiddenColumns.push({ start: first + 1, end: Math.min(MAX_COLUMN, last + 1) });
+      }
       continue;
     }
     if (type === BRT.MergeCell) {
@@ -286,6 +425,18 @@ export function parseXlsbSheet(bytes: Uint8Array, ctx: XlsbSheetContext): XlsbSh
     }
   }
   sheet.skippedRows = skippedRowNumbers.size;
+  if (hiddenRows.size > 0) sheet.hiddenRows = hiddenRows;
+  if (hiddenColumns.length > 0) {
+    hiddenColumns.sort((a, b) => a.start - b.start);
+    const merged: Array<{ start: number; end: number }> = [];
+    for (const range of hiddenColumns) {
+      budget.tick();
+      const last = merged.at(-1);
+      if (last && range.start <= last.end + 1) last.end = Math.max(last.end, range.end);
+      else merged.push({ ...range });
+    }
+    sheet.hiddenColumns = merged;
+  }
   if (records.damaged) result.damaged = true;
   return result;
 }

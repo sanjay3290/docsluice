@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-rar.mjs (RAR 5.0, stored entries)
+Requirements: IN-4
+Notes: listing only (ADR 0014); a directory, nested paths, an empty file and a non-ASCII name.

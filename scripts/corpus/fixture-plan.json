@@ -79,5 +79,10 @@
     "source": "src/ppt-order-title-notes.fodp",
     "formats": ["ppt"],
     "requirements": ["PPT-1", "PPT-2", "PPT-4"]
+  },
+  {
+    "source": "src/workbook-comments-hidden-names.fods",
+    "formats": ["xlsx", "xls", "ods"],
+    "requirements": ["XLS-9", "XLS-10"]
   }
 ]
