@@ -1,0 +1,14 @@
+import { readFileSync } from 'node:fs';
+import { installTraps, OPTIONS } from './spike.mjs';
+const calls = installTraps();
+const warnings = [];
+const original = console.log;
+for (const level of ['log', 'warn', 'error', 'info']) console[level] = (...args) => warnings.push(`${level}: ${String(args[0]).slice(0, 100)}`);
+const pdfjs = await import(process.argv[2] === 'legacy' ? 'pdfjs-dist/legacy/build/pdf.mjs' : 'unpdf/pdfjs');
+if (process.argv[2] === 'legacy') globalThis.pdfjsWorker = await import('pdfjs-dist/legacy/build/pdf.worker.mjs');
+const task = pdfjs.getDocument({ data: new Uint8Array(readFileSync('helvetica.pdf')), ...OPTIONS });
+const pdf = await task.promise;
+const content = await (await pdf.getPage(1)).getTextContent();
+await task.destroy();
+console.log = original;
+console.log(process.argv[2], JSON.stringify(content.items.map((i) => [i.str, Math.round(i.transform[4]), Math.round(i.transform[5]), Math.round(i.width)])), JSON.stringify(calls), JSON.stringify(warnings));
