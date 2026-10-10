@@ -32,6 +32,13 @@ export const BRT = {
   BundleSh: 156,
   BeginSst: 159,
   MergeCell: 176,
+  Name: 39,
+  ColInfo: 60,
+  BeginList: 343,
+  ExternSheet: 362,
+  CommentAuthor: 632,
+  BeginComment: 635,
+  CommentText: 637,
   BeginCellXFs: 617,
   EndCellXFs: 618,
 } as const;

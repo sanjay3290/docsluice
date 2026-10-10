@@ -3,6 +3,7 @@ import type { XmlContext } from '../../xml/index.js';
 import { formatGeneral } from '../xlsx/numfmt.js';
 import type { XlsxCell, XlsxRange, XlsxSheet } from '../xlsx/sheet.js';
 import { MAX_COLUMN, MAX_ROW } from '../xlsx/spreadsheetml.js';
+import { parseSheetRange } from '../xlsx/workbook.js';
 
 const OFFICE_NS = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0';
 const TABLE_NS = 'urn:oasis:names:tc:opendocument:xmlns:table:1.0';
@@ -10,6 +11,9 @@ const TEXT_NS = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0';
 const STYLE_NS = 'urn:oasis:names:tc:opendocument:xmlns:style:1.0';
 const XLINK_NS = 'http://www.w3.org/1999/xlink';
 const XML_NS = 'http://www.w3.org/XML/1998/namespace';
+const DC_NS = 'http://purl.org/dc/elements/1.1/';
+/** LibreOffice's unnamed per-sheet database ranges (autofilters): not names a person gave. */
+const ANONYMOUS_RANGE = '__Anonymous_Sheet_DB__';
 /** `text:s` stands for this many spaces at most; the attribute is a count from the file. */
 const MAX_SPACES = 1024;
 /**
@@ -21,15 +25,34 @@ export const MAX_REPEATED_COPIES = 65_536;
 /** Value types whose `office:value` is a number ([ODF 1.3] 19.385). */
 const NUMERIC_TYPES: ReadonlySet<string> = new Set(['float', 'percentage', 'currency']);
 
+/** A cell comment (`office:annotation`, XLS-9). */
+export interface OdsComment {
+  row: number;
+  column: number;
+  text: string;
+  author?: string;
+}
+
 /** One `table:table` of the spreadsheet body, in the XLSX sheet model. */
 export interface OdsSheet {
   name: string | undefined;
   hidden: boolean;
   sheet: XlsxSheet;
+  comments: OdsComment[];
+}
+
+/** A named range or database range of one sheet (XLS-9). */
+export interface OdsNamedRange {
+  name: string;
+  sheet: string;
+  range: XlsxRange;
+  /** Database ranges say whether their first row is a header (`table:contains-header`). */
+  headerRows?: number;
 }
 
 export interface OdsContent {
   sheets: OdsSheet[];
+  named: OdsNamedRange[];
   hasExternalLinks: boolean;
 }
 
@@ -50,6 +73,8 @@ interface OpenCell {
   paragraph: string | undefined;
   /** Open elements whose text is not displayed: annotations and nested tables. */
   hiddenDepth: number;
+  /** The cell's annotation while it is open, then its finished text. */
+  note?: { paragraphs: string[]; paragraph: string | undefined; author?: string; creator?: string };
 }
 
 interface RowCell {
@@ -148,13 +173,45 @@ export function odsFormula(formula: string, ctx: XmlContext): string {
   return out;
 }
 
+/** An ODF range address (`$Sheet1.$A$1:.$B$3`) as one sheet and range, or undefined. */
+function rangeAddress(
+  address: string | undefined,
+  ctx: XmlContext,
+): { sheet: string; range: XlsxRange } | undefined {
+  if (address === undefined || address.length === 0 || address.length > 512) return undefined;
+  // Several areas are separated by spaces; only single-area ranges name a table region.
+  if (address.trim().includes(' ')) return undefined;
+  const parts: string[] = [];
+  let part = '';
+  let quote = false;
+  for (let index = 0; index < address.length; index++) {
+    ctx.budget.tick();
+    const char = address[index]!;
+    if (char === "'") quote = !quote;
+    if (char === ':' && !quote) {
+      parts.push(part);
+      part = '';
+    } else part += char;
+  }
+  parts.push(part);
+  if (parts.length > 2) return undefined;
+  const first = referencePart(parts[0]!, ctx);
+  let text = first;
+  if (parts.length === 2) {
+    // The end of a range repeats its sheet (`.$B$3` or `$Sheet1.$B$3`); keep the cell only.
+    const end = referencePart(parts[1]!, ctx);
+    text += `:${end.slice(end.lastIndexOf('!') + 1)}`;
+  }
+  return parseSheetRange(text, ctx.budget);
+}
+
 /**
  * Parse an ODS `content.xml` with bounded SAX events into sparse sheets. Repeated rows and columns
  * are never expanded when empty; repeated cells with a value are stored one by one against the
  * `cells` budget, and once it is spent the rest are counted arithmetically, never looped over.
  */
 export function parseOdsContent(input: Uint8Array, ctx: OdsContext): OdsContent {
-  const content: OdsContent = { sheets: [], hasExternalLinks: false };
+  const content: OdsContent = { sheets: [], named: [], hasExternalLinks: false };
   const maxMerges = ctx.budget.limits.cells;
   /** Namespace declarations per open element (`undefined` when it declares none). */
   const scopes: Array<Map<string, string> | undefined> = [];
@@ -173,6 +230,11 @@ export function parseOdsContent(input: Uint8Array, ctx: OdsContext): OdsContent 
   let rowMerges: XlsxRange[] = [];
   let column = 1;
   let cell: OpenCell | undefined;
+  /** Next column number for `table:table-column` declarations of the current sheet. */
+  let declaredColumn = 1;
+  /** Hidden row ranges of the current sheet (`table:visibility` on rows), in row order. */
+  let hiddenRows: Array<{ start: number; end: number }> = [];
+  let hiddenColumns: Array<{ start: number; end: number }> = [];
 
   const resolve = (prefix: string): string | undefined => {
     if (prefix === 'xml') return XML_NS;
@@ -310,9 +372,35 @@ export function parseOdsContent(input: Uint8Array, ctx: OdsContext): OdsContent 
         }
         if (cell) {
           if (uri === TABLE_NS && local === 'table') nestedTables++;
-          if ((uri === OFFICE_NS && local === 'annotation') || (uri === TABLE_NS && local === 'table')) {
+          const note = cell.note;
+          if (uri === OFFICE_NS && local === 'annotation' && cell.hiddenDepth === 0 && !note) {
+            // The cell's comment: its paragraphs and author are kept apart from the cell text.
+            cell.note = { paragraphs: [], paragraph: undefined };
+            cell.hiddenDepth++;
+            kind = 'annotation';
+          } else if (
+            (uri === OFFICE_NS && local === 'annotation') ||
+            (uri === TABLE_NS && local === 'table')
+          ) {
             cell.hiddenDepth++;
             kind = 'hidden';
+          } else if (
+            note &&
+            cell.hiddenDepth === 1 &&
+            note.creator === undefined &&
+            uri === DC_NS &&
+            local === 'creator'
+          ) {
+            note.creator = '';
+            kind = 'creator';
+          } else if (note && cell.hiddenDepth === 1 && uri === TEXT_NS) {
+            if ((local === 'p' || local === 'h') && note.paragraph === undefined) {
+              note.paragraph = '';
+              kind = 'note-p';
+            } else if (note.paragraph !== undefined && local === 's') {
+              note.paragraph += ' '.repeat(Math.min(count(attr(TEXT_NS, 'c'), ctx) ?? 1, MAX_SPACES));
+            } else if (note.paragraph !== undefined && local === 'tab') note.paragraph += '\t';
+            else if (note.paragraph !== undefined && local === 'line-break') note.paragraph += '\n';
           } else if (cell.hiddenDepth === 0 && uri === TEXT_NS) {
             if ((local === 'p' || local === 'h') && cell.paragraph === undefined) {
               cell.paragraph = '';
@@ -346,11 +434,46 @@ export function parseOdsContent(input: Uint8Array, ctx: OdsContext): OdsContent 
               skippedRows: 0,
               missingCachedValues: 0,
             },
+            comments: [],
           };
           row = 1;
+          declaredColumn = 1;
+          hiddenRows = [];
+          hiddenColumns = [];
           kind = 'sheet';
+        } else if (current && nestedTables === 0 && uri === TABLE_NS && local === 'table-column') {
+          const repeat = count(attr(TABLE_NS, 'number-columns-repeated'), ctx) ?? 1;
+          const visibility = attr(TABLE_NS, 'visibility');
+          if ((visibility === 'collapse' || visibility === 'filter') && declaredColumn <= MAX_COLUMN) {
+            hiddenColumns.push({
+              start: declaredColumn,
+              end: Math.min(MAX_COLUMN, declaredColumn + repeat - 1),
+            });
+          }
+          declaredColumn += repeat;
+        } else if (
+          spreadsheet > 0 &&
+          !current &&
+          uri === TABLE_NS &&
+          (local === 'named-range' || local === 'database-range')
+        ) {
+          const name = attr(TABLE_NS, 'name');
+          const target = rangeAddress(
+            attr(TABLE_NS, local === 'named-range' ? 'cell-range-address' : 'target-range-address'),
+            ctx,
+          );
+          if (name !== undefined && name.length > 0 && !name.startsWith(ANONYMOUS_RANGE) && target) {
+            const named: OdsNamedRange = { name, ...target };
+            if (local === 'database-range')
+              named.headerRows = attr(TABLE_NS, 'contains-header') === 'false' ? 0 : 1;
+            content.named.push(named);
+          }
         } else if (current && nestedTables === 0 && uri === TABLE_NS && local === 'table-row') {
           rowRepeat = count(attr(TABLE_NS, 'number-rows-repeated'), ctx) ?? 1;
+          const visibility = attr(TABLE_NS, 'visibility');
+          if ((visibility === 'collapse' || visibility === 'filter') && row <= MAX_ROW) {
+            hiddenRows.push({ start: row, end: Math.min(MAX_ROW, row + rowRepeat - 1) });
+          }
           rowCells = [];
           rowMerges = [];
           column = 1;
@@ -378,13 +501,28 @@ export function parseOdsContent(input: Uint8Array, ctx: OdsContext): OdsContent 
         kinds.push(kind);
       },
       onText(text) {
-        if (cell && cell.hiddenDepth === 0 && cell.paragraph !== undefined) cell.paragraph += text;
+        if (!cell) return;
+        if (cell.hiddenDepth === 0 && cell.paragraph !== undefined) cell.paragraph += text;
+        else if (cell.hiddenDepth === 1 && cell.note) {
+          if (cell.note.paragraph !== undefined) cell.note.paragraph += text;
+          else if (kinds.at(-1) === 'creator') cell.note.creator += text;
+        }
       },
       onClose(_name, info) {
         ctx.budget.tick();
         scopes.pop();
         const kind = kinds.pop();
-        if (kind === 'hidden') {
+        if (kind === 'annotation') {
+          const note = cell!.note!;
+          cell!.hiddenDepth--;
+          note.author = note.creator?.trim() || undefined;
+        } else if (kind === 'note-p') {
+          const note = cell!.note!;
+          note.paragraphs.push(note.paragraph!);
+          note.paragraph = undefined;
+        } else if (kind === 'creator') {
+          // The creator text is kept as it arrived; nothing to close.
+        } else if (kind === 'hidden') {
           cell!.hiddenDepth--;
           if (info.namespaceURI === TABLE_NS && info.localName === 'table') nestedTables--;
         } else if (kind === 'p') {
@@ -396,6 +534,12 @@ export function parseOdsContent(input: Uint8Array, ctx: OdsContext): OdsContent 
           const repeat = Math.min(open.repeat, Math.max(0, MAX_COLUMN - open.column + 1));
           column = open.column + open.repeat;
           if (repeat === 0 || row > MAX_ROW) return;
+          const text = open.note?.paragraphs.join('\n').trim();
+          if (text && !open.covered) {
+            const comment: OdsComment = { row, column: open.column, text };
+            if (open.note!.author) comment.author = open.note!.author;
+            current!.comments.push(comment);
+          }
           const value = cellValue({ ...open, repeat });
           if (value) rowCells.push({ column: open.column, repeat, value });
           // A merge is kept for the cell as written; repeated copies of a merged cell are not merged.
@@ -413,6 +557,7 @@ export function parseOdsContent(input: Uint8Array, ctx: OdsContext): OdsContent 
           rowCells = [];
           rowMerges = [];
         } else if (kind === 'sheet') {
+          markHidden(current!.sheet, hiddenRows, hiddenColumns, ctx);
           content.sheets.push(current!);
           current = undefined;
         } else if (kind === 'table-style') {
@@ -425,6 +570,30 @@ export function parseOdsContent(input: Uint8Array, ctx: OdsContext): OdsContent 
     ctx,
   );
   return content;
+}
+
+/**
+ * Turn hidden row ranges into the rows that hold values (a range can cover a million repeated rows;
+ * only stored rows are looked up) and keep the hidden column ranges (XLS-10).
+ */
+function markHidden(
+  sheet: XlsxSheet,
+  rows: ReadonlyArray<{ start: number; end: number }>,
+  columns: ReadonlyArray<{ start: number; end: number }>,
+  ctx: XmlContext,
+): void {
+  if (columns.length > 0) sheet.hiddenColumns = columns;
+  if (rows.length === 0) return;
+  const hidden = new Set<number>();
+  const stored = [...sheet.rows.keys()].sort((a, b) => a - b);
+  let range = 0;
+  for (const row of stored) {
+    ctx.budget.tick();
+    while (range < rows.length && rows[range]!.end < row) range++;
+    if (range === rows.length) break;
+    if (rows[range]!.start <= row) hidden.add(row);
+  }
+  if (hidden.size > 0) sheet.hiddenRows = hidden;
 }
 
 /** A link target with a URI scheme or a network path, as opposed to a place in the document. */

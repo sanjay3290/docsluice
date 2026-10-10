@@ -4,6 +4,7 @@ import { guessHeaderRows } from './header.js';
 import { rangeName, regionRows, sheetRegions } from './layout.js';
 import type { XlsxRegion } from './layout.js';
 import type { XlsxRange, XlsxSheet } from './sheet.js';
+import { columnName } from './spreadsheetml.js';
 
 /** An Excel table (ListObject) or a defined name that covers a range of one sheet (XLS-9). */
 export interface XlsxNamedRange {
@@ -148,4 +149,33 @@ function regionFor(sheet: XlsxSheet, range: XlsxRange, ctx: ReadContext): XlsxRe
     if (clipped.bottom > clipped.top || clipped.right > clipped.left) merges.push(clipped);
   }
   return { range, merges };
+}
+
+/** A cell comment to emit after a sheet's tables (XLS-9). */
+export interface SheetNote {
+  row: number;
+  column: number;
+  text: string;
+  author?: string;
+}
+
+/**
+ * Emit cell comments as `note` blocks with `role: 'comment'`, the cell address in `loc.range`.
+ * Shared by the XLS, XLSB and ODS readers. Returns false when the output is full.
+ */
+export function emitSheetNotes(
+  ctx: ReadContext,
+  notes: readonly SheetNote[],
+  sheetName: string | undefined,
+  path: string | undefined,
+): boolean {
+  for (const note of notes) {
+    ctx.budget.tick();
+    const loc: Location = {};
+    if (path !== undefined) loc.path = path;
+    if (sheetName !== undefined) loc.sheet = sheetName;
+    loc.range = `${columnName(note.column)}${note.row}`;
+    if (!ctx.out.note('comment', note.text, loc, note.author)) return false;
+  }
+  return true;
 }
