@@ -76,3 +76,8 @@ defaultRegistry.add({
   mimeTypes: ['application/xml', 'text/xml'],
   load: () => import('../readers/xml/index.js').then((module) => module.xmlReader),
 });
+defaultRegistry.add({
+  id: 'html',
+  mimeTypes: ['text/html'],
+  load: () => import('../readers/html/index.js').then((module) => module.htmlReader),
+});

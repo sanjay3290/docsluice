@@ -3,7 +3,7 @@ import { DocBuilder } from '../src/core/builder.js';
 import { DocsluiceError } from '../src/core/errors.js';
 import { resolveLimits } from '../src/core/limits.js';
 import type { ResolvedOptions } from '../src/core/options.js';
-import { readHtml } from '../src/readers/html/index.js';
+import { readHtml } from '../src/readers/html/read.js';
 
 /** Bounded HTML parser entry point; unexpected parser errors remain fuzz failures. */
 export async function fuzzHtml(input: Uint8Array): Promise<void> {

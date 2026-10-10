@@ -228,6 +228,13 @@ describe('extraction pipeline', () => {
     expect(xml.blocks.map((block) => block.loc.path)).toEqual(['/doc/p[1]', '/doc/p[2]']);
   });
 
+  it('extracts HTML through the public pipeline', async () => {
+    const html = await extract(bytes('<!doctype html><h1>Title</h1><p>Body <script>x</script>text</p>'));
+    expect(html.format).toBe('html');
+    expect(toText(html)).toBe('Title\n\nBody text');
+    expect(html.features.hasJavaScript).toBe(true);
+  });
+
   it('reports a guessed TXT or Markdown encoding once, with or without a forced format', async () => {
     const latin = new Uint8Array([0x63, 0x61, 0x66, 0xe9]);
     for (const options of [{}, { format: 'txt' as const }, { format: 'markdown' as const }]) {

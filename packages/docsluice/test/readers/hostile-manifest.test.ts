@@ -11,7 +11,7 @@ interface ManifestEntry {
 }
 
 // Manifest entries for these readers run here until the shared hostile runner (#20) lands.
-const READERS = ['markdown', 'txt', 'csv', 'tsv', 'json', 'xml'];
+const READERS = ['markdown', 'txt', 'csv', 'tsv', 'json', 'xml', 'html'];
 const root = new URL('../../../../hostile/', import.meta.url);
 const entries = (JSON.parse(readFileSync(new URL('manifest.json', root), 'utf8')) as ManifestEntry[]).filter(
   ({ file }) => READERS.includes(file.split('/')[0]!),

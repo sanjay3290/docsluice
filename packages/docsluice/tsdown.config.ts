@@ -11,6 +11,7 @@ export default defineConfig({
     tsv: 'src/readers/tsv/index.ts',
     json: 'src/readers/json/index.ts',
     xml: 'src/readers/xml/index.ts',
+    html: 'src/readers/html/index.ts',
   },
   format: ['esm', 'cjs'],
   platform: 'neutral',

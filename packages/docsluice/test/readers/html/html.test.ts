@@ -5,8 +5,10 @@ import { resolveLimits } from '../../../src/core/limits.js';
 import type { Limits } from '../../../src/core/limits.js';
 import type { ReadContext } from '../../../src/core/reader.js';
 import type { ExtractOptions } from '../../../src/core/options.js';
-import { emitHtml, readHtml } from '../../../src/readers/html/index.js';
+import { emitHtml } from '../../../src/html/index.js';
+import { readHtml } from '../../../src/readers/html/read.js';
 import { fuzzHtml } from '../../../fuzz/html.fuzz.js';
+import { toMarkdown } from '../../../src/render/markdown.js';
 
 function context(
   input: string | Uint8Array,
@@ -137,13 +139,37 @@ describe('HTML reader', () => {
       kind: 'table',
       headerRows: 1,
       rows: [
-        [
-          { text: 'A', rowSpan: 2 },
-          { text: 'B', colSpan: 2 },
-        ],
-        [{ text: 'C' }, { text: 'D' }],
+        [{ text: 'A', rowSpan: 2 }, { text: 'B', colSpan: 2 }, { text: '' }],
+        [{ text: '' }, { text: 'C' }, { text: 'D' }],
       ],
     });
+  });
+
+  it('places cells on the grid around spans so renderers keep every value', async () => {
+    const ctx = context(
+      '<table><tr><td rowspan="3">L</td><td>1</td><td rowspan="2">R</td></tr>' +
+        '<tr><td>2</td></tr><tr><td colspan="2">3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr></table>',
+    );
+    await readHtml(ctx);
+    const doc = ctx.out.finish();
+    const table = doc.blocks[0];
+    expect(table?.kind === 'table' && table.rows.map((row) => row.map((cell) => cell.text))).toEqual([
+      ['L', '1', 'R'],
+      ['', '2', ''],
+      ['', '3', ''],
+      ['4', '5', '6'],
+    ]);
+    expect(toMarkdown(doc)).toContain('| 4 | 5 | 6 |');
+    expect(toMarkdown(doc)).toContain('| L | 1 | R |');
+    expect(toMarkdown(doc)).toContain('|  | 2 |  |');
+  });
+
+  it('clamps spans to the HTML maxima and charges placeholder cells to the cell budget', async () => {
+    const ctx = context('<table><tr><td colspan="999999">wide</td></tr></table>', { cells: 50 });
+    await readHtml(ctx);
+    const table = ctx.out.finish().blocks[0];
+    expect(table?.kind === 'table' && table.rows[0]!.length).toBeLessThanOrEqual(50);
+    expect(ctx.budget.truncated).toBe(true);
   });
   it('prefers declared meta charset and decodes numeric and common named entities', async () => {
     const head = new TextEncoder().encode('<meta charset="windows-1252"><p>');
@@ -163,8 +189,11 @@ describe('HTML reader', () => {
   });
   it('limits deep unclosed tags and bounds staged output', async () => {
     const deep = context('<div>'.repeat(100_000) + 'end', { blockDepth: 16, timeMs: 2000 });
+    const started = performance.now();
     await readHtml(deep);
+    expect(performance.now() - started).toBeLessThan(2000);
     expect(deep.warnings.warnings.some((w) => w.code === 'DEPTH_LIMIT')).toBe(true);
+    expect(deep.out.finish().blocks.at(-1)).toMatchObject({ kind: 'paragraph', text: 'end' });
     const small = context('<p>' + 'x'.repeat(100_000) + '</p>', { outputChars: 100 });
     await readHtml(small);
     expect(small.out.finish().stats.truncated).toBe(true);
@@ -179,11 +208,18 @@ describe('HTML reader', () => {
       code: 'ABORTED',
     });
   });
-  it('balances depth and obeys throwing depth limits', async () => {
-    const ctx = context('<div><div><div>hidden</div></div></div>', { blockDepth: 2 }, { onLimit: 'throw' });
-    await expect(readHtml(ctx)).rejects.toMatchObject({ code: 'LIMIT_EXCEEDED', limit: 'blockDepth' });
-    expect(ctx.budget.enterDepth('block')).toBe(true);
-    ctx.budget.exitDepth('block');
+  it('flattens elements past blockDepth and keeps their text and later content', async () => {
+    for (const onLimit of ['truncate', 'throw'] as const) {
+      const html = `${'<div>'.repeat(30)}deep text${'</div>'.repeat(30)}<p>after</p>`;
+      const ctx = context(html, { blockDepth: 8 }, { onLimit });
+      await readHtml(ctx);
+      const doc = ctx.out.finish();
+      expect(doc.blocks.map((block) => ('text' in block ? block.text : ''))).toEqual(['deep text', 'after']);
+      expect(doc.stats.truncated).toBe(false);
+      expect(ctx.warnings.warnings.map((w) => w.code)).toEqual(['DEPTH_LIMIT']);
+      expect(ctx.budget.enterDepth('block')).toBe(true);
+      ctx.budget.exitDepth('block');
+    }
   });
   it('requires a real raw-text closing tag and excludes head text', async () => {
     const ctx = context('<head><title>HEAD</title></head><script>x</scriptx>SECRET</script><p>Visible</p>');

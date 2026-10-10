@@ -241,6 +241,9 @@ export function parseHtml(text: string, ctx: ReadContext): HtmlNode {
   let nodes = 0;
   const positions = new Map<string, number[]>();
   const hiddenScopes: number[] = [];
+  // Open tags past `blockDepth` are transparent: their content joins the nearest kept ancestor.
+  const flattened = new Map<string, number>();
+  let depthWarned = false;
   const topIndex = (tag: string): number => positions.get(tag)?.at(-1) ?? 0;
   const pop = (): void => {
     if (hiddenScopes.at(-1) === stack.length - 1) hiddenScopes.pop();
@@ -248,7 +251,6 @@ export function parseHtml(text: string, ctx: ReadContext): HtmlNode {
     const indices = positions.get(frame.node.tag)!;
     indices.pop();
     if (!indices.length) positions.delete(frame.node.tag);
-    ctx.budget.exitDepth('block');
   };
   try {
     while (pos < text.length) {
@@ -285,6 +287,11 @@ export function parseHtml(text: string, ctx: ReadContext): HtmlNode {
       }
       pos = token.end;
       if (token.close) {
+        const open = flattened.get(token.tag) ?? 0;
+        if (open > 0) {
+          flattened.set(token.tag, open - 1);
+          continue;
+        }
         const index = topIndex(token.tag);
         if (index && index >= (hiddenScopes.at(-1) ?? 0))
           while (stack.length > index) {
@@ -328,6 +335,19 @@ export function parseHtml(text: string, ctx: ReadContext): HtmlNode {
         }
       const node: HtmlNode = { tag: token.tag, attrs: token.attrs, children: [] };
       const hidden = stack.at(-1)!.hidden || HIDDEN.has(token.tag);
+      const container =
+        !VOID.has(token.tag) && !token.self && token.tag !== 'script' && token.tag !== 'style';
+      if (container && !hidden && stack.length > ctx.budget.limits.blockDepth) {
+        if (!depthWarned) {
+          depthWarned = true;
+          ctx.warnings.add({
+            code: 'DEPTH_LIMIT',
+            message: `HTML nesting was flattened at the configured block depth of ${ctx.budget.limits.blockDepth}.`,
+          });
+        }
+        flattened.set(token.tag, (flattened.get(token.tag) ?? 0) + 1);
+        continue;
+      }
       if (!hidden) {
         if (++nodes > MAX_NODES) {
           ctx.warnings.add({
@@ -351,22 +371,7 @@ export function parseHtml(text: string, ctx: ReadContext): HtmlNode {
         }
         continue;
       }
-      if (!VOID.has(token.tag) && !token.self) {
-        let entered: boolean;
-        try {
-          entered = ctx.budget.enterDepth('block');
-        } catch (error) {
-          ctx.budget.exitDepth('block');
-          throw error;
-        }
-        if (!entered) {
-          ctx.budget.exitDepth('block');
-          ctx.warnings.add({
-            code: 'DEPTH_LIMIT',
-            message: 'HTML nesting exceeded the configured block depth.',
-          });
-          break;
-        }
+      if (container) {
         const indices = positions.get(node.tag) ?? [];
         indices.push(stack.length);
         positions.set(node.tag, indices);
@@ -378,6 +383,15 @@ export function parseHtml(text: string, ctx: ReadContext): HtmlNode {
   } finally {
     while (stack.length > 1) pop();
   }
+}
+
+// HTML caps colspan at 1,000 and rowspan at 65,534 (WHATWG tables processing model).
+const MAX_COLSPAN = 1000;
+const MAX_ROWSPAN = 65_534;
+
+function spanValue(raw: string | undefined, maximum: number): number {
+  const span = raw === undefined ? 1 : Number(raw.trim());
+  return Number.isSafeInteger(span) && span > 1 ? Math.min(span, maximum) : 1;
 }
 
 function plain(node: HtmlNode, ctx: ReadContext, preserve = false): string {
@@ -519,6 +533,8 @@ export function emitHtml(ctx: ReadContext, html: string, cidReferences?: Readonl
       if (!ctx.out.list(node.tag === 'ol', items, loc)) return;
     } else if (node.tag === 'table') {
       const rows: Cell[][] = [];
+      const coveredUntil: number[] = [];
+      let cellsStopped = false;
       let headerRows = 0;
       let caption: string | undefined;
       const work = [node];
@@ -531,33 +547,58 @@ export function emitHtml(ctx: ReadContext, html: string, cidReferences?: Readonl
           continue;
         }
         if (part.tag === 'tr') {
+          // Rows follow the model's grid: positions covered by an earlier span hold empty cells.
           const row: Cell[] = [];
+          const rowIndex = rows.length;
+          let column = 0;
           let header = true;
+          const placeholder = (): boolean => {
+            if (!ctx.budget.addCells(1)) {
+              cellsStopped = true;
+              return false;
+            }
+            row.push({ text: '' });
+            column++;
+            return true;
+          };
+          const skipCovered = (): boolean => {
+            while ((coveredUntil[column] ?? -1) >= rowIndex) {
+              ctx.budget.tick();
+              if (!placeholder()) return false;
+            }
+            return true;
+          };
           for (const child of part.children) {
             ctx.budget.tick();
             if (typeof child === 'string' || (child.tag !== 'td' && child.tag !== 'th')) continue;
-            if (!ctx.budget.addCells(1)) break;
-            const cell: Cell = { text: plain(child, ctx) };
-            for (const [name, target] of [
-              ['colspan', 'colSpan'],
-              ['rowspan', 'rowSpan'],
-            ] as const) {
-              ctx.budget.tick();
-              const raw = child.attrs.get(name);
-              const span = raw === undefined ? 1 : Number(raw);
-              if (Number.isInteger(span) && span > 1 && span <= ctx.budget.limits.cells) {
-                if (target === 'colSpan') cell.colSpan = span;
-                else cell.rowSpan = span;
-              }
+            if (!skipCovered()) break;
+            if (!ctx.budget.addCells(1)) {
+              cellsStopped = true;
+              break;
             }
+            const cell: Cell = { text: plain(child, ctx) };
+            const colSpan = spanValue(child.attrs.get('colspan'), MAX_COLSPAN);
+            const rowSpan = spanValue(child.attrs.get('rowspan'), MAX_ROWSPAN);
+            if (colSpan > 1) cell.colSpan = colSpan;
+            if (rowSpan > 1) cell.rowSpan = rowSpan;
             if (child.tag !== 'th') header = false;
             row.push(cell);
+            if (rowSpan > 1) {
+              for (let covered = column; covered < column + colSpan; covered++) {
+                ctx.budget.tick();
+                coveredUntil[covered] = Math.max(coveredUntil[covered] ?? -1, rowIndex + rowSpan - 1);
+              }
+            }
+            column++;
+            for (let covered = 1; covered < colSpan && !cellsStopped; covered++) placeholder();
+            if (cellsStopped) break;
           }
+          if (!cellsStopped) skipCovered();
           if (row.length) {
             if (header && headerRows === rows.length) headerRows++;
             rows.push(row);
           }
-          if (ctx.budget.cells > ctx.budget.limits.cells) break;
+          if (cellsStopped) break;
         } else
           for (let i = part.children.length - 1; i >= 0; i--) {
             ctx.budget.tick();
