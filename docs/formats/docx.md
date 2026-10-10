@@ -2,7 +2,7 @@
 
 The DOCX reader extracts Word paragraphs in document order, including paragraphs inside tables, content controls, and text boxes. Built-in heading styles (`Heading 1` through `Heading 6`, plus `Title`), localized heading names, and custom styles with inherited outline levels become heading blocks. A paragraph's own `w:outlineLvl` overrides its style: levels 0–5 are headings 1–6, and any other level (9 is body text) is a paragraph. Hyperlinks retain their relationship target; bookmark links retain visible text. Set `runs: true` to retain bold, italic, and hyperlink details in paragraph runs.
 
-The body is read from the `word/document.xml` part with the shared SAX XML scanner. Markup compatibility `AlternateContent` emits one branch: a supported `Choice` or its `Fallback`. Textbox paragraphs appear at their anchor position; surrounding anchor text is kept in ordered paragraph segments. Field instruction text is never returned. Images, revisions, notes and other ancillary parts are handled by separate reader work.
+The body is read from the `word/document.xml` part with the shared SAX XML scanner. Markup compatibility `AlternateContent` emits one branch: a supported `Choice` or its `Fallback`. Textbox paragraphs appear at their anchor position; surrounding anchor text is kept in ordered paragraph segments. Field instruction text is never returned. Images and revisions are handled by separate reader work.
 
 XML depth and staged output are governed by the shared `Budget`. A caller's abort signal, strict warning policy, output-character limit, and XML depth limit therefore apply while scanning the DOCX body.
 
@@ -32,3 +32,10 @@ Each `w:tbl` becomes a `table` block at its place in the document. A cell's para
 - A nested table stays text-only inside its parent cell (tabs between cells, line breaks between rows), and is also emitted as its own `table` block right after the parent, in document order. Its own nested tables follow it.
 - Tables nested deeper than `blockDepth` are flattened: their text joins the deepest kept cell, with one `DEPTH_LIMIT`. Very deep nesting then reaches the XML depth budget, which truncates the scan.
 - A table ends an open list block.
+
+## Headers, footers, notes and comments (DOC-5)
+
+- Headers and footers are read from the parts that section properties reference (`w:headerReference`, `w:footerReference`) and become `header`/`footer` blocks: every distinct header text before the body and every distinct footer text after it, in reference order. Identical texts (for example a first-page and a default header with the same words) appear once. Their `loc.path` is the part (`word/header1.xml`).
+- Footnotes, endnotes and comments become `note` blocks with `role` `footnote`, `endnote` or `comment`. Each note is emitted once, right after the block that references it: the paragraph holding the `w:footnoteReference`/`w:endnoteReference`, or the paragraph where a comment's range starts (`w:commentRangeStart`, or `w:commentReference` when there is no range). A comment range that starts between paragraphs attaches to the next one. Notes referenced inside a list item or table cell follow that list or table. Separator footnotes and endnotes (`w:type` `separator`, `continuationSeparator`, `continuationNotice`) are skipped.
+- A comment's `author` is `w:author`, or `w:initials` when there is no author. Authors are personal data: `metadata: false` removes them.
+- Note text keeps paragraphs as lines; `mc:Fallback` copies are skipped. Note, header and footer ids are kept in `Map`s, never as object keys.

@@ -69,3 +69,14 @@ await writeFile(
 // 3,000 rows of one cell spanning 1,000 grid columns: a few kilobytes that would expand to 3 million cells.
 const wide = `<w:tbl>${'<w:tr><w:tc><w:tcPr><w:gridSpan w:val="1000"/></w:tcPr><w:p/></w:tc></w:tr>'.repeat(3_000)}</w:tbl>`;
 await writeFile(new URL('gridspan-flood.docx', directory), docx(body(wide)));
+
+// Notes with prototype-named ids, each referenced 5,000 times: every note must appear once.
+const refs = '<w:r><w:footnoteReference w:id="__proto__"/></w:r><w:r><w:commentReference w:id="constructor"/></w:r>'.repeat(5_000);
+await writeFile(
+  new URL('notes-proto-ids.docx', directory),
+  docx(body(`<w:p><w:r><w:t>anchor</w:t></w:r>${refs}</w:p>`), {
+    'word/footnotes.xml': `<w:footnotes xmlns:w="${W}"><w:footnote w:id="__proto__">${para('proto note')}</w:footnote></w:footnotes>`,
+    'word/comments.xml': `<w:comments xmlns:w="${W}"><w:comment w:id="constructor" w:author="__proto__">${para('constructor comment')}</w:comment></w:comments>`,
+    'word/_rels/document.xml.rels': `<Relationships xmlns="${PKG}"><Relationship Id="f" Type="${R}/footnotes" Target="footnotes.xml"/><Relationship Id="c" Type="${R}/comments" Target="comments.xml"/></Relationships>`,
+  }),
+);

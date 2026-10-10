@@ -11,6 +11,9 @@ import { openZip } from '../../zip/index.js';
 import type { XmlContext } from '../../xml/index.js';
 import { scanDocxBody } from './body.js';
 import { DocxLists } from './lists.js';
+import { readDocxNotes, readDocxStoryText } from './stories.js';
+import type { DocxNoteText } from './stories.js';
+import type { DocxNoteRef } from './body.js';
 import { parseDocxNumbering } from './numbering.js';
 import type { DocxNumbering } from './numbering.js';
 import { parseDocxStyles } from './styles.js';
@@ -22,6 +25,63 @@ const OFFICE_DOCUMENT_REL =
   'http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument';
 const STYLES_REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles';
 const NUMBERING_REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering';
+const REL_BASE = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/';
+const NOTE_PARTS = [
+  ['footnote', 'footnotes'],
+  ['endnote', 'endnotes'],
+  ['comment', 'comments'],
+] as const;
+
+interface StoryPart {
+  path: string;
+  text: string;
+}
+
+/** Header and footer parts by relationship id, read before the synchronous body scan. */
+async function readStories(
+  parts: OoxmlParts,
+  relationships: ReadonlyMap<string, OoxmlRelationship>,
+  ctx: XmlContext,
+  pathPrefix: string,
+): Promise<Map<string, StoryPart>> {
+  const stories = new Map<string, StoryPart>();
+  for (const [id, relationship] of relationships) {
+    ctx.budget.tick();
+    if (relationship.external || !relationship.part) continue;
+    if (relationship.type !== `${REL_BASE}header` && relationship.type !== `${REL_BASE}footer`) continue;
+    const bytes = await parts.read(relationship.part);
+    if (!bytes) continue;
+    const path = pathWithPrefix(pathPrefix, relationship.part);
+    stories.set(id, {
+      path,
+      text: readDocxStoryText(bytes, { budget: ctx.budget, warnings: ctx.warnings, path }),
+    });
+  }
+  return stories;
+}
+
+/** Footnotes, endnotes and comments by role and `w:id`, with the path of the part they came from. */
+async function readNotes(
+  parts: OoxmlParts,
+  relationships: ReadonlyMap<string, OoxmlRelationship>,
+  ctx: XmlContext,
+  pathPrefix: string,
+): Promise<Map<string, { path: string; notes: Map<string, DocxNoteText> }>> {
+  const result = new Map<string, { path: string; notes: Map<string, DocxNoteText> }>();
+  for (const [role, part] of NOTE_PARTS) {
+    ctx.budget.tick();
+    const relationship = relationshipOfType(relationships, `${REL_BASE}${part}`, ctx);
+    if (!relationship || relationship.external || !relationship.part) continue;
+    const bytes = await parts.read(relationship.part);
+    if (!bytes) continue;
+    const path = pathWithPrefix(pathPrefix, relationship.part);
+    result.set(role, {
+      path,
+      notes: readDocxNotes(bytes, { budget: ctx.budget, warnings: ctx.warnings, path }, role),
+    });
+  }
+  return result;
+}
 
 function warnUnreadable(ctx: XmlContext, message: string): void {
   ctx.warnings.add({ code: 'UNREADABLE_PART', message });
@@ -150,15 +210,48 @@ export const docxReader: Reader = {
     if (features.hasEmbeddedFiles) ctx.out.setFeature('hasEmbeddedFiles');
     if (features.isEncrypted) ctx.out.setFeature('isEncrypted');
     if (features.hasJavaScript) ctx.out.setFeature('hasJavaScript');
-    const lists = new DocxLists(ctx, numbering, styles);
+    const stories = await readStories(parts, mainRelationships, xmlContext, ctx.path);
+    const notes = await readNotes(parts, mainRelationships, xmlContext, ctx.path);
+    const emittedNotes = new Set<string>();
+    const emitNotes = (refs: readonly DocxNoteRef[]): void => {
+      for (const ref of refs) {
+        ctx.budget.tick();
+        const key = `${ref.role}:${ref.id}`;
+        const source = notes.get(ref.role);
+        const note = source?.notes.get(ref.id);
+        if (!source || !note || emittedNotes.has(key)) continue;
+        emittedNotes.add(key);
+        ctx.out.note(ref.role, note.text, { path: source.path }, note.author);
+      }
+    };
+    // Each referenced header and footer is emitted once per distinct text: headers before the body,
+    // footers after it.
+    const sectionStories: Array<{ kind: 'header' | 'footer'; id: string }> = [];
+    const emitStories = (kind: 'header' | 'footer'): void => {
+      const seen = new Set<string>();
+      for (const reference of sectionStories) {
+        ctx.budget.tick();
+        const story = reference.kind === kind ? stories.get(reference.id) : undefined;
+        if (!story || story.text.length === 0 || seen.has(story.text)) continue;
+        seen.add(story.text);
+        ctx.out.headerFooter(kind, story.text, { path: story.path });
+      }
+    };
+    const lists = new DocxLists(ctx, numbering, styles, emitNotes);
     scanDocxBody(
       main.bytes,
       { ...ctx, path: pathWithPrefix(ctx.path, main.path) },
       styles,
       mainRelationships,
-      (paragraph) => lists.accept(paragraph),
-      () => lists.flush(),
+      {
+        onParagraph: (paragraph) => lists.accept(paragraph),
+        onTable: () => lists.flush(),
+        onNotes: emitNotes,
+        onSectionReference: (kind, id) => sectionStories.push({ kind, id }),
+        beforeEmit: () => emitStories('header'),
+      },
     );
     lists.flush();
+    emitStories('footer');
   },
 };

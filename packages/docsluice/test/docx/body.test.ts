@@ -175,9 +175,11 @@ describe('scanDocxBody', () => {
       ctx,
       new Map([['CustomHeading', { id: 'CustomHeading', level: 2 as const }]]),
       new Map(),
-      (paragraph) => {
-        seen.push(paragraph);
-        return true;
+      {
+        onParagraph: (paragraph) => {
+          seen.push(paragraph);
+          return true;
+        },
       },
     );
     expect(seen).toEqual([
@@ -201,9 +203,11 @@ describe('scanDocxBody', () => {
       ctx,
       new Map([['Heading1', { id: 'Heading1', level: 1 as const }]]),
       new Map(),
-      (paragraph) => {
-        seen.push(paragraph);
-        return true;
+      {
+        onParagraph: (paragraph) => {
+          seen.push(paragraph);
+          return true;
+        },
       },
     );
     expect(seen).toEqual([{ text: 'plain', loc: { path: 'word/document.xml' } }]);

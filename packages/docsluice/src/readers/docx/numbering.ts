@@ -1,7 +1,7 @@
 import type { XmlContext } from '../../xml/index.js';
 import { scanXml } from '../../xml/index.js';
+import { namespaceScope, WORD_NS, wordAttribute } from './wordml.js';
 
-const WORD_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const MAX_LEVEL = 8;
 /** Real level texts are a few characters; longer ones are cut so markers stay small. */
 const MAX_LEVEL_TEXT = 255;
@@ -34,29 +34,6 @@ interface Frame {
   localName?: string;
   /** Set on `w:lvl` frames: the level being read. */
   level?: MutableLevel;
-}
-
-function wordAttribute(
-  attrs: Map<string, string>,
-  local: string,
-  scopes: readonly Map<string, string>[],
-  budget: XmlContext['budget'],
-): string | undefined {
-  for (const [qualifiedName, value] of attrs) {
-    budget.tick();
-    const colon = qualifiedName.indexOf(':');
-    if (colon < 0 || qualifiedName.slice(colon + 1) !== local) continue;
-    const prefix = qualifiedName.slice(0, colon);
-    for (let index = scopes.length - 1; index >= 0; index--) {
-      budget.tick();
-      const uri = scopes[index]!.get(prefix);
-      if (uri !== undefined) {
-        if (uri === WORD_NS) return value;
-        break;
-      }
-    }
-  }
-  return undefined;
 }
 
 function parseCount(value: string | undefined, budget: XmlContext['budget']): number | undefined {
@@ -104,13 +81,7 @@ export function parseDocxNumbering(input: Uint8Array | string, ctx: XmlContext):
     {
       onOpen(_name, attrs, info) {
         ctx.budget.tick();
-        const scope = new Map<string, string>();
-        for (const [key, value] of attrs) {
-          ctx.budget.tick();
-          if (key === 'xmlns') scope.set('', value);
-          else if (key.startsWith('xmlns:')) scope.set(key.slice(6), value);
-        }
-        scopes.push(scope);
+        scopes.push(namespaceScope(attrs, ctx.budget));
         const parent = frames.at(-1)?.localName;
         const local = info.namespaceURI === WORD_NS ? info.localName : undefined;
         const value = (name: string): string | undefined => wordAttribute(attrs, name, scopes, ctx.budget);

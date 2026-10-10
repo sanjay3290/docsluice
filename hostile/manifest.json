@@ -502,5 +502,14 @@
     "maxMs": 2000,
     "maxHeapMB": 256,
     "requirement": "SEC-12"
+  },
+  {
+    "file": "docx/notes-proto-ids.docx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-6"
   }
 ]
