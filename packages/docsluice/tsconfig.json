@@ -5,5 +5,5 @@
     "noEmit": true
   },
   "include": ["src", "test", "fuzz"],
-  "exclude": ["src/node"]
+  "exclude": ["src/node", "test/node"]
 }
