@@ -46,6 +46,19 @@ describe('ODF metadata helpers', () => {
     });
   });
 
+  it('normalizes LibreOffice nanosecond dates without relying on engine-specific Date parsing', () => {
+    const meta = (date: string) =>
+      parseOdfMetadata(
+        new TextEncoder().encode(
+          `<office:document-meta xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"><office:meta><meta:creation-date>${date}</meta:creation-date></office:meta></office:document-meta>`,
+        ),
+        context(),
+      ).created;
+    expect(meta('2026-10-09T14:42:00.123456789')).toBe('2026-10-09T14:42:00.123Z');
+    expect(meta('2026-10-09T14:42:00.5+02:00')).toBe('2026-10-09T12:42:00.500Z');
+    expect(meta('2026-10-09T14:42:00')).toBe('2026-10-09T14:42:00.000Z');
+    expect(meta('2026-10-09')).toBe('2026-10-09T00:00:00.000Z');
+  });
   it('accepts flat documents but reads only fields directly under office:meta', () => {
     const result = parseOdfMetadata(
       `<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:ext="urn:example:extension"><office:meta><dc:title>Direct title</dc:title><ext:wrapper><dc:title>Nested title</dc:title><meta:user-defined meta:name="nested">secret</meta:user-defined></ext:wrapper></office:meta><office:body><dc:title>Body title</dc:title></office:body></office:document>`,

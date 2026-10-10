@@ -21,6 +21,8 @@ const XLINK_NS = 'http://www.w3.org/1999/xlink';
 const MIMETYPE = 'application/vnd.oasis.opendocument.text';
 /** `number-columns-repeated` is honoured up to this many copies per cell; each copy is charged to `cells`. */
 const MAX_REPEATED_CELLS = 1024;
+/** ODF list styles define levels 1 to 10. */
+const MAX_LIST_LEVEL = 10;
 const KNOWN_ODF_NAMESPACES = new Set([
   ODF_OFFICE_NS,
   TEXT_NS,
@@ -143,6 +145,7 @@ export const odtReader: Reader = {
     }
     const scopes = scopeMap(content, ctx);
     const listStyles = parseListStyles(content, scopes, ctx);
+    const pageStories = { header: [] as string[], footer: [] as string[] };
     if (stylesBytes) {
       const styleRoot = parseXml(stylesBytes, {
         budget: ctx.budget,
@@ -159,6 +162,7 @@ export const odtReader: Reader = {
           ctx.budget.tick();
           if (!listStyles.has(name)) listStyles.set(name, ordered);
         }
+        collectPageStories(styleRoot, styleScopes, pageStories, ctx);
       }
     }
     const body = directChild(content, ODF_OFFICE_NS, 'body', ctx);
@@ -170,6 +174,7 @@ export const odtReader: Reader = {
     detectExternalLinks(content, scopes, ctx);
     detectTrackedChanges(content, ctx);
     const trackedChanges = parseTrackedChanges(officeText, scopes, ctx);
+    for (const text of pageStories.header) ctx.out.headerFooter('header', text, location('styles.xml'));
     const emittedImages = new Set<string>();
     const stack: WalkFrame[] = [{ element: officeText, index: 0 }];
     while (stack.length > 0) {
@@ -203,9 +208,42 @@ export const odtReader: Reader = {
         stack.push({ element: child, index: 0 });
       }
     }
+    for (const text of pageStories.footer) ctx.out.headerFooter('footer', text, location('styles.xml'));
   },
 };
 
+/**
+ * Header and footer text of every master page (`style:header`, `style:header-left`, `style:header-first`
+ * and the footer forms), each distinct text once, in document order.
+ */
+function collectPageStories(
+  styleRoot: XmlElement,
+  scopes: Map<XmlElement, OdfElement>,
+  stories: { header: string[]; footer: string[] },
+  ctx: ReadContext,
+): void {
+  const masterStyles = directChild(styleRoot, ODF_OFFICE_NS, 'master-styles', ctx);
+  if (!masterStyles) return;
+  const noChanges = new Map<string, TrackedChange>();
+  for (const page of masterStyles.children) {
+    ctx.budget.tick();
+    if (typeof page === 'string' || page.namespaceURI !== ODF_STYLE_NS || page.localName !== 'master-page')
+      continue;
+    for (const story of page.children) {
+      ctx.budget.tick();
+      if (typeof story === 'string' || story.namespaceURI !== ODF_STYLE_NS) continue;
+      const kind = story.localName.startsWith('header')
+        ? 'header'
+        : story.localName.startsWith('footer')
+          ? 'footer'
+          : undefined;
+      if (!kind || !['', '-left', '-first'].includes(story.localName.slice(kind.length))) continue;
+      const text = cellText(story, scopes, noChanges, ctx);
+      const list = kind === 'header' ? stories.header : stories.footer;
+      if (text && !list.includes(text)) list.push(text);
+    }
+  }
+}
 
 function warn(ctx: ReadContext, code: string, message: string, path?: string): void {
   ctx.warnings.add({ code, message, loc: { path: path ?? 'content.xml' } });
@@ -685,8 +723,11 @@ interface ListFrame {
   items: ListItem[];
   index: number;
   depth: number;
-  markerStyle?: ListMarkerStyle;
+  listStyle?: ListStyle;
 }
+
+/** A `text:list-style`: marker styles by `text:level` (1-based). */
+type ListStyle = ReadonlyMap<number, ListMarkerStyle>;
 
 interface ListMarkerStyle {
   ordered: boolean;
@@ -698,7 +739,7 @@ interface ListMarkerStyle {
 function parseList(
   root: XmlElement,
   scopes: Map<XmlElement, OdfElement>,
-  listStyles: ReadonlyMap<string, ListMarkerStyle>,
+  listStyles: ReadonlyMap<string, ListStyle>,
   trackedChanges: ReadonlyMap<string, TrackedChange>,
   ctx: ReadContext,
 ): { ordered: boolean; items: ListItem[] } | undefined {
@@ -708,9 +749,7 @@ function parseList(
     items: [],
     index: 0,
     depth: 1,
-    ...(rootStyleName && listStyles.has(rootStyleName)
-      ? { markerStyle: listStyles.get(rootStyleName)! }
-      : {}),
+    ...(rootStyleName && listStyles.has(rootStyleName) ? { listStyle: listStyles.get(rootStyleName)! } : {}),
   };
   const stack: ListFrame[] = [top];
   while (stack.length > 0) {
@@ -724,7 +763,8 @@ function parseList(
     if (typeof child === 'string' || child.namespaceURI !== TEXT_NS || child.localName !== 'list-item')
       continue;
     const item: ListItem = { text: '' };
-    if (frame.markerStyle) item.marker = listMarker(frame.markerStyle, frame.items.length, ctx);
+    const markerStyle = levelStyle(frame.listStyle, frame.depth);
+    if (markerStyle) item.marker = listMarker(markerStyle, frame.items.length, ctx);
     frame.items.push(item);
     for (const part of child.children) {
       ctx.budget.tick();
@@ -742,22 +782,25 @@ function parseList(
           if (flattened) item.text += `${item.text ? '\n' : ''}${flattened}`;
           continue;
         }
+        // A nested list without its own style continues the outer list's style at the next level.
         const nestedStyleName = attr(part, scopes, TEXT_NS, 'style-name', ctx);
+        const nestedStyle =
+          nestedStyleName && listStyles.has(nestedStyleName)
+            ? listStyles.get(nestedStyleName)
+            : frame.listStyle;
         const nested: ListFrame = {
           list: part,
           items: [],
           index: 0,
           depth: frame.depth + 1,
-          ...(nestedStyleName && listStyles.has(nestedStyleName)
-            ? { markerStyle: listStyles.get(nestedStyleName)! }
-            : {}),
+          ...(nestedStyle ? { listStyle: nestedStyle } : {}),
         };
         item.items = nested.items;
         stack.push(nested);
       }
     }
   }
-  return { ordered: top.markerStyle?.ordered ?? false, items: top.items };
+  return { ordered: levelStyle(top.listStyle, 1)?.ordered ?? false, items: top.items };
 }
 
 function flattenListText(
@@ -794,8 +837,8 @@ function parseListStyles(
   root: XmlElement,
   scopes: Map<XmlElement, OdfElement>,
   ctx: ReadContext,
-): Map<string, ListMarkerStyle> {
-  const result = new Map<string, ListMarkerStyle>();
+): Map<string, ListStyle> {
+  const result = new Map<string, ListStyle>();
   for (const container of root.children) {
     ctx.budget.tick();
     if (
@@ -810,33 +853,51 @@ function parseListStyles(
         continue;
       const styleName = attr(style, scopes, ODF_STYLE_NS, 'name', ctx);
       if (!styleName || result.has(styleName)) continue;
-      let markerStyle: ListMarkerStyle | undefined;
+      const levels = new Map<number, ListMarkerStyle>();
       for (const level of style.children) {
         ctx.budget.tick();
-        if (markerStyle) continue;
-        if (
-          typeof level !== 'string' &&
-          level.namespaceURI === TEXT_NS &&
-          level.localName === 'list-level-style-number'
-        ) {
-          markerStyle = {
+        if (typeof level === 'string' || level.namespaceURI !== TEXT_NS) continue;
+        const rawLevel = attr(level, scopes, TEXT_NS, 'level', ctx);
+        const number = rawLevel ? boundedNumber(rawLevel, 0, MAX_LIST_LEVEL, ctx) : 1;
+        if (number === 0 || levels.has(number)) continue;
+        if (level.localName === 'list-level-style-number') {
+          levels.set(number, {
             ordered: true,
             format: attr(level, scopes, ODF_STYLE_NS, 'num-format', ctx),
             prefix: attr(level, scopes, ODF_STYLE_NS, 'num-prefix', ctx),
             suffix: attr(level, scopes, ODF_STYLE_NS, 'num-suffix', ctx),
-          };
-        } else if (
-          typeof level !== 'string' &&
-          level.namespaceURI === TEXT_NS &&
-          level.localName === 'list-level-style-bullet'
-        ) {
-          markerStyle = { ordered: false, bullet: attr(level, scopes, TEXT_NS, 'bullet-char', ctx) ?? '•' };
+          });
+        } else if (level.localName === 'list-level-style-bullet') {
+          levels.set(number, {
+            ordered: false,
+            bullet: bulletText(attr(level, scopes, TEXT_NS, 'bullet-char', ctx)),
+          });
         }
       }
-      if (markerStyle) result.set(styleName, markerStyle);
+      if (levels.size > 0) result.set(styleName, levels);
     }
   }
   return result;
+}
+
+/** The marker style for a nesting depth: that level, or the deepest defined level above it. */
+function levelStyle(style: ListStyle | undefined, depth: number): ListMarkerStyle | undefined {
+  if (!style) return undefined;
+  for (let level = Math.min(depth, MAX_LIST_LEVEL); level >= 1; level -= 1) {
+    const found = style.get(level);
+    if (found) return found;
+  }
+  return undefined;
+}
+
+/**
+ * A bullet character as text. Private-use code points are symbol-font glyphs (OpenSymbol, Wingdings)
+ * with no meaning as text, so they become the plain bullet DOCX output uses.
+ */
+function bulletText(value: string | undefined): string {
+  if (!value) return '•';
+  const code = value.codePointAt(0)!;
+  return (code >= 0xe000 && code <= 0xf8ff) || code >= 0xf0000 ? '•' : value;
 }
 
 function listMarker(style: ListMarkerStyle, itemIndex: number, ctx: ReadContext): string {

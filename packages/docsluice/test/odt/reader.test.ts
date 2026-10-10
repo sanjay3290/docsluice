@@ -99,6 +99,29 @@ describe('ODT reader', () => {
       rows: [[{ text: 'A', colSpan: 2 }, { text: '' }, { text: 'B' }]],
     });
   });
+  it('takes list markers per level, continues the outer style in nested lists and maps symbol-font bullets', async () => {
+    const result = await doc(
+      root(
+        `<text:list text:style-name="L1"><text:list-item><text:p>Top</text:p><text:list><text:list-item><text:p>Second</text:p></text:list-item></text:list></text:list-item></text:list>`,
+        `<text:list-style style:name="L1"><text:list-level-style-bullet text:level="1" text:bullet-char="\uf095"/><text:list-level-style-number text:level="2" style:num-format="a" style:num-suffix=")"/></text:list-style>`,
+      ),
+    );
+    expect(result.blocks[0]).toMatchObject({
+      kind: 'list',
+      ordered: false,
+      items: [{ text: 'Top', marker: '•', items: [{ text: 'Second', marker: 'a)' }] }],
+    });
+  });
+  it('emits master-page headers before the body and footers after it, each distinct text once', async () => {
+    const styles = `<office:document-styles xmlns:office="${office}" xmlns:style="${style}" xmlns:text="${text}"><office:master-styles><style:master-page style:name="A"><style:header><text:p>Top line</text:p></style:header><style:footer><text:p>Page <text:page-number>3</text:page-number></text:p></style:footer></style:master-page><style:master-page style:name="B"><style:header><text:p>Top line</text:p></style:header><style:footer-first><text:p>First footer</text:p></style:footer-first></style:master-page></office:master-styles></office:document-styles>`;
+    const result = await doc(root('<text:p>Body</text:p>'), [{ name: 'styles.xml', data: styles }]);
+    expect(result.blocks).toMatchObject([
+      { kind: 'header', text: 'Top line' },
+      { kind: 'paragraph', text: 'Body' },
+      { kind: 'footer', text: 'Page 3' },
+      { kind: 'footer', text: 'First footer' },
+    ]);
+  });
   it('keeps covered cells as empty grid positions, repeats cells and folds nested table text into its cell', async () => {
     const result = await doc(
       root(

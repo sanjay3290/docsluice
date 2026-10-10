@@ -131,7 +131,18 @@ function validIsoDate(value: string, ctx: XmlContext): string | undefined {
       break;
     }
   }
-  const timestamp = Date.parse(value.length > 10 && !hasZone ? `${value}Z` : value);
+  // ECMAScript defines only three fraction digits; LibreOffice writes nine. Trim or pad to three so
+  // every engine parses the same string.
+  let normalized = value;
+  if (value.length > 20 && value.charCodeAt(19) === 46) {
+    let end = 20;
+    while (end < value.length && value.charCodeAt(end) >= 48 && value.charCodeAt(end) <= 57) {
+      ctx.budget.tick();
+      end += 1;
+    }
+    normalized = `${value.slice(0, 20)}${value.slice(20, Math.min(end, 23)).padEnd(3, '0')}${value.slice(end)}`;
+  }
+  const timestamp = Date.parse(normalized.length > 10 && !hasZone ? `${normalized}Z` : normalized);
   if (!Number.isFinite(timestamp)) return undefined;
   try {
     return new Date(timestamp).toISOString();

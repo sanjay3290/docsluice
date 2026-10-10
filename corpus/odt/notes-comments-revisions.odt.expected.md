@@ -6,7 +6,7 @@ Valve pressure rose to 18 kPaReplacement gasket fitted..
 
 Inspect the eastern line.
 
-> Note (annotation): Confirm the gauge serial number.
+> Note (comment): Confirm the gauge serial number.
 
 Safety review
 
