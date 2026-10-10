@@ -423,6 +423,50 @@
       "sha256": "c5e2d0323e68d506b283c50ae725d4435be87c541b9df17b62f47c3b7c4a21a8",
       "file": "corpus/epub/gettysburg-address.epub",
       "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-values-formulas.fods",
+      "requirements": [
+        "XLS-2",
+        "XLS-3",
+        "XLS-4"
+      ],
+      "sizeBytes": 6656,
+      "sha256": "3db450644a824c702b69cb4182882b204bf4278fe61ff29442dc5fefd31a6000",
+      "file": "corpus/xls/workbook-values-formulas.xls",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-hidden-sparse.fods",
+      "requirements": [
+        "XLS-1",
+        "XLS-5"
+      ],
+      "sizeBytes": 6656,
+      "sha256": "b34d3ad7125af0e553b6a75b274dbed8ceba7f589fcb23fe2124be19f44ca844",
+      "file": "corpus/xls/workbook-hidden-sparse.xls",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-merged-richstrings.fods",
+      "requirements": [
+        "XLS-2",
+        "XLS-5"
+      ],
+      "sizeBytes": 5632,
+      "sha256": "ded69001ed6a381caf6c4e9f124121189d4e4aa85b814aedb960f10049258635",
+      "file": "corpus/xls/workbook-merged-richstrings.xls",
+      "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/workbook-1904-note.fods",
+      "requirements": [
+        "XLS-3"
+      ],
+      "sizeBytes": 5632,
+      "sha256": "f60ba6111934851ce698ce8f14697de53959346d4c3f52da35dd7823199f9648",
+      "file": "corpus/xls/workbook-1904-note.xls",
+      "goldenStatus": "unreviewed"
     }
   ]
 }

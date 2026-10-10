@@ -15,6 +15,7 @@ export default defineConfig({
     rtf: 'src/readers/rtf/index.ts',
     docx: 'src/readers/docx/index.ts',
     xlsx: 'src/readers/xlsx/index.ts',
+    xls: 'src/readers/xls/index.ts',
     pptx: 'src/readers/pptx/index.ts',
     odt: 'src/readers/odt/index.ts',
     zip: 'src/readers/zip/index.ts',

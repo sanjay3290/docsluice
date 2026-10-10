@@ -121,6 +121,11 @@ test('XLSX reader subpath loads lazily', async () => {
   assert.equal(xlsx.xlsxReader.id, 'xlsx');
 });
 
+test('XLS reader subpath loads lazily', async () => {
+  const xls = await import('docsluice/xls');
+  assert.equal(xls.xlsReader.id, 'xls');
+});
+
 test('PPTX reader subpath loads lazily', async () => {
   const pptx = await import('docsluice/pptx');
   assert.equal(pptx.pptxReader.id, 'pptx');

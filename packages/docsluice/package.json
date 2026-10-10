@@ -52,6 +52,9 @@
       "xlsx": [
         "dist/xlsx.d.ts"
       ],
+      "xls": [
+        "dist/xls.d.ts"
+      ],
       "pptx": [
         "dist/pptx.d.ts"
       ],
@@ -121,6 +124,10 @@
     "./xlsx": {
       "import": "./dist/xlsx.js",
       "require": "./dist/xlsx.cjs"
+    },
+    "./xls": {
+      "import": "./dist/xls.js",
+      "require": "./dist/xls.cjs"
     },
     "./pptx": {
       "import": "./dist/pptx.js",

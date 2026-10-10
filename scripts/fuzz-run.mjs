@@ -59,6 +59,7 @@ export const TARGETS = {
   eml: { module: 'fuzz/eml.fuzz.js', export: 'fuzzEml', seeds: ['corpus/eml', 'hostile/eml'] },
   odf: { module: 'fuzz/odf.fuzz.js', export: 'fuzzOdf', seeds: ['corpus/odt', 'hostile/odt'] },
   odt: { module: 'fuzz/odt.fuzz.js', export: 'fuzzOdt', seeds: ['corpus/odt', 'hostile/odt'] },
+  xls: { module: 'fuzz/xls.fuzz.js', export: 'fuzzXls', seeds: ['corpus/xls', 'hostile/xls'] },
   epub: { module: 'fuzz/epub.fuzz.js', export: 'fuzzEpub', seeds: ['corpus/epub', 'hostile/epub'] },
   rtf: { module: 'fuzz/rtf.fuzz.js', export: 'fuzzRtf', seeds: ['corpus/rtf', 'hostile/rtf'] },
   ooxml: {

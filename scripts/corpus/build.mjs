@@ -22,6 +22,7 @@ const conversions = new Map([
     'fods',
     new Map([
       ['xlsx', 'xlsx:Calc MS Excel 2007 XML'],
+      ['xls', 'xls:MS Excel 97'],
       ['ods', 'ods:calc8'],
     ]),
   ],
@@ -114,7 +115,9 @@ function execute(soffice, args, timeoutMs, label) {
 
 function assertSignature(bytes, format) {
   const valid =
-    format === 'pdf'
+    format === 'xls'
+      ? bytes.subarray(0, 8).equals(Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]))
+      : format === 'pdf'
       ? bytes.subarray(0, 5).equals(Buffer.from('%PDF-'))
       : format === 'rtf'
         ? bytes.subarray(0, 5).equals(Buffer.from('{\\rtf'))
