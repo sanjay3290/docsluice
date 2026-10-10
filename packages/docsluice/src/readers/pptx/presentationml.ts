@@ -2,6 +2,7 @@ import type { XmlContext } from '../../xml/index.js';
 
 export const P_NS = 'http://schemas.openxmlformats.org/presentationml/2006/main';
 export const A_NS = 'http://schemas.openxmlformats.org/drawingml/2006/main';
+export const C_NS = 'http://schemas.openxmlformats.org/drawingml/2006/chart';
 export const DGM_NS = 'http://schemas.openxmlformats.org/drawingml/2006/diagram';
 export const MC_NS = 'http://schemas.openxmlformats.org/markup-compatibility/2006';
 export const R_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';

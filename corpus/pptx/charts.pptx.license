@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-pptx-charts.mjs
+Requirements: PPT-6
+Notes: a clustered column chart with two series and an axis title, a line chart without a title whose second series misses a cached point, and a pie chart; each chart keeps only cached values and its embedded workbook is absent.

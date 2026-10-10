@@ -594,6 +594,15 @@
     "requirement": "SEC-6"
   },
   {
+    "file": "pptx/chart-sparse-cache.pptx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
     "file": "zip/nested-entries-10001.zip",
     "expect": {
       "warnings": ["TRUNCATED"]

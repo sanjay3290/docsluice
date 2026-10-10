@@ -127,6 +127,31 @@ describe('PPTX reader', () => {
     });
   });
 
+  it('reads chart data series as tables in reading order (PPT-6)', async () => {
+    const doc = await extract(fixture('charts.pptx'));
+    const [bar, line, pie] = slides(doc);
+    expect(texts(bar!)).toEqual(['Samples', 'table', 'Chart 1 of 3, synthetic data.']);
+    expect(bar!.blocks[1]).toMatchObject({
+      kind: 'table',
+      caption: 'Samples per quarter',
+      headerRows: 1,
+      loc: { slide: 1, path: 'ppt/slides/slide1.xml' },
+    });
+    const table = (section: Section) => {
+      const block = section.blocks.find((candidate) => candidate.kind === 'table');
+      return block?.kind === 'table' ? block : undefined;
+    };
+    expect(table(line!)?.caption).toBeUndefined();
+    expect(table(line!)?.rows[3]!.map((cell) => cell.text)).toEqual(['Mar', '29.5', '']);
+    expect(table(pie!)?.rows.map((row) => row.map((cell) => cell.text))).toEqual([
+      ['', 'Share'],
+      ['Water', '55'],
+      ['Sediment', '30'],
+      ['Biota', '15'],
+    ]);
+    expect(doc.warnings).toEqual([]);
+  });
+
   it('reads SmartArt as a nested list, uses mc:Fallback, keeps footers and skips generated placeholders', async () => {
     const fourth = slides(await extract(fixture('reading-order.pptx')))[3]!;
     expect(fourth.blocks[1]).toMatchObject({

@@ -3,6 +3,7 @@ import type { XmlContext } from '../../xml/index.js';
 import { scanXml } from '../../xml/index.js';
 import {
   A_NS,
+  C_NS,
   DGM_NS,
   MC_NS,
   namespacedAttribute,
@@ -36,9 +37,9 @@ export interface PptxPlaceholder {
   idx?: string;
 }
 
-/** A shape with text, a table or a SmartArt diagram, with its top-left corner on the slide (EMU). */
+/** A shape with text, a table, a SmartArt diagram or a chart, with its top-left corner on the slide (EMU). */
 export interface PptxShape {
-  kind: 'text' | 'table' | 'diagram';
+  kind: 'text' | 'table' | 'diagram' | 'chart';
   /** Position in the shape tree, used to keep ties in document order. */
   order: number;
   x?: number;
@@ -49,6 +50,8 @@ export interface PptxShape {
   headerRows?: number;
   /** Relationship id of the diagram data part (`dgm:relIds r:dm`). */
   diagramData?: string;
+  /** Relationship id of the chart part (`c:chart r:id`). */
+  chartPart?: string;
 }
 
 export interface PptxSlideContent {
@@ -201,6 +204,14 @@ export function parseSlide(input: Uint8Array, ctx: XmlContext): PptxSlideContent
           if (id !== undefined) {
             shape.kind = 'diagram';
             shape.diagramData = id;
+          }
+          return;
+        }
+        if (ns === C_NS && local === 'chart' && shape && shape.kind === 'text') {
+          const id = namespacedAttribute(attrs, 'id', R_NS, scopes, ctx.budget);
+          if (id !== undefined) {
+            shape.kind = 'chart';
+            shape.chartPart = id;
           }
           return;
         }
