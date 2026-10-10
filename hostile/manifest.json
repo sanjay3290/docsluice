@@ -906,5 +906,90 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "R2"
+  },
+  {
+    "file": "gzip/bomb-200mb.gz",
+    "expect": {
+      "error": "LIMIT_EXCEEDED"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "gzip/nested-5.gz",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "NST-1"
+  },
+  {
+    "file": "gzip/trailer-lie.gz",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "gzip/extra-overrun.gz",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "tar/size-lie.tar",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "tar/pax-size-lie.tar",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "tar/pax-header-bomb.tar",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "tar/bad-checksum.tar",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "tar/path-tricks.tar",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-3"
   }
 ]

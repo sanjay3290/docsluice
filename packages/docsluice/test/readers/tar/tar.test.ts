@@ -216,7 +216,11 @@ describe('tar reader', () => {
     const oneFile = makeTar([{ name: 'x', data: new TextEncoder().encode('x') }], false);
     const truncated = new Uint8Array(oneFile.length + 13);
     truncated.set(oneFile);
-    await expect(reader.read(makeContext(truncated).ctx)).rejects.toBeInstanceOf(CorruptFileError);
+    // Damage after a readable entry keeps that entry, with a warning.
+    const partial = makeContext(truncated);
+    await reader.read(partial.ctx);
+    expect(partial.extracted.map((entry) => entry.name)).toEqual(['x']);
+    expect(partial.ctx.warnings.warnings.map(({ code }) => code)).toEqual(['UNREADABLE_PART']);
   });
 
   it('rejects invalid checksum and size lies', async () => {

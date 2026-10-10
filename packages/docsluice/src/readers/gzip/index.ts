@@ -61,6 +61,8 @@ export const gzipReader: Reader = {
     let stoppedByBudget = false;
     let outputStopped = false;
     let failure: unknown;
+    // A damaged trailer or a stream cut short keeps the bytes inflated so far, with a warning.
+    let damaged = false;
 
     const gunzip = new Gunzip((chunk, final) => {
       if (final) finished = true;
@@ -86,7 +88,7 @@ export const gzipReader: Reader = {
     gunzip.onmember = (offset) => {
       ctx.budget.tick();
       if (offset > 0) {
-        verifyTrailer(bytes, offset - 8, memberCrc, memberSize);
+        if (!trailerMatches(bytes, offset - 8, memberCrc, memberSize)) damaged = true;
         ctx.budget.checkRatio(offset - memberCompressedStart, memberSize);
         inspectHeader(bytes.subarray(offset), ctx);
         if (!ctx.budget.addEntries(1)) {
@@ -114,12 +116,23 @@ export const gzipReader: Reader = {
     } catch (error) {
       if (error instanceof DocsluiceError) throw error;
       if (failure instanceof DocsluiceError) throw failure;
-      throw new CorruptFileError('The gzip stream is invalid.', { cause: error });
+      if (outputSize === 0) throw new CorruptFileError('The gzip stream is invalid.', { cause: error });
+      damaged = true;
     }
     if (failure instanceof DocsluiceError) throw failure;
     if (stoppedByBudget) return;
-    if (outputStopped || !finished) throw new CorruptFileError('The gzip stream is invalid.');
-    verifyTrailer(bytes, bytes.length - 8, memberCrc, memberSize);
+    if (!damaged && (outputStopped || !finished)) {
+      if (outputSize === 0) throw new CorruptFileError('The gzip stream is invalid.');
+      damaged = true;
+    }
+    if (!damaged && !trailerMatches(bytes, bytes.length - 8, memberCrc, memberSize)) damaged = true;
+    if (damaged) {
+      if (outputSize === 0) throw new CorruptFileError('The gzip stream is invalid.');
+      ctx.warnings.add({
+        code: 'UNREADABLE_PART',
+        message: 'The gzip data is damaged or cut short; the bytes read before the damage are kept.',
+      });
+    }
     ctx.budget.checkRatio(bytes.length - memberCompressedStart, memberSize);
 
     const output = new Uint8Array(outputSize);
@@ -188,12 +201,11 @@ function inspectHeader(bytes: Uint8Array, ctx: ReadContext): HeaderInfo {
   return { end: cursor, name };
 }
 
-function verifyTrailer(bytes: Uint8Array, offset: number, crc: number, size: number): void {
-  if (offset < 0 || offset + 8 > bytes.length) throw new CorruptFileError('The gzip trailer is missing.');
+/** Whether the member trailer at `offset` holds the CRC-32 and size of the inflated member. */
+function trailerMatches(bytes: Uint8Array, offset: number, crc: number, size: number): boolean {
+  if (offset < 0 || offset + 8 > bytes.length) return false;
   const view = new DataView(bytes.buffer, bytes.byteOffset + offset, 8);
-  if (view.getUint32(0, true) !== (crc ^ 0xffffffff) >>> 0 || view.getUint32(4, true) !== size >>> 0) {
-    throw new CorruptFileError('The gzip trailer checksum is invalid.');
-  }
+  return view.getUint32(0, true) === (crc ^ 0xffffffff) >>> 0 && view.getUint32(4, true) === size >>> 0;
 }
 
 function preflightChild(ctx: ReadContext): boolean {

@@ -174,10 +174,19 @@ describe('gzip reader', () => {
     await expect(reader.read(cancelled.ctx)).rejects.toHaveProperty('code', 'ABORTED');
   });
 
-  it('verifies member CRC and rejects a damaged trailer', async () => {
+  it('verifies member CRC and keeps damaged or cut-short data with a warning', async () => {
     const bytes = fixture('corpus/gzip/scores.csv.gz');
     bytes[bytes.length - 8] = bytes[bytes.length - 8]! ^ 0xff;
-    await expect(reader.read(makeContext(bytes).ctx)).rejects.toBeDefined();
+    const damaged = makeContext(bytes);
+    await reader.read(damaged.ctx);
+    expect(new TextDecoder().decode(damaged.extracted[0]!.bytes)).toContain('species,count');
+    expect(damaged.warnings.warnings.map(({ code }) => code)).toEqual(['UNREADABLE_PART']);
+    const cut = makeContext(fixture('corpus/gzip/scores.csv.gz').subarray(0, -8));
+    await reader.read(cut.ctx);
+    expect(cut.extracted).toHaveLength(1);
+    expect(cut.warnings.warnings.map(({ code }) => code)).toEqual(['UNREADABLE_PART']);
+    // Nothing inflated: the file is corrupt.
+    await expect(reader.read(makeContext(fixture('corpus/gzip/scores.csv.gz').subarray(0, 24)).ctx)).rejects.toBeDefined();
   });
 
   it('validates FHCRC instead of relying on inflater behavior', async () => {

@@ -12,6 +12,23 @@ export const tarReader: Reader = {
     return decodeAscii(bytes.subarray(257, 262)) === 'ustar' ? 0.9 : 0;
   },
   async read(ctx: ReadContext): Promise<void> {
+    const progress = { children: 0 };
+    try {
+      await readTar(ctx, progress);
+    } catch (error) {
+      // Damage after readable entries keeps those entries (partial is better than nothing).
+      if (!(error instanceof CorruptFileError) || progress.children === 0) throw error;
+      ctx.warnings.add({
+        code: 'UNREADABLE_PART',
+        message: 'The tar archive is damaged; the entries before the damage are kept.',
+      });
+    }
+  },
+};
+
+/** Read entries in order; `progress.children` counts the children emitted so far. */
+async function readTar(ctx: ReadContext, progress: { children: number }): Promise<void> {
+  {
     const bytes = ctx.bytes;
     let offset = 0;
     let pendingPath: string | undefined;
@@ -89,24 +106,31 @@ export const tarReader: Reader = {
       if (ctx.options.children === 'skip') {
         // Parse headers to advance safely, but do not expose skipped children.
       } else if (directory) {
+        progress.children++;
         ctx.out.addChild({ path: childPath(ctx, name), name, status: 'skipped', sizeBytes: size });
       } else if (!directory && !regular && !link) {
+        progress.children++;
         ctx.out.addChild({ path: childPath(ctx, name), name, status: 'skipped', sizeBytes: size });
       } else if (!directory && link) {
+        progress.children++;
         ctx.out.addChild({ path: childPath(ctx, name), name, status: 'listed', sizeBytes: size });
       } else if (!directory && regular && ctx.options.children === 'list') {
+        progress.children++;
         ctx.out.addChild({ path: childPath(ctx, name), name, status: 'listed', sizeBytes: size });
       } else if (!directory && regular) {
         if (ctx.options.children === 'extract' && !preflightChild(ctx)) {
+          progress.children++;
           ctx.out.addChild({ path: childPath(ctx, name), name, status: 'listed', sizeBytes: size });
           offset = padded;
           continue;
         }
         if (size > 0) {
           if (!ctx.budget.addUncompressed(size)) return;
+          progress.children++;
           await ctx.extractChild(name, bytes.subarray(dataStart, entryEnd));
           readAny = true;
         } else {
+          progress.children++;
           await ctx.extractChild(name, new Uint8Array());
           readAny = true;
         }
@@ -119,8 +143,8 @@ export const tarReader: Reader = {
       throw new CorruptFileError('The tar archive ends with a partial header.');
     }
     if (!readAny && !terminatorSeen && !entrySeen) throw new CorruptFileError();
-  },
-};
+  }
+}
 
 function checksum(header: Uint8Array, ctx: ReadContext): number {
   let sum = 0;
