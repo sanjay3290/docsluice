@@ -23,8 +23,13 @@ The PPTX reader turns every slide of a PresentationML deck (`.pptx`, `.ppsx`, `.
 - SmartArt text comes from the diagram data part (`dgm:relIds r:dm`): each node point's text (not presentation, transition or document points) becomes a list item in data order, nested by its `parOf` connections (at most 8 levels; cycles stop there).
 - Footer placeholders (`ftr`) become `footer` blocks. Date, slide-number and header placeholders hold generated text and are skipped.
 
+## Speaker notes and hidden slides (PPT-4, PPT-5)
+
+- A slide's notes part (`notesSlide` relationship) becomes one `note` block with `role: 'speaker-notes'`, last in the slide's section, with `loc.slide` and `loc.path` of the notes part. Its text is the notes body placeholder and any plain text boxes, top to bottom; the slide image, slide number, date, header and footer placeholders are left out.
+- A slide with `p:sld show="0"` is included with `hidden: true` on its section, and the document gets one `HIDDEN_CONTENT` warning with the number of hidden slides.
+
 ## Not yet read
 
-Speaker notes and hidden-slide flags (pptx2), pictures and their alt text, chart data (PPT-6), and comments.
+Pictures and their alt text, chart data (PPT-6), and comments.
 
 Hostile samples in `hostile/pptx/`: groups nested 1,000 deep (`DEPTH_LIMIT`, then `TRUNCATED`), a SmartArt part with 10,000 points whose connections form one cycle, and prototype-named relationship ids, placeholder types and slides with a table of huge spans (inert).

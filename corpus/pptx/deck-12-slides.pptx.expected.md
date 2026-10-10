@@ -4,6 +4,8 @@ Shoreline Survey
 
 Synthetic slide content 1: Shoreline Survey.
 
+> Note (speaker-notes): Speaker note: Introduce the synthetic shoreline survey.
+
 ## Slide 2
 
 Purpose and Scope

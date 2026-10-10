@@ -2,6 +2,8 @@
 
 Briefing
 
+> Note (speaker-notes): Speak to the quality checks.
+
 ## Slide 2
 
 Hidden Appendix

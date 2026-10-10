@@ -138,6 +138,32 @@ describe('PPTX reader', () => {
     expect(JSON.stringify(fourth)).not.toContain('skipped');
   });
 
+  it('reads speaker notes from the notes body only, and flags hidden slides (PPT-4, PPT-5)', async () => {
+    const doc = await extract(fixture('reading-order.pptx'));
+    const [, second, third] = slides(doc);
+    expect(second!.blocks.at(-1)).toMatchObject({
+      kind: 'note',
+      role: 'speaker-notes',
+      text: 'Start with the left column.\nThen compare the right.',
+      loc: { slide: 2, path: 'ppt/notesSlides/notesSlide1.xml' },
+    });
+    expect(JSON.stringify(second)).not.toContain('"2"');
+    expect(third!.hidden).toBe(true);
+    expect(second!.hidden).toBeUndefined();
+    expect(doc.warnings).toEqual([
+      { code: 'HIDDEN_CONTENT', message: '1 hidden slides are included with hidden: true.' },
+    ]);
+  });
+
+  it('reads LibreOffice notes text boxes', async () => {
+    const [first] = slides(await extract(fixture('deck-hidden-notes.pptx')));
+    expect(first!.blocks.at(-1)).toMatchObject({
+      kind: 'note',
+      role: 'speaker-notes',
+      text: 'Speak to the quality checks.',
+    });
+  });
+
   it('keeps ties in document order and puts unplaced shapes last', async () => {
     const unplaced =
       '<p:sp><p:nvSpPr><p:cNvPr id="3" name="u"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr/><p:txBody><a:p><a:r><a:t>unplaced</a:t></a:r></a:p></p:txBody></p:sp>';

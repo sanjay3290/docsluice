@@ -23,8 +23,8 @@ const shape = ({ name = 'Shape', ph, position, paragraphs }) =>
   `<p:sp><p:nvSpPr><p:cNvPr id="${id++}" name="${name}"/><p:cNvSpPr/><p:nvPr>${ph ?? ''}</p:nvPr></p:nvSpPr><p:spPr>${position ?? ''}</p:spPr><p:txBody><a:bodyPr/>${paragraphs.join('')}</p:txBody></p:sp>`;
 const tree = (shapes) =>
   `<p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr/>${shapes.join('')}</p:spTree></p:cSld>`;
-const slide = (shapes) =>
-  xml(`<p:sld xmlns:p="${P}" xmlns:a="${A}" xmlns:r="${R}" xmlns:mc="${MC}" xmlns:p14="${P14}">${tree(shapes)}</p:sld>`);
+const slide = (shapes, show = '') =>
+  xml(`<p:sld xmlns:p="${P}" xmlns:a="${A}" xmlns:r="${R}" xmlns:mc="${MC}" xmlns:p14="${P14}"${show}>${tree(shapes)}</p:sld>`);
 
 // Slide 1 (slide10.xml): title and subtitle placeholders positioned only by the layout.
 const titleSlide = slide([
@@ -78,7 +78,16 @@ const groups = slide([
   shape({ name: 'Between', position: xfrm(1000000, 4500000), paragraphs: [para('Between the group items')] }),
   table,
   shape({ ph: '<p:ph type="title"/>', paragraphs: [para('Groups and tables')] }),
-]);
+], ' show="0"');
+
+// Speaker notes for slide 2, laid out as PowerPoint writes them: slide image, body and number.
+const notes = xml(
+  `<p:notes xmlns:p="${P}" xmlns:a="${A}" xmlns:r="${R}">${tree([
+    `<p:sp><p:nvSpPr><p:cNvPr id="${id++}" name="Slide Image"/><p:cNvSpPr/><p:nvPr><p:ph type="sldImg"/></p:nvPr></p:nvSpPr><p:spPr/></p:sp>`,
+    shape({ ph: '<p:ph type="body" idx="1"/>', paragraphs: [para('Start with the left column.'), para('Then compare the right.')] }),
+    shape({ ph: '<p:ph type="sldNum" idx="5"/>', paragraphs: [para('2')] }),
+  ])}</p:notes>`,
+);
 
 // Slide 4 (slide3.xml): SmartArt, footer placeholders and alternate content.
 const diagram = `<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id="${id++}" name="Diagram"/><p:cNvGraphicFramePr/><p:nvPr/></p:nvGraphicFramePr><p:xfrm><a:off x="1000000" y="1500000"/><a:ext cx="6000000" cy="2500000"/></p:xfrm><a:graphic><a:graphicData uri="${DGM}"><dgm:relIds xmlns:dgm="${DGM}" r:dm="rIdData" r:lo="rIdLayout" r:qs="rIdStyle" r:cs="rIdColors"/></a:graphicData></a:graphic></p:graphicFrame>`;
@@ -157,13 +166,14 @@ const files = {
 for (const [name, content] of slides) {
   files[`ppt/slides/${name}`] = content;
   files[`ppt/slides/_rels/${name}.rels`] = xml(
-    `<Relationships xmlns="${PKG}">${layoutRel}${name === 'slide3.xml' ? `<Relationship Id="rIdData" Type="${R}/diagramData" Target="../diagrams/data1.xml"/>` : ''}</Relationships>`,
+    `<Relationships xmlns="${PKG}">${layoutRel}${name === 'slide3.xml' ? `<Relationship Id="rIdData" Type="${R}/diagramData" Target="../diagrams/data1.xml"/>` : ''}${name === 'slide2.xml' ? `<Relationship Id="rIdNotes" Type="${R}/notesSlide" Target="../notesSlides/notesSlide1.xml"/>` : ''}</Relationships>`,
   );
 }
+files['ppt/notesSlides/notesSlide1.xml'] = notes;
 const entries = Object.create(null);
 for (const [name, text] of Object.entries(files)) entries[name] = [strToU8(text), { mtime: new Date('1980-01-01T00:00:00Z') }];
 await writeFile(new URL('../../corpus/pptx/reading-order.pptx', import.meta.url), zipSync(entries, { level: 9 }));
 await writeFile(
   new URL('../../corpus/pptx/reading-order.pptx.license', import.meta.url),
-  'SPDX-License-Identifier: CC0-1.0\nSource: hand-made for docsluice by scripts/corpus/make-pptx-reading-order.mjs\nRequirements: PPT-1, PPT-2, PPT-3\nNotes: slide part names out of slide order; title and body placeholders positioned by the layout; two columns written right first; bullets, levels, numbering and symbol bullets; a scaled group; a table with spans; SmartArt; footer, date and slide-number placeholders; alternate content.\n',
+  'SPDX-License-Identifier: CC0-1.0\nSource: hand-made for docsluice by scripts/corpus/make-pptx-reading-order.mjs\nRequirements: PPT-1, PPT-2, PPT-3, PPT-4, PPT-5\nNotes: slide part names out of slide order; title and body placeholders positioned by the layout; two columns written right first; bullets, levels, numbering and symbol bullets; a scaled group; a table with spans; SmartArt; footer, date and slide-number placeholders; alternate content; speaker notes on slide 2; slide 3 hidden.\n',
 );
