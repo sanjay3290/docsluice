@@ -29,6 +29,15 @@
       "vsdx": [
         "dist/vsdx.d.ts"
       ],
+      "7z": [
+        "dist/7z.d.ts"
+      ],
+      "rar": [
+        "dist/rar.d.ts"
+      ],
+      "ppt": [
+        "dist/ppt.d.ts"
+      ],
       "txt": [
         "dist/txt.d.ts"
       ],
@@ -110,6 +119,9 @@
       "eml": [
         "dist/eml.d.ts"
       ],
+      "mbox": [
+        "dist/mbox.d.ts"
+      ],
       "msg": [
         "dist/msg.d.ts"
       ],
@@ -141,6 +153,18 @@
     "./vsdx": {
       "import": "./dist/vsdx.js",
       "require": "./dist/vsdx.cjs"
+    },
+    "./7z": {
+      "import": "./dist/7z.js",
+      "require": "./dist/7z.cjs"
+    },
+    "./rar": {
+      "import": "./dist/rar.js",
+      "require": "./dist/rar.cjs"
+    },
+    "./ppt": {
+      "import": "./dist/ppt.js",
+      "require": "./dist/ppt.cjs"
     },
     "./txt": {
       "import": "./dist/txt.js",
@@ -249,6 +273,10 @@
     "./eml": {
       "import": "./dist/eml.js",
       "require": "./dist/eml.cjs"
+    },
+    "./mbox": {
+      "import": "./dist/mbox.js",
+      "require": "./dist/mbox.cjs"
     },
     "./msg": {
       "import": "./dist/msg.js",

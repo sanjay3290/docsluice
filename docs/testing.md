@@ -8,6 +8,7 @@ Four kinds of test. Each issue says which kinds it needs. A reader needs all fou
 - Runner: Vitest. `npm test`.
 - Build small inputs in the test itself where you can (a tiny CSV string, a zip made in memory with a test helper).
 - Test helpers live in `packages/docsluice/test/helpers/`. A zip writer for tests is fine there; it never ships.
+- `String.raw` keeps `\u` escapes as text under Vitest (RTF, JSON and regex sources rely on this). Check that the tool that writes a test file does not decode them into characters: `test/string-raw.test.ts` fails when a `String.raw` template holds a non-ASCII character (#240).
 
 ## 2. Golden tests (QA-2)
 
@@ -60,7 +61,7 @@ hostile/
 { "file": "zip/bomb-42k.zip", "expect": { "error": "LIMIT_EXCEEDED" }, "maxMs": 2000, "maxHeapMB": 256, "requirement": "SEC-1" }
 ```
 
-`expect` is either `{ "error": "<code>" }` or `{ "warnings": ["<code>", ...] }`. An optional `"format"` forces that reader, for attack files that detection would otherwise route to a different format. The runner (`packages/docsluice/test/hostile.test.ts`) also checks: finished within `maxMs`, no global prototype changed (`Object.prototype` and `Array.prototype` have no new keys), no network call (`fetch` is stubbed to throw), no unhandled rejection (Vitest fails the run on one), and every file in `hostile/` has exactly one entry. `maxHeapMB` is recorded for an isolated runner; in-process Vitest cannot measure heap per file.
+`expect` is either `{ "error": "<code>" }` or `{ "warnings": ["<code>", ...] }`. An optional `"format"` forces that reader, for attack files that detection would otherwise route to a different format. An optional `"plugin"` (`"7z"` or `"rar"`) registers that opt-in format plugin ([ADR 0014](adr/0014-7z-rar-listing-plugins.md)) for the file. The runner (`packages/docsluice/test/hostile.test.ts`) also checks: finished within `maxMs`, no global prototype changed (`Object.prototype` and `Array.prototype` have no new keys), no network call (`fetch` is stubbed to throw), no unhandled rejection (Vitest fails the run on one), and every file in `hostile/` has exactly one entry. `maxHeapMB` is recorded for an isolated runner; in-process Vitest cannot measure heap per file.
 
 Hostile files are made by scripts in `scripts/hostile/` where possible, so the repo holds the recipe, not only the bytes.
 

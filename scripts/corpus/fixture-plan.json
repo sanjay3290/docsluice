@@ -41,7 +41,7 @@
   },
   {
     "source": "src/deck-12-slides.fodp",
-    "formats": ["pptx", "odp", "pdf"],
+    "formats": ["pptx", "ppt", "odp", "pdf"],
     "requirements": ["PPT-1", "PPT-2", "PPT-3", "PPT-4"]
   },
   {
@@ -51,7 +51,7 @@
   },
   {
     "source": "src/deck-hidden-notes.fodp",
-    "formats": ["pptx", "odp", "pdf"],
+    "formats": ["pptx", "ppt", "odp", "pdf"],
     "requirements": ["PPT-4"]
   },
   {
@@ -74,5 +74,10 @@
     "source": "src/gettysburg-address.fodt",
     "formats": ["epub"],
     "requirements": ["HTM-1"]
+  },
+  {
+    "source": "src/ppt-order-title-notes.fodp",
+    "formats": ["ppt"],
+    "requirements": ["PPT-1", "PPT-2", "PPT-4"]
   }
 ]

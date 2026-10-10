@@ -176,6 +176,18 @@ test('XLS reader subpath loads lazily', async () => {
   assert.equal(xlsb.xlsbReader.id, 'xlsb');
 });
 
+test('7z and RAR plugins load from their subpaths', async () => {
+  const { sevenZipPlugin } = await import('docsluice/7z');
+  assert.equal(sevenZipPlugin.id, '7z');
+  const { rarPlugin } = await import('docsluice/rar');
+  assert.equal(rarPlugin.id, 'rar');
+});
+
+test('PPT reader subpath loads lazily', async () => {
+  const ppt = await import('docsluice/ppt');
+  assert.equal(ppt.pptReader.id, 'ppt');
+});
+
 test('VSDX reader subpath loads lazily', async () => {
   const vsdx = await import('docsluice/vsdx');
   assert.equal(vsdx.vsdxReader.id, 'vsdx');
@@ -221,6 +233,11 @@ test('GZIP and TAR reader subpaths load lazily', async () => {
   const tar = await import('docsluice/tar');
   assert.equal(gzip.gzipReader.id, 'gzip');
   assert.equal(tar.tarReader.id, 'tar');
+});
+
+test('MBOX reader subpath loads lazily', async () => {
+  const mbox = await import('docsluice/mbox');
+  assert.equal(mbox.mboxReader.id, 'mbox');
 });
 
 test('EML reader subpath loads lazily', async () => {

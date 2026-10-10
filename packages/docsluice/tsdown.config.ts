@@ -9,6 +9,10 @@ export default defineConfig({
     'node/cli': 'src/node/cli/index.ts',
     doc: 'src/readers/doc/index.ts',
     vsdx: 'src/readers/vsdx/index.ts',
+    // Opt-in format plugins (ADR 0014): not registered by default.
+    '7z': 'src/readers/7z/index.ts',
+    rar: 'src/readers/rar/index.ts',
+    ppt: 'src/readers/ppt/index.ts',
     txt: 'src/readers/txt/index.ts',
     markdown: 'src/readers/markdown/index.ts',
     csv: 'src/readers/csv/index.ts',
@@ -44,6 +48,7 @@ export default defineConfig({
     gzip: 'src/readers/gzip/index.ts',
     tar: 'src/readers/tar/index.ts',
     eml: 'src/readers/eml/index.ts',
+    mbox: 'src/readers/mbox/index.ts',
     msg: 'src/readers/msg/index.ts',
     epub: 'src/readers/epub/index.ts',
   },

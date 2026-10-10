@@ -567,6 +567,169 @@
     "requirement": "XLS-3"
   },
   {
+    "file": "ppt/deep-drawing-1000.ppt",
+    "expect": {
+      "warnings": ["DEPTH_LIMIT"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "ppt/edit-chain-loop.ppt",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "ppt/encrypted-token.ppt",
+    "expect": {
+      "error": "ENCRYPTED"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "R2"
+  },
+  {
+    "file": "ppt/orphan-slides-5000.ppt",
+    "expect": {
+      "warnings": ["UNREADABLE_PART"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "ppt/paragraph-flood.ppt",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "7z/entries-12000.7z",
+    "plugin": "7z",
+    "expect": {
+      "warnings": ["TRUNCATED"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-2"
+  },
+  {
+    "file": "7z/header-ratio-bomb.7z",
+    "plugin": "7z",
+    "expect": {
+      "error": "LIMIT_EXCEEDED"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "7z/lzma-garbage.7z",
+    "plugin": "7z",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "7z/number-overflow.7z",
+    "plugin": "7z",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "rar/rar4-encrypted-headers.rar",
+    "plugin": "rar",
+    "expect": {
+      "error": "ENCRYPTED"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "R2"
+  },
+  {
+    "file": "rar/rar4-size-lie.rar",
+    "plugin": "rar",
+    "expect": {
+      "warnings": ["UNREADABLE_PART"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "rar/rar5-crc-damage.rar",
+    "plugin": "rar",
+    "expect": {
+      "warnings": ["UNREADABLE_PART"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "rar/rar5-encrypted-headers.rar",
+    "plugin": "rar",
+    "expect": {
+      "error": "ENCRYPTED"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "R2"
+  },
+  {
+    "file": "rar/rar5-entries-12000.rar",
+    "plugin": "rar",
+    "expect": {
+      "warnings": ["TRUNCATED"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-2"
+  },
+  {
+    "file": "rar/rar5-vint-overflow.rar",
+    "plugin": "rar",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "mbox/messages-6000.mbox",
+    "expect": {
+      "warnings": ["TRUNCATED"]
+    },
+    "maxMs": 5000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-2"
+  },
+  {
+    "file": "mbox/quoted-from-flood.mbox",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
     "file": "vsdx/nested-shapes-1000.vsdx",
     "expect": {
       "warnings": ["TRUNCATED"]

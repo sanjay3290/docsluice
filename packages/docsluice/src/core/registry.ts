@@ -119,6 +119,7 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
   const builtIns: Array<[FormatId, () => Promise<Reader>]> = [
     ['doc', () => import('../readers/doc/index.js').then((module) => module.docReader)],
     ['vsdx', () => import('../readers/vsdx/index.js').then((module) => module.vsdxReader)],
+    ['ppt', () => import('../readers/ppt/index.js').then((module) => module.pptReader)],
     ['txt', () => import('../readers/txt/index.js').then((module) => module.txtReader)],
     ['markdown', () => import('../readers/markdown/index.js').then((module) => module.markdownReader)],
     ['csv', () => import('../readers/csv/index.js').then((module) => module.csvReader)],
@@ -148,6 +149,7 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     ['gzip', () => import('../readers/gzip/index.js').then((module) => module.gzipReader)],
     ['tar', () => import('../readers/tar/index.js').then((module) => module.tarReader)],
     ['eml', () => import('../readers/eml/index.js').then((module) => module.emlReader)],
+    ['mbox', () => import('../readers/mbox/index.js').then((module) => module.mboxReader)],
     ['msg', () => import('../readers/msg/index.js').then((module) => module.msgReader)],
     ['epub', () => import('../readers/epub/index.js').then((module) => module.epubReader)],
   ];
