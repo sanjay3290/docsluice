@@ -12,6 +12,7 @@ export default defineConfig({
     json: 'src/readers/json/index.ts',
     xml: 'src/readers/xml/index.ts',
     html: 'src/readers/html/index.ts',
+    rtf: 'src/readers/rtf/index.ts',
     docx: 'src/readers/docx/index.ts',
     xlsx: 'src/readers/xlsx/index.ts',
     pptx: 'src/readers/pptx/index.ts',

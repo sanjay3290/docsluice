@@ -43,6 +43,9 @@
       "html": [
         "dist/html.d.ts"
       ],
+      "rtf": [
+        "dist/rtf.d.ts"
+      ],
       "docx": [
         "dist/docx.d.ts"
       ],
@@ -103,6 +106,10 @@
     "./html": {
       "import": "./dist/html.js",
       "require": "./dist/html.cjs"
+    },
+    "./rtf": {
+      "import": "./dist/rtf.js",
+      "require": "./dist/rtf.cjs"
     },
     "./docx": {
       "import": "./dist/docx.js",

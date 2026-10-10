@@ -149,6 +149,11 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
     load: () => import('../readers/html/index.js').then((module) => module.htmlReader),
   });
   registry.add({
+    id: 'rtf',
+    mimeTypes: ['application/rtf', 'text/rtf'],
+    load: () => import('../readers/rtf/index.js').then((module) => module.rtfReader),
+  });
+  registry.add({
     id: 'docx',
     mimeTypes: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
     load: () => import('../readers/docx/index.js').then((module) => module.docxReader),

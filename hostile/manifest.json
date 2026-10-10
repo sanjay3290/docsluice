@@ -729,5 +729,60 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "MOD-5"
+  },
+  {
+    "file": "rtf/nested-groups-100000.rtf",
+    "expect": {
+      "warnings": [
+        "TRUNCATED"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "rtf/bin-length-lies.rtf",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "rtf/unterminated-groups.rtf",
+    "expect": {
+      "warnings": [
+        "TRUNCATED",
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "rtf/picture-and-cell-flood.rtf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "rtf/control-word-abuse.rtf",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART",
+        "ENCODING_GUESSED"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-7"
   }
 ]

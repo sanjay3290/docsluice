@@ -37,6 +37,7 @@ jobs:
             eml,
             odf,
             odt,
+            rtf,
           ]
     steps:
       - uses: actions/checkout@v7
