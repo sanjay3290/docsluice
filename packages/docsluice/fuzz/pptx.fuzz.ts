@@ -2,10 +2,11 @@ import { DocsluiceError } from '../src/core/errors.js';
 import { Budget } from '../src/core/budget.js';
 import { DEFAULT_LIMITS } from '../src/core/limits.js';
 import { WarningSink } from '../src/core/warnings.js';
+import { parseChart } from '../src/readers/pptx/chart.js';
 import { parseDiagramData } from '../src/readers/pptx/diagram.js';
 import { parseSlide } from '../src/readers/pptx/slide.js';
 
-/** Bounded entry point for arbitrary XML payloads sent through the slide and SmartArt parsers. */
+/** Bounded entry point for arbitrary XML payloads sent through the slide, SmartArt and chart parsers. */
 export function fuzzPptx(input: Uint8Array): void {
   const sample = input.subarray(0, 1_000_000);
   const warnings = new WarningSink();
@@ -17,6 +18,7 @@ export function fuzzPptx(input: Uint8Array): void {
   try {
     parseSlide(sample, context);
     parseDiagramData(sample, context);
+    parseChart(sample, context);
   } catch (error) {
     // Malformed XML and resource limits are ordinary outcomes; anything else is a finding.
     if (error instanceof DocsluiceError) return;

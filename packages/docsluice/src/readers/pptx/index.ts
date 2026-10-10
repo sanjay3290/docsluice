@@ -11,6 +11,7 @@ import type { OoxmlRelationship } from '../../ooxml/index.js';
 import { openZip } from '../../zip/index.js';
 import type { XmlContext } from '../../xml/index.js';
 import { scanXml } from '../../xml/index.js';
+import { parseChart } from './chart.js';
 import { parseDiagramData } from './diagram.js';
 import { autoNumberMarker, bulletMarker, nestItems } from './lists.js';
 import type { FlatItem } from './lists.js';
@@ -289,6 +290,19 @@ export const pptxReader: Reader = {
             path: pathWithPrefix(ctx.path, dataPart.part),
           });
           if (items.length > 0) open = ctx.out.list(false, nestItems(items, ctx.budget), loc);
+          continue;
+        }
+        if (shape.kind === 'chart' && shape.chartPart !== undefined) {
+          const chartPart = slideRelationships.get(shape.chartPart);
+          const chartBytes =
+            chartPart && !chartPart.external && chartPart.part ? await parts.read(chartPart.part) : undefined;
+          if (!chartBytes || !chartPart?.part) continue;
+          const chart = parseChart(chartBytes, {
+            budget: ctx.budget,
+            warnings: ctx.warnings,
+            path: pathWithPrefix(ctx.path, chartPart.part),
+          });
+          if (chart) open = ctx.out.table(chart.rows, 1, loc, chart.title);
           continue;
         }
         if (shape.placeholder?.type === 'ftr') {

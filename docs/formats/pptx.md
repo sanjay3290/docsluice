@@ -15,12 +15,13 @@ The PPTX reader turns every slide of a PresentationML deck (`.pptx`, `.ppsx`, `.
 - Group shapes (`p:grpSp`) apply their transform (`a:off`, `a:ext`, `a:chOff`, `a:chExt` scaling) to the shapes inside them, so grouped shapes are placed where they appear on the slide. Groups nested deeper than `blockDepth` keep their parent's transform and add one `DEPTH_LIMIT`; very deep nesting then reaches the XML depth budget, which truncates the slide with `TRUNCATED`.
 - `mc:AlternateContent`: `mc:Choice` is skipped and `mc:Fallback` is read.
 
-## Text, lists, tables, SmartArt
+## Text, lists, tables, SmartArt, charts
 
 - Each `a:p` is one paragraph; `a:br` is a line break; field text (`a:fld`) is kept.
 - Bulleted paragraphs become `list` blocks, nested by `a:pPr lvl`. A paragraph is bulleted when it has `a:buChar` or `a:buAutoNum`, or when it sits in a body or content placeholder (`body`, `obj`, or a placeholder with only an `idx`) and has no `a:buNone`. Markers: the bullet character (private-use and Wingdings/Symbol glyphs become `•`, `▪`, `➢`, `✓`, `❑`, `❖`, `■`, `●`), or the auto-number scheme (`arabicPeriod` `1.`, `arabicParenR` `1)`, `arabicParenBoth` `(1)`, `alphaLc…`/`alphaUc…` letters, `romanLc…`/`romanUc…` numerals; others as `1.`). `ordered` is true when the list starts with a numbered paragraph.
 - Tables (`a:tbl` in a graphic frame) follow the grid convention: `gridSpan`/`rowSpan` cells get `colSpan`/`rowSpan` (clamped to 75), and `hMerge`/`vMerge` cells are empty placeholders. `headerRows` is 1 when `a:tblPr firstRow` is set. Every cell counts toward `cells`; the table stops at the limit with `TRUNCATED`.
 - SmartArt text comes from the diagram data part (`dgm:relIds r:dm`): each node point's text (not presentation, transition or document points) becomes a list item in data order, nested by its `parOf` connections (at most 8 levels; cycles stop there).
+- Charts (`c:chart r:id` in a graphic frame) become a `table` from the chart part's cached data (PPT-6), at the frame's place in reading order. The first row is a header (`headerRows: 1`): an empty corner cell, then one column per series (`c:ser` of every plot, so combo charts share one table), named by the series' cached `c:tx` or `Series N`. Each further row is one point index present in any cache (`c:strCache`, `c:numCache`, `c:strLit`, `c:numLit`): the category label (`c:cat` or scatter `c:xVal`; the first level of multi-level categories; else the 1-based index), then each series' value (`c:val` or `c:yVal`) as cached, or empty. A sparse cache costs only the points it holds, whatever its `c:ptCount`. The chart title (`c:chart/c:title`, rich text or cached) is the table `caption`; axis titles are not. Values are the cached text as written, without number formats. The embedded or linked workbook is never opened. Every cell counts toward `cells`.
 - Footer placeholders (`ftr`) become `footer` blocks. Date, slide-number and header placeholders hold generated text and are skipped.
 
 ## Speaker notes and hidden slides (PPT-4, PPT-5)
@@ -30,9 +31,11 @@ The PPTX reader turns every slide of a PresentationML deck (`.pptx`, `.ppsx`, `.
 
 ## Not yet read
 
-Pictures and their alt text, chart data (PPT-6), and comments.
+Pictures and their alt text, and comments. Chart bubble sizes, error bars, trendlines and `cx:` (chartex) charts, which PowerPoint stores beside a picture fallback.
 
-Hostile samples in `hostile/pptx/`: groups nested 1,000 deep (`DEPTH_LIMIT`, then `TRUNCATED`), a SmartArt part with 10,000 points whose connections form one cycle, and prototype-named relationship ids, placeholder types and slides with a table of huge spans (inert).
+Hostile samples in `hostile/pptx/`: groups nested 1,000 deep (`DEPTH_LIMIT`, then `TRUNCATED`), a SmartArt part with 10,000 points whose connections form one cycle, prototype-named relationship ids, placeholder types and slides with a table of huge spans (inert), and a chart whose cache claims a million points but holds 10,000 scattered ones, under a prototype-named relationship id (inert; the table has only the cached rows).
+
+The chart corpus deck `corpus/pptx/charts.pptx` (bar, line and pie charts) is made by `scripts/corpus/make-pptx-charts.mjs`.
 
 ## Macro-enabled files
 

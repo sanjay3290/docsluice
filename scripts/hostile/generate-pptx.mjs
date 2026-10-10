@@ -3,12 +3,13 @@ import { URL } from 'node:url';
 import { strToU8, zipSync } from 'fflate';
 
 // Hostile PPTX packages: groups nested 1,000 deep, a SmartArt parent cycle, a span flood and
-// prototype-named relationship ids, placeholders and shapes.
+// prototype-named relationship ids, placeholders and shapes, and a sparse chart cache.
 const P = 'http://schemas.openxmlformats.org/presentationml/2006/main';
 const A = 'http://schemas.openxmlformats.org/drawingml/2006/main';
 const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 const PKG = 'http://schemas.openxmlformats.org/package/2006/relationships';
 const DGM = 'http://schemas.openxmlformats.org/drawingml/2006/diagram';
+const CHART = 'http://schemas.openxmlformats.org/drawingml/2006/chart';
 const directory = new URL('../../hostile/pptx/', import.meta.url);
 await mkdir(directory, { recursive: true });
 
@@ -66,4 +67,18 @@ await writeFile(
     ['__proto__', `${text('__proto__', '<p:ph type="__proto__" idx="constructor"/>')}${spanTable}`, `<Relationship Id="constructor" Type="${R}/slideLayout" Target="../slideLayouts/missing.xml"/>`],
     ['constructor', text('ok', '<p:ph type="title"/>')],
   ]),
+);
+
+// A chart whose caches claim 999,999 points but hold 10,000 scattered ones, out of order and with
+// duplicates, under a prototype-named relationship id. Only the cached points become rows.
+const chartFrame = `<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id="6" name="c"/><p:cNvGraphicFramePr/><p:nvPr/></p:nvGraphicFramePr><p:xfrm><a:off x="0" y="0"/><a:ext cx="1" cy="1"/></p:xfrm><a:graphic><a:graphicData uri="${CHART}"><c:chart xmlns:c="${CHART}" r:id="__proto__"/></a:graphicData></a:graphic></p:graphicFrame>`;
+const sparse = (kind, prefix) =>
+  `<c:${kind}Cache><c:ptCount val="999999"/>${Array.from({ length: 10_000 }, (_, index) => `<c:pt idx="${((10_000 - index) * 49) % 999_999}"><c:v>${prefix}${index}</c:v></c:pt>`).join('')}</c:${kind}Cache>`;
+const sparseSeries = (name) =>
+  `<c:ser><c:tx><c:v>${name}</c:v></c:tx><c:cat><c:strRef>${sparse('str', 'k')}</c:strRef></c:cat><c:val><c:numRef>${sparse('num', '')}</c:numRef></c:val></c:ser>`;
+await writeFile(
+  new URL('chart-sparse-cache.pptx', directory),
+  pptx([['rId1', chartFrame, `<Relationship Id="__proto__" Type="${R}/chart" Target="../charts/chart1.xml"/>`]], {
+    'ppt/charts/chart1.xml': `<c:chartSpace xmlns:c="${CHART}" xmlns:a="${A}"><c:chart><c:title><c:tx><c:rich><a:p><a:r><a:t>__proto__</a:t></a:r></a:p></c:rich></c:tx></c:title><c:plotArea><c:barChart>${sparseSeries('constructor')}${sparseSeries('__proto__')}</c:barChart></c:plotArea></c:chart></c:chartSpace>`,
+  }),
 );
