@@ -14,6 +14,8 @@ import { rangeName, regionRows, sheetRegions } from './layout.js';
 import { parseSharedStrings } from './shared-strings.js';
 import type { XlsxSharedStrings } from './shared-strings.js';
 import { parseWorksheet } from './sheet.js';
+import { GENERAL_STYLES, parseStyles } from './styles.js';
+import type { XlsxStyles } from './styles.js';
 import { parseWorkbook } from './workbook.js';
 
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
@@ -84,6 +86,23 @@ async function readSharedStrings(
   });
 }
 
+async function readStyles(
+  parts: OoxmlParts,
+  relationships: ReadonlyMap<string, OoxmlRelationship>,
+  ctx: XmlContext,
+  prefix: string,
+): Promise<XlsxStyles> {
+  const relationship = relationshipOfKind(relationships, 'styles', ctx);
+  const path = relationship?.part ?? 'xl/styles.xml';
+  const bytes = await parts.read(path);
+  if (!bytes) return GENERAL_STYLES;
+  return parseStyles(bytes, {
+    budget: ctx.budget,
+    warnings: ctx.warnings,
+    path: pathWithPrefix(prefix, path),
+  });
+}
+
 /** Reader for SpreadsheetML `.xlsx` workbooks: every sheet is a `section` of tables (XLS-1). */
 export const xlsxReader: Reader = {
   id: 'xlsx',
@@ -125,6 +144,7 @@ export const xlsxReader: Reader = {
     if (features.isEncrypted) ctx.out.setFeature('isEncrypted');
     if (features.hasJavaScript) ctx.out.setFeature('hasJavaScript');
     const sharedStrings = await readSharedStrings(parts, relationships, xmlContext, ctx.path);
+    const styles = await readStyles(parts, relationships, xmlContext, ctx.path);
 
     let badSharedString = false;
     for (let index = 0; index < workbook.sheets.length; index++) {
@@ -154,6 +174,8 @@ export const xlsxReader: Reader = {
         warnings: ctx.warnings,
         path,
         sharedStrings,
+        styles,
+        date1904: workbook.date1904,
         onBadSharedString: () => {
           if (badSharedString) return;
           badSharedString = true;

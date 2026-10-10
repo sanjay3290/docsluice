@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-xlsx-numfmt.mjs
+Requirements: XLS-3
+Notes: one row per number-format kind: built-in ids, sections, conditions, colours, currency, scaling, dates, times, elapsed time, the 1900 leap-day bug, text sections and a hidden format.

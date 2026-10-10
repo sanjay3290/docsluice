@@ -3,7 +3,7 @@ import { strToU8, zipSync } from 'fflate';
 import { describe, expect, it, vi } from 'vitest';
 import { extract } from '../../src/core/extract.js';
 import type { Block, Cell, DocsluiceDocument } from '../../src/core/model.js';
-import { formatGeneral } from '../../src/readers/xlsx/sheet.js';
+import { formatGeneral } from '../../src/readers/xlsx/numfmt.js';
 import { columnName, parseCellReference, parseRangeReference } from '../../src/readers/xlsx/spreadsheetml.js';
 import { xlsxReader } from '../../src/readers/xlsx/index.js';
 
@@ -322,6 +322,32 @@ describe('XLSX reader', () => {
       { text: '0x10', address: 'E1' },
       { text: '', address: 'F1' },
       { text: '2026-01-02', address: 'G1' },
+    ]);
+  });
+
+  it('applies number formats from styles.xml with the workbook date system', async () => {
+    const { unzipSync } = await import('fflate');
+    const sheet = worksheet(
+      '<row r="1"><c r="A1" s="1"><v>0.5</v></c><c r="B1" s="2"><v>0</v></c><c r="C1" s="3"><v>-1234.5</v></c><c r="D1" s="3" t="inlineStr"><is><t>tag</t></is></c><c r="E1" s="9"><v>2</v></c><c r="F1" s="4"><v>7</v></c></row>',
+    );
+    const files = unzipSync(workbook([{ name: 'F', xml: sheet }]));
+    files['xl/workbook.xml'] = strToU8(
+      `<workbook xmlns="${S}" xmlns:r="${R}"><workbookPr date1904="1"/><sheets><sheet name="F" sheetId="1" r:id="rId1"/></sheets></workbook>`,
+    );
+    files['xl/_rels/workbook.xml.rels'] = strToU8(
+      `<Relationships xmlns="${PKG}"><Relationship Id="rId1" Type="${R}/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="${R}/styles" Target="theme/odd-name.xml"/></Relationships>`,
+    );
+    files['xl/theme/odd-name.xml'] = strToU8(
+      `<styleSheet xmlns="${S}"><numFmts><numFmt numFmtId="164" formatCode="#,##0.00;(#,##0.00);&quot;zero&quot;;&quot;[&quot;@&quot;]&quot;"/><numFmt numFmtId="165" formatCode="General"/></numFmts><cellXfs><xf numFmtId="0"/><xf numFmtId="9"/><xf numFmtId="14"/><xf numFmtId="164"/><xf numFmtId="165"/></cellXfs></styleSheet>`,
+    );
+    const doc = await extract(zipSync(files));
+    expect(tables(sections(doc)[0]!)[0]!.rows[0]).toEqual([
+      { text: '50%', raw: 0.5, address: 'A1' },
+      { text: '01-01-04', raw: 0, address: 'B1' },
+      { text: '(1,234.50)', raw: -1234.5, address: 'C1' },
+      { text: '[tag]', raw: 'tag', address: 'D1' },
+      { text: '2', raw: 2, address: 'E1' },
+      { text: '7', raw: 7, address: 'F1' },
     ]);
   });
 
