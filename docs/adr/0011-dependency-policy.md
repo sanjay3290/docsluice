@@ -8,10 +8,10 @@
 
 Runtime dependencies of `docsluice` are limited to this list:
 
-| Package | Why | ADR |
-|---------|-----|-----|
-| `fflate` | Pure-JS inflate with byte counting | 0005 |
-| `unpdf` | PDF text layer | 0009 |
+| Package | Pinned | Why | ADR |
+|---------|--------|-----|-----|
+| `fflate` | 0.8.2 | Pure-JS inflate with byte counting | 0005 |
+| `unpdf` | 1.8.1 (added with the PDF reader) | PDF text layer | 0009 |
 
 - Any other runtime dependency needs a new ADR with a written reason, its size, its licence, its maintainer health and its install scripts (none allowed).
 - Dev dependencies are free to add, but no package with an install script.
