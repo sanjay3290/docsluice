@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice fixture preparation with Python standard library.
+Requirements: EML-1, EML-2, EML-3
 Notes: synthetic test data; no real people, mailboxes, or private content.

@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice by scripts/corpus/make-msg.mjs
+Requirements: EML-1, EML-2, EML-3, IN-4, NST-1
 Notes: A forwarded message attached as an embedded message (attach method 5) that has an attachment of its own.

@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice by scripts/corpus/make-archives.mjs
+Requirements: NST-1
 Notes: The nested-folders tar inside GZIP.

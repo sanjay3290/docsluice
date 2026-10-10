@@ -31,8 +31,11 @@ corpus/
   ```
   SPDX-License-Identifier: CC0-1.0
   Source: made for docsluice with LibreOffice 25.8 from scripts/corpus/src/headings.fodt
-  Notes: tests DOC-2 (headings from outline levels)
+  Requirements: DOC-2
+  Notes: headings from outline levels
   ```
+
+  `Requirements:` lists the PRD requirement IDs the file exercises. `npm run docs:support` turns the tags into [docs/formats/support-matrix.md](formats/support-matrix.md) and fails on a missing or unknown tag; `scripts/test/docs-support.test.mjs` fails when the committed page is out of date.
 
 - **Licences (risk R4).** Only add files you made yourself, or files with a clear open licence recorded in `.license`. Prefer files made with real office suites by the scripts in `scripts/corpus/` (LibreOffice headless). Never add files from any organisation's systems or private documents.
 - Durations are removed from golden JSON (`stats.durationMs` is set to 0 by the runner).

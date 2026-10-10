@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice by scripts/corpus/make-msg.mjs
+Requirements: EML-1, EML-2, IN-4
 Notes: A body only in PR_RTF_COMPRESSED (LZFu) that encapsulates HTML (\fromhtml1).

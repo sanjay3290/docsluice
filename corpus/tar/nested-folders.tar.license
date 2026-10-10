@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: made for docsluice by scripts/corpus/make-archives.mjs
+Requirements: NST-1
 Notes: ustar with nested folders, a CSV, Markdown and a symbolic link listed, never followed.

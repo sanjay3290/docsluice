@@ -1,3 +1,4 @@
 SPDX-License-Identifier: CC0-1.0
 Source: authored synthetic Windows-1252 text for docsluice Package B.
+Requirements: IN-6, IN-7
 Notes: encoding fallback, CRLF paragraphs, and accented characters; no real personal information.
