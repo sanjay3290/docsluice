@@ -4,7 +4,8 @@ import type { Reader, ReadContext } from '../../core/reader.js';
 import { parseOdfManifest, parseOdfMetadata } from '../../odf/index.js';
 import { openZip } from '../../zip/index.js';
 import type { ZipEntry } from '../../zip/index.js';
-import { emitSheetTables } from '../xlsx/emit.js';
+import { emitSheetNotes, emitSheetTables } from '../xlsx/emit.js';
+import type { XlsxNamedRange } from '../xlsx/emit.js';
 import { parseOdsContent } from './content.js';
 
 const ODS_MIME = 'application/vnd.oasis.opendocument.spreadsheet';
@@ -101,14 +102,30 @@ export const odsReader: Reader = {
       formulas: ctx.options.formulas,
     });
     if (content.hasExternalLinks) ctx.out.setFeature('hasExternalLinks');
+    // Named and database ranges caption the table regions they cover exactly (XLS-9).
+    const namesBySheet = new Map<string, XlsxNamedRange[]>();
+    // Database ranges first, like the Excel tables an XLSX export makes of them; then named ranges.
+    const ordered = [
+      ...content.named.filter((named) => named.headerRows !== undefined),
+      ...content.named.filter((named) => named.headerRows === undefined),
+    ];
+    for (const named of ordered) {
+      ctx.budget.tick();
+      const range: XlsxNamedRange = { name: named.name, range: named.range };
+      if (named.headerRows !== undefined) range.headerRows = named.headerRows;
+      const list = namesBySheet.get(named.sheet);
+      if (list) list.push(range);
+      else namesBySheet.set(named.sheet, [range]);
+    }
     for (let index = 0; index < content.sheets.length; index++) {
       ctx.budget.tick();
-      const { name, hidden, sheet } = content.sheets[index]!;
+      const { name, hidden, sheet, comments } = content.sheets[index]!;
       const loc: Location = {};
       if (name !== undefined && name.length > 0) loc.sheet = name;
       loc.path = path;
       if (!ctx.out.openSection('sheet', loc, loc.sheet, hidden)) break;
-      emitSheetTables(ctx, sheet, index, loc.sheet, path);
+      emitSheetTables(ctx, sheet, index, loc.sheet, path, (name && namesBySheet.get(name)) || []);
+      emitSheetNotes(ctx, comments, loc.sheet, path);
       if (!ctx.out.closeSection()) break;
       // Each sheet is one top-level block; a streaming consumer can apply backpressure here (EXT-2).
       await ctx.out.flush();

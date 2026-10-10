@@ -1,0 +1,41 @@
+From alex@example.test Mon Oct  5 08:15:00 2026
+From: Alex Example <alex@example.test>
+To: Reader <reader@example.test>
+Subject: Field plan
+Date: Mon, 05 Oct 2026 08:15:00 +0000
+Message-ID: <plan@example.test>
+
+The tide survey starts at dawn.
+>From the north jetty we walk south.
+>>From a quoted reply, still quoted once.
+Bring the gauge.
+From here on the line is body text, not an envelope.
+
+From casey@example.test Tue Oct  6 09:30:00 2026
+From: Casey Example <casey@example.test>
+To: Alex Example <alex@example.test>
+Subject: Re: Field plan
+Date: Tue, 06 Oct 2026 09:30:00 +0000
+In-Reply-To: <plan@example.test>
+
+Confirmed for Tuesday.
+
+From casey@example.test Wed Oct  7 10:00:00 2026
+From: Casey Example <casey@example.test>
+To: Alex Example <alex@example.test>
+Subject: Readings
+Date: Wed, 07 Oct 2026 10:00:00 +0000
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="b1"
+
+--b1
+Content-Type: text/plain; charset=utf-8
+
+Readings attached.
+--b1
+Content-Type: text/csv; name="readings.csv"
+Content-Disposition: attachment; filename="readings.csv"
+
+station,salinity
+N-1,24
+--b1--

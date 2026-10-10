@@ -9,7 +9,7 @@ The ODS reader (`docsluice/ods`) reads OpenDocument spreadsheets with the same o
 - A cell without paragraphs shows its typed value: the number in General format, `TRUE`/`FALSE`, the ISO date or time, or `office:string-value`.
 - **Formulas** are never evaluated. A formula cell shows its cached value. Without one (no `office:value-type`) it is empty and counted in the same `UNREADABLE_PART` warning as XLSX. With `formulas: true`, `table:formula` is kept as an A1 formula: `of:=SUM([.A1:.B2])` becomes `=SUM(A1:B2)` and `[$Other.A1]` becomes `Other!A1` (best effort).
 - **Merges**: `table:number-columns-spanned` and `table:number-rows-spanned` become `colSpan`/`rowSpan`, as XLSX merges do. `table:covered-table-cell` content is ignored.
-- **Hidden sheets**: `table:display="false"` on the table or on its table style (`style:table-properties`) sets the section's `hidden`. ODS has no "very hidden" state. Hidden rows and columns are not marked, as in XLSX today.
+- **Hidden sheets**: `table:display="false"` on the table or on its table style (`style:table-properties`) sets the section's `hidden`. ODS has no "very hidden" state. Rows and columns with `table:visibility="collapse"` (or `"filter"`) mark their cells `hidden: true`. A hidden range of repeated rows costs only the rows that hold values.
 
 Attributes are matched by namespace, not by prefix, so documents that bind other prefixes read the same.
 
@@ -29,7 +29,7 @@ Attributes are matched by namespace, not by prefix, so documents that bind other
 - `Basic/` or `Scripts/` entries set `hasMacros` with a `MACROS_PRESENT` warning. Macros are never run. `Object …` and `ObjectReplacements/` entries set `hasEmbeddedFiles`. A link with a URI scheme sets `hasExternalLinks`.
 - `content.xml` is read with the bounded SAX tokenizer, so `xmlDepth`, `totalUncompressedBytes` and time limits apply. A missing `content.xml` gives an empty document with an `UNREADABLE_PART` warning. Duplicate part names are not read.
 
-Not supported: hidden rows and columns, comments (annotations), named ranges, charts, data pilot tables, linked sheets (`table:table-source`) and flat `.fods` files.
+Not supported: charts, data pilot tables, linked sheets (`table:table-source`) and flat `.fods` files.
 
 ## Corpus and generators
 
@@ -37,4 +37,8 @@ Not supported: hidden rows and columns, comments (annotations), named ranges, ch
 
 ## Header rows (XLS-8)
 
-Tables get `headerRows` from the `headerRow` option, guessed the same way as for XLSX (see [xlsx.md](xlsx.md#header-rows-xls-8)). Hidden rows and columns, comments and named ranges are not read yet (#231).
+Tables get `headerRows` from the `headerRow` option, guessed the same way as for XLSX (see [xlsx.md](xlsx.md#header-rows-xls-8)). ## Comments and names (XLS-9)
+
+- A cell's `office:annotation` becomes a `note` block (`role: 'comment'`, author from `dc:creator`) after the sheet's tables. Its text never joins the cell text.
+- `table:named-range` (`table:cell-range-address`) and `table:database-range` (`table:target-range-address`, `table:contains-header`) caption the regions they cover exactly. Database ranges come first, as the Excel tables an XLSX export makes of them. LibreOffice's anonymous autofilter ranges (`__Anonymous_Sheet_DB__…`) are skipped. Addresses with several areas are ignored.
+- `corpus/ods/workbook-comments-hidden-names.ods` gives the same blocks as the XLSX export of the same source.

@@ -10,7 +10,21 @@ const NOT_READERS = new Set(['.', './node', './worker', './schema.json', './pack
 export const READERS = Object.keys(manifest.exports)
   .filter((subpath) => !NOT_READERS.has(subpath))
   .map((subpath) => subpath.slice(2));
-const OFFICE_READERS = new Set(['doc', 'ppt', 'docx', 'xlsx', 'xls', 'xlsb', 'pptx', 'odt', 'ods', 'odp']);
+// Opt-in format plugins (ADR 0014): their own budgets, never loaded by `extract` unless registered.
+export const PLUGINS = ['7z', 'rar'];
+const OFFICE_READERS = new Set([
+  'doc',
+  'ppt',
+  'vsdx',
+  'docx',
+  'xlsx',
+  'xls',
+  'xlsb',
+  'pptx',
+  'odt',
+  'ods',
+  'odp',
+]);
 // The P1 text families (issue #68) load lazily like the office readers and keep their own budgets.
 // `code` is the source-code language table the text reader loads only for source file names.
 const TEXT_FAMILY_READERS = ['yaml', 'ndjson', 'ics', 'vcf', 'srt', 'vtt', 'code'];
@@ -27,6 +41,7 @@ const EXTERNAL_READERS = [
   ...CONTAINERS,
   ...OPT_IN,
   'eml',
+  'mbox',
   'msg',
   'rtf',
   'epub',

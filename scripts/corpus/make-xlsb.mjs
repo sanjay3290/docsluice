@@ -2,26 +2,40 @@
 // 2.1.4, records 2.4, structures 2.5). LibreOffice reads XLSB but cannot write it, so this script
 // converts the cells, shared strings, number formats, merges, sheet states and date system of each
 // XLSX file. Formula cells keep their cached value; the formula is stored as that constant
-// (PtgNum / PtgStr / PtgBool), because docsluice never reads formulas from XLSB.
+// (PtgNum / PtgStr / PtgBool), because docsluice never reads formulas from XLSB. Hidden rows and
+// columns, comments, table parts and single-area defined names are carried over too (XLS-9, XLS-10);
+// table parts hold only BrtBeginList/BrtEndList, which is what a reader needs to name the range.
 import { readFile, writeFile } from 'node:fs/promises';
 import { URL } from 'node:url';
 import { TextDecoder, TextEncoder } from 'node:util';
 import { unzipSync, zipSync } from 'fflate';
 
 const corpus = new URL('../../corpus/', import.meta.url);
-const SOURCES = ['workbook-values-formulas', 'workbook-hidden-sparse', 'workbook-merged-richstrings', 'workbook-1904-note'];
+const SOURCES = [
+  'workbook-values-formulas',
+  'workbook-hidden-sparse',
+  'workbook-merged-richstrings',
+  'workbook-1904-note',
+  'workbook-comments-hidden-names',
+];
 const R = {
   RowHdr: 0, CellRk: 2, CellError: 3, CellBool: 4, CellReal: 5, CellIsst: 7, FmlaString: 8, FmlaNum: 9, FmlaBool: 10,
   SSTItem: 19, Fmt: 44, XF: 47, BeginSheet: 129, EndSheet: 130, BeginBook: 131, EndBook: 132, BeginBundleShs: 143,
   EndBundleShs: 144, BeginSheetData: 145, EndSheetData: 146, WsDim: 148, WbProp: 153, BundleSh: 156, BeginSst: 159,
   EndSst: 160, MergeCell: 176, BeginMergeCells: 177, EndMergeCells: 178, BeginStyleSheet: 278, EndStyleSheet: 279,
   BeginFmts: 615, EndFmts: 616, BeginCellXFs: 617, EndCellXFs: 618, BeginCellStyleXFs: 626, EndCellStyleXFs: 627,
+  Name: 39, ColInfo: 60, BeginList: 343, EndList: 344, BeginExternals: 353, EndExternals: 354, SupSelf: 357,
+  ExternSheet: 362, BeginColInfos: 390, EndColInfos: 391, BeginComments: 628, EndComments: 629,
+  BeginCommentAuthors: 630, EndCommentAuthors: 631, CommentAuthor: 632, BeginCommentList: 633, EndCommentList: 634,
+  BeginComment: 635, EndComment: 636, CommentText: 637,
 };
+const isTrue = (value) => value === 'true' || value === '1';
 const ERRORS = new Map([['#NULL!', 0x00], ['#DIV/0!', 0x07], ['#VALUE!', 0x0f], ['#REF!', 0x17], ['#NAME?', 0x1d], ['#NUM!', 0x24], ['#N/A', 0x2a]]);
 
 const text = (bytes) => new TextDecoder().decode(bytes);
 const u16 = (value) => [value & 0xff, (value >> 8) & 0xff];
 const u32 = (value) => [value & 0xff, (value >> 8) & 0xff, (value >> 16) & 0xff, (value >>> 24) & 0xff];
+const NULL_STRING = u32(0xffffffff);
 const f64 = (value) => [...new Uint8Array(Float64Array.of(value).buffer)];
 const wide = (value) => {
   const out = [...u32(value.length)];
@@ -113,7 +127,20 @@ function sheetPart(xml, strings) {
   const bounds = all.length
     ? [Math.min(...rowNumbers), Math.max(...rowNumbers), Math.min(...all.map((c) => c.column)), Math.max(...all.map((c) => c.column))]
     : [0, 0, 0, 0];
-  const records = [record(R.BeginSheet), record(R.WsDim, bounds.flatMap(u32)), record(R.BeginSheetData)];
+  const hiddenRows = new Set(
+    [...xml.matchAll(/<row ([^>]*)>/g)].filter((m) => isTrue(attr(m[1], 'hidden'))).map((m) => Number(attr(m[1], 'r')) - 1),
+  );
+  const hiddenCols = [...xml.matchAll(/<col ([^>]*?)\/>/g)]
+    .filter((m) => isTrue(attr(m[1], 'hidden')))
+    .map((m) => [Number(attr(m[1], 'min')) - 1, Number(attr(m[1], 'max')) - 1]);
+  const records = [record(R.BeginSheet), record(R.WsDim, bounds.flatMap(u32))];
+  if (hiddenCols.length > 0) {
+    // BrtColInfo (2.4.323): colFirst, colLast, coldx, ixfe, then flags with fHidden in bit 0.
+    records.push(record(R.BeginColInfos));
+    for (const [first, last] of hiddenCols) records.push(record(R.ColInfo, [...u32(first), ...u32(last), ...u32(2304), ...u32(0), ...u16(1)]));
+    records.push(record(R.EndColInfos));
+  }
+  records.push(record(R.BeginSheetData));
   for (const row of rowNumbers) {
     const cells = rows.get(row).sort((a, b) => a.column - b.column);
     // BrtRowHdr (2.4.770): rw, ixfe, miyRw, three flag bytes, then one BrtColSpan per 1,024-column block used.
@@ -122,7 +149,8 @@ function sheetPart(xml, strings) {
       const inBlock = cells.filter((cell) => cell.column >> 10 === block).map((cell) => cell.column);
       return [...u32(Math.min(...inBlock)), ...u32(Math.max(...inBlock))];
     });
-    records.push(record(R.RowHdr, [...u32(row), ...u32(0), ...u16(256), 0, 0, 0, ...u32(blocks.length), ...spans]));
+    // The second flag byte holds fDyZero (hidden row) in bit 4.
+    records.push(record(R.RowHdr, [...u32(row), ...u32(0), ...u16(256), 0, hiddenRows.has(row) ? 0x10 : 0, 0, ...u32(blocks.length), ...spans]));
     for (const cell of cells) records.push(cellRecord(cell, strings));
   }
   records.push(record(R.EndSheetData));
@@ -156,6 +184,65 @@ function stylesPart(xml) {
   ]);
 }
 
+/** The relationships part of a package part: `xl/worksheets/sheet1.bin` → `xl/worksheets/_rels/sheet1.bin.rels`. */
+const relsPathOf = (path) => {
+  const slash = path.lastIndexOf('/');
+  return `${path.slice(0, slash + 1)}_rels/${path.slice(slash + 1)}.rels`;
+};
+
+/** BrtBeginComment … BrtEndComment for each `<comment>` of a comments part (2.1.7.8). */
+function commentsPart(xml) {
+  const authors = [...xml.matchAll(/<author>(.*?)<\/author>/gs)].map((m) => unescapeXml(m[1]));
+  const comments = [...xml.matchAll(/<comment ([^>]*)>(.*?)<\/comment>/gs)].map((m) => ({
+    cell: column(attr(m[1], 'ref')),
+    author: Number(attr(m[1], 'authorId') ?? 0),
+    text: unescapeXml([...m[2].matchAll(/<t(?:\s[^>]*)?>(.*?)<\/t>/gs)].map((t) => t[1]).join('')),
+  }));
+  return part([
+    record(R.BeginComments),
+    record(R.BeginCommentAuthors),
+    ...authors.map((author) => record(R.CommentAuthor, wide(author))),
+    record(R.EndCommentAuthors),
+    record(R.BeginCommentList),
+    ...comments.flatMap((comment) => [
+      // iauthor, the cell as an UncheckedRfX, then a GUID.
+      record(R.BeginComment, [...u32(comment.author), ...u32(comment.cell.row), ...u32(comment.cell.row), ...u32(comment.cell.column), ...u32(comment.cell.column), ...new Array(16).fill(0)]),
+      record(R.CommentText, [0, ...wide(comment.text)]),
+      record(R.EndComment),
+    ]),
+    record(R.EndCommentList),
+    record(R.EndComments),
+  ]);
+}
+
+/** BrtBeginList (2.4.310) for a table part: range, ids, header and totals rows, names. */
+function tablePart(xml) {
+  const tag = /<table ([^>]*)>/.exec(xml)[1];
+  const [first, last] = attr(tag, 'ref').split(':').map(column);
+  const flags = new Array(6).fill(0).flatMap(() => u32(0xffffffff));
+  return part([
+    record(R.BeginList, [
+      ...u32(first.row), ...u32(last.row), ...u32(first.column), ...u32(last.column),
+      ...u32(0), ...u32(Number(attr(tag, 'id') ?? 1)), ...u32(Number(attr(tag, 'headerRowCount') ?? 1)), ...u32(Number(attr(tag, 'totalsRowCount') ?? 0)),
+      ...u32(0), ...flags, ...u32(0),
+      ...wide(attr(tag, 'name')), ...wide(attr(tag, 'displayName') ?? attr(tag, 'name')), ...NULL_STRING, ...NULL_STRING, ...NULL_STRING, ...NULL_STRING,
+    ]),
+    record(R.EndList),
+  ]);
+}
+
+/** A single-area defined name (`Sheet!$A$1:$B$2`) as BrtName with a PtgArea3d formula (2.4.687). */
+function namedRecord(name, formula, sheetIndex) {
+  const match = /^'?(.*?)'?!\$?([A-Z]+)\$?(\d+)(?::\$?([A-Z]+)\$?(\d+))?$/.exec(formula);
+  if (!match) return undefined;
+  const sheet = sheetIndex.get(match[1]);
+  if (sheet === undefined) return undefined;
+  const start = column(match[2] + match[3]);
+  const end = match[4] ? column(match[4] + match[5]) : start;
+  const ptg = [0x3b, ...u16(sheet), ...u32(start.row), ...u32(end.row), ...u16(start.column), ...u16(end.column)];
+  return record(R.Name, [...u32(0), 0, ...u32(0xffffffff), ...wide(name), ...u32(ptg.length), ...ptg, ...u32(0), ...NULL_STRING]);
+}
+
 for (const name of SOURCES) {
   const files = unzipSync(new Uint8Array(await readFile(new URL(`xlsx/${name}.xlsx`, corpus))));
   const workbookXml = text(files['xl/workbook.xml']);
@@ -173,6 +260,26 @@ for (const name of SOURCES) {
   }));
   const date1904 = attr(/<workbookPr [^>]*>/.exec(workbookXml)?.[0] ?? '', 'date1904') === 'true';
   const sheetParts = sheets.map((sheet) => sheetPart(text(files[sheet.source]), strings));
+  // Comment and table parts of each sheet, from the sheet's relationships.
+  const extras = sheets.map((sheet, index) => {
+    const relsPath = relsPathOf(sheet.source);
+    const relsXml = files[relsPath] ? text(files[relsPath]) : '';
+    return [...relsXml.matchAll(/<Relationship ([^>]*)\/>/g)].flatMap((m) => {
+      const type = attr(m[1], 'Type');
+      const source = new URL(attr(m[1], 'Target'), `http://x/${sheet.source}`).pathname.slice(1);
+      if (type.endsWith('/comments')) return [{ type: 'comments', path: `xl/comments${index + 1}.bin`, data: commentsPart(text(files[source])) }];
+      if (type.endsWith('/table')) {
+        const file = source.slice(source.lastIndexOf('/') + 1, -'.xml'.length);
+        return [{ type: 'table', path: `xl/tables/${file}.bin`, data: tablePart(text(files[source])) }];
+      }
+      return [];
+    });
+  });
+  const sheetIndex = new Map(sheets.map((sheet, index) => [sheet.name, index]));
+  const names = [...workbookXml.matchAll(/<definedName ([^>]*)>(.*?)<\/definedName>/gs)]
+    .filter((m) => !isTrue(attr(m[1], 'hidden')) && !attr(m[1], 'name').startsWith('_xlnm'))
+    .map((m) => namedRecord(attr(m[1], 'name'), unescapeXml(m[2]), sheetIndex))
+    .filter(Boolean);
   const book = part([
     record(R.BeginBook),
     // BrtWbProp (2.4.866): flags with f1904 in bit 0, dwThemeVersion, strName.
@@ -180,6 +287,16 @@ for (const name of SOURCES) {
     record(R.BeginBundleShs),
     ...sheets.map((sheet, index) => record(R.BundleSh, [...u32(sheet.state), ...u32(index + 1), ...wide(sheet.rid), ...wide(sheet.name)])),
     record(R.EndBundleShs),
+    ...(names.length > 0
+      ? [
+          record(R.BeginExternals),
+          record(R.SupSelf),
+          // One XTI per sheet: iSupBook 0 (this workbook), itabFirst, itabLast.
+          record(R.ExternSheet, [...u32(sheets.length), ...sheets.flatMap((_, index) => [...u32(0), ...u32(index), ...u32(index)])]),
+          record(R.EndExternals),
+          ...names,
+        ]
+      : []),
     record(R.EndBook),
   ]);
   const sst = part([
@@ -194,6 +311,10 @@ for (const name of SOURCES) {
       '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
       '<Override PartName="/xl/workbook.bin" ContentType="application/vnd.ms-excel.sheet.binary.macroEnabled.main"/>' +
       sheets.map((sheet) => `<Override PartName="/${sheet.target}" ContentType="application/vnd.ms-excel.worksheet"/>`).join('') +
+      extras
+        .flat()
+        .map((extra) => `<Override PartName="/${extra.path}" ContentType="application/vnd.ms-excel.${extra.type === 'table' ? 'table' : 'comments'}"/>`)
+        .join('') +
       '<Override PartName="/xl/styles.bin" ContentType="application/vnd.ms-excel.styles"/>' +
       '<Override PartName="/xl/sharedStrings.bin" ContentType="application/vnd.ms-excel.sharedStrings"/></Types>',
     '_rels/.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL}/officeDocument" Target="xl/workbook.bin"/></Relationships>`,
@@ -206,7 +327,17 @@ for (const name of SOURCES) {
     'xl/styles.bin': stylesPart(text(files['xl/styles.xml'])),
     'xl/sharedStrings.bin': sst,
   };
-  sheets.forEach((sheet, index) => (out[sheet.target] = sheetParts[index]));
+  sheets.forEach((sheet, index) => {
+    out[sheet.target] = sheetParts[index];
+    if (extras[index].length === 0) return;
+    for (const extra of extras[index]) out[extra.path] = extra.data;
+    out[relsPathOf(sheet.target)] =
+      `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">` +
+      extras[index]
+        .map((extra, number) => `<Relationship Id="rId${number + 1}" Type="${REL}/${extra.type}" Target="../${extra.path.slice(3)}"/>`)
+        .join('') +
+      '</Relationships>';
+  });
   const entries = Object.create(null);
   for (const [path, data] of Object.entries(out)) {
     entries[path] = [typeof data === 'string' ? new TextEncoder().encode(data) : data, { mtime: new Date('1980-01-01T00:00:00Z'), level: 9 }];
