@@ -301,6 +301,56 @@ describe('openZip', () => {
     expect(sharedBudget.truncated).toBe(true);
   });
 
+  it('grows DEFLATE input slices for large entries while keeping each push within the overshoot bounds', async () => {
+    // Text-like data that compresses about 5:1, like worksheet XML.
+    const content = new Uint8Array(4 * 1024 * 1024);
+    let seed = 7;
+    for (let index = 0; index < content.length; index++) {
+      seed = (Math.imul(seed, 1_103_515_245) + 12_345) >>> 0;
+      content[index] = 97 + ((seed >>> 16) % 8);
+    }
+    const checks: Array<{ compressed: number; uncompressed: number }> = [];
+    class CountingBudget extends Budget {
+      override checkRatio(compressed: number, uncompressed: number): boolean {
+        checks.push({ compressed, uncompressed });
+        return super.checkRatio(compressed, uncompressed);
+      }
+    }
+    const sharedBudget = new CountingBudget(DEFAULT_LIMITS, { onLimit: 'throw' });
+    const archive = openZip(makeZip([{ name: 'large', data: content, method: 8 }]), sharedBudget);
+    const compressedSize = archive.entries[0]!.compressedSize;
+    const output = await archive.read(archive.entries[0]!);
+    expect(output?.length).toBe(content.length);
+    expect(output!.every((byte, index) => byte === content[index])).toBe(true);
+    // 63-byte slices would need one push per 63 compressed bytes.
+    expect(checks.length).toBeLessThan(compressedSize / 63 / 10);
+    let previous = 0;
+    let widestBurst = 0;
+    let ratioOvershoot = Number.NEGATIVE_INFINITY;
+    for (const check of checks) {
+      widestBurst = Math.max(widestBurst, check.uncompressed - previous);
+      ratioOvershoot = Math.max(
+        ratioOvershoot,
+        check.uncompressed - DEFAULT_LIMITS.compressionRatio * check.compressed,
+      );
+      previous = check.uncompressed;
+    }
+    expect(widestBurst).toBeLessThanOrEqual(4096 * 1032);
+    expect(ratioOvershoot).toBeLessThanOrEqual(64 * 1024);
+  });
+
+  it('cuts a DEFLATE stream that lies about its size within the slack', async () => {
+    const warnings = new WarningSink();
+    const sharedBudget = new Budget(DEFAULT_LIMITS, { warnings });
+    const archive = openZip(
+      makeZip([{ name: 'lie', data: new Uint8Array(8 * 1024 * 1024), method: 8, declaredSize: 1024 }]),
+      sharedBudget,
+    );
+    expect(await archive.read(archive.entries[0]!)).toBeNull();
+    expect(warnings.warnings.map((warning) => warning.code)).toEqual(['UNREADABLE_PART']);
+    expect(sharedBudget.totalUncompressedBytes).toBeLessThanOrEqual(1024 + 2 * 64 * 1024);
+  });
+
   it('cuts off output that is over the declared size slack', async () => {
     const warnings = new WarningSink();
     const archive = openZip(
