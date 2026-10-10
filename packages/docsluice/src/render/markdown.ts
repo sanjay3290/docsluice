@@ -30,6 +30,8 @@ const MAX_PENDING_MARKERS = 4096;
 interface RenderContext {
   budget: Budget;
   pendingOutputChars: number;
+  /** Leftmost addressed column of the table being rendered; addresses place cells relative to it. */
+  columnOrigin?: number;
 }
 
 function tick(context: RenderContext): void {
@@ -681,7 +683,22 @@ function addressedColumn(address: string | undefined, context: RenderContext): n
 }
 
 function cellColumn(cell: Cell, arrayIndex: number, context: RenderContext): number {
-  return addressedColumn(cell.address, context) ?? arrayIndex;
+  const column = addressedColumn(cell.address, context);
+  return column === undefined ? arrayIndex : column - (context.columnOrigin ?? 0);
+}
+
+/** A table cut from the middle of a sheet (for example at Z90000) starts at its own first column. */
+function addressOrigin(table: TableBlock, context: RenderContext): number {
+  let origin: number | undefined;
+  for (const row of table.rows) {
+    tick(context);
+    for (const cell of row) {
+      tick(context);
+      const column = addressedColumn(cell.address, context);
+      if (column !== undefined && (origin === undefined || column < origin)) origin = column;
+    }
+  }
+  return origin ?? 0;
 }
 
 interface PositionedCell {
@@ -959,6 +976,7 @@ function validCap(value: number | undefined, fallback: number): number {
 function renderTable(table: TableBlock, options: MarkdownOptions, context: RenderContext): string {
   const maxRows = validCap(options.maxTableRows, DEFAULT_MAX_TABLE_ROWS);
   const maxColumns = validCap(options.maxTableColumns, DEFAULT_MAX_TABLE_COLUMNS);
+  context.columnOrigin = addressOrigin(table, context);
   const width = tableWidth(table, context);
   const visibleRows = Math.min(table.rows.length, maxRows);
   const visibleColumns = Math.min(width, maxColumns);

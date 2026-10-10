@@ -45,6 +45,9 @@
       ],
       "docx": [
         "dist/docx.d.ts"
+      ],
+      "xlsx": [
+        "dist/xlsx.d.ts"
       ]
     }
   },
@@ -92,6 +95,10 @@
     "./docx": {
       "import": "./dist/docx.js",
       "require": "./dist/docx.cjs"
+    },
+    "./xlsx": {
+      "import": "./dist/xlsx.js",
+      "require": "./dist/xlsx.cjs"
     },
     "./package.json": "./package.json"
   },

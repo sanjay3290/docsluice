@@ -294,6 +294,25 @@ describe('toMarkdown', () => {
     );
   });
 
+  it('places addressed cells relative to the table first column, not the sheet', () => {
+    const doc = document([
+      {
+        kind: 'table',
+        headerRows: 1,
+        rows: [
+          [
+            { text: 'Y', address: 'Y90000' },
+            { text: 'Z', address: 'Z90000' },
+          ],
+          [{ text: 'Z only', address: 'Z90001' }],
+        ],
+        loc: {},
+      },
+    ]);
+
+    expect(toMarkdown(doc)).toBe('| Y | Z |\n| --- | --- |\n|  | Z only |');
+  });
+
   it('preserves address gaps in HTML table rows', () => {
     const doc = document([
       {
@@ -344,8 +363,9 @@ describe('toMarkdown', () => {
       },
     ]);
 
+    // C is the table's first addressed column; the duplicate falls back to its source position.
     expect(toMarkdown(doc, { tables: 'html' })).toBe(
-      '<table>\n<tbody>\n<tr><td></td><td>duplicate</td><td>C1<br>value</td></tr>\n</tbody>\n</table>',
+      '<table>\n<tbody>\n<tr><td>C1<br>value</td><td>duplicate</td></tr>\n</tbody>\n</table>',
     );
   });
 

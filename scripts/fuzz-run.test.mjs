@@ -223,7 +223,7 @@ test('both fuzz workflows run every registered target', async () => {
   const expected = Object.keys(TARGETS).sort();
   for (const workflow of ['fuzz-pr.yml', 'fuzz-nightly.yml']) {
     const text = await readFile(join(root, '.github/workflows', workflow), 'utf8');
-    // The matrix may be inline or wrapped onto the next line by Prettier.
+    // The matrix may be inline, wrapped onto the next line, or one name per line with a trailing comma.
     const key = text.indexOf('target:');
     const open = text.indexOf('[', key);
     const close = text.indexOf(']', open);
@@ -232,6 +232,7 @@ test('both fuzz workflows run every registered target', async () => {
       .slice(open + 1, close)
       .split(',')
       .map((name) => name.trim())
+      .filter((name) => name.length > 0)
       .sort();
     assert.deepEqual(listed, expected, `${workflow} matrix matches TARGETS`);
   }

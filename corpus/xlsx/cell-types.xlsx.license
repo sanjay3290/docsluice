@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-xlsx-cells.mjs
+Requirements: XLS-1, XLS-2, XLS-5, XLS-7
+Notes: visible, hidden and very hidden sheets in an order that differs from part names; shared, rich, inline and phonetic strings; booleans, an error, numbers, cached formula values, an ISO date cell and merged cells.

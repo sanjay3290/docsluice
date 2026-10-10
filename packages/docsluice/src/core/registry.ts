@@ -86,3 +86,8 @@ defaultRegistry.add({
   mimeTypes: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
   load: () => import('../readers/docx/index.js').then((module) => module.docxReader),
 });
+defaultRegistry.add({
+  id: 'xlsx',
+  mimeTypes: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+  load: () => import('../readers/xlsx/index.js').then((module) => module.xlsxReader),
+});
