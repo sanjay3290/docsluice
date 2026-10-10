@@ -30,6 +30,11 @@ export function detectTextKindCandidates(text: string): readonly FormatId[] {
   if (start < sample.length && (sample[start] === '{' || sample[start] === '[') && isJson(sample, start)) {
     return ['json'];
   }
+  if (startsAsciiInsensitive(sample, start, 'begin:vcalendar')) return ['ics'];
+  if (startsAsciiInsensitive(sample, start, 'begin:vcard')) return ['vcf'];
+  if (WEBVTT.test(sample)) return ['vtt'];
+  if (SUBRIP.test(sample.slice(start, start + 64))) return ['srt'];
+  if (isNdjson(sample)) return ['ndjson'];
   if (isEmailHeaderBlock(sample)) return ['eml'];
   if (startsAsciiInsensitive(sample, start, '<!doctype html')) return ['html'];
   if (startsAsciiInsensitive(sample, start, '<?xml')) return ['xml'];
@@ -374,4 +379,22 @@ function isDigit(code: number): boolean {
 }
 function isDigitOneToNine(code: number): boolean {
   return code >= 0x31 && code <= 0x39;
+}
+
+/** WebVTT files open with `WEBVTT`, then a space, tab or line end (W3C WebVTT 4.1). Anchored and linear. */
+const WEBVTT = /^WEBVTT(?:[\t\n\r ]|$)/;
+/** SubRip: a cue number line, then `hh:mm:ss,mmm --> hh:mm:ss,mmm`. Anchored, bounded quantifiers. */
+const SUBRIP = /^\d{1,9}\r?\n\d\d:\d\d:\d\d,\d{3} --> \d\d:\d\d:\d\d,\d{3}/;
+
+function isJsonLine(line: string): boolean {
+  const start = skipWhitespace(line, 0);
+  const code = line.charCodeAt(start);
+  return (code === 0x7b || code === 0x5b) && isJson(line, start);
+}
+
+/** Two or more lines, each one JSON object or array; the sample can cut its last line short. */
+function isNdjson(sample: string): boolean {
+  const lines = sample.split('\n').filter((line) => skipWhitespace(line, 0) < line.length);
+  if (lines.length > 2 && !isJsonLine(lines.at(-1)!)) lines.pop();
+  return lines.length >= 2 && lines.every(isJsonLine);
 }

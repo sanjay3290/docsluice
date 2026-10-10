@@ -1,0 +1,23 @@
+BEGIN:VCARD
+VERSION:4.0
+FN:Ada Field
+N:Field;Ada;Marie;Dr.;
+ORG:Estuary Lab;Survey Team
+TITLE:Field lead
+EMAIL;TYPE=work:ada@example.org
+TEL;VALUE=uri;TYPE=cell:tel:+1-555-0100
+ADR;TYPE=work:;;1 Harbour Road;Saltmarsh;;12345;Example Land
+BDAY:19800214
+NOTE:Prefers morning\, low-tide surveys.
+PHOTO:data:image/png;base64,iVBORw0KGgo=
+UID:urn:uuid:ada
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Grace Plot
+N:Plot;Grace;;;
+item1.EMAIL;TYPE=INTERNET:grace@example.org
+item1.X-ABLabel:work
+NOTE:Folded note that continues
+  on the next line.
+END:VCARD

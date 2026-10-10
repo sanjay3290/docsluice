@@ -43,6 +43,24 @@
       "xml": [
         "dist/xml.d.ts"
       ],
+      "yaml": [
+        "dist/yaml.d.ts"
+      ],
+      "ndjson": [
+        "dist/ndjson.d.ts"
+      ],
+      "ics": [
+        "dist/ics.d.ts"
+      ],
+      "vcf": [
+        "dist/vcf.d.ts"
+      ],
+      "srt": [
+        "dist/srt.d.ts"
+      ],
+      "vtt": [
+        "dist/vtt.d.ts"
+      ],
       "html": [
         "dist/html.d.ts"
       ],
@@ -136,6 +154,30 @@
     "./xml": {
       "import": "./dist/xml.js",
       "require": "./dist/xml.cjs"
+    },
+    "./yaml": {
+      "import": "./dist/yaml.js",
+      "require": "./dist/yaml.cjs"
+    },
+    "./ndjson": {
+      "import": "./dist/ndjson.js",
+      "require": "./dist/ndjson.cjs"
+    },
+    "./ics": {
+      "import": "./dist/ics.js",
+      "require": "./dist/ics.cjs"
+    },
+    "./vcf": {
+      "import": "./dist/vcf.js",
+      "require": "./dist/vcf.cjs"
+    },
+    "./srt": {
+      "import": "./dist/srt.js",
+      "require": "./dist/srt.cjs"
+    },
+    "./vtt": {
+      "import": "./dist/vtt.js",
+      "require": "./dist/vtt.cjs"
     },
     "./html": {
       "import": "./dist/html.js",

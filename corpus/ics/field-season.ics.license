@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice
+Requirements: IN-6
+Notes: One event with a folded line, TZID dates, escapes, organizer, attendee, recurrence and an alarm, and one to-do.

@@ -7,3 +7,7 @@ Text is scanned with budget ticks, and output is capped by `outputChars`. If a p
 The reader preserves ordinary text rather than interpreting markup. It does not infer titles, authors or other metadata.
 
 `extract()` loads this reader lazily for `txt` input. It is also available as the `docsluice/txt` subpath (`txtReader`).
+
+## Source code
+
+A file whose name has a source-code extension (`.py`, `.js`, `.ts`, `.go`, `.rs`, `.java`, `.c`, `.cpp`, `.cs`, `.rb`, `.php`, `.sh`, `.sql`, `.toml`, `.ini` and others; see `CODE_LANGUAGES` in `src/detect/mime.ts`) is read as text and becomes one `code` block with its `language` (`python`, `javascript`, …), limited by `outputChars`. A source file whose comments look like Markdown headings (`# …`) stays text. The format stays `txt`: source code has no format id of its own.

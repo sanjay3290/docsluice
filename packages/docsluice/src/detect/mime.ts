@@ -134,3 +134,11 @@ function normalizeMimeType(mimeType: string): string {
   const separator = mimeType.indexOf(';');
   return (separator < 0 ? mimeType : mimeType.slice(0, separator)).trim().toLowerCase();
 }
+
+/** Source files whose `#` comments look like Markdown headings; such files stay plain text. */
+const HASH_COMMENT_SOURCE = /\.(?:bash|ini|pl|ps1|py|r|rb|sh|toml|zsh)$/i;
+
+/** Whether a file name is source code whose comments start with `#`. */
+export function isHashCommentSource(filename: string | undefined): boolean {
+  return filename !== undefined && HASH_COMMENT_SOURCE.test(filename);
+}

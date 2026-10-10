@@ -11,7 +11,7 @@ import type { CfbArchive } from '../ole/index.js';
 import type { ZipArchive } from '../zip/index.js';
 import { decodeText, detectEncoding } from './encoding.js';
 import type { TextEncoding } from './encoding.js';
-import { formatForFilename, formatForMimeType, mimeTypeForFormat } from './mime.js';
+import { formatForFilename, isHashCommentSource, formatForMimeType, mimeTypeForFormat } from './mime.js';
 import { sniffMagic } from './sniff.js';
 import { detectTextKindCandidates } from './text-kind.js';
 import { detectZipKind } from './zip-kind.js';
@@ -118,6 +118,27 @@ export async function resolveFormat(
     selectedByTie = true;
     tiedFormats = new Set(['txt', 'markdown']);
   } else if (
+    candidates.every((candidate) => LOOSE_TEXT.has(candidate)) &&
+    TEXT_FAMILY.has(filenameHint ?? mimeHint ?? '') &&
+    (mimeHint ?? filenameHint) === (filenameHint ?? mimeHint)
+  ) {
+    // YAML has no reliable signature, and a damaged NDJSON, calendar, card or subtitle file can fail
+    // its sniff: loose text (plain, Markdown- or CSV-like) named or typed as one of them, with no
+    // disagreeing hint, is read as that format.
+    format = (filenameHint ?? mimeHint)!;
+    tiedFormats = new Set([...candidates, format]);
+    selectedByTie = true;
+  } else if (
+    candidates.length === 1 &&
+    format === 'markdown' &&
+    isHashCommentSource(options.filename) &&
+    filenameHint === undefined &&
+    mimeHint === undefined
+  ) {
+    // Source code comments (`# …`) look like Markdown headings; a source file name keeps it text.
+    format = 'txt';
+    selectedByTie = true;
+  } else if (
     candidates.length > 1 &&
     candidates.every((candidate) => candidate === 'csv' || candidate === 'tsv') &&
     (filenameHint === undefined || candidates.includes(filenameHint)) &&
@@ -140,6 +161,12 @@ export async function resolveFormat(
   warnIfMismatched(result.format, options, budget, tiedFormats);
   return { result };
 }
+
+/** Content kinds that YAML, NDJSON and the other text families can look like (flow lists look like CSV). */
+const LOOSE_TEXT: ReadonlySet<FormatId> = new Set(['txt', 'markdown', 'csv', 'tsv']);
+
+/** Text formats that a name or MIME type can select when the content only looks like plain text. */
+const TEXT_FAMILY: ReadonlySet<FormatId> = new Set(['yaml', 'ndjson', 'ics', 'vcf', 'srt', 'vtt']);
 
 function makeResult(format: FormatId, confidence: number, sniffedMimeType?: string | null): DetectResult {
   return {

@@ -1,7 +1,10 @@
 import type { ReadContext, Reader } from '../../core/reader.js';
 import { decodeTextInput } from '../text-input.js';
 
-/** Plain text reader. Blank lines separate paragraphs; line breaks within each paragraph are retained. */
+/**
+ * Plain text reader. Blank lines separate paragraphs; line breaks within each paragraph are retained.
+ * Source files (by extension) become one `code` block with their language.
+ */
 export const txtReader: Reader = {
   id: 'txt',
   mimeTypes: ['text/plain'],
@@ -9,6 +12,13 @@ export const txtReader: Reader = {
     ctx.budget.tick();
     const text = decodeTextInput(ctx);
     if (text === undefined) return;
+    // A source file (by extension) is one code block with its language; the language table loads
+    // lazily, only for file names with an extension.
+    const extension = /\.(\w{1,10})$/.exec(ctx.filename ?? '')?.[1];
+    if (extension !== undefined) {
+      const { readSourceCode } = await import('../code/index.js');
+      if (readSourceCode(ctx, text, extension.toLowerCase())) return;
+    }
     let lineStart = 0;
     let paragraph = '';
     let emitted = 0;

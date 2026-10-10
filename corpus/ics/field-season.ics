@@ -1,0 +1,33 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//docsluice//corpus//EN
+X-WR-CALNAME:Field season
+BEGIN:VTIMEZONE
+TZID:Europe/Berlin
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:survey-1@example.org
+DTSTAMP:20260101T000000Z
+SUMMARY:River survey\, north inlet
+DTSTART;TZID=Europe/Berlin:20260514T080000
+DTEND;TZID=Europe/Berlin:20260514T120000
+LOCATION:North inlet\; boat ramp
+DESCRIPTION:Bring waders and the plot list.\nMeet at the boat ramp. This line is lo
+ ng enough to be folded across two physical lines.
+ORGANIZER;CN=Ada Field:mailto:ada@example.org
+ATTENDEE;CN="Grace Plot";ROLE=REQ-PARTICIPANT:mailto:grace@example.org
+RRULE:FREQ=WEEKLY;COUNT=4
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Survey tomorrow
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VTODO
+UID:todo-1@example.org
+SUMMARY:Charge the depth sounder
+DUE;VALUE=DATE:20260513
+STATUS:NEEDS-ACTION
+X-CUSTOM:ignored
+END:VTODO
+END:VCALENDAR

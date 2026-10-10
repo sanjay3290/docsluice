@@ -1,0 +1,17 @@
+WEBVTT - Survey briefing
+
+NOTE This file is synthetic.
+
+STYLE
+::cue { color: yellow }
+
+intro
+00:01.000 --> 00:04.200 align:start
+<v Ada>The tide turns <i>early</i> today.
+
+00:00:05.000 --> 00:00:08.500
+<c.highlight>Check the north inlet</c> first,
+<00:00:07.000>then the south bank.
+
+00:01:02.250 --> 00:01:05.000
+Herons &amp; wrens &lt;counted&gt;.

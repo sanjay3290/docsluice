@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice
+Requirements: IN-6
+Notes: A vCard 4.0 and a vCard 3.0 with structured name, organization and address, a grouped email, a folded note and an inline photo.

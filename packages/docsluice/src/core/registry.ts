@@ -50,7 +50,8 @@ function checkContract(plugin: FormatPlugin): void {
 /** Internal registration; format modules are loaded only after format resolution. */
 export interface ReaderRegistration {
   readonly id: FormatId;
-  readonly mimeTypes: readonly string[];
+  /** Plugins record theirs; built-in MIME types live in the detection tables (`detect/mime.ts`). */
+  readonly mimeTypes?: readonly string[];
   readonly load: () => Promise<Reader>;
 }
 
@@ -108,137 +109,139 @@ export class ReaderRegistry {
 
 /** Add the built-in readers; each format module loads only when that format is read. */
 function addBuiltInReaders(registry: ReaderRegistry): void {
+  // Macro-enabled files share the plain reader's module.
+  const loadPptx = () => import('../readers/pptx/index.js').then((module) => module.pptxReader);
+  const loadXlsx = () => import('../readers/xlsx/index.js').then((module) => module.xlsxReader);
+  const loadDocx = () => import('../readers/docx/index.js').then((module) => module.docxReader);
   registry.add({
     id: 'doc',
-    mimeTypes: ['application/msword'],
     load: () => import('../readers/doc/index.js').then((module) => module.docReader),
   });
   registry.add({
     id: 'txt',
-    mimeTypes: ['text/plain'],
     load: () => import('../readers/txt/index.js').then((module) => module.txtReader),
   });
   registry.add({
     id: 'markdown',
-    mimeTypes: ['text/markdown', 'text/x-markdown'],
     load: () => import('../readers/markdown/index.js').then((module) => module.markdownReader),
   });
   registry.add({
     id: 'csv',
-    mimeTypes: ['text/csv', 'text/comma-separated-values'],
     load: () => import('../readers/csv/index.js').then((module) => module.csvReader),
   });
   registry.add({
     id: 'tsv',
-    mimeTypes: ['text/tab-separated-values'],
     load: () => import('../readers/tsv/index.js').then((module) => module.tsvReader),
   });
   registry.add({
     id: 'json',
-    mimeTypes: ['application/json', 'text/json'],
     load: () => import('../readers/json/index.js').then((module) => module.jsonReader),
   });
   registry.add({
+    id: 'yaml',
+    load: () => import('../readers/yaml/index.js').then((module) => module.yamlReader),
+  });
+  registry.add({
+    id: 'ndjson',
+    load: () => import('../readers/ndjson/index.js').then((module) => module.ndjsonReader),
+  });
+  registry.add({
+    id: 'ics',
+    load: () => import('../readers/ics/index.js').then((module) => module.icsReader),
+  });
+  registry.add({
+    id: 'vcf',
+    load: () => import('../readers/vcf/index.js').then((module) => module.vcfReader),
+  });
+  registry.add({
+    id: 'srt',
+    load: () => import('../readers/srt/index.js').then((module) => module.srtReader),
+  });
+  registry.add({
+    id: 'vtt',
+    load: () => import('../readers/vtt/index.js').then((module) => module.vttReader),
+  });
+  registry.add({
     id: 'xml',
-    mimeTypes: ['application/xml', 'text/xml'],
     load: () => import('../readers/xml/index.js').then((module) => module.xmlReader),
   });
   registry.add({
     id: 'html',
-    mimeTypes: ['text/html'],
     load: () => import('../readers/html/index.js').then((module) => module.htmlReader),
   });
   registry.add({
     id: 'rtf',
-    mimeTypes: ['application/rtf', 'text/rtf'],
     load: () => import('../readers/rtf/index.js').then((module) => module.rtfReader),
   });
   registry.add({
     id: 'docx',
-    mimeTypes: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-    load: () => import('../readers/docx/index.js').then((module) => module.docxReader),
+    load: loadDocx,
   });
   // Macro-enabled files are read like their plain version; macros are flagged, never read or run.
   registry.add({
     id: 'docm',
-    mimeTypes: ['application/vnd.ms-word.document.macroEnabled.12'],
-    load: () => import('../readers/docx/index.js').then((module) => module.docxReader),
+    load: loadDocx,
   });
   registry.add({
     id: 'xlsx',
-    mimeTypes: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-    load: () => import('../readers/xlsx/index.js').then((module) => module.xlsxReader),
+    load: loadXlsx,
   });
   // Macro-enabled files are read like their plain version; macros are flagged, never read or run.
   registry.add({
     id: 'xlsm',
-    mimeTypes: ['application/vnd.ms-excel.sheet.macroEnabled.12'],
-    load: () => import('../readers/xlsx/index.js').then((module) => module.xlsxReader),
+    load: loadXlsx,
   });
   registry.add({
     id: 'xlsb',
-    mimeTypes: ['application/vnd.ms-excel.sheet.binary.macroEnabled.12'],
     load: () => import('../readers/xlsb/index.js').then((module) => module.xlsbReader),
   });
   registry.add({
     id: 'xls',
-    mimeTypes: ['application/vnd.ms-excel'],
     load: () => import('../readers/xls/index.js').then((module) => module.xlsReader),
   });
   registry.add({
     id: 'pptx',
-    mimeTypes: ['application/vnd.openxmlformats-officedocument.presentationml.presentation'],
-    load: () => import('../readers/pptx/index.js').then((module) => module.pptxReader),
+    load: loadPptx,
   });
   // Macro-enabled files are read like their plain version; macros are flagged, never read or run.
   registry.add({
     id: 'pptm',
-    mimeTypes: ['application/vnd.ms-powerpoint.presentation.macroEnabled.12'],
-    load: () => import('../readers/pptx/index.js').then((module) => module.pptxReader),
+    load: loadPptx,
   });
   registry.add({
     id: 'odt',
-    mimeTypes: ['application/vnd.oasis.opendocument.text'],
     load: () => import('../readers/odt/index.js').then((module) => module.odtReader),
   });
   registry.add({
     id: 'ods',
-    mimeTypes: ['application/vnd.oasis.opendocument.spreadsheet'],
     load: () => import('../readers/ods/index.js').then((module) => module.odsReader),
   });
   registry.add({
     id: 'odp',
-    mimeTypes: ['application/vnd.oasis.opendocument.presentation'],
     load: () => import('../readers/odp/index.js').then((module) => module.odpReader),
   });
   registry.add({
     id: 'zip',
-    mimeTypes: ['application/zip'],
     load: () => import('../readers/zip/index.js').then((module) => module.zipReader),
   });
   registry.add({
     id: 'gzip',
-    mimeTypes: ['application/gzip', 'application/x-gzip'],
     load: () => import('../readers/gzip/index.js').then((module) => module.gzipReader),
   });
   registry.add({
     id: 'tar',
-    mimeTypes: ['application/x-tar'],
     load: () => import('../readers/tar/index.js').then((module) => module.tarReader),
   });
   registry.add({
     id: 'eml',
-    mimeTypes: ['message/rfc822'],
     load: () => import('../readers/eml/index.js').then((module) => module.emlReader),
   });
   registry.add({
     id: 'msg',
-    mimeTypes: ['application/vnd.ms-outlook'],
     load: () => import('../readers/msg/index.js').then((module) => module.msgReader),
   });
   registry.add({
     id: 'epub',
-    mimeTypes: ['application/epub+zip'],
     load: () => import('../readers/epub/index.js').then((module) => module.epubReader),
   });
 }
