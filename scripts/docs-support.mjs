@@ -11,7 +11,7 @@ const OUTPUT = 'docs/formats/support-matrix.md';
 const SIDECARS = ['.license', '.expected.json', '.expected.md', '.blocks.json', '.native.txt'];
 const METADATA = new Set(['README.md', '.gitattributes', '.gitkeep']);
 /** Package subpaths that are not format readers. */
-const NOT_READERS = new Set(['.', './node', './worker', './package.json']);
+const NOT_READERS = new Set(['.', './node', './worker', './schema.json', './package.json']);
 
 const compare = (left, right) => (left < right ? -1 : left > right ? 1 : 0);
 

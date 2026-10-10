@@ -82,6 +82,13 @@ test('CJS entry loads', () => {
   assert.equal(typeof mod.toJSON, 'function');
 });
 
+test('the JSON Schema is built and exported as docsluice/schema.json (MOD-2)', () => {
+  const schema = require('docsluice/schema.json');
+  assert.equal(schema.$schema, 'https://json-schema.org/draft/2020-12/schema');
+  assert.match(schema.$id, /^urn:docsluice:schema:document:v\d+$/);
+  assert.equal(schema.$ref, '#/$defs/DocsluiceDocument');
+});
+
 test('node entry loads', async () => {
   const mod = await import('../dist/node/index.js');
   assert.equal(typeof mod.DocsluiceError, 'function');

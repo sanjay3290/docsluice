@@ -8,3 +8,4 @@ coverage/
 bench/results/
 fuzz-artifacts/
 site/
+packages/docsluice/schema.json
