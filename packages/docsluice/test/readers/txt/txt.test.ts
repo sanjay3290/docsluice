@@ -10,6 +10,11 @@ import type { ResolvedOptions } from '../../../src/core/options.js';
 import { AbortError } from '../../../src/core/errors.js';
 import { txtReader as reader } from '../../../src/readers/txt/index.js';
 
+// Timing assertions mean nothing under coverage instrumentation (`npm run coverage` sets this).
+const underCoverage =
+  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env
+    ?.DOCSLUICE_COVERAGE === '1';
+
 async function parse(
   source: Uint8Array | string,
   limits: Record<string, number> = {},
@@ -96,15 +101,18 @@ describe('TXT reader', () => {
     expect(JSON.stringify(warnings)).not.toContain('aaaaa');
   });
 
-  it('bounds a 50 MB paragraph and returns within the two-second acceptance limit', async () => {
-    const bytes = new TextEncoder().encode('x'.repeat(50_000_000));
-    const started = performance.now();
-    const { doc } = await parse(bytes, { outputChars: 1_000_000 });
-    const elapsed = performance.now() - started;
-    expect(doc.blocks).toMatchObject([{ kind: 'paragraph', text: 'x'.repeat(1_000_000) }]);
-    expect(doc.stats.truncated).toBe(true);
-    expect(elapsed).toBeLessThan(2_000);
-  });
+  it.skipIf(underCoverage)(
+    'bounds a 50 MB paragraph and returns within the two-second acceptance limit',
+    async () => {
+      const bytes = new TextEncoder().encode('x'.repeat(50_000_000));
+      const started = performance.now();
+      const { doc } = await parse(bytes, { outputChars: 1_000_000 });
+      const elapsed = performance.now() - started;
+      expect(doc.blocks).toMatchObject([{ kind: 'paragraph', text: 'x'.repeat(1_000_000) }]);
+      expect(doc.stats.truncated).toBe(true);
+      expect(elapsed).toBeLessThan(2_000);
+    },
+  );
 
   it('honors cancellation before decoding source bytes', async () => {
     const controller = new AbortController();

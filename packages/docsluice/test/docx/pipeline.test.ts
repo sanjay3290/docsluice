@@ -5,6 +5,11 @@ import { docxReader } from '../../src/readers/docx/index.js';
 import { toText } from '../../src/render/text.js';
 import { makeZip } from '../helpers/zip.js';
 
+// Timing assertions mean nothing under coverage instrumentation (`npm run coverage` sets this).
+const underCoverage =
+  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env
+    ?.DOCSLUICE_COVERAGE === '1';
+
 const word = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const rel = 'http://schemas.openxmlformats.org/package/2006/relationships';
 const officeRel = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
@@ -70,7 +75,7 @@ describe('DOCX extraction pipeline', () => {
 });
 
 describe('DOCX performance (PERF-1)', () => {
-  it('extracts a 5 MB DOCX through the public pipeline in under a second', async () => {
+  it.skipIf(underCoverage)('extracts a 5 MB DOCX through the public pipeline in under a second', async () => {
     const paragraphs: string[] = [];
     let size = 0;
     for (let index = 0; size < 5_500_000; index++) {

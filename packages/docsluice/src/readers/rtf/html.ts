@@ -173,6 +173,9 @@ export function deencapsulateRtfHtml(bytes: Uint8Array, budget: Budget): string 
     while (index < bytes.length && !halted) {
       budget.tick();
       const byte = bytes[index]!;
+      // Overflow mode is a second guard: `enterDepth` already refuses a group before the stack
+      // reaches `blockDepth`, so tests cannot reach it. It stays in case the two limits diverge.
+      /* v8 ignore start */
       if (overflowDepth > 0) {
         if (byte === 123) {
           if (!enterDepth()) return undefined;
@@ -193,9 +196,11 @@ export function deencapsulateRtfHtml(bytes: Uint8Array, budget: Budget): string 
         else index += 1;
         continue;
       }
+      /* v8 ignore stop */
       if (byte === 123) {
         flush();
         if (!enterDepth()) return undefined;
+        /* v8 ignore next 5 -- the same second guard as overflow mode above */
         if (stack.length >= budget.limits.blockDepth) {
           overflowDepth = 1;
           index += 1;

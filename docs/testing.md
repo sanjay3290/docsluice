@@ -78,6 +78,12 @@ Hostile files are made by scripts in `scripts/hostile/` where possible, so the r
 | `readers/*` | 90% |
 | everything else | 85% |
 
+Every file must meet its own threshold, not just its group on average. `npm run coverage` (part of `npm run verify` and of the required CI job) runs the unit tests with v8 coverage. It fails when any file is below its line threshold, and writes a Markdown summary to the GitHub job summary: totals, each group's lowest file, and the ten files closest to their threshold. The thresholds live in `packages/docsluice/vitest.config.ts`. A new file without tests counts as 0%, so it fails until it has them.
+
+- Tests that measure time (the PERF checks) skip themselves under coverage, where instrumentation makes timing meaningless. `npm test` still runs them.
+- The worker-thread entry (`src/node/worker/worker.ts`) is excluded: it runs only inside a `Worker`, where the test process's coverage cannot see it. The built-package worker tests exercise it.
+- A branch that only a second, unreachable guard can reach is excluded with a `/* v8 ignore */` comment that says why. One example is the RTF HTML overflow mode behind `enterDepth`. Do not use such comments to hide untested code.
+
 ## Cross-runtime (QA-4)
 
 CI runs the unit tests on Node 24. The built package then runs one shared contract (ZIP, XML, and `extract()` on CSV, HTML and hostile HTML) on Node 20, 22 and 24, Bun, Deno, Chromium, Firefox and WebKit (Vitest browser mode), and Cloudflare Workers (local `wrangler dev`). The browser and Workers runs trap any access to `globalThis.Buffer`. [testing-runtime.md](testing-runtime.md) has the command for each runtime. A feature that cannot work in one runtime must say so in its docs page and skip that runtime's test with a reason.

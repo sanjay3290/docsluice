@@ -16,6 +16,7 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write . && eslint . --fix",
     "test": "npm run test --workspaces --if-present",
+    "coverage": "npm run coverage --workspace packages/docsluice && node scripts/coverage-summary.mjs",
     "fuzz": "node scripts/fuzz-run.mjs",
     "docs:support": "node scripts/docs-support.mjs",
     "docs:site": "node scripts/docs-site.mjs",
@@ -23,7 +24,7 @@
     "check:package": "npm run check:package --workspace packages/docsluice",
     "test:runtime-tools": "node scripts/runtime-fixtures.mjs --check && node --test scripts/test/*.test.mjs scripts/corpus/build.test.mjs packages/docsluice/test-runtime/workers/buffer-trap.test.mjs",
     "test:browser": "vitest run --config packages/docsluice/test-runtime/browser/vitest.config.mjs",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run test:runtime-tools && npm run build && npm run check:package && npm run test:dist && npm run docs:site"
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run coverage && npm run test:runtime-tools && npm run build && npm run check:package && npm run test:dist && npm run docs:site"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
