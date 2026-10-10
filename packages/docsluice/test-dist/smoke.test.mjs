@@ -125,3 +125,8 @@ test('PPTX reader subpath loads lazily', async () => {
   const pptx = await import('docsluice/pptx');
   assert.equal(pptx.pptxReader.id, 'pptx');
 });
+
+test('ZIP container reader subpath loads lazily', async () => {
+  const zip = await import('docsluice/zip');
+  assert.equal(zip.zipReader.id, 'zip');
+});

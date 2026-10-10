@@ -51,6 +51,9 @@
       ],
       "pptx": [
         "dist/pptx.d.ts"
+      ],
+      "zip": [
+        "dist/zip.d.ts"
       ]
     }
   },
@@ -106,6 +109,10 @@
     "./pptx": {
       "import": "./dist/pptx.js",
       "require": "./dist/pptx.cjs"
+    },
+    "./zip": {
+      "import": "./dist/zip.js",
+      "require": "./dist/zip.cjs"
     },
     "./package.json": "./package.json"
   },

@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-zip-bundle.mjs
+Requirements: NST-1, NST-3, NST-4
+Notes: a directory entry, a CSV, an HTML page, a nested zip with a text file, and a 1x1 PNG.

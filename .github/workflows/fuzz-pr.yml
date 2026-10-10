@@ -32,6 +32,7 @@ jobs:
             xlsx,
             xlsx-numfmt,
             pptx,
+            zip-container,
           ]
     steps:
       - uses: actions/checkout@v7

@@ -15,6 +15,7 @@ export default defineConfig({
     docx: 'src/readers/docx/index.ts',
     xlsx: 'src/readers/xlsx/index.ts',
     pptx: 'src/readers/pptx/index.ts',
+    zip: 'src/readers/zip/index.ts',
   },
   format: ['esm', 'cjs'],
   platform: 'neutral',
