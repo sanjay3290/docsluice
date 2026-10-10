@@ -131,7 +131,3 @@ export const docxReader: Reader = {
     );
   },
 };
-
-/** Standard lazy-reader entry point used by the built-in registry. */
-export const defaultReader = docxReader;
-export default defaultReader;

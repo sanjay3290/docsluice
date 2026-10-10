@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-docx-edge-cases.mjs
+Requirements: DOC-1, DOC-2, DOC-7
+Notes: AlternateContent text box (one branch), content control, localized and inherited outline-level heading styles, internal anchor and external hyperlink, simple field, table text.

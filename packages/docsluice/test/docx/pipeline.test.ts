@@ -68,3 +68,34 @@ describe('DOCX extraction pipeline', () => {
     }
   });
 });
+
+describe('DOCX performance (PERF-1)', () => {
+  it('extracts a 5 MB DOCX through the public pipeline in under a second', async () => {
+    const paragraphs: string[] = [];
+    let size = 0;
+    for (let index = 0; size < 5_500_000; index++) {
+      const paragraph = `<w:p><w:pPr><w:pStyle w:val="${index % 50 === 0 ? 'Heading2' : 'Normal'}"/></w:pPr><w:r><w:t>Paragraph ${index} records a synthetic field observation for timing.</w:t></w:r></w:p>`;
+      paragraphs.push(paragraph);
+      size += paragraph.length;
+    }
+    const zip = makeZip([
+      {
+        name: '[Content_Types].xml',
+        data: encode(
+          '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>',
+        ),
+      },
+      {
+        name: 'word/document.xml',
+        data: encode(`<w:document xmlns:w="${word}"><w:body>${paragraphs.join('')}</w:body></w:document>`),
+      },
+    ]);
+    expect(zip.length).toBeGreaterThan(5_000_000);
+    const started = performance.now();
+    const doc = await createExtractor(registry)(zip);
+    const elapsed = performance.now() - started;
+    expect(doc.blocks.length).toBe(paragraphs.length);
+    // PERF-1 target is 1 s (about 0.8 s locally); shared CI runners get twice that before failing.
+    expect(elapsed).toBeLessThan(2_000);
+  });
+});

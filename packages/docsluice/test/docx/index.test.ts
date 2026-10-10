@@ -7,7 +7,7 @@ import type { ReadContext } from '../../src/core/reader.js';
 import { WarningSink } from '../../src/core/warnings.js';
 import { openZip } from '../../src/zip/index.js';
 import { makeZip } from '../helpers/zip.js';
-import { defaultReader } from '../../src/readers/docx/index.js';
+import { docxReader as defaultReader } from '../../src/readers/docx/index.js';
 
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const RELS = 'http://schemas.openxmlformats.org/package/2006/relationships';

@@ -1,3 +1,4 @@
+import { DocsluiceError } from '../src/core/errors.js';
 import { Budget } from '../src/core/budget.js';
 import { DocBuilder } from '../src/core/builder.js';
 import { DEFAULT_LIMITS } from '../src/core/limits.js';
@@ -22,7 +23,9 @@ export function fuzzDocx(input: Uint8Array): void {
   try {
     const styles = parseDocxStyles(sample, context);
     scanDocxBody(sample, context, styles, new Map());
-  } catch {
-    // Malformed XML and ordinary resource limits are expected fuzz outcomes.
+  } catch (error) {
+    // Malformed XML and resource limits are ordinary outcomes; anything else is a finding.
+    if (error instanceof DocsluiceError) return;
+    throw error;
   }
 }

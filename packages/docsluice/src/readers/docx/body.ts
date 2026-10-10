@@ -38,6 +38,8 @@ interface ParagraphState {
   text: string;
   runs: Array<{ text: string; bold?: boolean; italic?: boolean; href?: string }>;
   styleId?: string;
+  /** Direct `w:outlineLvl` (0-based); it overrides the style's heading level. */
+  outlineLevel?: number;
   numId?: string;
   ilvl?: number;
 }
@@ -244,7 +246,16 @@ export function scanDocxBody(
   const finishParagraph = (paragraph: ParagraphState): void => {
     const baseLoc = location(ctx);
     const style = paragraph.styleId === undefined ? undefined : styles.get(paragraph.styleId);
-    const level = style === undefined ? builtinHeadingLevel(paragraph.styleId) : style.level;
+    // Outline levels 0-5 are headings 1-6; any other direct level (9 is body text) is not a heading.
+    const outline = paragraph.outlineLevel;
+    const level =
+      outline !== undefined
+        ? outline <= 5
+          ? ((outline + 1) as 1 | 2 | 3 | 4 | 5 | 6)
+          : undefined
+        : style === undefined
+          ? builtinHeadingLevel(paragraph.styleId)
+          : style.level;
     const event: DocxParagraph = { text: paragraph.text, loc: baseLoc };
     if (paragraph.styleId !== undefined) event.styleId = paragraph.styleId;
     if (level !== undefined) event.level = level;
@@ -367,6 +378,12 @@ export function scanDocxBody(
             const paragraph = paragraphs.at(-1);
             const styleId = wordAttribute(attrs, 'val', frames, namespaceScope, ctx.budget);
             if (paragraph && styleId !== undefined) paragraph.styleId = styleId;
+          }
+          if (!skipped && isWord && info.localName === 'outlineLvl' && parent?.paragraphProperties) {
+            const paragraph = paragraphs.at(-1);
+            const value = wordAttribute(attrs, 'val', frames, namespaceScope, ctx.budget);
+            const outlineLevel = value === undefined ? undefined : parseLevel(value, ctx.budget);
+            if (paragraph && outlineLevel !== undefined) paragraph.outlineLevel = outlineLevel;
           }
           if (
             !skipped &&

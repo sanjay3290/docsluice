@@ -87,6 +87,28 @@ describe('scanDocxBody', () => {
     expect(blocks).toMatchObject([{ kind: 'heading', level: 2, text: 'real namespace' }]);
   });
 
+  it('treats a direct paragraph outline level as a heading level that overrides the style', () => {
+    const ctx = base();
+    const styles = new Map([['Heading1', { id: 'Heading1', level: 1 as const }]]);
+    scanDocxBody(
+      `<w:document xmlns:w="${W}"><w:body>` +
+        `<w:p><w:pPr><w:pStyle w:val="Normal"/><w:outlineLvl w:val="2"/></w:pPr><w:r><w:t>Custom</w:t></w:r></w:p>` +
+        `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:outlineLvl w:val="9"/></w:pPr><w:r><w:t>Body text</w:t></w:r></w:p>` +
+        `<w:p><w:pPr><w:outlineLvl w:val="7"/></w:pPr><w:r><w:t>Deep</w:t></w:r></w:p>` +
+        `<w:p><w:pPr><w:rPr><w:outlineLvl w:val="0"/></w:rPr></w:pPr><w:r><w:t>Nested</w:t></w:r></w:p>` +
+        `</w:body></w:document>`,
+      ctx,
+      styles,
+      new Map(),
+    );
+    expect(ctx.out.finish().blocks).toMatchObject([
+      { kind: 'heading', level: 3, text: 'Custom' },
+      { kind: 'paragraph', text: 'Body text' },
+      { kind: 'paragraph', text: 'Deep' },
+      { kind: 'paragraph', text: 'Nested' },
+    ]);
+  });
+
   it('recognizes built-in heading ids when styles.xml omits their declarations', () => {
     const ctx = base();
     scanDocxBody(

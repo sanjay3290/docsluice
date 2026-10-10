@@ -42,6 +42,7 @@ export const TARGETS = {
   },
   html: { module: 'fuzz/html.fuzz.js', export: 'fuzzHtml', seeds: ['corpus/html', 'hostile/html'] },
   doc: { module: 'fuzz/doc.fuzz.js', export: 'fuzzDoc', seeds: ['corpus/doc', 'corpus/ole', 'hostile/doc'] },
+  docx: { module: 'fuzz/docx.fuzz.js', export: 'fuzzDocx', seeds: ['corpus/docx', 'hostile/docx'] },
   ooxml: {
     module: 'fuzz/ooxml.fuzz.js',
     export: 'fuzzOoxml',
