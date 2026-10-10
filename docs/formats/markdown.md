@@ -9,3 +9,7 @@ Nested list items retain their marker strings, but the output model has one orde
 This is a small best-effort block parser, not a full CommonMark implementation. It does not resolve references, parse raw HTML, preserve heading/list inline runs, or implement all delimiter and continuation rules. Table alignment markers are ignored; the first row is the table header. URLs are never fetched.
 
 `extract()` loads this reader lazily for `markdown` input. It is also available as the `docsluice/markdown` subpath (`markdownReader`).
+
+## Inline runs (MOD-3)
+
+With `runs: true`, paragraphs keep bold, italic, code and link runs. Emphasis follows CommonMark flanking rules, so an intraword `_` and a spaced `*` stay literal text (see [rendering.md](../rendering.md#inline-runs-mod-3)).

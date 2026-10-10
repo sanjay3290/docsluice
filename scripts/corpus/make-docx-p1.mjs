@@ -209,3 +209,39 @@ await save(
   'DOC-12, NST-1',
   'an embedded XLSX package part, an OLE .bin whose Package stream holds a DOCX, an external linked object and a repeated object reference.',
 );
+
+// MOD-3: inline runs: bold, italic, a hyperlink, a code character style and a monospace font.
+await save(
+  'inline-runs.docx',
+  docx({
+    styles:
+      '<w:style w:type="character" w:styleId="HTMLCode"><w:name w:val="HTML Code"/><w:rPr><w:rFonts w:ascii="Courier New"/></w:rPr></w:style>',
+    rels: `<Relationship Id="rIdLink" Type="${R}/hyperlink" Target="https://example.invalid/docs" TargetMode="External"/>`,
+    body: [
+      heading('Inline formatting'),
+      p(
+        run('Plain, ') +
+          run('bold', '<w:b/>') +
+          run(', ') +
+          run('italic', '<w:i/>') +
+          run(', ') +
+          run('both', '<w:b/><w:i/>') +
+          run(' and ') +
+          `<w:hyperlink r:id="rIdLink">${run('a link')}</w:hyperlink>` +
+          run('.'),
+      ),
+      p(
+        run('Call ') +
+          run('extract(bytes)', '<w:rStyle w:val="HTMLCode"/>') +
+          run(' or type ') +
+          run('npm test', '<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas"/>') +
+          run(' in a ') +
+          run('terminal', '<w:rFonts w:ascii="Calibri"/>') +
+          run('.'),
+      ),
+      p(run('Split ') + run('across ', '<w:b/>') + run('runs', '<w:b/>') + run(' merge.')),
+    ].join(''),
+  }),
+  'MOD-3',
+  'bold, italic and combined runs, a hyperlink, a code character style, a monospace font, a proportional font, and adjacent runs with equal formatting.',
+);

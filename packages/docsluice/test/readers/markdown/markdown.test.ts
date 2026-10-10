@@ -161,7 +161,8 @@ describe('Markdown reader', () => {
     });
     if (doc.blocks[1]?.kind === 'paragraph') {
       expect(doc.blocks[1].runs).toContainEqual({ text: 'label', href: 'https://host.test/a(b)c' });
-      expect(doc.blocks[1].runs).toContainEqual({ text: 'alt' });
+      // Image alt text is plain text; equal neighbouring runs merge (MOD-3).
+      expect(doc.blocks[1].runs?.[0]).toEqual({ text: 'Escaped *marks*, strike, alt, ' });
       expect(doc.blocks[1].runs?.some(({ href }) => href === 'https://img.example/x')).toBe(false);
     }
     expect(doc.blocks[2]).toMatchObject({ kind: 'paragraph', text: '[[nested]] [unfinished](target' });

@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: written for docsluice; invented text
+Requirements: MOD-3
+Notes: inline bold, italic, code and link runs; a runs: true golden is the .runs.expected.json sidecar.

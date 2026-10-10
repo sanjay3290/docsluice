@@ -79,7 +79,12 @@ The same registry is used for child documents, so a plugin format inside a zip o
 - `out`: the `DocBuilder` (`heading`, `paragraph`, `list`, `table`, `code`, `image`, `note`, `headerFooter`, `openSection`/`closeSection`, `setMetadata`, `setFeature`, `addChild`). It applies `transform`, `onBlock`, output limits and depth flattening.
 - `extractChild(name, bytes, hint?)`: read an embedded file as a child document under the shared budget, with nesting depth and self-containing-file checks.
 
-The safe helpers are exported for plugins too: `openZip` (bounded ZIP index and streaming inflate), `scanXml` and `parseXml` (SAX and tree XML without DTDs or external entities), and `Budget`/`WarningSink`.
+The safe building blocks are exported for plugins and for use on their own (EXT-6):
+
+- `openZip(bytes, budget)`: a bounded ZIP index with streaming inflate. Entry counts, sizes, the compression ratio and paths are checked.
+- `scanXml` and `parseXml`: SAX and tree XML without DTDs or external entities, with depth and size limits.
+- `sniff(bytes)`: names a format synchronously from the first 64 KiB. Magic numbers come first, then text kinds (JSON, XML, HTML, CSV/TSV, Markdown, plain text, the text families). It opens nothing, so ZIP and compound files are reported as `zip` and `ole`. `detect()` reads their index and weighs file-name and MIME hints.
+- `Budget` and `WarningSink`.
 
 ## Errors
 

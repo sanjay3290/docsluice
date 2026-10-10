@@ -586,10 +586,22 @@ function renderRuns(
   for (const run of runs) {
     tick(context);
     const linkLabel = Boolean(run.href);
+    // Emphasis markers must touch text: white space at a run's edges goes outside them.
+    let start = 0;
+    let end = run.text.length;
+    if (run.bold || run.italic || run.code) {
+      while (start < end && (run.text[start] === ' ' || run.text[start] === '\t')) start++;
+      while (end > start && (run.text[end - 1] === ' ' || run.text[end - 1] === '\t')) end--;
+    }
+    if (start === end && start > 0) {
+      output += run.text;
+      continue;
+    }
+    const core = run.text.slice(start, end);
     let text =
       run.code && !linkLabel
-        ? renderInlineCode(run.text, context)
-        : escapeSourceText(run.text, context, false, false, linkLabel);
+        ? renderInlineCode(core, context)
+        : escapeSourceText(core, context, false, false, linkLabel);
     if (!run.code && run.bold && run.italic) {
       reserve(context, 6);
       text = `***${text}***`;
@@ -610,7 +622,7 @@ function renderRuns(
         text = `[${text}](${target})`;
       }
     }
-    output += text;
+    output += run.text.slice(0, start) + text + run.text.slice(end);
   }
   return output;
 }

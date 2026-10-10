@@ -31,7 +31,10 @@ export interface Chunk {
   headingPath: string[];
   /** Locations of the blocks the chunk's text comes from, in order. */
   locations: Location[];
-  /** Length of the leading text repeated from the previous chunk (0 for none). */
+  /**
+   * Length of the leading repeated text (0 for none): text from the end of the previous chunk, and,
+   * when the chunk starts inside a table with header rows, those header rows (CHK-4).
+   */
   overlap: number;
   /** Set when a table row longer than `maxSize` had to be split at cell boundaries. */
   warnings?: string[];
@@ -183,6 +186,27 @@ export function* chunk(document: DocsluiceDocument, options: ChunkOptions = {}):
     return best;
   };
 
+  /**
+   * Start a chunk that begins inside a table with its header rows (CHK-4), as repeated text, unless
+   * the chunk already holds them or they would take more than half of `maxSize`.
+   */
+  const withHeader = (entries: Entry[]): Entry[] => {
+    const first = entries.find((entry) => !entry.overlap);
+    const header = first?.piece.header;
+    if (!header || entries.some((entry) => header.includes(entry.piece))) return entries;
+    const repeated: Entry[] = [];
+    for (const piece of header) {
+      budget.tick();
+      repeated.push({ piece, size: count(piece.text), separatorSize: count(piece.separator), overlap: true });
+    }
+    const size = totalOf(repeated);
+    if (size * 2 > maxSize) return entries;
+    // The repeated header replaces any overlap: both are context, and the header is the useful one.
+    const content = entries.filter((entry) => !entry.overlap);
+    const joined = [...repeated, ...content];
+    return totalOf(joined) <= maxSize ? joined : entries;
+  };
+
   /** Emit `entries`, moving trailing pieces back while a non-additive counter says the text is too long. */
   function* emit(entries: Entry[]): Generator<Chunk, Entry[]> {
     const kept = [...entries];
@@ -211,13 +235,22 @@ export function* chunk(document: DocsluiceDocument, options: ChunkOptions = {}):
       }
       if (content >= minSize) {
         const back = yield* emit(current);
-        current = back.map((item) => ({ ...item, overlap: false }));
+        current = withHeader(back.map((item) => ({ ...item, overlap: false })));
         total = totalOf(current);
       }
     }
     for (;;) {
       budget.tick();
       const added = current.length > 0 ? entry.separatorSize + entry.size : entry.size;
+      if (total + added <= maxSize && entry.piece.header && !hasContent(current)) {
+        // A table body row starts this chunk: its header rows come first (CHK-4).
+        const started = withHeader([...current, entry]);
+        if (started[0]?.piece === entry.piece.header[0]) {
+          current = started;
+          total = totalOf(current);
+          break;
+        }
+      }
       if (total + added <= maxSize) {
         current.push(entry);
         total += added;
@@ -232,13 +265,13 @@ export function* chunk(document: DocsluiceDocument, options: ChunkOptions = {}):
       const emitted = current.slice(0, cut);
       const back = yield* emit(emitted);
       const carry = [...back, ...current.slice(cut)];
-      current = [...overlapFrom(emitted.slice(0, emitted.length - back.length), carry), ...carry];
+      current = withHeader([...overlapFrom(emitted.slice(0, emitted.length - back.length), carry), ...carry]);
       total = totalOf(current);
     }
   }
   while (hasContent(current)) {
     budget.tick();
     const back = yield* emit(current);
-    current = back;
+    current = withHeader(back);
   }
 }

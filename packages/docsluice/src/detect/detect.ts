@@ -13,7 +13,6 @@ import type { TextEncoding } from './encoding.js';
 import { formatForFilename, isHashCommentSource, formatForMimeType, mimeTypeForFormat } from './mime.js';
 import { sniffMagic } from './sniff.js';
 import { detectTextKindCandidates } from './text-kind.js';
-import { detectZipKind } from './zip-kind.js';
 
 const TEXT_SAMPLE_BYTES = 8 * 1024;
 
@@ -65,6 +64,8 @@ export async function resolveFormat(
 
   const magic = hasTextBom(bytes) ? { kind: null, mimeType: null, confidence: 0 } : sniffMagic(bytes);
   if (magic.kind === 'zip') {
+    // Telling ZIP-based formats apart (OOXML, ODF, EPUB) serves non-text files only; it loads on demand.
+    const { detectZipKind } = await import('./zip-kind.js');
     const archive = await detectZipKind(bytes, budget);
     const result = makeResult(archive.format, magic.confidence);
     warnIfMismatched(result.format, options, budget);
@@ -161,6 +162,34 @@ export async function resolveFormat(
   };
   warnIfMismatched(result.format, options, budget, tiedFormats);
   return { result };
+}
+
+/** Bytes `sniff()` looks at. */
+const SNIFF_BYTES = 64 * 1024;
+
+/**
+ * Name a file's format from its first bytes, synchronously and without opening anything (EXT-6):
+ * magic numbers first, then the text kinds (JSON, XML, HTML, CSV/TSV, Markdown, plain text, and
+ * the P1 text families). ZIP and compound (OLE) files are reported as `zip` and `ole`: telling DOCX
+ * from XLSX needs their index, which `detect()` reads. Only the first 64 KiB are looked at.
+ * File names and MIME types are not used; `detect()` weighs those hints.
+ */
+export function sniff(bytes: Uint8Array): DetectResult {
+  const prefix = bytes.subarray(0, SNIFF_BYTES);
+  const magic = hasTextBom(prefix) ? { kind: null, mimeType: null, confidence: 0 } : sniffMagic(prefix);
+  if (magic.kind !== null) return makeResult(magic.kind, magic.confidence, magic.mimeType);
+  const encoding = detectEncoding(prefix);
+  if (!encoding.isText || encoding.encoding === 'unsupported')
+    return { format: 'unknown', mimeType: mimeTypeForFormat('unknown'), confidence: 0 };
+  const format =
+    detectTextKindCandidates(decodeText(getTextPrefix(prefix, encoding.encoding), encoding.encoding))[0] ??
+    'txt';
+  return {
+    format,
+    mimeType: mimeTypeForFormat(format),
+    confidence: format === 'txt' ? 0.65 : 0.9,
+    encoding: encoding.encoding,
+  };
 }
 
 /** Content kinds that YAML, NDJSON and the other text families can look like (flow lists look like CSV). */

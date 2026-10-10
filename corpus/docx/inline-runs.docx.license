@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-docx-p1.mjs
+Requirements: MOD-3
+Notes: bold, italic and combined runs, a hyperlink, a code character style, a monospace font, a proportional font, and adjacent runs with equal formatting.
