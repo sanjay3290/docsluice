@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-docx-p1.mjs
+Requirements: DOC-10
+Notes: PAGE, NUMPAGES, DATE, MERGEFIELD and HYPERLINK complex fields, an AUTHOR fldSimple, an IF field with a nested field in its code, a field with no result, and a TOC field across paragraphs.

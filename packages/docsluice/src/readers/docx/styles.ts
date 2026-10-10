@@ -14,6 +14,10 @@ export interface DocxStyle {
   /** List numbering from `w:numPr`, inherited through `basedOn` (DOC-3). */
   numId?: string;
   ilvl?: number;
+  /** Run text in this style is hidden (`w:rPr/w:vanish`), inherited through `basedOn` (DOC-9). */
+  hidden?: boolean;
+  /** A character style (`w:type="character"`), applied to runs by `w:rStyle`. */
+  character?: boolean;
 }
 
 interface MutableStyle {
@@ -24,6 +28,8 @@ interface MutableStyle {
   builtinLevel?: HeadingLevel;
   numId?: string;
   ilvl?: number;
+  hidden?: boolean;
+  character?: boolean;
 }
 
 interface Frame {
@@ -132,7 +138,8 @@ export function parseDocxStyles(input: Uint8Array | string, ctx: XmlContext): Ma
           if (id !== undefined) {
             declaredStyle = { id };
             const kind = attribute(attrs, 'type', scopes, ctx.budget);
-            if (kind !== 'paragraph') declaredStyle = undefined;
+            if (kind === 'character') declaredStyle.character = true;
+            else if (kind !== 'paragraph') declaredStyle = undefined;
           }
         }
         const styleRecord = declaredStyle ?? parent?.styleRecord;
@@ -148,6 +155,14 @@ export function parseDocxStyles(input: Uint8Array | string, ctx: XmlContext): Ma
           } else if (parent?.isStyleRoot && info.localName === 'basedOn') {
             const value = attribute(attrs, 'val', scopes, ctx.budget);
             if (value !== undefined) styleRecord.basedOn = value;
+          } else if (
+            info.localName === 'vanish' &&
+            parent?.localName === 'rPr' &&
+            frames.at(-2)?.isStyleRoot === true
+          ) {
+            const value = attribute(attrs, 'val', scopes, ctx.budget);
+            styleRecord.hidden =
+              value === undefined || (value !== '0' && value !== 'false' && value !== 'off');
           } else if (info.localName === 'outlineLvl' && parent?.isStyleParagraphProperties) {
             const value = attribute(attrs, 'val', scopes, ctx.budget);
             if (value !== undefined) styleRecord.outlineLevel = parseSmallInteger(value, ctx.budget);
@@ -180,7 +195,7 @@ export function parseDocxStyles(input: Uint8Array | string, ctx: XmlContext): Ma
         if (info.namespaceURI === WORD_NS && info.localName === 'style' && frame?.declaredStyle) {
           const declared = frame.declaredStyle;
           if (!raw.has(declared.id)) {
-            declared.builtinLevel = headingFromName(declared.name, declared.id);
+            if (!declared.character) declared.builtinLevel = headingFromName(declared.name, declared.id);
             raw.set(declared.id, declared);
           } else if (!duplicateWarned) {
             duplicateWarned = true;
@@ -195,6 +210,8 @@ export function parseDocxStyles(input: Uint8Array | string, ctx: XmlContext): Ma
   if (!rootSeen) warnUnreadable(ctx);
 
   const levels = resolveLevels(raw, ctx);
+  const hidden = resolveHidden(raw, ctx);
+  const numberings = resolveNumbering(raw, ctx);
   const resolved = new Map<string, DocxStyle>();
   for (const [id, style] of raw) {
     ctx.budget.tick();
@@ -203,31 +220,92 @@ export function parseDocxStyles(input: Uint8Array | string, ctx: XmlContext): Ma
     if (style.name !== undefined) result.name = style.name;
     if (style.basedOn !== undefined) result.basedOn = style.basedOn;
     if (level !== undefined) result.level = level;
-    const numbering = inheritedNumbering(raw, id, ctx);
+    const numbering = numberings.get(id) ?? {};
     if (numbering.numId !== undefined) result.numId = numbering.numId;
     if (numbering.ilvl !== undefined) result.ilvl = numbering.ilvl;
+    if (style.character) result.character = true;
+    if (hidden.get(id) === true) result.hidden = true;
     resolved.set(id, result);
   }
   return resolved;
 }
 
-/** The nearest `numId` and `ilvl` along a style's `basedOn` chain; cycles stop at a visited style. */
-function inheritedNumbering(
+/**
+ * The nearest `numId` and `ilvl` along each style's `basedOn` chain. Each chain is walked once and
+ * every style on it is memoized, so long chains stay linear; a cycle stops at a visited style.
+ */
+function resolveNumbering(
   raw: ReadonlyMap<string, MutableStyle>,
-  id: string,
   ctx: XmlContext,
-): { numId?: string; ilvl?: number } {
-  const result: { numId?: string; ilvl?: number } = {};
-  const visited = new Set<string>();
-  let current = raw.get(id);
-  while (current && !visited.has(current.id) && (result.numId === undefined || result.ilvl === undefined)) {
+): Map<string, { numId?: string; ilvl?: number }> {
+  const resolved = new Map<string, { numId?: string; ilvl?: number }>();
+  for (const id of raw.keys()) {
     ctx.budget.tick();
-    visited.add(current.id);
-    if (result.numId === undefined && current.numId !== undefined) result.numId = current.numId;
-    if (result.ilvl === undefined && current.ilvl !== undefined) result.ilvl = current.ilvl;
-    current = current.basedOn === undefined ? undefined : raw.get(current.basedOn);
+    if (resolved.has(id)) continue;
+    const chain: MutableStyle[] = [];
+    const visited = new Set<string>();
+    let inherited: { numId?: string; ilvl?: number } = {};
+    let current = raw.get(id);
+    while (current && !visited.has(current.id)) {
+      ctx.budget.tick();
+      const known = resolved.get(current.id);
+      if (known) {
+        inherited = known;
+        break;
+      }
+      visited.add(current.id);
+      chain.push(current);
+      current = current.basedOn === undefined ? undefined : raw.get(current.basedOn);
+    }
+    for (let index = chain.length - 1; index >= 0; index--) {
+      ctx.budget.tick();
+      const style = chain[index]!;
+      const result: { numId?: string; ilvl?: number } = {};
+      const numId = style.numId ?? inherited.numId;
+      const ilvl = style.ilvl ?? inherited.ilvl;
+      if (numId !== undefined) result.numId = numId;
+      if (ilvl !== undefined) result.ilvl = ilvl;
+      resolved.set(style.id, result);
+      inherited = result;
+    }
   }
-  return result;
+  return resolved;
+}
+
+/**
+ * Whether each style's runs are hidden: the nearest `w:vanish` along its `basedOn` chain. Each
+ * chain is walked once and every style on it is memoized, so long chains stay linear; a cycle
+ * stops at a visited style.
+ */
+function resolveHidden(raw: ReadonlyMap<string, MutableStyle>, ctx: XmlContext): Map<string, boolean> {
+  const hidden = new Map<string, boolean>();
+  for (const id of raw.keys()) {
+    ctx.budget.tick();
+    if (hidden.has(id)) continue;
+    const chain: string[] = [];
+    const visited = new Set<string>();
+    let value = false;
+    let current = raw.get(id);
+    while (current && !visited.has(current.id)) {
+      ctx.budget.tick();
+      if (hidden.has(current.id)) {
+        value = hidden.get(current.id)!;
+        break;
+      }
+      visited.add(current.id);
+      chain.push(current.id);
+      if (current.hidden !== undefined) {
+        value = current.hidden;
+        break;
+      }
+      current = current.basedOn === undefined ? undefined : raw.get(current.basedOn);
+    }
+    for (const item of chain) {
+      ctx.budget.tick();
+      hidden.set(item, value);
+    }
+  }
+  return hidden;
 }
 
 function resolveLevels(

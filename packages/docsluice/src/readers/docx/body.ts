@@ -5,6 +5,7 @@ import type { Cell } from '../../core/model.js';
 import type { XmlContext, XmlElementInfo } from '../../xml/index.js';
 import { scanXml } from '../../xml/index.js';
 import type { DocxStyle } from './styles.js';
+import { MathBuilder } from './math.js';
 
 const WORD_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const REL_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
@@ -13,6 +14,7 @@ const WP_NS = 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDr
 const A_NS = 'http://schemas.openxmlformats.org/drawingml/2006/main';
 const VML_NS = 'urn:schemas-microsoft-com:vml';
 const OFFICE_NS = 'urn:schemas-microsoft-com:office:office';
+const MATH_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/math';
 /** English Metric Units per pixel at 96 dpi. */
 const EMU_PER_PIXEL = 9525;
 const UNDERSTOOD_NAMESPACES = new Set([WORD_NS, REL_NS, MC_NS]);
@@ -52,8 +54,15 @@ export interface DocxImageRef {
   height?: number;
 }
 
+/** An embedded or linked OLE object (`o:OLEObject`) read as a child document (DOC-12). */
+export interface DocxObjectRef {
+  role: 'object';
+  /** Relationship id of the object part (`r:id`). */
+  relationshipId: string;
+}
+
 /** Something emitted right after the block that anchors it. */
-export type DocxAnchor = DocxNoteRef | DocxImageRef;
+export type DocxAnchor = DocxNoteRef | DocxImageRef | DocxObjectRef;
 
 export interface DocxNoteRef {
   role: 'footnote' | 'endnote' | 'comment';
@@ -93,7 +102,14 @@ interface ParagraphState {
 interface RunState {
   bold?: boolean;
   italic?: boolean;
+  /** Direct `w:vanish`; it overrides any style (DOC-9). */
+  hidden?: boolean;
+  /** The run's character style (`w:rStyle`) is hidden. */
+  styleHidden?: boolean;
 }
+
+/** Nested fields tracked at most; deeper `begin`/`end` pairs are only counted. */
+const MAX_FIELD_DEPTH = 64;
 
 interface CellState {
   text: string;
@@ -155,11 +171,17 @@ interface Frame {
   revision?: 'ins' | 'del';
   /** In `show` mode, whether this revision's opening marker has been written. */
   revisionMarked?: boolean;
+  /** Set on Office Math elements that opened a node in the math builder. */
+  mathNode?: boolean;
+  /** Set on Office Math property elements (`m:*Pr`), whose content is never text. */
+  mathProperties?: boolean;
+  /** Set on `m:t`. */
+  mathText?: boolean;
 }
 
 interface BodyContext extends XmlContext {
   out: DocBuilder;
-  options: Pick<ResolvedOptions, 'runs'> & Partial<Pick<ResolvedOptions, 'revisions'>>;
+  options: Pick<ResolvedOptions, 'runs'> & Partial<Pick<ResolvedOptions, 'revisions' | 'includeHidden'>>;
 }
 
 const STOP = new Error('DOCX output limit reached.');
@@ -310,6 +332,15 @@ export function scanDocxBody(
   let revisionWarned = false;
   // A paragraph whose mark is removed under the chosen mode joins the next paragraph.
   let carry: ParagraphState | undefined;
+  // Complex fields (17.16.18): `true` while a field is in its code, before `separate`.
+  const fields: boolean[] = [];
+  let fieldCodeDepth = 0;
+  let untrackedFields = 0;
+  const includeHidden = ctx.options.includeHidden === true;
+  let hiddenSkipped = false;
+  const math = new MathBuilder(ctx.budget);
+  let mathPropertiesDepth = 0;
+  let mathTextDepth = 0;
   const noteRevision = (): void => {
     if (revisionWarned) return;
     revisionWarned = true;
@@ -357,10 +388,25 @@ export function scanDocxBody(
     }
   };
 
+  /** Direct `w:vanish` wins, then the run's character style, then the paragraph style (DOC-9). */
+  const hiddenText = (paragraph: ParagraphState): boolean => {
+    const run = nearestRun(frames, ctx.budget);
+    if (run?.hidden !== undefined) return run.hidden;
+    if (run?.styleHidden) return true;
+    const style = paragraph.styleId === undefined ? undefined : styles.get(paragraph.styleId);
+    return style?.character !== true && style?.hidden === true;
+  };
+
   const append = (text: string, marker = false): void => {
     const paragraph = paragraphs.at(-1);
     if (text.length === 0 || outputStopped || !paragraph) return;
     if (!marker && !revisionVisible()) return;
+    // Field codes are never text; only the result after `separate` is (DOC-10).
+    if (!marker && fieldCodeDepth > 0) return;
+    if (!marker && !includeHidden && hiddenText(paragraph)) {
+      hiddenSkipped = true;
+      return;
+    }
     if (!marker && revisions === 'show' && (insertedDepth > 0 || deletedDepth > 0)) openRevisionMarkers();
     ctx.budget.tick();
     if (!ctx.budget.checkOutputChars(stagedOutputChars + text.length)) {
@@ -556,6 +602,50 @@ export function scanDocxBody(
             if (run && info.localName === 'b') run.bold = enabled;
             else if (run && info.localName === 'i') run.italic = enabled;
           }
+          if (
+            !skipped &&
+            isWord &&
+            (info.localName === 'vanish' || info.localName === 'rStyle') &&
+            parent?.localName === 'rPr' &&
+            frames.at(-2)?.run
+          ) {
+            const run = frames.at(-2)!.run!;
+            const value = wordAttribute(attrs, 'val', frames, namespaceScope, ctx.budget);
+            if (info.localName === 'vanish') run.hidden = boolValue(value);
+            else if (value !== undefined) run.styleHidden = styles.get(value)?.hidden === true;
+          }
+          if (!skipped && isWord && info.localName === 'fldChar' && revisionVisible()) {
+            const type = wordAttribute(attrs, 'fldCharType', frames, namespaceScope, ctx.budget);
+            if (type === 'begin') {
+              if (fields.length < MAX_FIELD_DEPTH) {
+                fields.push(true);
+                fieldCodeDepth++;
+              } else untrackedFields++;
+            } else if (type === 'separate' && untrackedFields === 0 && fields.at(-1) === true) {
+              fields[fields.length - 1] = false;
+              fieldCodeDepth--;
+            } else if (type === 'end') {
+              if (untrackedFields > 0) untrackedFields--;
+              else if (fields.pop() === true) fieldCodeDepth--;
+            }
+          }
+          if (!skipped && inBody && info.namespaceURI === OFFICE_NS && info.localName === 'OLEObject') {
+            const relationshipId = relationshipAttribute(attrs, 'id', frames, namespaceScope, ctx.budget);
+            if (relationshipId !== undefined && revisionVisible()) anchor({ role: 'object', relationshipId });
+          }
+          if (!skipped && inBody && info.namespaceURI === MATH_NS) {
+            const local = info.localName;
+            if (mathPropertiesDepth > 0 || (local.endsWith('Pr') && local !== 'Pr')) {
+              if (mathPropertiesDepth === 0) frame.mathProperties = true;
+              else math.property(local, wordlessValue(attrs, frames, namespaceScope, ctx.budget));
+              if (frame.mathProperties) mathPropertiesDepth++;
+            } else if (local === 't') {
+              frame.mathText = true;
+              mathTextDepth++;
+            } else if (local !== 'r') {
+              frame.mathNode = math.open(local);
+            }
+          }
           if (!skipped && isWord && info.localName === 'pStyle' && parent?.paragraphProperties) {
             const paragraph = paragraphs.at(-1);
             const styleId = wordAttribute(attrs, 'val', frames, namespaceScope, ctx.budget);
@@ -655,7 +745,9 @@ export function scanDocxBody(
           if (frame.textElement) activeTextDepth++;
         },
         onText(text) {
-          if (activeTextDepth > 0 && skippedDepth === 0) append(text);
+          if (skippedDepth > 0) return;
+          if (activeTextDepth > 0) append(text);
+          else if (mathTextDepth > 0 && mathPropertiesDepth === 0) math.text(text);
         },
         onClose(_name, info) {
           ctx.budget.tick();
@@ -663,6 +755,13 @@ export function scanDocxBody(
           if (!frame) return;
           if (frame.textElement) activeTextDepth--;
           if (frame.skipped) skippedDepth--;
+          if (frame.mathProperties) mathPropertiesDepth--;
+          if (frame.mathText) mathTextDepth--;
+          if (frame.mathNode) {
+            // A finished top-level `m:oMath` or `m:oMathPara` is the paragraph's text (DOC-11).
+            const equation = math.close();
+            if (equation !== undefined) append(equation);
+          }
           if (frame.revision) {
             if (frame.revisionMarked) append(frame.revision === 'ins' ? '+]' : '-]', true);
             if (frame.revision === 'ins') insertedDepth--;
@@ -674,6 +773,12 @@ export function scanDocxBody(
           if (info.namespaceURI === WORD_NS && info.localName === 'p' && frame.paragraph) {
             const paragraph = paragraphs.pop();
             if (paragraph && !frame.skipped) finishParagraph(paragraph);
+            // A field code ends within its paragraph; one still open is damaged and must not hide
+            // the rest of the document. Its later `separate` or `end`, if any, only closes a result.
+            if (fieldCodeDepth > 0) {
+              fields.fill(false);
+              fieldCodeDepth = 0;
+            }
           }
           if (frame.flattenedTable) flattenedTables--;
           if (flattenedTables === 0 && frame.inBody && info.namespaceURI === WORD_NS) {
@@ -711,6 +816,11 @@ export function scanDocxBody(
     finishParagraph({ ...last, markDeleted: false, markInserted: false });
   }
   if (!rootSeen || !validRoot || !bodySeen) warnUnreadableRoot();
+  if (hiddenSkipped)
+    ctx.warnings.add({
+      code: 'HIDDEN_CONTENT',
+      message: 'Hidden text was left out; set includeHidden to keep it.',
+    });
   if (emptyParagraphPending) events.push({ text: '', loc: location(ctx) });
   if (pendingAnchors.length > 0)
     events.push({ text: '', loc: location(ctx), anchors: pendingAnchors.splice(0) });
@@ -752,6 +862,16 @@ function builtinHeadingLevel(styleId: string | undefined): 1 | 2 | 3 | 4 | 5 | 6
     if (normalized === `heading${level}`) return level as 1 | 2 | 3 | 4 | 5 | 6;
   }
   return undefined;
+}
+
+/** The `m:val` attribute of an Office Math property, whatever its prefix. */
+function wordlessValue(
+  attrs: Map<string, string>,
+  frames: readonly Frame[],
+  current: Map<string, string>,
+  budget: XmlContext['budget'],
+): string | undefined {
+  return namespacedAttribute(attrs, 'val', MATH_NS, frames, current, budget);
 }
 
 function nearestRun(frames: readonly Frame[], budget: XmlContext['budget']): RunState | undefined {
