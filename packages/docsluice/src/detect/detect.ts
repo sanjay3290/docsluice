@@ -6,7 +6,6 @@ import { resolveLimits } from '../core/limits.js';
 import type { DetectResult, FormatId } from '../core/model.js';
 import type { ExtractOptions } from '../core/options.js';
 import { WarningSink } from '../core/warnings.js';
-import { openCfb } from '../ole/index.js';
 import type { CfbArchive } from '../ole/index.js';
 import type { ZipArchive } from '../zip/index.js';
 import { decodeText, detectEncoding } from './encoding.js';
@@ -73,6 +72,8 @@ export async function resolveFormat(
   }
 
   if (magic.kind === 'ole') {
+    // The compound-file parser serves legacy Office and Outlook files only; it loads on demand.
+    const { openCfb } = await import('../ole/index.js');
     const archive = openCfb(bytes, budget);
     const format = classifyCfb(archive.entries, budget);
     const result =

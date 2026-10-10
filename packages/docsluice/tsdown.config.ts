@@ -17,6 +17,8 @@ export default defineConfig({
     yaml: 'src/readers/yaml/index.ts',
     // Not a package subpath: the source-code language table the text reader loads lazily.
     'readers/code': 'src/readers/code/index.ts',
+    // Not a package subpath: the compound-file (OLE) parser that detection loads for legacy files.
+    ole: 'src/ole/index.ts',
     ndjson: 'src/readers/ndjson/index.ts',
     ics: 'src/readers/ics/index.ts',
     vcf: 'src/readers/vcf/index.ts',
@@ -32,7 +34,6 @@ export default defineConfig({
     odt: 'src/readers/odt/index.ts',
     ods: 'src/readers/ods/index.ts',
     odp: 'src/readers/odp/index.ts',
-    image: 'src/readers/image/index.ts',
     image: 'src/readers/image/index.ts',
     zip: 'src/readers/zip/index.ts',
     gzip: 'src/readers/gzip/index.ts',
