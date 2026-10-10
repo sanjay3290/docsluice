@@ -358,6 +358,7 @@ export class DocBuilder {
   readonly #mimeType: string;
   readonly #budget: Budget;
   readonly #options: ExtractOptions | ResolvedOptions;
+  readonly #drain: (() => Promise<void> | undefined) | undefined;
   readonly #blocks: Block[] = [];
   readonly #sections: SectionFrame[] = [];
   readonly #metadata: Metadata = {};
@@ -375,17 +376,33 @@ export class DocBuilder {
    * @param mimeType MIME type selected by the detector or reader.
    * @param budget Shared extraction budget and warning collector.
    * @param options Effective extraction options, including transform and onBlock hooks.
+   * @param drain Internal backpressure hook from `extractStream()`: a promise while the consumer
+   *   has too many blocks waiting, otherwise `undefined`.
    */
   constructor(
     format: FormatId,
     mimeType: string,
     budget: Budget,
     options: ExtractOptions | ResolvedOptions = {},
+    drain?: () => Promise<void> | undefined,
   ) {
     this.#format = format;
     this.#mimeType = mimeType;
     this.#budget = budget;
     this.#options = options;
+    this.#drain = drain;
+  }
+
+  /**
+   * A yield point for readers between batches of output (EXT-2). Under `extractStream()` it waits
+   * while the consumer has too many blocks waiting, so a slow consumer bounds buffered output; it
+   * also checks cancellation. Outside streaming it resolves at once.
+   */
+  async flush(): Promise<void> {
+    this.#budget.tick();
+    const waiting = this.#drain?.();
+    if (waiting) await waiting;
+    this.#budget.tick();
   }
 
   /** Add a heading. Returns false when output was truncated. */

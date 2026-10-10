@@ -429,8 +429,6 @@ function emitHeading(
 export const markdownReader: Reader = {
   id: 'markdown',
   mimeTypes: ['text/markdown', 'text/x-markdown'],
-  // The common reader contract is async so readers can extract nested documents.
-  // eslint-disable-next-line @typescript-eslint/require-await
   async read(ctx): Promise<void> {
     ctx.budget.tick();
     const text = decodeTextInput(ctx);
@@ -444,8 +442,11 @@ export const markdownReader: Reader = {
       depthWarned = true;
     };
     let i = 0;
+    let steps = 0;
     while (i < lines.length) {
       ctx.budget.tick();
+      // A streaming consumer can apply backpressure between blocks (EXT-2).
+      if (++steps % 256 === 0) await ctx.out.flush();
       const line = lines[i]!;
       if (line.trim().length === 0) {
         i++;

@@ -82,6 +82,8 @@ export const xlsReader: Reader = {
       if (result.badSharedString) badSharedString = true;
       emitSheetTables(ctx, result.sheet, index, loc.sheet, path);
       if (!ctx.out.closeSection()) break;
+      // Each sheet is one top-level block; a streaming consumer can apply backpressure here (EXT-2).
+      await ctx.out.flush();
     }
     if (badSharedString)
       ctx.warnings.add({

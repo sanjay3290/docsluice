@@ -5,14 +5,13 @@ import { decodeTextInput } from '../text-input.js';
 export const txtReader: Reader = {
   id: 'txt',
   mimeTypes: ['text/plain'],
-  // The common reader contract is async so readers can extract nested documents.
-  // eslint-disable-next-line @typescript-eslint/require-await
   async read(ctx: ReadContext): Promise<void> {
     ctx.budget.tick();
     const text = decodeTextInput(ctx);
     if (text === undefined) return;
     let lineStart = 0;
     let paragraph = '';
+    let emitted = 0;
     for (let index = 0; index <= text.length; index++) {
       ctx.budget.tick();
       if (index < text.length && text.charCodeAt(index) !== 0x0a && text.charCodeAt(index) !== 0x0d) continue;
@@ -28,7 +27,11 @@ export const txtReader: Reader = {
         }
       }
       if (blank) {
-        if (paragraph.length > 0 && !emitParagraph(ctx, paragraph)) return;
+        if (paragraph.length > 0) {
+          if (!emitParagraph(ctx, paragraph)) return;
+          // A streaming consumer can apply backpressure between paragraphs (EXT-2).
+          if (++emitted % 64 === 0) await ctx.out.flush();
+        }
         paragraph = '';
       } else {
         if (paragraph.length > 0) paragraph += '\n';
