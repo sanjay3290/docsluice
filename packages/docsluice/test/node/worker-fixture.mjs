@@ -1,3 +1,4 @@
+import { getHeapStatistics } from 'node:v8';
 import { parentPort, workerData } from 'node:worker_threads';
 import { readTestInput } from './worker-fixture-reader.mjs';
 
@@ -12,4 +13,4 @@ parentPort.on('message', ({ id, buffer, byteOffset, byteLength }) => {
   parentPort.postMessage({ id, ok: true, result: readTestInput(workerData.mode, bytes) });
 });
 
-parentPort.postMessage({ type: 'ready' });
+parentPort.postMessage({ type: 'ready', heapLimitMb: Math.round(getHeapStatistics().heap_size_limit / 2 ** 20) });

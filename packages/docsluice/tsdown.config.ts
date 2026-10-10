@@ -4,6 +4,8 @@ export default defineConfig({
   entry: {
     index: 'src/index.ts',
     'node/index': 'src/node/index.ts',
+    worker: 'src/node/worker/index.ts',
+    'worker-thread': 'src/node/worker/worker.ts',
     doc: 'src/readers/doc/index.ts',
     txt: 'src/readers/txt/index.ts',
     markdown: 'src/readers/markdown/index.ts',

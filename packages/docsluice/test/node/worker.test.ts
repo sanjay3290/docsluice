@@ -5,7 +5,16 @@ import { Readable } from 'node:stream';
 import { markAsUntransferable } from 'node:worker_threads';
 import { AbortError, TimeoutError } from '../../src/core/errors.js';
 import type { LimitExceededError } from '../../src/core/errors.js';
-import { createExtractorWithWorkerEntry, workerExecArgv } from '../../src/node/worker/pool.js';
+import {
+  createExtractorWithWorkerEntry,
+  WorkerIsolationError,
+  workerExecArgv,
+} from '../../src/node/worker/pool.js';
+
+/** Whether this test process carries a heap-size flag, which every worker inherits. */
+const heapFlagSet = [...process.execArgv, process.env.NODE_OPTIONS ?? ''].some((argument) =>
+  /--max[-_]old[-_]space[-_]size/.test(argument),
+);
 
 const workerUrl = new URL('./worker-fixture.mjs', import.meta.url);
 const extractors: Array<{ close(): Promise<void> }> = [];
@@ -14,7 +23,10 @@ function makeExtractor(
   workerMode: 'echo' | 'oom' | 'hang' | 'hang-on-zero',
   options: { maxOldGenerationSizeMb?: number; timeMs?: number; poolSize?: number } = {},
 ) {
-  const extractor = createExtractorWithWorkerEntry(options, workerUrl, { mode: workerMode });
+  // The heap check is exercised by the memory tests only, so a heap flag in the developer's shell does
+  // not fail unrelated tests.
+  const enforceHeapLimit = workerMode === 'oom' || options.maxOldGenerationSizeMb === 16;
+  const extractor = createExtractorWithWorkerEntry(options, workerUrl, { mode: workerMode }, undefined, enforceHeapLimit);
   extractors.push(extractor);
   return extractor;
 }
@@ -111,12 +123,28 @@ describe('worker extractor', () => {
 
   it('maps an actual worker heap exhaustion to a memory limit error and keeps the parent alive', async () => {
     const extractor = makeExtractor('oom', { maxOldGenerationSizeMb: 16, timeMs: 10_000 });
-
-    await expect(extractor.extract(new Uint8Array([1]))).rejects.toMatchObject({
-      code: 'LIMIT_EXCEEDED',
-      limit: 'memory',
-    } satisfies Partial<LimitExceededError>);
+    const result = extractor.extract(new Uint8Array([1]));
+    if (heapFlagSet) {
+      // A process-wide heap flag overrides resourceLimits: the pool refuses instead of pretending.
+      await expect(result).rejects.toBeInstanceOf(WorkerIsolationError);
+      await expect(extractor.extract(new Uint8Array([1]))).rejects.toBeInstanceOf(WorkerIsolationError);
+    } else {
+      await expect(result).rejects.toMatchObject({
+        code: 'LIMIT_EXCEEDED',
+        limit: 'memory',
+      } satisfies Partial<LimitExceededError>);
+    }
     expect(2 + 2).toBe(4);
+  });
+
+  it('refuses to run when the worker reports a heap limit far above the requested cap', async () => {
+    const extractor = makeExtractor('echo', { maxOldGenerationSizeMb: 16 });
+    const outcome = await extractor.extract(new Uint8Array([1])).then(
+      () => 'ran',
+      (error: unknown) => error,
+    );
+    if (heapFlagSet) expect(outcome).toBeInstanceOf(WorkerIsolationError);
+    else expect(outcome).toBe('ran');
   });
 
   it('terminates a hanging worker at timeMs and reports TimeoutError', async () => {
@@ -224,7 +252,8 @@ describe('worker extractor', () => {
     extractors.push(extractor);
 
     await expect(extractor.extract(new Uint8Array([1]))).rejects.toThrow('Worker failed to start.');
-    await expect(extractor.extract(new Uint8Array([1]))).rejects.toThrow('Worker extractor is closed.');
+    // Later calls repeat why the pool stopped.
+    await expect(extractor.extract(new Uint8Array([1]))).rejects.toThrow('Worker failed to start.');
   });
 
   it('times out a worker that hangs before announcing readiness', async () => {
@@ -235,6 +264,6 @@ describe('worker extractor', () => {
 
     await expect(first).rejects.toMatchObject({ code: 'TIMEOUT', timeMs: 75 });
     await expect(second).rejects.toMatchObject({ code: 'TIMEOUT', timeMs: 75 });
-    await expect(extractor.extract(new Uint8Array([3]))).rejects.toThrow('Worker extractor is closed.');
+    await expect(extractor.extract(new Uint8Array([3]))).rejects.toMatchObject({ code: 'TIMEOUT' });
   });
 });

@@ -1,5 +1,6 @@
 /// <reference types="node" />
 
+import { getHeapStatistics } from 'node:v8';
 import { parentPort } from 'node:worker_threads';
 import {
   DocsluiceError,
@@ -52,4 +53,6 @@ port.on('message', (request: RequestMessage) => {
   })();
 });
 
-port.postMessage({ type: 'ready' });
+// The pool checks the heap limit V8 actually applied: a process-wide --max-old-space-size flag
+// (command line or NODE_OPTIONS) overrides the Worker resourceLimits.
+port.postMessage({ type: 'ready', heapLimitMb: Math.round(getHeapStatistics().heap_size_limit / 2 ** 20) });

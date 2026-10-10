@@ -65,6 +65,27 @@ interface ResponseMessage {
 
 interface ReadyMessage {
   type: 'ready';
+  /** The heap limit V8 applied in the worker, when the worker reports it. */
+  heapLimitMb?: number;
+}
+
+/**
+ * V8 adds about 192 MB of young-generation and other spaces to the old-generation cap. A reported
+ * limit more than this far above the requested cap means a process-wide --max-old-space-size flag
+ * replaced it.
+ */
+const HEAP_LIMIT_SLACK_MB = 512;
+
+/** Thrown when the worker heap cap cannot be enforced, so isolation would only be pretended. */
+export class WorkerIsolationError extends Error {
+  constructor(requestedMb: number, actualMb: number) {
+    super(
+      `The worker heap limit of ${requestedMb} MB cannot be enforced: V8 applied ${actualMb} MB because a ` +
+        '--max-old-space-size flag (on the command line or in NODE_OPTIONS) overrides Worker resourceLimits. ' +
+        'Remove the flag, or raise maxOldGenerationSizeMb to match it.',
+    );
+    this.name = 'WorkerIsolationError';
+  }
 }
 
 interface WorkerData {
@@ -75,6 +96,8 @@ interface WorkerConstruction {
   workerEntry: URL;
   workerData?: WorkerData;
   startupTimeoutMs?: number;
+  /** Refuse to run when the worker's heap limit is not the requested one (always on in production). */
+  enforceHeapLimit?: boolean;
 }
 
 interface Task {
@@ -268,11 +291,13 @@ export function createExtractorWithWorkerEntry(
   workerEntry: URL,
   workerData?: WorkerData,
   startupTimeoutMs = DEFAULT_STARTUP_TIMEOUT_MS,
+  enforceHeapLimit = true,
 ): WorkerExtractor {
   return makeWorkerExtractor(options, {
     workerEntry,
     ...(workerData ? { workerData } : {}),
     startupTimeoutMs,
+    enforceHeapLimit,
   });
 }
 
@@ -291,6 +316,8 @@ function makeWorkerExtractor(
   const slots: WorkerSlot[] = [];
   let nextId = 1;
   let closed = false;
+  /** Why the pool stopped on its own; later calls reject with it. */
+  let poolFailure: Error | undefined;
   let closePromise: Promise<void> | undefined;
 
   function createSlot(): WorkerSlot {
@@ -326,6 +353,7 @@ function makeWorkerExtractor(
     closed = true;
     const failure =
       error instanceof Error ? error : new Error('Worker pool could not start a replacement worker.');
+    poolFailure = failure;
     for (const task of queue.splice(0)) settle(task, { ok: false, error: failure });
     for (const slot of [...slots]) {
       void retireSlot(slot, failure, false).catch(() => undefined);
@@ -397,6 +425,15 @@ function makeWorkerExtractor(
 
   function handleMessage(slot: WorkerSlot, message: unknown): void {
     if (isReadyMessage(message)) {
+      const actual = message.heapLimitMb;
+      if (
+        construction.enforceHeapLimit !== false &&
+        actual !== undefined &&
+        actual > settings.maxOldGenerationSizeMb + HEAP_LIMIT_SLACK_MB
+      ) {
+        failPool(new WorkerIsolationError(settings.maxOldGenerationSizeMb, actual));
+        return;
+      }
       slot.ready = true;
       if (slot.startupTimer !== undefined) clearTimeout(slot.startupTimer);
       pump();
@@ -495,7 +532,7 @@ function makeWorkerExtractor(
 
   function extract(input: unknown, extractOptions: ExtractOptions = {}): Promise<DocsluiceDocument> {
     if (closed) {
-      const error = new Error('Worker extractor is closed.');
+      const error = poolFailure ?? new Error('Worker extractor is closed.');
       disposeInput(input, error);
       return Promise.reject(error);
     }
@@ -570,7 +607,16 @@ function makeWorkerExtractor(
   return { extract, close };
 }
 
+/**
+ * The built worker thread entry next to this bundle: `worker-thread.js` for ESM, `worker-thread.cjs`
+ * for CommonJS (tsdown provides `import.meta.url` in both).
+ */
+function builtWorkerEntry(): URL {
+  const extension = import.meta.url.endsWith('.cjs') ? 'cjs' : 'js';
+  return new URL(`./worker-thread.${extension}`, import.meta.url);
+}
+
 /** Create an isolated worker-backed extractor with a bounded queue and fixed-size pool. */
 export function createExtractor(options: WorkerExtractorOptions = {}): WorkerExtractor {
-  return makeWorkerExtractor(options, { workerEntry: new URL('./worker.js', import.meta.url) });
+  return makeWorkerExtractor(options, { workerEntry: builtWorkerEntry() });
 }
