@@ -65,6 +65,9 @@
       "latex": [
         "dist/latex.d.ts"
       ],
+      "media": [
+        "dist/media.d.ts"
+      ],
       "ics": [
         "dist/ics.d.ts"
       ],
@@ -204,6 +207,10 @@
     "./latex": {
       "import": "./dist/latex.js",
       "require": "./dist/latex.cjs"
+    },
+    "./media": {
+      "import": "./dist/media.js",
+      "require": "./dist/media.cjs"
     },
     "./ics": {
       "import": "./dist/ics.js",

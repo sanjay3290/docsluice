@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: made for docsluice with ffmpeg by scripts/corpus/make-media.mjs
+Requirements: IN-4
+Notes: synthetic one-second tone (and test pattern) with title, artist, album, date and genre tags (#248).

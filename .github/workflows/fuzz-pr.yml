@@ -17,6 +17,7 @@ jobs:
           [
             zip,
             image,
+            media,
             xml,
             detect,
             detection,

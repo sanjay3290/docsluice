@@ -96,6 +96,9 @@ export function sniffMagic(input: Uint8Array): MagicSniffResult {
   if (ascii(bytes, 0, 'RIFF') && ascii(bytes, 8, 'WAVE')) return result('audio', 'audio/wav');
 
   if (length >= 8 && ascii(bytes, 4, 'ftyp')) {
+    // Apple's audio-only brands (M4A, M4B audiobooks, M4P) are MP4 files without video.
+    if (ascii(bytes, 8, 'M4A ') || ascii(bytes, 8, 'M4B ') || ascii(bytes, 8, 'M4P '))
+      return result('audio', 'audio/mp4');
     return ascii(bytes, 8, 'qt  ') ? result('video', 'video/quicktime') : result('video', 'video/mp4');
   }
   if (matches(bytes, 0, [0x1a, 0x45, 0xdf, 0xa3])) return result('video', 'video/webm', 0.9);

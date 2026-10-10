@@ -804,6 +804,96 @@
     "requirement": "SEC-12"
   },
   {
+    "file": "media/flac-block-lie.flac",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "media/flac-comment-flood.flac",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "media/id3-extended-lie.mp3",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "media/id3-frame-lie.mp3",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "media/mp4-deep-boxes.mp4",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "media/mp4-size-lie.mp4",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "media/mp4-truncated-stsd.mp4",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "media/ogg-endless-packet.ogg",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "media/ogg-segment-lie.ogg",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "media/wav-chunk-lie.wav",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
     "file": "pptx/deep-groups-1000.pptx",
     "expect": {
       "warnings": ["TRUNCATED", "DEPTH_LIMIT"]
