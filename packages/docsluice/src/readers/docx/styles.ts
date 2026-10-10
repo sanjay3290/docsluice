@@ -11,6 +11,9 @@ export interface DocxStyle {
   basedOn?: string;
   /** Heading level, when this style or an ancestor identifies one. */
   level?: 1 | 2 | 3 | 4 | 5 | 6;
+  /** List numbering from `w:numPr`, inherited through `basedOn` (DOC-3). */
+  numId?: string;
+  ilvl?: number;
 }
 
 interface MutableStyle {
@@ -19,6 +22,8 @@ interface MutableStyle {
   basedOn?: string;
   outlineLevel?: number;
   builtinLevel?: HeadingLevel;
+  numId?: string;
+  ilvl?: number;
 }
 
 interface Frame {
@@ -28,6 +33,7 @@ interface Frame {
   styleRecord?: MutableStyle;
   isStyleRoot: boolean;
   isStyleParagraphProperties: boolean;
+  isStyleNumberingProperties: boolean;
   inParagraphProperties: boolean;
 }
 
@@ -145,6 +151,12 @@ export function parseDocxStyles(input: Uint8Array | string, ctx: XmlContext): Ma
           } else if (info.localName === 'outlineLvl' && parent?.isStyleParagraphProperties) {
             const value = attribute(attrs, 'val', scopes, ctx.budget);
             if (value !== undefined) styleRecord.outlineLevel = parseSmallInteger(value, ctx.budget);
+          } else if (info.localName === 'numId' && parent?.isStyleNumberingProperties) {
+            const value = attribute(attrs, 'val', scopes, ctx.budget);
+            if (value !== undefined) styleRecord.numId = value;
+          } else if (info.localName === 'ilvl' && parent?.isStyleNumberingProperties) {
+            const value = attribute(attrs, 'val', scopes, ctx.budget);
+            if (value !== undefined) styleRecord.ilvl = parseSmallInteger(value, ctx.budget);
           }
         }
         frames.push({
@@ -154,6 +166,10 @@ export function parseDocxStyles(input: Uint8Array | string, ctx: XmlContext): Ma
           styleRecord,
           isStyleRoot: styleRoot,
           isStyleParagraphProperties: paragraphProperties,
+          isStyleNumberingProperties:
+            info.namespaceURI === WORD_NS &&
+            info.localName === 'numPr' &&
+            parent?.isStyleParagraphProperties === true,
           inParagraphProperties: paragraphProperties,
         });
       },
@@ -187,9 +203,31 @@ export function parseDocxStyles(input: Uint8Array | string, ctx: XmlContext): Ma
     if (style.name !== undefined) result.name = style.name;
     if (style.basedOn !== undefined) result.basedOn = style.basedOn;
     if (level !== undefined) result.level = level;
+    const numbering = inheritedNumbering(raw, id, ctx);
+    if (numbering.numId !== undefined) result.numId = numbering.numId;
+    if (numbering.ilvl !== undefined) result.ilvl = numbering.ilvl;
     resolved.set(id, result);
   }
   return resolved;
+}
+
+/** The nearest `numId` and `ilvl` along a style's `basedOn` chain; cycles stop at a visited style. */
+function inheritedNumbering(
+  raw: ReadonlyMap<string, MutableStyle>,
+  id: string,
+  ctx: XmlContext,
+): { numId?: string; ilvl?: number } {
+  const result: { numId?: string; ilvl?: number } = {};
+  const visited = new Set<string>();
+  let current = raw.get(id);
+  while (current && !visited.has(current.id) && (result.numId === undefined || result.ilvl === undefined)) {
+    ctx.budget.tick();
+    visited.add(current.id);
+    if (result.numId === undefined && current.numId !== undefined) result.numId = current.numId;
+    if (result.ilvl === undefined && current.ilvl !== undefined) result.ilvl = current.ilvl;
+    current = current.basedOn === undefined ? undefined : raw.get(current.basedOn);
+  }
+  return result;
 }
 
 function resolveLevels(

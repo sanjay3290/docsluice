@@ -1,14 +1,10 @@
 # Seed Bank Inventory
 
-Coastal grasses
-
-Salt meadow cordgrass
-
-Spike grass
-
-Flowering plants
-
-Sea lavender
+- Coastal grasses
+  - Salt meadow cordgrass
+  - Spike grass
+- Flowering plants
+  - Sea lavender
 
 North beds (merged heading)
 
