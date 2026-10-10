@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: made for docsluice by scripts/corpus/make-xlsb.mjs from corpus/xlsx/workbook-merged-richstrings.xlsx
+Requirements: XLS-2, XLS-5
+Notes: written from the [MS-XLSB] specification; LibreOffice 24.2.7.2 imports it with the same values and formats. Formula cells store their cached value as a constant formula.

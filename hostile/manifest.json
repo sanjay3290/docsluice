@@ -1174,5 +1174,65 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-12"
+  },
+  {
+    "file": "xlsb/record-size-lie.xlsb",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "xlsb/string-length-lie.xlsb",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "xlsb/short-cell-flood.xlsb",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "xlsb/out-of-range-cells.xlsb",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "xlsb/sst-index-lie.xlsb",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "xlsb/merge-flood.xlsb",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 3000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
   }
 ]
