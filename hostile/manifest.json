@@ -481,5 +481,26 @@
     "maxMs": 2000,
     "maxHeapMB": 128,
     "requirement": "SEC-12"
+  },
+  {
+    "file": "docx/deep-tables-1000.docx",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT",
+        "TRUNCATED"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "docx/gridspan-flood.docx",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
   }
 ]

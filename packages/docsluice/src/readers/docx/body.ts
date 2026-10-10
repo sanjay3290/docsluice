@@ -1,6 +1,7 @@
 import type { DocBuilder } from '../../core/builder.js';
 import type { ResolvedOptions } from '../../core/options.js';
 import type { ReadContext } from '../../core/reader.js';
+import type { Cell } from '../../core/model.js';
 import type { XmlContext, XmlElementInfo } from '../../xml/index.js';
 import { scanXml } from '../../xml/index.js';
 import type { DocxStyle } from './styles.js';
@@ -49,6 +50,36 @@ interface RunState {
   italic?: boolean;
 }
 
+interface CellState {
+  text: string;
+  colSpan: number;
+  vMerge?: 'restart' | 'continue';
+}
+
+interface RowState {
+  cells: CellState[];
+  header: boolean;
+}
+
+interface TableState {
+  rows: RowState[];
+  row?: RowState;
+  cell?: CellState;
+  /** Tables nested in this one, in document order, emitted right after it. */
+  nested: TableEvent[];
+}
+
+interface TableEvent {
+  table: { rows: Cell[][]; headerRows: number };
+  loc: { path?: string };
+}
+
+type BodyEvent = DocxParagraph | TableEvent;
+
+// Word tables have at most 63 grid columns. Wider spans are clamped, so a few bytes of
+// gridSpan cannot expand into millions of placeholder cells (SEC-12).
+const MAX_GRID_SPAN = 64;
+
 interface AlternateState {
   selected: boolean | undefined;
 }
@@ -67,6 +98,9 @@ interface Frame {
   inBody: boolean;
   paragraphProperties: boolean;
   numberingProperties: boolean;
+  /** Set on a kept `w:tbl`; flattened tables past `blockDepth` set `flattenedTable` instead. */
+  table?: TableState;
+  flattenedTable?: boolean;
 }
 
 interface BodyContext extends XmlContext {
@@ -210,6 +244,7 @@ export function scanDocxBody(
   styles: ReadonlyMap<string, DocxStyle>,
   relationships: DocxRelationships,
   onParagraph?: DocxParagraphHandler,
+  onTable?: () => void,
 ): void {
   const ctx = context as BodyContext;
   const frames: Frame[] = [];
@@ -223,7 +258,10 @@ export function scanDocxBody(
   let validRoot = false;
   let bodySeen = false;
   let rootWarningSent = false;
-  const events: DocxParagraph[] = [];
+  const events: BodyEvent[] = [];
+  const tables: TableState[] = [];
+  let flattenedTables = 0;
+  let depthWarned = false;
 
   const warnUnreadableRoot = (): void => {
     if (rootWarningSent) return;
@@ -244,6 +282,13 @@ export function scanDocxBody(
   };
 
   const finishParagraph = (paragraph: ParagraphState): void => {
+    const cell = tables.at(-1)?.cell;
+    if (cell) {
+      // Cell paragraphs become the cell's text, one line each (DOC-4).
+      if (paragraph.text.length > 0)
+        cell.text += cell.text.length > 0 ? `\n${paragraph.text}` : paragraph.text;
+      return;
+    }
     const baseLoc = location(ctx);
     const style = paragraph.styleId === undefined ? undefined : styles.get(paragraph.styleId);
     // Outline levels 0-5 are headings 1-6; any other direct level (9 is body text) is not a heading.
@@ -401,6 +446,43 @@ export function scanDocxBody(
               }
             }
           }
+          if (!skipped && isWord && info.localName === 'tbl') {
+            if (tables.length + flattenedTables >= ctx.budget.limits.blockDepth) {
+              frame.flattenedTable = true;
+              flattenedTables++;
+              if (!depthWarned) {
+                depthWarned = true;
+                ctx.warnings.add({
+                  code: 'DEPTH_LIMIT',
+                  message: `Word tables were flattened at the configured block depth of ${ctx.budget.limits.blockDepth}.`,
+                });
+              }
+            } else {
+              frame.table = { rows: [], nested: [] };
+              tables.push(frame.table);
+            }
+          }
+          const table = flattenedTables === 0 ? tables.at(-1) : undefined;
+          if (!skipped && isWord && table) {
+            if (info.localName === 'tr') {
+              table.row = { cells: [], header: false };
+              table.rows.push(table.row);
+            } else if (info.localName === 'tblHeader' && parent?.localName === 'trPr' && table.row) {
+              table.row.header = boolValue(wordAttribute(attrs, 'val', frames, namespaceScope, ctx.budget));
+            } else if (info.localName === 'tc' && table.row) {
+              table.cell = { text: '', colSpan: 1 };
+              table.row.cells.push(table.cell);
+            } else if (info.localName === 'gridSpan' && parent?.localName === 'tcPr' && table.cell) {
+              const span = parseSpan(
+                wordAttribute(attrs, 'val', frames, namespaceScope, ctx.budget),
+                ctx.budget,
+              );
+              if (span !== undefined) table.cell.colSpan = Math.min(Math.max(span, 1), MAX_GRID_SPAN);
+            } else if (info.localName === 'vMerge' && parent?.localName === 'tcPr' && table.cell) {
+              const value = wordAttribute(attrs, 'val', frames, namespaceScope, ctx.budget);
+              table.cell.vMerge = value === 'restart' ? 'restart' : 'continue';
+            }
+          }
           if (!skipped && isWord && info.localName === 'tab') append('\t');
           if (!skipped && isWord && info.localName === 'br') append('\n');
           frames.push(frame);
@@ -419,6 +501,26 @@ export function scanDocxBody(
             const paragraph = paragraphs.pop();
             if (paragraph && !frame.skipped) finishParagraph(paragraph);
           }
+          if (frame.flattenedTable) flattenedTables--;
+          if (flattenedTables === 0 && frame.inBody && info.namespaceURI === WORD_NS) {
+            const table = tables.at(-1);
+            if (table && info.localName === 'tc') table.cell = undefined;
+            else if (table && info.localName === 'tr') table.row = undefined;
+          }
+          if (frame.table) {
+            tables.pop();
+            const event: TableEvent = { table: layoutTable(frame.table, ctx.budget), loc: location(ctx) };
+            const parent = tables.at(-1);
+            if (parent) {
+              const flattened = flattenTable(event.table.rows, ctx.budget);
+              if (parent.cell && flattened.length > 0) {
+                parent.cell.text += parent.cell.text.length > 0 ? `\n${flattened}` : flattened;
+              }
+              parent.nested.push(event, ...frame.table.nested);
+            } else {
+              events.push(event, ...frame.table.nested);
+            }
+          }
         },
       },
       ctx,
@@ -431,8 +533,15 @@ export function scanDocxBody(
   if (emptyParagraphPending) events.push({ text: '', loc: location(ctx) });
   for (let index = 0; index < events.length; index++) {
     ctx.budget.tick();
-    const event = events[index]!;
+    const next = events[index]!;
     events[index] = { text: '', loc: {} };
+    if ('table' in next) {
+      onTable?.();
+      if (next.table.rows.length > 0 && !ctx.out.table(next.table.rows, next.table.headerRows, next.loc))
+        break;
+      continue;
+    }
+    const event = next;
     if (onParagraph?.(event) === true || event.text.length === 0) continue;
     const level = event.level;
     const emitted =
@@ -479,4 +588,91 @@ function relationshipAttribute(
     if (lookupNamespace(prefix, frames, current, budget) === REL_NS) return value;
   }
   return undefined;
+}
+
+function parseSpan(value: string | undefined, budget: XmlContext['budget']): number | undefined {
+  if (value === undefined || value.length === 0 || value.length > 6) return undefined;
+  let result = 0;
+  for (let index = 0; index < value.length; index++) {
+    budget.tick();
+    const code = value.charCodeAt(index);
+    if (code < 48 || code > 57) return undefined;
+    result = result * 10 + code - 48;
+  }
+  return result;
+}
+
+/**
+ * Lay a Word table out on the model's grid: `rows[r][c]` is grid column `c`. Columns covered by a
+ * `gridSpan` or a `vMerge` continuation hold empty cells, and a merge's first cell gets the span.
+ */
+function layoutTable(
+  table: TableState,
+  budget: XmlContext['budget'],
+): { rows: Cell[][]; headerRows: number } {
+  const rows: Cell[][] = [];
+  const openMerges = new Map<number, Cell>();
+  let headerRows = 0;
+  let headerRun = true;
+  for (const row of table.rows) {
+    budget.tick();
+    const cells: Cell[] = [];
+    let column = 0;
+    let stopped = false;
+    for (const source of row.cells) {
+      budget.tick();
+      const span = source.colSpan;
+      if (source.vMerge === 'continue' && openMerges.has(column)) {
+        const top = openMerges.get(column)!;
+        top.rowSpan = (top.rowSpan ?? 1) + 1;
+      } else if (source.vMerge === 'restart') {
+        openMerges.set(column, { text: '' });
+      } else {
+        for (let covered = column; covered < column + span; covered++) {
+          budget.tick();
+          openMerges.delete(covered);
+        }
+      }
+      for (let offset = 0; offset < span; offset++) {
+        budget.tick();
+        if (!budget.addCells(1)) {
+          stopped = true;
+          break;
+        }
+        const isStart = offset === 0 && !(source.vMerge === 'continue' && openMerges.has(column));
+        if (isStart) {
+          const cell: Cell = source.vMerge === 'restart' ? openMerges.get(column)! : { text: '' };
+          cell.text = source.text;
+          if (span > 1) cell.colSpan = span;
+          cells.push(cell);
+        } else {
+          cells.push({ text: '' });
+        }
+      }
+      column += span;
+      if (stopped) break;
+    }
+    if (cells.length > 0) {
+      rows.push(cells);
+      if (headerRun && row.header) headerRows++;
+      else headerRun = false;
+    }
+    if (stopped) break;
+  }
+  return { rows, headerRows };
+}
+
+/** A nested table's text for its parent cell: tabs between cells, line breaks between rows. */
+function flattenTable(rows: readonly Cell[][], budget: XmlContext['budget']): string {
+  const lines: string[] = [];
+  for (const row of rows) {
+    budget.tick();
+    const parts: string[] = [];
+    for (const cell of row) {
+      budget.tick();
+      if (cell.text.length > 0) parts.push(cell.text);
+    }
+    if (parts.length > 0) lines.push(parts.join('\t'));
+  }
+  return lines.join('\n');
 }
