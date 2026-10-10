@@ -21,6 +21,8 @@ The first non-empty body wins:
 2. `PR_HTML`: decoded in `PR_INTERNET_CPID` and passed through the safe HTML reader. `cid:` image references point at the matching attachment child (`PR_ATTACH_CONTENT_ID`).
 3. `PR_RTF_COMPRESSED`: decompressed ([MS-OXRTFCP] LZFu, or the uncompressed `MELA` form). RTF that encapsulates HTML (`\fromhtml1`, [MS-OXRTFEX]) becomes HTML; other RTF goes through the [RTF reader](rtf.md).
 
+With `quotedReplies: 'drop'`, plain and HTML bodies (including HTML encapsulated in RTF) lose their quoted reply history by the rules in [eml.md](eml.md#quoted-reply-history-eml-4). Plain RTF bodies are read whole.
+
 A compressed RTF body that fails its CRC, is cut short or holds less than its declared size keeps the text read so far, with an `UNREADABLE_PART` warning.
 
 ## Attachments

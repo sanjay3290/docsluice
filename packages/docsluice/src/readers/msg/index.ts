@@ -6,6 +6,7 @@ import { openCfb } from '../../ole/index.js';
 import type { CfbArchive } from '../../ole/index.js';
 import { writeCfb } from '../../ole/write.js';
 import type { CfbWriteEntry } from '../../ole/write.js';
+import { dropQuotedText, quotedHtml } from '../eml/replies.js';
 import { emitPlain, safeAttachmentName } from '../eml/shared.js';
 import { codePageName } from '../rtf/common.js';
 import { deencapsulateRtfHtml, rtfReader } from '../rtf/index.js';
@@ -335,9 +336,11 @@ async function readBody(
   store: MessageStore,
   cidReferences: Map<string, string>,
 ): Promise<void> {
+  const drop = ctx.options.quotedReplies === 'drop';
   const text = store.string('', PR_BODY);
   if (text !== undefined && text.trim().length > 0) {
-    emitPlain(ctx, text.replaceAll('\r\n', '\n'));
+    const body = text.replaceAll('\r\n', '\n');
+    emitPlain(ctx, drop ? dropQuotedText(body, ctx.budget) : body);
     return;
   }
   const htmlBytes = store.stream(streamPath('', PR_HTML, TYPE_BINARY));
@@ -346,7 +349,7 @@ async function readBody(
       ? store.decode(htmlBytes, store.long('', PR_INTERNET_CPID, ROOT_HEADER) ?? store.codePage)
       : store.string('', PR_HTML);
   if (html !== undefined && html.trim().length > 0) {
-    emitHtml(ctx, html, cidReferences);
+    emitHtml(ctx, html, cidReferences, drop ? quotedHtml : undefined);
     return;
   }
   const compressed = store.stream(streamPath('', PR_RTF_COMPRESSED, TYPE_BINARY));
@@ -363,7 +366,7 @@ async function readBody(
   if (!rtf || rtf.bytes.length === 0) return;
   const encapsulated = deencapsulateRtfHtml(rtf.bytes, ctx.budget);
   if (encapsulated !== undefined) {
-    emitHtml(ctx, encapsulated, cidReferences);
+    emitHtml(ctx, encapsulated, cidReferences, drop ? quotedHtml : undefined);
     return;
   }
   await rtfReader.read({ ...ctx, bytes: rtf.bytes });

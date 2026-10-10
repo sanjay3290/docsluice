@@ -2,6 +2,7 @@ import type { Cell } from '../../core/model.js';
 import type { ReadContext, Reader } from '../../core/reader.js';
 import { decodeMimeText, parseMime, type MimePart } from '../../mime/index.js';
 import { emitHtml } from '../../html/index.js';
+import { dropQuotedText, quotedHtml } from './replies.js';
 import { emitPlain, safeAttachmentName } from './shared.js';
 
 function cleanHeader(value: string | undefined): string | undefined {
@@ -129,12 +130,13 @@ function allParts(parts: MimePart[], budget: ReadContext['budget']): MimePart[] 
 }
 
 function emitParts(ctx: ReadContext, parts: MimePart[], cidReferences: ReadonlyMap<string, string>): void {
+  const drop = ctx.options.quotedReplies === 'drop';
   for (const part of parts) {
     ctx.budget.tick();
     if (part.contentType.value === 'text/html') {
       // The parser charges raw HTML bytes to totalUncompressedBytes; only emitted text uses outputChars.
       const html = decodeMimeText(part, ctx.budget, part.bytes?.length ?? 0);
-      emitHtml(ctx, html, cidReferences);
+      emitHtml(ctx, html, cidReferences, drop ? quotedHtml : undefined);
     } else {
       const remaining = Math.max(0, ctx.budget.limits.outputChars - ctx.budget.outputChars);
       let text = decodeMimeText(part, ctx.budget, remaining + 1);
@@ -142,7 +144,7 @@ function emitParts(ctx: ReadContext, parts: MimePart[], cidReferences: ReadonlyM
         ctx.budget.checkOutputChars(remaining + 1);
         text = text.slice(0, remaining);
       }
-      emitPlain(ctx, text);
+      emitPlain(ctx, drop ? dropQuotedText(text, ctx.budget) : text);
     }
   }
 }

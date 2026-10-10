@@ -55,6 +55,13 @@ export interface ExtractOptions {
    * Default false: a photo's location is personal data. `metadata: false` drops all EXIF regardless.
    */
   imageGps?: boolean;
+  /**
+   * Email bodies (EML, MSG): `'drop'` removes quoted reply history (EML-4): everything from the
+   * first reply header ("On …, X wrote:", "-----Original Message-----", an Outlook "From:/Sent:"
+   * block) on, lines quoted with `>`, and HTML quote blocks (Gmail, Apple Mail, Outlook, Yahoo,
+   * Thunderbird). Default `'keep'`. Attachments, forwarded messages and other formats are not changed.
+   */
+  quotedReplies?: 'keep' | 'drop';
   /** Password for encrypted files (PDF-5). */
   password?: string;
 
