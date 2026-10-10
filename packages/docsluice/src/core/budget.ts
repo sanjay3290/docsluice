@@ -23,6 +23,10 @@ interface SharedState {
   truncated: boolean;
   startedAt: number;
   ticks: number;
+  /** Set by the signal's `abort` event, so `tick()` reads a field rather than the `aborted` getter. */
+  aborted: boolean;
+  /** A signal-like object without `addEventListener` is polled instead. */
+  pollSignal: boolean;
 }
 
 const CLOCK_INTERVAL = 1024;
@@ -52,7 +56,16 @@ export class Budget {
       truncated: false,
       startedAt: performance.now(),
       ticks: 0,
+      aborted: options.signal?.aborted === true,
+      pollSignal: false,
     };
+    const signal = options.signal;
+    if (signal && !this.#state.aborted) {
+      if (typeof signal.addEventListener === 'function') {
+        const state = this.#state;
+        signal.addEventListener('abort', () => (state.aborted = true), { once: true });
+      } else this.#state.pollSignal = true;
+    }
   }
 
   get depth(): number {
@@ -159,7 +172,8 @@ export class Budget {
   /** Abort is checked on every call; elapsed time on the first and each 1024th call after it. */
   tick(): void {
     const state = this.#state;
-    if (state.signal?.aborted) throw new AbortError({ cause: state.signal.reason });
+    if (state.aborted || (state.pollSignal && state.signal?.aborted === true))
+      throw new AbortError({ cause: state.signal?.reason });
     if (state.ticks++ % CLOCK_INTERVAL === 0 && performance.now() - state.startedAt > state.limits.timeMs) {
       throw new TimeoutError(state.limits.timeMs);
     }

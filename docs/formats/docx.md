@@ -8,7 +8,7 @@ XML depth and staged output are governed by the shared `Budget`. A caller's abor
 
 `extract()` loads this reader lazily for `docx` input. It is also available as the `docsluice/docx` subpath (`docxReader`). Package parts, relationships, document properties and feature flags (macros, external links, embedded files) come from the shared OOXML helpers (see [ooxml.md](ooxml.md)).
 
-Performance (PERF-1): a 5.5 MB DOCX with about 40,000 paragraphs extracts in 0.75–0.94 s on a development machine. #182 tracks more headroom.
+Performance (PERF-1): a 5.5 MB DOCX with about 40,000 paragraphs extracts in about 0.35–0.4 s on a development machine (0.75–0.94 s before #182); the test bound is 1 s.
 
 Hostile samples in `hostile/docx/`: 10,000 nested content controls (stopped by the XML depth budget with `TRUNCATED`), a 40 MB `document.xml` in a small archive (`LIMIT_EXCEEDED` from the compression-ratio check), prototype-named style ids (inert), images with prototype-named alt text, nonsense extents and relationship ids plus nested revisions (inert, `HIDDEN_CONTENT`), Office Math nested 120 levels deep beside 8,000 fractions (`math-deep-and-wide.docx`), 10,000 unterminated field begins, 10,000 stray field ends and a 5,000-link cyclic style chain (`field-and-style-floods.docx`, text after each flood survives), and objects embedding each other past `childDepth`, pointing at the main part, with prototype-named and missing ids and an external link (`object-oddities.docx`, `DEPTH_LIMIT`).
 

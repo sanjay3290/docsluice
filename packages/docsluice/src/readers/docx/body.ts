@@ -213,6 +213,8 @@ interface BodyContext extends XmlContext {
 }
 
 const STOP = new Error('DOCX output limit reached.');
+/** The scope of an element that declares no namespace. Never written to. */
+const NO_NAMESPACES: Map<string, string> = new Map();
 
 function lookupNamespace(
   prefix: string,
@@ -523,11 +525,13 @@ export function scanDocxBody(
             validRoot = info.namespaceURI === WORD_NS && info.localName === 'document';
             if (!validRoot) warnUnreadableRoot();
           }
-          const namespaceScope = new Map<string, string>();
+          // Most elements declare no namespace; they share one empty scope instead of a new Map (#182).
+          let namespaceScope = NO_NAMESPACES;
           for (const [qualifiedName, value] of attrs) {
             ctx.budget.tick();
-            if (qualifiedName === 'xmlns') namespaceScope.set('', value);
-            else if (qualifiedName.startsWith('xmlns:')) namespaceScope.set(qualifiedName.slice(6), value);
+            if (qualifiedName !== 'xmlns' && !qualifiedName.startsWith('xmlns:')) continue;
+            if (namespaceScope === NO_NAMESPACES) namespaceScope = new Map<string, string>();
+            namespaceScope.set(qualifiedName === 'xmlns' ? '' : qualifiedName.slice(6), value);
           }
           const parent = frames.at(-1);
           const skippedByParent = parent?.skipped ?? false;
