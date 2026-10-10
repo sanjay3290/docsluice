@@ -1,3 +1,7 @@
+// Load the PDF engine before the fuzz runner snapshots built-in prototypes: pdf.js installs its
+// polyfills (DOMMatrix, Map.prototype.getOrInsertComputed, Uint8Array.prototype.toHex,
+// Math.sumPrecise) once on load, which is not something a fuzz input causes.
+import 'unpdf/pdfjs';
 import { DocsluiceError } from '../src/core/errors.js';
 import { extract } from '../src/core/extract.js';
 

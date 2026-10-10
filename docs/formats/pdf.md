@@ -8,6 +8,7 @@ The PDF reader turns each page into a `section` with `role: 'page'`, `loc.page` 
 - PDF JavaScript (document-level, open actions, page and annotation actions) is never run; its presence sets `features.hasJavaScript`.
 - Launch, remote (`GoToR`) and non-web URI actions are never followed. They set `features.hasExternalLinks` and never appear as link targets in the output.
 - Embedded files set `features.hasEmbeddedFiles` (they are not extracted yet).
+- Loading the engine (once, on the first PDF) changes the global environment the way pdf.js does: it defines `globalThis.DOMMatrix` when missing (a minimal polyfill), `globalThis.pdfjsLib`, `globalThis.pdfjsWorker` and `globalThis._pdfjsTestingUtils`, and adds polyfills for `Map.prototype.getOrInsertComputed`, `Uint8Array.prototype.toHex` and `Math.sumPrecise` where the runtime lacks them. `Object.prototype` and `Array.prototype` are not changed, and nothing changes per document.
 - Every page counts toward the `pdfPages` limit (default 2,000); the reader stops there with `TRUNCATED`. It ticks the budget per page and per text item, and the output goes through the usual output-character and depth limits.
 
 ## Pages and text (PDF-1)
@@ -37,3 +38,7 @@ The PDF subpath is the one large reader: about 480 KB gzipped with pdf.js, budge
 Performance: a generated 100-page text PDF (40 lines per page) extracts in about 0.3–0.5 s locally (PERF-1 target: 3 s); the test bound is 6 s.
 
 Hostile samples in `hostile/pdf/`: a JavaScript open action plus document JavaScript (`hasJavaScript`, nothing runs), launch and remote `GoToR` links (`hasExternalLinks`, never followed), a trailer whose `/Prev` points at itself, a 100,000-page tree built from shared nodes (stops at `pdfPages` with `TRUNCATED`), and a page tree nested 2,000 deep. None makes a network call.
+
+## Known engine issue
+
+On some malformed PDFs, pdf.js leaves a rejected internal promise unobserved while the document opens: it prefetches page-tree objects without a rejection handler. In browsers this is only logged; in Node it is an `unhandledRejection`, which ends the process under the default settings. Until it is fixed (#206), Node services that read untrusted PDFs should isolate extraction (for example in a worker, #62) or handle `unhandledRejection`.

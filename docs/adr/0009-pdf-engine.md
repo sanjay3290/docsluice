@@ -66,3 +66,5 @@ All four checks pass for `unpdf`: (1) it runs in all the CI runtimes tested (Nod
 - The PDF reader is the one large subpath. It is excluded from the 40 KB reader budget and gets 500 KB gzipped.
 - The dependency is added in the PDF reader issue, pinned exactly to `1.8.1`, not in this spike.
 - Updating `unpdf` (and so pdf.js) re-runs the checks above in the PDF reader's runtime tests.
+- Found with the PDF reader (#45): loading the engine changes globals once — it sets `globalThis.DOMMatrix` (minimal polyfill, when missing), `pdfjsLib`, `pdfjsWorker` and `_pdfjsTestingUtils`, and polyfills `Map.prototype.getOrInsertComputed`, `Uint8Array.prototype.toHex` and `Math.sumPrecise` where missing. `Object.prototype` and `Array.prototype` are untouched. This is documented in `docs/formats/pdf.md`; the PDF fuzz target loads the engine before the runner's prototype baseline.
+- Found by the PDF fuzz target (#45): on some malformed page trees pdf.js (both builds) leaves an internal prefetch promise rejected and unobserved during `getDocument()`; in Node this is an `unhandledRejection`. Tracked in #206.
