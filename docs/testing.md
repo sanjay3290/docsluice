@@ -55,7 +55,7 @@ hostile/
 { "file": "zip/bomb-42k.zip", "expect": { "error": "LIMIT_EXCEEDED" }, "maxMs": 2000, "maxHeapMB": 256, "requirement": "SEC-1" }
 ```
 
-`expect` is either `{ "error": "<code>" }` or `{ "warnings": ["<code>", ...] }`. An optional `"format"` forces that reader, for attack files that detection would otherwise route to a different format. The runner (`test/hostile.test.ts`) also checks: finished within `maxMs`, no global prototype changed (`Object.prototype` has no new keys), no network call, no unhandled rejection.
+`expect` is either `{ "error": "<code>" }` or `{ "warnings": ["<code>", ...] }`. An optional `"format"` forces that reader, for attack files that detection would otherwise route to a different format. The runner (`packages/docsluice/test/hostile.test.ts`) also checks: finished within `maxMs`, no global prototype changed (`Object.prototype` and `Array.prototype` have no new keys), no network call (`fetch` is stubbed to throw), no unhandled rejection (Vitest fails the run on one), and every file in `hostile/` has exactly one entry. `maxHeapMB` is recorded for an isolated runner; in-process Vitest cannot measure heap per file.
 
 Hostile files are made by scripts in `scripts/hostile/` where possible, so the repo holds the recipe, not only the bytes.
 

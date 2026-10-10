@@ -14,3 +14,5 @@ await writeFile(new URL('unclosed-inline-200k.md', markdown), `${'[`<!['.repeat(
 const txt = new URL('../../hostile/txt/', import.meta.url);
 await mkdir(txt, { recursive: true });
 await writeFile(new URL('blank-lines-200k.txt', txt), `${' \r\n  \n'.repeat(50_000)}end\n`);
+await writeFile(new URL('regex-near-miss.txt', txt), `${'a'.repeat(20_000)}!`);
+await writeFile(new URL('invalid-utf8.txt', txt), new Uint8Array([0x66, 0x80, 0xc0, 0xaf, 0x67]));
