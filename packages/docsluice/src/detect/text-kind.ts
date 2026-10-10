@@ -35,6 +35,7 @@ export function detectTextKindCandidates(text: string): readonly FormatId[] {
   if (WEBVTT.test(sample)) return ['vtt'];
   if (SUBRIP.test(sample.slice(start, start + 64))) return ['srt'];
   if (isNdjson(sample)) return ['ndjson'];
+  if (isLatex(sample, start)) return ['latex'];
   if (isMailbox(sample)) return ['mbox'];
   if (isEmailHeaderBlock(sample)) return ['eml'];
   if (startsAsciiInsensitive(sample, start, '<!doctype html')) return ['html'];
@@ -80,6 +81,24 @@ function isEmailHeaderBlock(text: string): boolean {
     at = end + 1;
   }
   return messageHeaders >= 2;
+}
+
+/**
+ * A LaTeX source: `\\documentclass` (or LaTeX 2.09's `\\documentstyle`) first, after any `%` comment
+ * lines, or a `\\begin{document}` in the sample (#247).
+ */
+function isLatex(text: string, start: number): boolean {
+  let at = start;
+  while (text.charCodeAt(at) === 0x25) {
+    const end = text.indexOf('\n', at);
+    if (end < 0) return false;
+    at = skipWhitespace(text, end + 1);
+  }
+  return (
+    text.startsWith('\\documentclass', at) ||
+    text.startsWith('\\documentstyle', at) ||
+    text.includes('\\begin{document}')
+  );
 }
 
 /** A Unix mailbox: a `From ` envelope line at the very start, then a message header block (RFC 4155). */

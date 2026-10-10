@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice
+Requirements: IN-6
+Notes: synthetic article: preamble title and authors, sections, lists, a tabular, math, verbatim, comments and escapes (ADR 0016, #247).

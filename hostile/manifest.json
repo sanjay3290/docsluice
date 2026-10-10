@@ -764,6 +764,46 @@
     "requirement": "SEC-9"
   },
   {
+    "file": "latex/deep-braces.tex",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "latex/deep-lists.tex",
+    "expect": {
+      "warnings": [
+        "DEPTH_LIMIT"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "latex/dollar-flood.tex",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-7"
+  },
+  {
+    "file": "latex/unterminated-verbatim.tex",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
     "file": "pptx/deep-groups-1000.pptx",
     "expect": {
       "warnings": ["TRUNCATED", "DEPTH_LIMIT"]

@@ -28,6 +28,7 @@ jobs:
             csv,
             json,
             text-families,
+            latex,
             xml-reader,
             html,
             doc,

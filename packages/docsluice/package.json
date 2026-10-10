@@ -62,6 +62,9 @@
       "ndjson": [
         "dist/ndjson.d.ts"
       ],
+      "latex": [
+        "dist/latex.d.ts"
+      ],
       "ics": [
         "dist/ics.d.ts"
       ],
@@ -197,6 +200,10 @@
     "./ndjson": {
       "import": "./dist/ndjson.js",
       "require": "./dist/ndjson.cjs"
+    },
+    "./latex": {
+      "import": "./dist/latex.js",
+      "require": "./dist/latex.cjs"
     },
     "./ics": {
       "import": "./dist/ics.js",
