@@ -35,6 +35,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | tsv | `docsluice/tsv` | 1 | 1 | [tsv.md](tsv.md) |
 | txt | `docsluice/txt` | 4 | 4 | [txt.md](txt.md) |
 | vcf | `docsluice/vcf` | 1 | 1 | [vcf.md](vcf.md) |
+| vsdx | `docsluice/vsdx` | 6 | 6 | [vsdx.md](vsdx.md) |
 | vtt | `docsluice/vtt` | 1 | 1 | [vtt.md](vtt.md) |
 | xls | `docsluice/xls` | 4 | 4 | [xls.md](xls.md) |
 | xlsb | `docsluice/xlsb` | 4 | 4 | [xlsb.md](xlsb.md) |
@@ -69,7 +70,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | IN-2 | Accept a Node `Readable` stream and a file path, only from the Node entry point (`docsluice/node`), so the core stays runtime-neutral. | Not covered | — |
 | IN-3 | Take optional hints: `filename`, `mimeType`, `format` (forces a reader and skips sniffing). | Not covered | — |
 | IN-4 | Detect format from magic bytes: PDF, zip, OLE compound file (old Office and Outlook `.msg`), RTF, gzip, PNG/JPEG/GIF/TIFF/WebP, and others. | `doc/doc-legacy.doc`<br>`doc/doc-legacy.docx`<br>`gzip/multi-member.txt.gz`<br>`gzip/optional-header.gz`<br>`gzip/scores.csv.gz`<br>`msg/embedded-message.msg`<br>`msg/html-body.msg`<br>`msg/plain-attachments.msg`<br>`msg/rtf-ansi-1251.msg`<br>`msg/rtf-fromhtml.msg`<br>`ole/libreoffice.doc`<br>`ole/libreoffice.ppt (no golden)`<br>`ole/libreoffice.xls`<br>`ole/test_outlook_msg.msg`<br>`rtf/bin-overrun.rtf`<br>`rtf/japanese-codepage.rtf`<br>`rtf/table-and-list.rtf`<br>`rtf/wordpad-unicode.rtf` | 1 |
-| IN-5 | Look inside zip containers to tell DOCX, XLSX, PPTX, ODT, ODS, ODP, EPUB and plain zip apart (via `[Content_Types].xml` and the ODF/EPUB `mimetype` entry). | `epub/tiny-epub2.epub`<br>`epub/tiny-epub3.epub`<br>`zip/hello.odt`<br>`zip/zip-cli.zip` | 1 |
+| IN-5 | Look inside zip containers to tell DOCX, XLSX, PPTX, ODT, ODS, ODP, EPUB and plain zip apart (via `[Content_Types].xml` and the ODF/EPUB `mimetype` entry). | `epub/tiny-epub2.epub`<br>`epub/tiny-epub3.epub`<br>`vsdx/bounded-malformed.vsdx`<br>`vsdx/duplicate-id.vsdx`<br>`vsdx/missing-relationship.vsdx`<br>`vsdx/tiny-flow.vsdx`<br>`vsdx/traversal-part.vsdx`<br>`vsdx/xml-hostile-candidate.vsdx`<br>`zip/hello.odt`<br>`zip/zip-cli.zip` | 1 |
 | IN-6 | Tell text formats apart by content: JSON, XML, HTML, CSV/TSV, Markdown, plain text. | `ics/field-season.ics`<br>`json/dangerous-keys.json`<br>`json/mixed-leaves.json`<br>`markdown/constructs.md`<br>`ndjson/observations.ndjson`<br>`srt/survey-briefing.srt`<br>`txt/paragraphs.txt`<br>`txt/tide_table.py`<br>`txt/utf16le-bom.txt`<br>`txt/windows-1252.txt`<br>`vcf/survey-team.vcf`<br>`vtt/survey-briefing.vtt`<br>`yaml/survey-config.yaml` | — |
 | IN-7 | Detect text encoding: byte-order mark (BOM), UTF-8, UTF-16 LE/BE, and a fallback to Windows-1252 when bytes are not valid UTF-8. Report the encoding used. | `html/windows-1252-meta.html`<br>`txt/paragraphs.txt`<br>`txt/utf16le-bom.txt`<br>`txt/windows-1252.txt` | 1 |
 | IN-8 | When the name or MIME type disagrees with the content, trust the content and add a `FORMAT_MISMATCH` warning. (A `.pdf` that is really an `.exe` must not be read as a PDF.) | Not covered | — |

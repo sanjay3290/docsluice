@@ -29,6 +29,7 @@ export type FormatId =
   | 'xlsb'
   | 'pptx'
   | 'pptm'
+  | 'vsdx'
   | 'odt'
   | 'ods'
   | 'odp'

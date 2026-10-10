@@ -8,6 +8,7 @@ export default defineConfig({
     'worker-thread': 'src/node/worker/worker.ts',
     'node/cli': 'src/node/cli/index.ts',
     doc: 'src/readers/doc/index.ts',
+    vsdx: 'src/readers/vsdx/index.ts',
     txt: 'src/readers/txt/index.ts',
     markdown: 'src/readers/markdown/index.ts',
     csv: 'src/readers/csv/index.ts',

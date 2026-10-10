@@ -19,5 +19,6 @@ To change a decision, write a new ADR that supersedes the old one. Do not edit a
 | [0011](0011-dependency-policy.md) | Runtime dependency allow-list | Accepted |
 | [0012](0012-fuzz-runner.md) | Fuzzing: Jazzer.js as a dev dependency, one process per target | Accepted |
 | [0013](0013-documentation-site.md) | Documentation site: a small markdown-it generator and TypeDoc, not VitePress or Starlight | Accepted |
+| [0016](0016-p2-formats.md) | P2 formats: VSDX in core; LaTeX and media metadata later; iWork only as a plugin | Accepted |
 
 Template: copy [0000-template.md](0000-template.md).

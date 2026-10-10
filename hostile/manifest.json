@@ -567,6 +567,24 @@
     "requirement": "XLS-3"
   },
   {
+    "file": "vsdx/nested-shapes-1000.vsdx",
+    "expect": {
+      "warnings": ["TRUNCATED"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "vsdx/duplicate-ids-20000.vsdx",
+    "expect": {
+      "warnings": ["UNREADABLE_PART"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
     "file": "pptx/deep-groups-1000.pptx",
     "expect": {
       "warnings": ["TRUNCATED", "DEPTH_LIMIT"]

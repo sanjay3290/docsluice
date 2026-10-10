@@ -33,6 +33,7 @@ jobs:
             doc,
             ooxml,
             docx,
+            vsdx,
             xlsx,
             xlsx-numfmt,
             pptx,

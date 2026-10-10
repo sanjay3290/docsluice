@@ -118,6 +118,7 @@ function addBuiltInReaders(registry: ReaderRegistry): void {
   // Each format module loads only when that format is read.
   const builtIns: Array<[FormatId, () => Promise<Reader>]> = [
     ['doc', () => import('../readers/doc/index.js').then((module) => module.docReader)],
+    ['vsdx', () => import('../readers/vsdx/index.js').then((module) => module.vsdxReader)],
     ['txt', () => import('../readers/txt/index.js').then((module) => module.txtReader)],
     ['markdown', () => import('../readers/markdown/index.js').then((module) => module.markdownReader)],
     ['csv', () => import('../readers/csv/index.js').then((module) => module.csvReader)],
