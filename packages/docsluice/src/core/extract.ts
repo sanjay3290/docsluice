@@ -19,6 +19,7 @@ import { WarningSink } from './warnings.js';
 import { resolveFormat } from '../detect/detect.js';
 import { assignOffsets, createOffsetTracker } from '../render/text.js';
 
+/** Formats that give an empty document when no reader is registered for them, instead of an error. */
 const EMPTY_FORMATS = new Set(['png', 'jpeg', 'gif', 'tiff', 'webp', 'bmp', 'ico', 'audio', 'video']);
 const MAX_TIMER_DELAY = 2_147_483_647;
 
@@ -338,9 +339,10 @@ async function runExtraction(
         },
       };
 
-      if (!EMPTY_FORMATS.has(resolution.result.format)) {
-        const loading = activeRegistry.load(resolution.result.format);
-        if (!loading) throw new UnsupportedFormatError(resolution.result.format);
+      const loading = activeRegistry.load(resolution.result.format);
+      if (!loading && !EMPTY_FORMATS.has(resolution.result.format))
+        throw new UnsupportedFormatError(resolution.result.format);
+      if (loading) {
         const reader = await loading;
         activeBudget.tick();
         try {

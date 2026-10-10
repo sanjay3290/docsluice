@@ -91,6 +91,9 @@
       "odp": [
         "dist/odp.d.ts"
       ],
+      "image": [
+        "dist/image.d.ts"
+      ],
       "zip": [
         "dist/zip.d.ts"
       ],
@@ -218,6 +221,10 @@
     "./odp": {
       "import": "./dist/odp.js",
       "require": "./dist/odp.cjs"
+    },
+    "./image": {
+      "import": "./dist/image.js",
+      "require": "./dist/image.cjs"
     },
     "./zip": {
       "import": "./dist/zip.js",

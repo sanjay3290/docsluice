@@ -38,6 +38,11 @@ export interface ExtractOptions {
   includeHidden?: boolean;
   /** Return formula text on spreadsheet cells (XLS-4). Default false. */
   formulas?: boolean;
+  /**
+   * Include GPS position from image EXIF data (latitude, longitude, altitude) in `metadata.custom`.
+   * Default false: a photo's location is personal data. `metadata: false` drops all EXIF regardless.
+   */
+  imageGps?: boolean;
   /** Password for encrypted files (PDF-5). */
   password?: string;
 

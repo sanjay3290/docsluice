@@ -16,6 +16,7 @@ jobs:
         target:
           [
             zip,
+            image,
             xml,
             detect,
             detection,

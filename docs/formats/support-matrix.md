@@ -18,6 +18,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | gzip | `docsluice/gzip` | 3 | 3 | [gzip.md](gzip.md) |
 | html | `docsluice/html` | 6 | 6 | [html.md](html.md) |
 | ics | `docsluice/ics` | 1 | 1 | [ics.md](ics.md) |
+| image | `docsluice/image` | 8 | 8 | [image.md](image.md) |
 | json | `docsluice/json` | 2 | 2 | [json.md](json.md) |
 | markdown | `docsluice/markdown` | 1 | 1 | [markdown.md](markdown.md) |
 | msg | `docsluice/msg` | 5 | 5 | [msg.md](msg.md) |
@@ -74,8 +75,8 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | IN-8 | When the name or MIME type disagrees with the content, trust the content and add a `FORMAT_MISMATCH` warning. (A `.pdf` that is really an `.exe` must not be read as a PDF.) | Not covered | — |
 | IN-9 | Expose detection alone: `detect(bytes)` returns format, MIME type, confidence and encoding, without full parsing. | Not covered | — |
 | MOD-1 | The model is a public, versioned, documented contract. A breaking change is a major version. | Not covered | — |
-| MOD-4 | Metadata extraction can be turned off as a whole or per field (author names are personal data). | Not covered | — |
-| MOD-5 | Report document features found but not run: `hasMacros`, `hasExternalLinks`, `hasEmbeddedFiles`, `isEncrypted`, `hasJavaScript`. | `docx/headings-outline-macros.docm`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 4 |
+| MOD-4 | Metadata extraction can be turned off as a whole or per field (author names are personal data). | `image/gradient-be.tif`<br>`image/gradient-exif.jpg`<br>`image/gradient-exif.png`<br>`image/gradient-le.tif`<br>`image/gradient-lossless-exif.webp`<br>`image/gradient-lossy.webp`<br>`image/gradient.gif`<br>`image/gradient.png` | — |
+| MOD-5 | Report document features found but not run: `hasMacros`, `hasExternalLinks`, `hasEmbeddedFiles`, `isEncrypted`, `hasJavaScript`. | `docx/headings-outline-macros.docm`<br>`image/gradient-be.tif`<br>`image/gradient-exif.jpg`<br>`image/gradient-exif.png`<br>`image/gradient-le.tif`<br>`image/gradient-lossless-exif.webp`<br>`image/gradient-lossy.webp`<br>`image/gradient.gif`<br>`image/gradient.png`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 4 |
 | NST-1 | Read children with the **same shared budget** as the parent. A child cannot reset the byte, time or entry limits. | `gzip/multi-member.txt.gz`<br>`gzip/optional-header.gz`<br>`gzip/scores.csv.gz`<br>`msg/embedded-message.msg`<br>`tar/gnu-long-name.tar`<br>`tar/nested-folders.tar`<br>`tar/nested-folders.tar.gz`<br>`tar/pax-long-path.tar`<br>`zip/bundle.zip`<br>`zip/hello.odt`<br>`zip/zip-cli.zip` | 2 |
 | NST-2 | Maximum nesting depth (default 3). Deeper files are listed but not opened, with a warning. | Not covered | 1 |
 | NST-3 | Each child has a path (`report.zip/q3.docx/embedded.xlsx`) used in every location inside it. | `zip/bundle.zip` | — |
@@ -107,7 +108,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | SEC-1 | **Zip bomb** — a 40 KB file that expands to many gigabytes. \| Count bytes as they decompress. Stop at the total-uncompressed limit and at a compression-ratio limit. Never trust the sizes written in the zip header. | Not covered | 12 |
 | SEC-10 | **Network calls** — linked images, remote templates, external relationships in Office files, PDF remote actions. \| docsluice never fetches anything. External targets are reported as data only (`hasExternalLinks`). | Not covered | 4 |
 | SEC-11 | **Running content** — macros, PDF JavaScript, HTML scripts, formulas. \| Never run. Report presence only. Formula text is returned as a string. | `docx/headings-outline-macros.docm`<br>`ods/formulas.ods`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/formulas.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 2 |
-| SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 39 |
+| SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 44 |
 | SEC-14 | **Supply-chain attack** through a dependency. \| Few dependencies, pinned with a lockfile, reviewed on update. No install scripts. Publish with npm provenance. | Not covered | — |
 | SEC-2 | **Too many entries** — a zip with a million tiny files. \| Entry-count limit, checked before reading entries. | Not covered | 4 |
 | SEC-3 | **Path tricks** — entry names like `../../etc/passwd`. \| docsluice never writes to disk. Entry names are treated as plain strings and cleaned before they appear in paths. | Not covered | 4 |
@@ -116,7 +117,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | SEC-6 | **Prototype pollution** — a key named `__proto__` in a file changes JavaScript objects across the app. (This is SheetJS's open advisory.) \| Never use file data as plain-object keys. Use `Map` or `Object.create(null)`. A lint rule and a test file full of `__proto__`, `constructor` and `prototype` keys in every format. | `json/dangerous-keys.json`<br>`yaml/survey-config.yaml` | 9 |
 | SEC-7 | **Slow regular expressions (ReDoS)** — text built to make a pattern run for minutes. \| No regular expression with nested repeats on file data. Static check in CI (for example `eslint-plugin-regexp`). Hand-written scanners for hot paths. | Not covered | 5 |
 | SEC-8 | **Deep nesting** — tables in tables, lists in lists, 10,000 levels deep, to crash the stack. \| Depth limit everywhere. Iterative code, not recursion, for tree walks over file data. | Not covered | 22 |
-| SEC-9 | **Endless loops** — PDF objects or zip parts that point at each other. \| Visited sets on every reference graph. A global time budget. | Not covered | 14 |
+| SEC-9 | **Endless loops** — PDF objects or zip parts that point at each other. \| Visited sets on every reference graph. A global time budget. | Not covered | 17 |
 | XLS-1 | Read every sheet in workbook order, with its name and state (visible, hidden, very hidden). | `ods/cell-types.ods`<br>`ods/workbook-hidden-sparse.ods`<br>`xls/workbook-hidden-sparse.xls`<br>`xlsb/workbook-hidden-sparse.xlsb`<br>`xlsx/cell-types.xlsx`<br>`xlsx/workbook-hidden-sparse.xlsx` | — |
 | XLS-2 | Resolve shared strings, inline strings and rich-text runs. | `ods/cell-types.ods`<br>`ods/workbook-merged-richstrings.ods`<br>`ods/workbook-values-formulas.ods`<br>`xls/workbook-merged-richstrings.xls`<br>`xls/workbook-values-formulas.xls`<br>`xlsb/workbook-merged-richstrings.xlsb`<br>`xlsb/workbook-values-formulas.xlsb`<br>`xlsx/cell-types.xlsx`<br>`xlsx/workbook-merged-richstrings.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm`<br>`xlsx/workbook-values-formulas.xlsx` | — |
 | XLS-3 | Apply number formats to give the value a person sees: dates (both 1900 and 1904 date systems), percentages, currency, thousands separators. Keep the raw value too. | `ods/number-formats.ods`<br>`ods/workbook-1904-note.ods`<br>`ods/workbook-values-formulas.ods`<br>`xls/workbook-1904-note.xls`<br>`xls/workbook-values-formulas.xls`<br>`xlsb/workbook-1904-note.xlsb`<br>`xlsb/workbook-values-formulas.xlsb`<br>`xlsx/number-formats.xlsx`<br>`xlsx/workbook-1904-note.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm`<br>`xlsx/workbook-values-formulas.xlsx` | 1 |
@@ -126,4 +127,4 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | XLS-7 | Each cell has an address (`Sheet2!B7`) for citations. | `ods/cell-types.ods`<br>`xlsx/cell-types.xlsx` | — |
 | XML-1 | Generic XML gives element text with its path. No DTD processing ever. | `xml/external-entity.xml`<br>`xml/internal-entity-expansion.xml`<br>`xml/namespaces-and-paths.xml` | — |
 
-44 of 79 P0 requirements have at least one corpus or hostile file.
+45 of 79 P0 requirements have at least one corpus or hostile file.
