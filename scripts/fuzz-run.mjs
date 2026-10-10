@@ -57,6 +57,7 @@ export const TARGETS = {
   },
   mime: { module: 'fuzz/mime.fuzz.js', export: 'fuzzMime', seeds: ['corpus/eml', 'hostile/eml'] },
   eml: { module: 'fuzz/eml.fuzz.js', export: 'fuzzEml', seeds: ['corpus/eml', 'hostile/eml'] },
+  ods: { module: 'fuzz/ods.fuzz.js', export: 'fuzzOds', seeds: ['corpus/ods', 'hostile/ods'] },
   msg: { module: 'fuzz/msg.fuzz.js', export: 'fuzzMsg', seeds: ['corpus/msg', 'corpus/ole', 'hostile/msg'] },
   odf: { module: 'fuzz/odf.fuzz.js', export: 'fuzzOdf', seeds: ['corpus/odt', 'hostile/odt'] },
   odt: { module: 'fuzz/odt.fuzz.js', export: 'fuzzOdt', seeds: ['corpus/odt', 'hostile/odt'] },

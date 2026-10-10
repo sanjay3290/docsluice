@@ -151,6 +151,11 @@ test('ODT reader subpath loads lazily', async () => {
   assert.equal(odt.odtReader.id, 'odt');
 });
 
+test('ODS reader subpath loads lazily', async () => {
+  const ods = await import('docsluice/ods');
+  assert.equal(ods.odsReader.id, 'ods');
+});
+
 test('RTF reader subpath loads lazily', async () => {
   const rtf = await import('docsluice/rtf');
   assert.equal(rtf.rtfReader.id, 'rtf');

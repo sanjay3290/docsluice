@@ -8,6 +8,6 @@ The internal `src/odf/` helpers prepare metadata, style inheritance and manifest
 
 `parseOdfManifest(input, ctx)` accepts a `manifest:manifest` root and direct `manifest:file-entry` children, then returns safe internal path/media-type pairs and a `hasEncryptedEntries` indication. Manifest paths are package-relative literal ZIP entry keys: they are preserved exactly as written and must never be URI-decoded before archive lookup. Percent-encoded slash, backslash and dot bytes are rejected to avoid downstream path confusion; other valid percent sequences remain literal. The helper never reads archive entries, decrypts content or follows a path. Absolute, traversal, URL-like and malformed paths are excluded with a structural warning. The root `/` package entry is recognized and omitted from part mappings.
 
-The ODT reader ([odt.md](odt.md)) uses these helpers. ODS and ODP readers are not implemented yet.
+The ODT ([odt.md](odt.md)) and ODS ([ods.md](ods.md)) readers use these helpers. The ODP reader is not implemented yet.
 
 `packages/docsluice/fuzz/odf.fuzz.ts` runs arbitrary bytes through each helper parser. It is registered as the `odf` target of `scripts/fuzz-run.mjs`.

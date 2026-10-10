@@ -1055,5 +1055,66 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-12"
+  },
+  {
+    "file": "ods/repeat-empty-grid.ods",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "ods/repeat-value-flood.ods",
+    "expect": {
+      "warnings": [
+        "TRUNCATED",
+        "TRUNCATED"
+      ]
+    },
+    "maxMs": 5000,
+    "maxHeapMB": 256,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "ods/bad-counts.ods",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "ods/merge-whole-sheet.ods",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "ods/nested-tables.ods",
+    "expect": {
+      "warnings": [
+        "TRUNCATED"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-8"
+  },
+  {
+    "file": "ods/formulas-without-values.ods",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-11"
   }
 ]
