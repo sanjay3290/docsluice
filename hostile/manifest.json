@@ -88,7 +88,7 @@
   {
     "file": "zip/bomb-42k.zip",
     "expect": {
-      "error": "UNSUPPORTED_FORMAT"
+      "error": "LIMIT_EXCEEDED"
     },
     "maxMs": 1000,
     "maxHeapMB": 128,
@@ -97,7 +97,7 @@
   {
     "file": "zip/nested-4gib.zip",
     "expect": {
-      "error": "UNSUPPORTED_FORMAT"
+      "error": "LIMIT_EXCEEDED"
     },
     "maxMs": 1000,
     "maxHeapMB": 128,
@@ -115,7 +115,7 @@
   {
     "file": "zip/path-traversal.zip",
     "expect": {
-      "error": "UNSUPPORTED_FORMAT"
+      "warnings": []
     },
     "maxMs": 1000,
     "maxHeapMB": 64,
@@ -124,7 +124,7 @@
   {
     "file": "zip/overlap.zip",
     "expect": {
-      "error": "UNSUPPORTED_FORMAT"
+      "warnings": ["UNREADABLE_PART"]
     },
     "maxMs": 1000,
     "maxHeapMB": 64,
@@ -133,7 +133,7 @@
   {
     "file": "zip/content-types-50mb.zip",
     "expect": {
-      "error": "UNSUPPORTED_FORMAT"
+      "error": "LIMIT_EXCEEDED"
     },
     "maxMs": 2000,
     "maxHeapMB": 256,
@@ -375,7 +375,7 @@
   {
     "file": "zip/high-ratio.zip",
     "expect": {
-      "error": "UNSUPPORTED_FORMAT"
+      "error": "LIMIT_EXCEEDED"
     },
     "maxMs": 2000,
     "maxHeapMB": 64,
@@ -384,7 +384,7 @@
   {
     "file": "zip/nested-high-ratio.zip",
     "expect": {
-      "error": "UNSUPPORTED_FORMAT"
+      "warnings": []
     },
     "maxMs": 2000,
     "maxHeapMB": 64,
@@ -393,7 +393,7 @@
   {
     "file": "zip/nested-chain-8.zip",
     "expect": {
-      "error": "UNSUPPORTED_FORMAT"
+      "warnings": ["DEPTH_LIMIT"]
     },
     "maxMs": 2000,
     "maxHeapMB": 64,
@@ -411,7 +411,7 @@
   {
     "file": "zip/zip64-count-lie.zip",
     "expect": {
-      "error": "UNSUPPORTED_FORMAT"
+      "warnings": ["TRUNCATED"]
     },
     "maxMs": 2000,
     "maxHeapMB": 64,
@@ -429,7 +429,7 @@
   {
     "file": "ooxml/extension-nested-records.zip",
     "expect": {
-      "error": "UNSUPPORTED_FORMAT"
+      "warnings": []
     },
     "maxMs": 1000,
     "maxHeapMB": 64,
@@ -592,5 +592,23 @@
     "maxMs": 1000,
     "maxHeapMB": 64,
     "requirement": "SEC-6"
+  },
+  {
+    "file": "zip/nested-entries-10001.zip",
+    "expect": {
+      "warnings": ["TRUNCATED"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-2"
+  },
+  {
+    "file": "zip/junk-and-encrypted.zip",
+    "expect": {
+      "warnings": ["UNREADABLE_PART"]
+    },
+    "maxMs": 1000,
+    "maxHeapMB": 64,
+    "requirement": "NST-4"
   }
 ]

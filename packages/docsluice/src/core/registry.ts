@@ -96,3 +96,8 @@ defaultRegistry.add({
   mimeTypes: ['application/vnd.openxmlformats-officedocument.presentationml.presentation'],
   load: () => import('../readers/pptx/index.js').then((module) => module.pptxReader),
 });
+defaultRegistry.add({
+  id: 'zip',
+  mimeTypes: ['application/zip'],
+  load: () => import('../readers/zip/index.js').then((module) => module.zipReader),
+});
