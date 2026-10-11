@@ -1,0 +1,92 @@
+%PDF-1.7
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R /AcroForm << /Fields [7 0 R 10 0 R 11 0 R 14 0 R 15 0 R 16 0 R] /DA (/Helv 10 Tf 0 g) /DR << /Font << /Helv 3 0 R >> >> >> >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R /Annots [8 0 R 9 0 R 10 0 R 12 0 R 13 0 R 14 0 R 15 0 R 16 0 R 17 0 R 18 0 R 19 0 R] >>
+endobj
+5 0 obj
+<<  /Length 156 >>
+stream
+BT /F1 12 Tf 72 760 Td 30 TL (Field Survey Application) Tj T* (Name) Tj T* (Email) Tj T* (Send updates) Tj T* (Plan) Tj T* (Country) Tj T* (Topics) Tj T* ET
+endstream
+endobj
+6 0 obj
+<< /Type /XObject /Subtype /Form /BBox [0 0 12 12] /Length 0 >>
+stream
+
+endstream
+endobj
+7 0 obj
+<< /T (applicant) /Kids [8 0 R 9 0 R] >>
+endobj
+8 0 obj
+<< /Type /Annot /Subtype /Widget /P 4 0 R /Rect [200 722 400 738] /FT /Tx /Parent 7 0 R /T (name) /V (Jordan Sample) >>
+endobj
+9 0 obj
+<< /Type /Annot /Subtype /Widget /P 4 0 R /Rect [200 692 400 708] /FT /Tx /Parent 7 0 R /T (email) /V (jordan@example.invalid) >>
+endobj
+10 0 obj
+<< /Type /Annot /Subtype /Widget /P 4 0 R /Rect [200 662 212 674] /FT /Btn /T (subscribe) /V /Yes /AS /Yes /AP << /N << /Yes 6 0 R /Off 6 0 R >> >> >>
+endobj
+11 0 obj
+<< /FT /Btn /Ff 49152 /T (plan) /V /Annual /Kids [12 0 R 13 0 R] >>
+endobj
+12 0 obj
+<< /Type /Annot /Subtype /Widget /P 4 0 R /Rect [200 632 212 644] /Parent 11 0 R /AS /Off /AP << /N << /Monthly 6 0 R /Off 6 0 R >> >> >>
+endobj
+13 0 obj
+<< /Type /Annot /Subtype /Widget /P 4 0 R /Rect [260 632 272 644] /Parent 11 0 R /AS /Annual /AP << /N << /Annual 6 0 R /Off 6 0 R >> >> >>
+endobj
+14 0 obj
+<< /Type /Annot /Subtype /Widget /P 4 0 R /Rect [200 602 400 618] /FT /Ch /Ff 131072 /T (country) /Opt [(Norway) (Chile)] /V (Chile) >>
+endobj
+15 0 obj
+<< /Type /Annot /Subtype /Widget /P 4 0 R /Rect [200 532 400 588] /FT /Ch /Ff 2097152 /T (topics) /Opt [(Tides) (Birds) (Soil)] /V [(Tides) (Soil)] >>
+endobj
+16 0 obj
+<< /Type /Annot /Subtype /Widget /P 4 0 R /Rect [72 480 160 500] /FT /Btn /Ff 65536 /T (submit) >>
+endobj
+17 0 obj
+<< /Type /Annot /Subtype /Text /Rect [520 720 540 740] /T (Reviewer A) /Contents (Check the email address.) /Name /Comment >>
+endobj
+18 0 obj
+<< /Type /Annot /Subtype /FreeText /Rect [72 420 360 440] /DA (/Helv 10 Tf 0 g) /T (Reviewer B) /Contents (Approved for the pilot.) >>
+endobj
+19 0 obj
+<< /Type /Annot /Subtype /Highlight /Rect [72 750 260 770] /QuadPoints [72 770 260 770 72 750 260 750] /T (Reviewer C) /Contents (A highlight is not a text annotation.) >>
+endobj
+xref
+0 20
+0000000000 65535 f 
+0000000019 00000 n 
+0000000191 00000 n 
+0000000248 00000 n 
+0000000345 00000 n 
+0000000556 00000 n 
+0000000764 00000 n 
+0000000861 00000 n 
+0000000917 00000 n 
+0000001052 00000 n 
+0000001197 00000 n 
+0000001364 00000 n 
+0000001448 00000 n 
+0000001602 00000 n 
+0000001758 00000 n 
+0000001910 00000 n 
+0000002077 00000 n 
+0000002192 00000 n 
+0000002334 00000 n 
+0000002485 00000 n 
+trailer
+<< /Size 20 /Root 1 0 R >>
+startxref
+2673
+%%EOF

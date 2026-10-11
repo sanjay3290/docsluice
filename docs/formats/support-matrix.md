@@ -31,7 +31,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | ods | `docsluice/ods` | 8 | 8 | [ods.md](ods.md) |
 | odt | `docsluice/odt` | 4 | 4 | [odt.md](odt.md) |
 | ole | no reader | 4 | 4 | [ole.md](ole.md) |
-| pdf | `docsluice/pdf` | 14 | 14 | [pdf.md](pdf.md) |
+| pdf | `docsluice/pdf` | 15 | 15 | [pdf.md](pdf.md) |
 | ppt | `docsluice/ppt` | 3 | 3 | [ppt.md](ppt.md) |
 | pptx | `docsluice/pptx` | 7 | 7 | [pptx.md](pptx.md) |
 | rar | `docsluice/rar` | 2 | 0 | [rar.md](rar.md) |
@@ -82,7 +82,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | IN-8 | When the name or MIME type disagrees with the content, trust the content and add a `FORMAT_MISMATCH` warning. (A `.pdf` that is really an `.exe` must not be read as a PDF.) | Not covered | — |
 | IN-9 | Expose detection alone: `detect(bytes)` returns format, MIME type, confidence and encoding, without full parsing. | Not covered | — |
 | MOD-1 | The model is a public, versioned, documented contract. A breaking change is a major version. | Not covered | — |
-| MOD-4 | Metadata extraction can be turned off as a whole or per field (author names are personal data). | `image/gradient-be.tif`<br>`image/gradient-exif.jpg`<br>`image/gradient-exif.png`<br>`image/gradient-le.tif`<br>`image/gradient-lossless-exif.webp`<br>`image/gradient-lossy.webp`<br>`image/gradient.gif`<br>`image/gradient.png` | — |
+| MOD-4 | Metadata extraction can be turned off as a whole or per field (author names are personal data). | `image/gradient-be.tif`<br>`image/gradient-exif.jpg`<br>`image/gradient-exif.png`<br>`image/gradient-le.tif`<br>`image/gradient-lossless-exif.webp`<br>`image/gradient-lossy.webp`<br>`image/gradient.gif`<br>`image/gradient.png`<br>`pdf/form-annotations.pdf` | — |
 | MOD-5 | Report document features found but not run: `hasMacros`, `hasExternalLinks`, `hasEmbeddedFiles`, `isEncrypted`, `hasJavaScript`. | `docx/headings-outline-macros.docm`<br>`image/gradient-be.tif`<br>`image/gradient-exif.jpg`<br>`image/gradient-exif.png`<br>`image/gradient-le.tif`<br>`image/gradient-lossless-exif.webp`<br>`image/gradient-lossy.webp`<br>`image/gradient.gif`<br>`image/gradient.png`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 4 |
 | NST-1 | Read children with the **same shared budget** as the parent. A child cannot reset the byte, time or entry limits. | `docx/embedded-objects.docx`<br>`gzip/multi-member.txt.gz`<br>`gzip/optional-header.gz`<br>`gzip/scores.csv.gz`<br>`msg/embedded-message.msg`<br>`tar/gnu-long-name.tar`<br>`tar/nested-folders.tar`<br>`tar/nested-folders.tar.gz`<br>`tar/pax-long-path.tar`<br>`zip/bundle.zip`<br>`zip/hello.odt`<br>`zip/zip-cli.zip` | 3 |
 | NST-2 | Maximum nesting depth (default 3). Deeper files are listed but not opened, with a warning. | Not covered | 1 |
@@ -114,7 +114,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | RT-4 | Each format is its own subpath export (`docsluice/pdf`, `docsluice/xlsx`). Importing `docsluice` with the default set loads readers lazily. | Not covered | — |
 | SEC-1 | **Zip bomb** — a 40 KB file that expands to many gigabytes. \| Count bytes as they decompress. Stop at the total-uncompressed limit and at a compression-ratio limit. Never trust the sizes written in the zip header. | Not covered | 14 |
 | SEC-10 | **Network calls** — linked images, remote templates, external relationships in Office files, PDF remote actions. \| docsluice never fetches anything. External targets are reported as data only (`hasExternalLinks`). | Not covered | 4 |
-| SEC-11 | **Running content** — macros, PDF JavaScript, HTML scripts, formulas. \| Never run. Report presence only. Formula text is returned as a string. | `docx/headings-outline-macros.docm`<br>`ods/formulas.ods`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/formulas.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 2 |
+| SEC-11 | **Running content** — macros, PDF JavaScript, HTML scripts, formulas. \| Never run. Report presence only. Formula text is returned as a string. | `docx/headings-outline-macros.docm`<br>`ods/formulas.ods`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/formulas.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 3 |
 | SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 71 |
 | SEC-14 | **Supply-chain attack** through a dependency. \| Few dependencies, pinned with a lockfile, reviewed on update. No install scripts. Publish with npm provenance. | Not covered | — |
 | SEC-2 | **Too many entries** — a zip with a million tiny files. \| Entry-count limit, checked before reading entries. | Not covered | 7 |

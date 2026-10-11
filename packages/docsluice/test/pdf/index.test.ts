@@ -151,6 +151,56 @@ describe('PDF reader', () => {
     expect(texts.join('\n')).not.toContain(password);
   });
 
+  it('reads AcroForm fields as a name/value table and text annotations as notes (PDF-7)', async () => {
+    const doc = await extract(read(corpus, 'form-annotations.pdf'));
+    const blocks = pages(doc)[0]!.blocks;
+    const table = blocks.find((block) => block.kind === 'table');
+    expect(table).toMatchObject({
+      kind: 'table',
+      headerRows: 0,
+      rows: [
+        [{ text: 'applicant.name' }, { text: 'Jordan Sample' }],
+        [{ text: 'applicant.email' }, { text: 'jordan@example.invalid' }],
+        [{ text: 'subscribe' }, { text: 'Yes' }],
+        [{ text: 'plan' }, { text: 'Annual' }],
+        [{ text: 'country' }, { text: 'Chile' }],
+        [{ text: 'topics' }, { text: 'Tides, Soil' }],
+      ],
+    });
+    // A push button holds no value; a highlight is not a text annotation.
+    expect(blocks.filter((block) => block.kind === 'note')).toMatchObject([
+      { kind: 'note', role: 'annotation', text: 'Check the email address.', author: 'Reviewer A' },
+      { kind: 'note', role: 'annotation', text: 'Approved for the pilot.', author: 'Reviewer B' },
+    ]);
+    expect(JSON.stringify(doc)).not.toContain('highlight is not');
+    expect(doc.warnings).toEqual([]);
+  });
+
+  it('drops annotation authors with metadata: false (MOD-4)', async () => {
+    const doc = await extract(read(corpus, 'form-annotations.pdf'), { metadata: false });
+    const notes = pages(doc)[0]!.blocks.filter((block) => block.kind === 'note');
+    expect(notes).toHaveLength(2);
+    for (const note of notes) expect(note).not.toHaveProperty('author');
+  });
+
+  it('reports an XFA-only form with a warning and never parses it', async () => {
+    const doc = await extract(read(hostile, 'xfa-only-form.pdf'));
+    expect(doc.warnings).toEqual([{ code: 'UNREADABLE_PART', message: 'The XFA form is not read.' }]);
+    expect(JSON.stringify(doc)).not.toContain('secret');
+  });
+
+  it('stops adding form rows at the cells limit', async () => {
+    const doc = await extract(read(corpus, 'form-annotations.pdf'), { limits: { cells: 4 } });
+    const table = pages(doc)[0]!.blocks.find((block) => block.kind === 'table');
+    expect(table).toMatchObject({
+      rows: [
+        [{ text: 'applicant.name' }, {}],
+        [{ text: 'applicant.email' }, {}],
+      ],
+    });
+    expect(doc.stats.truncated).toBe(true);
+  });
+
   it('turns bytes that are not a readable PDF into CorruptFileError', async () => {
     await expect(
       extract(new TextEncoder().encode('%PDF-1.7\nnot really a pdf'), { format: 'pdf' }),

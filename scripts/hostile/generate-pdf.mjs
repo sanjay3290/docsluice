@@ -202,3 +202,20 @@ for (const [file, encrypt] of [
     ),
   );
 }
+// An XFA-only form (PDF-7): an AcroForm with no fields and an XFA stream. XFA is never parsed;
+// the reader reports it with a warning.
+await writeFile(
+  new URL('xfa-only-form.pdf', directory),
+  pdf(
+    [
+      '<< /Type /Catalog /Pages 2 0 R /AcroForm << /Fields [] /XFA 5 0 R >> /NeedsRendering true >>',
+      '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+      '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >>',
+      stream('BT ET'),
+      stream(
+        '<xdp:xdp xmlns:xdp="http://ns.adobe.com/xdp/"><template xmlns="http://www.xfa.org/schema/xfa-template/3.3/"><subform name="form1"><field name="secret"/></subform></template></xdp:xdp>',
+      ),
+    ],
+    '/Root 1 0 R',
+  ),
+);
