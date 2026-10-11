@@ -1937,5 +1937,25 @@
     "maxMs": 2000,
     "maxHeapMB": 128,
     "requirement": "SEC-9"
+  },
+  {
+    "file": "pdf/missing-outline-page.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "pdf/page-index-prefetch-rejection.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": ["UNREADABLE_PART"]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
   }
 ]

@@ -57,12 +57,21 @@ test('importing extract from docsluice loads every reader lazily (RT-4)', async 
   }
 });
 
-test('each built engine contains exactly one prefetch patch and its license header', async () => {
+test('each built engine contains both prefetch patches and its license header', async () => {
   const files = (await readdir(dist)).filter((name) => /^pdfjs-.*\.(?:js|cjs)$/.test(name));
   assert.equal(files.length, 2);
   for (const file of files) {
     const code = await readFile(join(dist, file), 'utf8');
-    assert.equal([...code.matchAll(/docsluicePdfPageKidsPrefetch\(/g)].length, 2, file);
+    assert.equal([...code.matchAll(/docsluicePdfPrefetch\(/g)].length, 3, file);
+    for (const [method, next] of [
+      ['async getPageDict(', 'async getAllPageDicts('],
+      ['async getPageIndex(', 'get baseUrl('],
+    ]) {
+      const start = code.indexOf(method);
+      const end = code.indexOf(next, start);
+      assert.ok(start >= 0 && end > start, `${file}: ${method}`);
+      assert.equal([...code.slice(start, end).matchAll(/docsluicePdfPrefetch\(/g)].length, 1, method);
+    }
     assert.match(code, /promise\.catch\(\(\) => \{\}\)/);
     assert.match(code, /Copyright.*Mozilla Foundation/);
     assert.match(code, /Apache-2\.0/);
@@ -72,7 +81,7 @@ test('each built engine contains exactly one prefetch patch and its license head
   assert.match(notices, /MIT License/);
 });
 
-test('malformed page-kid prefetch cannot crash a process with either package entry', () => {
+test('malformed page-tree prefetch cannot crash a process with either package entry', () => {
   for (const format of ['esm', 'cjs']) {
     const load =
       format === 'esm' ? "await import('docsluice')" : "createRequire(import.meta.url)('docsluice')";
@@ -86,10 +95,15 @@ test('malformed page-kid prefetch cannot crash a process with either package ent
       import { readFileSync } from 'node:fs';
       import { createRequire } from 'node:module';
       const { extract } = ${load};
-      for (const file of ['unused-malformed-page-kid.pdf', 'page-kids-prefetch-rejection.pdf']) {
+      for (const [file, pages] of [
+        ['unused-malformed-page-kid.pdf', 1],
+        ['page-kids-prefetch-rejection.pdf', 1],
+        ['missing-outline-page.pdf', 1],
+        ['page-index-prefetch-rejection.pdf', 2],
+      ]) {
         const bytes = new Uint8Array(readFileSync('../../hostile/pdf/' + file));
         const document = await extract(bytes, { format: 'pdf' });
-        if (document.metadata.pageCount !== 1) throw new Error('Page count mismatch');
+        if (document.metadata.pageCount !== pages) throw new Error('Page count mismatch');
         await new Promise(resolve => setImmediate(resolve));
       }
     `,

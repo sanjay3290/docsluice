@@ -21,6 +21,22 @@ await writeFile(
   ),
 );
 
+await writeFile(
+  new URL('missing-outline-page.pdf', directory),
+  pdf(
+    [
+      '<< /Type /Catalog /Pages 2 0 R /Outlines 6 0 R >>',
+      '<< /Type /Pages /Kids [3 0 R 4 0 R] /Count 1 >>',
+      '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>',
+      '42',
+      '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>',
+      '<< /Type /Outlines /First 7 0 R /Last 7 0 R /Count 1 >>',
+      '<< /Title (Missing target page) /Parent 6 0 R /Dest [5 0 R /Fit] >>',
+    ],
+    '/Root 1 0 R',
+  ),
+);
+
 const page = (parent, contents, extra = '') =>
   `<< /Type /Page /Parent ${parent} 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contents} 0 R${extra} >>`;
 

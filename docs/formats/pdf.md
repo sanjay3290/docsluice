@@ -43,13 +43,13 @@ Hostile samples in `hostile/pdf/`: a JavaScript open action plus document JavaSc
 
 The PDF reader bundles a patched pdf.js from the exact `unpdf` 1.8.1 devDependency.
 It adds no runtime dependency.
-The build observes unused page-kids prefetch rejections and retains the original promise.
-The build fails unless exactly one patch site matches.
+The build observes unused page-kids and page-index prefetch rejections and retains each original promise.
+The build fails unless each patch site matches exactly once.
 The patch prevents the Node process crash recorded in #206.
 The hostile corpus includes the fuzz crash and a minimal synthetic PDF.
 Both package entries pass a separate process test under Node's default rejection policy.
 License texts ship in `dist/THIRD_PARTY_NOTICES.md`.
 
-PDF fuzz found a separate unhandled rejection during outline page resolution (#261).
-The page-kids patch does not cover this second promise.
-Merge waits for the owner's patch decision and a successful PDF fuzz run.
+The owner approved a second patch for outline page resolution (#261).
+It observes sibling promises when an outline target is absent from its parent's kids.
+Both fuzz crash inputs and both minimal regressions pass the hostile runner.

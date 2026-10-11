@@ -79,7 +79,7 @@ Node then stops the process under its default rejection policy.
 The build attaches a no-op rejection handler and retains the original promise.
 Later callers still receive its original result or error.
 The transform matches structure, independently of minified names.
-The build fails unless exactly one site matches.
+The build fails unless each approved site matches exactly once.
 Unit tests and fuzz tests use the same transform.
 The hostile corpus includes the fuzz crash and a minimal synthetic PDF.
 The hostile runner rejects any unhandled rejection for every format.
@@ -94,6 +94,11 @@ Its RT-5 budget remains 500 KB.
 Local verification passes with Node 24, UTC, and a real macOS temporary path.
 Issue #260 tracks failures with the default macOS test environment.
 
-PDF fuzz found a separate unhandled promise in `Catalog.getPageIndex` after this patch.
-Issue #261 records the minimal reproduction and requests approval for a second patch.
-The owner decision blocks merge until PDF fuzz passes.
+PDF fuzz found a separate unhandled promise in `Catalog.getPageIndex` after the first patch.
+The owner approved the second patch in PR #205 on 2026-10-10.
+It observes sibling promises before the method can throw for an absent outline target.
+It retains each original callback promise for later awaiters.
+Each built engine contains one patch in each method.
+The hostile corpus retains the new CI crash and a minimal missing-outline-page PDF.
+Issue #261 records the reproduction and the decision.
+Merge still requires green CI, including PDF fuzz.
