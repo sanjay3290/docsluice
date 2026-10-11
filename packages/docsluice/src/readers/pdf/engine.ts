@@ -35,7 +35,24 @@ export interface PdfPageContent {
   height: number;
   items: PdfTextItem[];
   links: PdfLink[];
+  /** Form fields whose widgets are on this page, by full name (PDF-7). */
+  fields: PdfField[];
+  /** Text and free-text annotations (PDF-7). */
+  notes: PdfNote[];
   hasJavaScript: boolean;
+}
+
+export interface PdfField {
+  /** Fully qualified name, `parent.child`. */
+  name: string;
+  /** Text value; the export value of a check box or radio group (`Off` when off); choices joined. */
+  value: string;
+}
+
+export interface PdfNote {
+  text: string;
+  /** The annotation's `/T` (personal data: the builder drops it with `metadata: false`). */
+  author?: string;
 }
 
 export interface PdfOutlineItem {
@@ -56,6 +73,8 @@ export interface PdfInfo {
   xmpCreator?: string;
   /** The file has an `/Encrypt` dictionary, even if it opened without a password. */
   encrypted: boolean;
+  /** The document has an XFA form (never parsed). */
+  xfa: boolean;
 }
 
 export interface PdfDocument {
@@ -114,6 +133,12 @@ interface EngineAnnotation {
   unsafeUrl?: string;
   rect?: number[];
   actions?: Record<string, unknown>;
+  fieldName?: unknown;
+  fieldType?: unknown;
+  fieldValue?: unknown;
+  pushButton?: boolean;
+  contentsObj?: { str?: unknown };
+  titleObj?: { str?: unknown };
 }
 interface EngineOutlineNode {
   title?: string;
@@ -189,6 +214,19 @@ function isWebUrl(url: string): boolean {
   return lower.startsWith('http://') || lower.startsWith('https://') || lower.startsWith('mailto:');
 }
 
+/** A field value as text: strings as they are, choices joined with `, `, nothing as empty. */
+function fieldValue(value: unknown, budget: Budget): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (!Array.isArray(value)) return '';
+  const parts: string[] = [];
+  for (const part of value as unknown[]) {
+    budget.tick();
+    if (typeof part === 'string') parts.push(part);
+  }
+  return parts.join(', ');
+}
+
 function hasEntries(value: Record<string, unknown> | null | undefined): boolean {
   return value !== null && value !== undefined && Object.keys(value).length > 0;
 }
@@ -248,7 +286,10 @@ export async function openPdf(
       const loaded = await document.getMetadata().catch(() => ({ info: undefined, metadata: null }));
       const info: Record<string, unknown> = loaded.info ?? {};
       const metadata = loaded.metadata;
-      const result: PdfInfo = { encrypted: typeof info.EncryptFilterName === 'string' };
+      const result: PdfInfo = {
+        encrypted: typeof info.EncryptFilterName === 'string',
+        xfa: info.IsXFAPresent === true,
+      };
       const title = text(info.Title);
       if (title !== undefined) result.title = title;
       const author = text(info.Author);
@@ -329,10 +370,33 @@ export async function openPdf(
         });
       }
       const links: PdfLink[] = [];
+      const fields: PdfField[] = [];
+      const fieldNames = new Set<string>();
+      const notes: PdfNote[] = [];
       let hasJavaScript = hasEntries(await page.getJSActions().catch(() => null));
       for (const annotation of await page.getAnnotations().catch(() => [])) {
         budget.tick();
         if (hasEntries(annotation.actions)) hasJavaScript = true;
+        if (annotation.subtype === 'Widget') {
+          // One row per field: a radio group has a widget per choice. Push buttons and signatures
+          // hold no value.
+          const name = text(annotation.fieldName);
+          if (name === undefined || annotation.pushButton === true || annotation.fieldType === 'Sig')
+            continue;
+          if (fieldNames.has(name)) continue;
+          fieldNames.add(name);
+          fields.push({ name, value: fieldValue(annotation.fieldValue, budget) });
+          continue;
+        }
+        if (annotation.subtype === 'Text' || annotation.subtype === 'FreeText') {
+          const contents = text(annotation.contentsObj?.str);
+          if (contents === undefined) continue;
+          const note: PdfNote = { text: contents };
+          const author = text(annotation.titleObj?.str);
+          if (author !== undefined) note.author = author;
+          notes.push(note);
+          continue;
+        }
         if (annotation.subtype !== 'Link') continue;
         const rect = annotation.rect;
         const target = annotation.url ?? annotation.unsafeUrl;
@@ -342,7 +406,15 @@ export async function openPdf(
         links.push(link);
       }
       page.cleanup();
-      return { width: Math.abs(x2 - x1), height: Math.abs(y2 - y1), items, links, hasJavaScript };
+      return {
+        width: Math.abs(x2 - x1),
+        height: Math.abs(y2 - y1),
+        items,
+        links,
+        fields,
+        notes,
+        hasJavaScript,
+      };
     },
     async imageCoverage(index, budget) {
       const page = await document.getPage(index + 1);

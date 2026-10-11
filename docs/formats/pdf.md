@@ -46,6 +46,18 @@ The layout code is in `src/readers/pdf/layout/`. It is a set of pure functions o
 - Two column sections stacked with no line between them read as one pair of columns.
 - Text tables read row by row only when their cells are short; tables are PDF-8.
 
+## Forms and annotations (PDF-7)
+
+- **AcroForm fields.** The fields whose widgets sit on a page become one `table` block at the end of that page, with no header row, and one row per field:
+  - the first cell is the fully qualified name (`parent.child`);
+  - a text field gives its text;
+  - a check box or radio group gives its export value, or `Off` when off;
+  - a choice field gives its selected options joined with `, `.
+
+  A radio group with several widgets is one row. Push buttons and signature fields hold no value and are skipped. Each row counts two cells toward the `cells` limit.
+- **Annotations.** Text annotations (sticky notes) and free-text annotations with contents become `note` blocks with role `annotation`, after the page's fields. The annotation's `/T` becomes `author`. Author names are personal data, so `metadata: false` drops them (MOD-4). Other markup annotations, such as highlights and underlines, are not read.
+- **XFA.** XFA is never parsed. A document with an XFA form and no AcroForm field values gets one `UNREADABLE_PART` warning: `The XFA form is not read.`
+
 ## Pages without a text layer (PDF-4)
 
 A page with no visible text whose images cover at least a quarter of its area is a scanned page: its section gets `needsOcr: true`, `stats.needsOcr` is set, and one `NEEDS_OCR` warning lists the page numbers (`Pages without a text layer need OCR: 1, 4-6.`). A blank page is not flagged.

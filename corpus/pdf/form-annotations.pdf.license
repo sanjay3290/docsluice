@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: hand-made for docsluice by scripts/corpus/make-pdf-forms.mjs
+Requirements: PDF-7, MOD-4
+Notes: a filled AcroForm (nested text fields, check box, radio group, combo box, multi-select list, push button), a sticky note and a free-text annotation with authors, and a highlight.

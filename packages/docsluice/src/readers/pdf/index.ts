@@ -1,5 +1,5 @@
 import { CorruptFileError, DocsluiceError, EncryptedError } from '../../core/errors.js';
-import type { Location, Metadata, Run } from '../../core/model.js';
+import type { Cell, Location, Metadata, Run } from '../../core/model.js';
 import type { Reader, ReadContext } from '../../core/reader.js';
 import { openPdf, PdfPasswordError, PdfUnsupportedEncryptionError } from './engine.js';
 import type { PdfDocument, PdfLink, PdfOutlineItem, PdfTextItem } from './engine.js';
@@ -133,6 +133,7 @@ export const pdfReader: Reader = {
       }
 
       const needsOcr: number[] = [];
+      let fieldCount = 0;
       const charged = { fonts: 0 };
       // Past the font limit, keep the page in progress, then stop.
       let fontsLeft = true;
@@ -195,7 +196,27 @@ export const pdfReader: Reader = {
               : ctx.out.heading(heading, text.trim(), loc);
           if (!written) break;
         }
+        // Form fields as a name/value table, then text annotations as notes (PDF-7).
+        if (open && content.fields.length > 0) {
+          const rows: Cell[][] = [];
+          for (const field of content.fields) {
+            ctx.budget.tick();
+            if (!ctx.budget.addCells(2)) break;
+            rows.push([{ text: field.name }, { text: field.value }]);
+          }
+          if (rows.length > 0) {
+            fieldCount += rows.length;
+            open = ctx.out.table(rows, 0, loc);
+          }
+        }
+        for (const note of open ? content.notes : []) {
+          ctx.budget.tick();
+          if (!ctx.out.note('annotation', note.text, loc, note.author)) break;
+        }
         if (!ctx.out.closeSection()) break;
+      }
+      if (info.xfa && fieldCount === 0) {
+        ctx.warnings.add({ code: 'UNREADABLE_PART', message: 'The XFA form is not read.' });
       }
       if (needsOcr.length > 0) {
         ctx.out.setNeedsOcr();
