@@ -57,7 +57,13 @@ A page with no visible text whose images cover at least a quarter of its area is
 
 ## Errors
 
-- A password-protected PDF throws `EncryptedError` (`ENCRYPTED`, reason `password-required`); a wrong `password` option gives reason `wrong-password`. With the right `password` the document is read. (More encryption handling is PDF-5.)
+- **Encryption (PDF-5).**
+  - A PDF that needs a password throws `EncryptedError` (`ENCRYPTED`) with reason `password-required`. A wrong `password` option gives reason `wrong-password`. With the right `password`, the document is read.
+  - A file encrypted with only an owner (permissions) password opens without a password. A `password` option that is not needed is ignored: on `wrong-password` the reader retries once without it.
+  - A security handler or algorithm the engine lacks gives reason `unsupported-encryption`. Examples are public-key `/Adobe.PubSec` and an unknown `/V`.
+  - `features.isEncrypted` is `true` whenever the file has an `/Encrypt` dictionary, including when it opened with the empty user password.
+  - Permission flags (print, copy) are not enforced: extraction is reading.
+  - The password never appears in errors or warnings.
 - Bytes the engine cannot open throw `CorruptFileError` with the engine error as `cause`. A single page that fails is an empty section with `UNREADABLE_PART`.
 
 ## Limits and size

@@ -106,6 +106,49 @@ describe('PDF reader', () => {
     });
     const doc = await extract(read(corpus, 'encrypted-document.pdf'), { password: 'docsluice-fixture-only' });
     expect(pages(doc).length).toBeGreaterThan(0);
+    expect(doc.features.isEncrypted).toBe(true);
+  });
+
+  it('opens an owner-password-only PDF without a password and reports it encrypted (PDF-5)', async () => {
+    const doc = await extract(read(corpus, 'permissions-only.pdf'));
+    expect(doc.features.isEncrypted).toBe(true);
+    expect(JSON.stringify(doc.blocks)).toContain('Synthetic restricted report');
+    // A password for a file that needs none is ignored.
+    const withPassword = await extract(read(corpus, 'permissions-only.pdf'), { password: 'unused' });
+    expect(withPassword.blocks).toEqual(doc.blocks);
+    const plain = await extract(read(corpus, 'lists-tables.pdf'));
+    expect(plain.features.isEncrypted).toBe(false);
+  });
+
+  it('throws unsupported-encryption for security handlers and versions the engine lacks', async () => {
+    for (const file of ['encrypt-public-key.pdf', 'encrypt-unknown-version.pdf']) {
+      await expect(extract(read(hostile, file)), file).rejects.toMatchObject({
+        name: 'EncryptedError',
+        code: 'ENCRYPTED',
+        reason: 'unsupported-encryption',
+      });
+    }
+  });
+
+  it('never puts the password in an error', async () => {
+    const password = 'Secret-Fixture-Password-41';
+    const error = await extract(read(corpus, 'encrypted-document.pdf'), { password }).catch(
+      (caught: unknown) => caught,
+    );
+    expect(error).toMatchObject({ reason: 'wrong-password' });
+    const seen = new Set<unknown>();
+    const texts: string[] = [];
+    // Walk the error and its causes with an explicit stack.
+    const stack: unknown[] = [error];
+    while (stack.length > 0) {
+      const value = stack.pop();
+      if (value === null || typeof value !== 'object' || seen.has(value)) continue;
+      seen.add(value);
+      const record = value as Record<string, unknown>;
+      texts.push(String(record.message), String(record.stack), JSON.stringify(record));
+      stack.push(record.cause);
+    }
+    expect(texts.join('\n')).not.toContain(password);
   });
 
   it('turns bytes that are not a readable PDF into CorruptFileError', async () => {

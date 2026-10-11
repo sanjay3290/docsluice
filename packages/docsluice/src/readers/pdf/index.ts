@@ -1,7 +1,7 @@
 import { CorruptFileError, DocsluiceError, EncryptedError } from '../../core/errors.js';
 import type { Location, Metadata, Run } from '../../core/model.js';
 import type { Reader, ReadContext } from '../../core/reader.js';
-import { openPdf, PdfPasswordError } from './engine.js';
+import { openPdf, PdfPasswordError, PdfUnsupportedEncryptionError } from './engine.js';
 import type { PdfDocument, PdfLink, PdfOutlineItem, PdfTextItem } from './engine.js';
 import { layoutPage } from './layout/index.js';
 import type { LayoutParagraph } from './layout/index.js';
@@ -75,14 +75,27 @@ function chargeFonts(pdf: PdfDocument, ctx: ReadContext, charged: { fonts: numbe
 }
 
 async function open(ctx: ReadContext): Promise<PdfDocument> {
+  // Fonts are shared across every PDF in one extraction (NST-1): give the engine what is left.
+  const fontLimit = Math.max(0, ctx.budget.limits.pdfFonts - ctx.budget.fonts);
+  const password = ctx.options.password;
   try {
-    // Fonts are shared across every PDF in one extraction (NST-1): give the engine what is left.
-    const fontLimit = Math.max(0, ctx.budget.limits.pdfFonts - ctx.budget.fonts);
-    return await openPdf(ctx.bytes, ctx.options.password, fontLimit);
+    try {
+      return await openPdf(ctx.bytes, password, fontLimit);
+    } catch (error) {
+      // The engine tries a given password instead of the empty user password: a file that opens
+      // without a password (owner password only) must not fail because a password was passed.
+      if (!(error instanceof PdfPasswordError && error.wrongPassword && password !== undefined)) throw error;
+      try {
+        return await openPdf(ctx.bytes, undefined, fontLimit);
+      } catch {
+        throw error;
+      }
+    }
   } catch (error) {
     if (error instanceof PdfPasswordError) {
       throw new EncryptedError(error.wrongPassword ? 'wrong-password' : 'password-required');
     }
+    if (error instanceof PdfUnsupportedEncryptionError) throw new EncryptedError('unsupported-encryption');
     if (error instanceof DocsluiceError) throw error;
     throw new CorruptFileError('The PDF could not be opened.', { cause: error });
   }
@@ -101,7 +114,10 @@ export const pdfReader: Reader = {
     const pdf = await open(ctx);
     try {
       ctx.budget.tick();
-      ctx.out.setMetadata(metadataOf(await pdf.info(), pdf.pageCount));
+      const info = await pdf.info();
+      ctx.out.setMetadata(metadataOf(info, pdf.pageCount));
+      // Encrypted, even when it opened with the empty user password (PDF-5).
+      if (info.encrypted) ctx.out.setFeature('isEncrypted');
       if (await pdf.hasJavaScript()) ctx.out.setFeature('hasJavaScript');
       if (await pdf.hasAttachments()) ctx.out.setFeature('hasEmbeddedFiles');
       const labels = await pdf.pageLabels();

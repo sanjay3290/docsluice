@@ -54,6 +54,8 @@ export interface PdfInfo {
   language?: string;
   xmpTitle?: string;
   xmpCreator?: string;
+  /** The file has an `/Encrypt` dictionary, even if it opened without a password. */
+  encrypted: boolean;
 }
 
 export interface PdfDocument {
@@ -82,6 +84,20 @@ export class PdfPasswordError extends Error {
     this.wrongPassword = wrongPassword;
   }
 }
+
+/** Thrown by `openPdf` when the file uses a security handler or algorithm the engine lacks. */
+export class PdfUnsupportedEncryptionError extends Error {
+  constructor() {
+    super('unsupported encryption');
+  }
+}
+
+/** The engine's fixed messages for encryption it cannot open (no document content). */
+const UNSUPPORTED_ENCRYPTION = new Set([
+  'unknown encryption method',
+  'unsupported encryption algorithm',
+  'Unknown crypto method',
+]);
 
 // Minimal shapes of the pdf.js objects used here.
 interface EngineTextItem {
@@ -208,6 +224,9 @@ export async function openPdf(
       const code = (error as { code?: unknown }).code;
       throw new PdfPasswordError(code === 2);
     }
+    if (UNSUPPORTED_ENCRYPTION.has(String((error as { message?: unknown }).message))) {
+      throw new PdfUnsupportedEncryptionError();
+    }
     throw error;
   }
   const { OPS } = engine;
@@ -229,7 +248,7 @@ export async function openPdf(
       const loaded = await document.getMetadata().catch(() => ({ info: undefined, metadata: null }));
       const info: Record<string, unknown> = loaded.info ?? {};
       const metadata = loaded.metadata;
-      const result: PdfInfo = {};
+      const result: PdfInfo = { encrypted: typeof info.EncryptFilterName === 'string' };
       const title = text(info.Title);
       if (title !== undefined) result.title = title;
       const author = text(info.Author);

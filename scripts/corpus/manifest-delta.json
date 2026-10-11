@@ -487,6 +487,16 @@
       "sha256": "b2cc3c08bdbf16f9ba5aa672481bb2f74cdb20ceba751d48c8d5fa86d3e6adc3",
       "file": "corpus/pdf/newsletter-three-columns.pdf",
       "goldenStatus": "reviewed"
+    },
+    {
+      "source": "scripts/corpus/src/permissions-only.fodt",
+      "requirements": [
+        "PDF-5"
+      ],
+      "sizeBytes": 17645,
+      "sha256": "c198c6edda8d50e21b5c99be1268ca62685d0be516e99bb223cb2f8b6aef2452",
+      "file": "corpus/pdf/permissions-only.pdf",
+      "goldenStatus": "reviewed"
     }
   ]
 }

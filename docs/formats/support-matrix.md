@@ -31,7 +31,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | ods | `docsluice/ods` | 8 | 8 | [ods.md](ods.md) |
 | odt | `docsluice/odt` | 4 | 4 | [odt.md](odt.md) |
 | ole | no reader | 4 | 4 | [ole.md](ole.md) |
-| pdf | `docsluice/pdf` | 13 | 13 | [pdf.md](pdf.md) |
+| pdf | `docsluice/pdf` | 14 | 14 | [pdf.md](pdf.md) |
 | ppt | `docsluice/ppt` | 3 | 3 | [ppt.md](ppt.md) |
 | pptx | `docsluice/pptx` | 7 | 7 | [pptx.md](pptx.md) |
 | rar | `docsluice/rar` | 2 | 0 | [rar.md](rar.md) |
@@ -93,7 +93,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | PDF-10 | Never run PDF JavaScript and never follow launch or remote actions. | `pdf/labels-outline-links.pdf` | 2 |
 | PDF-2 | Put text in reading order: join words into lines, lines into paragraphs, and handle two-column pages. | `pdf/article-two-columns.pdf`<br>`pdf/newsletter-three-columns.pdf` | — |
 | PDF-4 | Detect pages with no text layer and report `needsOcr: true` per page. Never return a silent empty result. | `pdf/scanned-image-only.pdf` | — |
-| PDF-5 | Encrypted PDFs: open with an empty user password if allowed; accept a `password` option; else throw `EncryptedError`. | `pdf/encrypted-document.pdf` | — |
+| PDF-5 | Encrypted PDFs: open with an empty user password if allowed; accept a `password` option; else throw `EncryptedError`. | `pdf/encrypted-document.pdf`<br>`pdf/permissions-only.pdf` | — |
 | PDF-6 | Read document metadata, outline (bookmarks) as headings, and link targets. | `pdf/labels-outline-links.pdf` | — |
 | PPT-1 | Slide order comes from the presentation's relationship list, **not** from file names (`slide10.xml` can come before `slide2.xml`). | `odp/deck-12-slides.odp`<br>`odp/deck-slide-order.odp`<br>`odp/reading-order.odp`<br>`pdf/deck-12-slides.pdf`<br>`pdf/deck-slide-order.pdf`<br>`ppt/deck-12-slides.ppt`<br>`ppt/ppt-order-title-notes.ppt`<br>`pptx/deck-12-slides.pptx`<br>`pptx/deck-slide-order.pptx`<br>`pptx/reading-order.pptx` | — |
 | PPT-2 | Find each slide's title from its title placeholder. | `odp/deck-12-slides.odp`<br>`odp/reading-order.odp`<br>`pdf/deck-12-slides.pdf`<br>`ppt/deck-12-slides.ppt`<br>`ppt/ppt-order-title-notes.ppt`<br>`pptx/deck-12-slides.pptx`<br>`pptx/reading-order.pptx` | — |
@@ -115,7 +115,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | SEC-1 | **Zip bomb** — a 40 KB file that expands to many gigabytes. \| Count bytes as they decompress. Stop at the total-uncompressed limit and at a compression-ratio limit. Never trust the sizes written in the zip header. | Not covered | 14 |
 | SEC-10 | **Network calls** — linked images, remote templates, external relationships in Office files, PDF remote actions. \| docsluice never fetches anything. External targets are reported as data only (`hasExternalLinks`). | Not covered | 4 |
 | SEC-11 | **Running content** — macros, PDF JavaScript, HTML scripts, formulas. \| Never run. Report presence only. Formula text is returned as a string. | `docx/headings-outline-macros.docm`<br>`ods/formulas.ods`<br>`pptx/deck-hidden-notes-macros.pptm`<br>`xlsx/formulas.xlsx`<br>`xlsx/workbook-values-formulas-macros.xlsm` | 2 |
-| SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 69 |
+| SEC-12 | **Memory exhaustion** — a sheet that claims 1,048,576 × 16,384 cells. \| Limits on cells, characters, blocks and decoded image size. Sparse storage for sheets. | Not covered | 71 |
 | SEC-14 | **Supply-chain attack** through a dependency. \| Few dependencies, pinned with a lockfile, reviewed on update. No install scripts. Publish with npm provenance. | Not covered | — |
 | SEC-2 | **Too many entries** — a zip with a million tiny files. \| Entry-count limit, checked before reading entries. | Not covered | 7 |
 | SEC-3 | **Path tricks** — entry names like `../../etc/passwd`. \| docsluice never writes to disk. Entry names are treated as plain strings and cleaned before they appear in paths. | Not covered | 4 |

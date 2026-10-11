@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: made for docsluice with LibreOffice 24.2.7.2 420(Build:2) from scripts/corpus/src/permissions-only.fodt
+Requirements: PDF-5
+Notes: Synthetic fixture; opens without a password; fixed public permissions password: docsluice-owner-only.
