@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: scripts/hostile/generate-pdf.mjs, from ISO 32000-1 file structure.
+Requirements: SEC-9
+Notes: minimal unused malformed page-kid prefetch rejection, issue #206.

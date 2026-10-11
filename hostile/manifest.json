@@ -1917,5 +1917,25 @@
     "maxMs": 2000,
     "maxHeapMB": 128,
     "requirement": "SEC-8"
+  },
+  {
+    "file": "pdf/page-kids-prefetch-rejection.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
+  },
+  {
+    "file": "pdf/unused-malformed-page-kid.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-9"
   }
 ]

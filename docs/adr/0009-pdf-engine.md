@@ -10,7 +10,8 @@ A PDF parser written from scratch takes years (risk R1). pdf.js is the reference
 
 ## Decision
 
-Use `unpdf` **1.8.1** (exact pin; MIT; no dependencies; its serverless bundle reports pdf.js **6.1.200**) behind docsluice's own reading-order layer and budget. Load it only through dynamic `import()` when a PDF arrives. Turn off JavaScript evaluation, font loading from the network and every remote action (PDF-10, SEC-10).
+Vendor `unpdf` **1.8.1** at build time as an exact devDependency.
+Use its serverless pdf.js build (exact pin; MIT; no dependencies; its serverless bundle reports pdf.js **6.1.200**) behind docsluice's own reading-order layer and budget. Load it only through dynamic `import()` when a PDF arrives. Turn off JavaScript evaluation, font loading from the network and every remote action (PDF-10, SEC-10).
 
 How the PDF reader must use it:
 
@@ -64,7 +65,35 @@ All four checks pass for `unpdf`: (1) it runs in all the CI runtimes tested (Nod
 ## Consequences
 
 - The PDF reader is the one large subpath. It is excluded from the 40 KB reader budget and gets 500 KB gzipped.
-- The dependency is added in the PDF reader issue, pinned exactly to `1.8.1`, not in this spike.
+- The PDF reader bundles the engine from the exact `unpdf` devDependency. No runtime dependency is added.
 - Updating `unpdf` (and so pdf.js) re-runs the checks above in the PDF reader's runtime tests.
 - Found with the PDF reader (#45): loading the engine changes globals once — it sets `globalThis.DOMMatrix` (minimal polyfill, when missing), `pdfjsLib`, `pdfjsWorker` and `_pdfjsTestingUtils`, and polyfills `Map.prototype.getOrInsertComputed`, `Uint8Array.prototype.toHex` and `Math.sumPrecise` where missing. `Object.prototype` and `Array.prototype` are untouched. This is documented in `docs/formats/pdf.md`; the PDF fuzz target loads the engine before the runner's prototype baseline.
 - Found by the PDF fuzz target (#45): on some malformed page trees pdf.js (both builds) leaves an internal prefetch promise rejected and unobserved during `getDocument()`; in Node this is an `unhandledRejection`. Tracked in #206.
+
+## Page-kids prefetch patch (issue #206)
+
+The owner approved a local patch on 2026-10-10.
+Malformed unused page-tree kids can reject an unobserved prefetch promise.
+Node then stops the process under its default rejection policy.
+
+The build attaches a no-op rejection handler and retains the original promise.
+Later callers still receive its original result or error.
+The transform matches structure, independently of minified names.
+The build fails unless exactly one site matches.
+Unit tests and fuzz tests use the same transform.
+The hostile corpus includes the fuzz crash and a minimal synthetic PDF.
+The hostile runner rejects any unhandled rejection for every format.
+
+`THIRD_PARTY_NOTICES.md` records the Apache-2.0 and MIT licenses.
+The bundled engine retains a license header and a modification notice.
+Remove the patch after pdf.js and unpdf release the fix.
+The owner posts the upstream report drafted on #206.
+
+The patched PDF reader measures 490.06 KB minified and gzipped.
+Its RT-5 budget remains 500 KB.
+Local verification passes with Node 24, UTC, and a real macOS temporary path.
+Issue #260 tracks failures with the default macOS test environment.
+
+PDF fuzz found a separate unhandled promise in `Catalog.getPageIndex` after this patch.
+Issue #261 records the minimal reproduction and requests approval for a second patch.
+The owner decision blocks merge until PDF fuzz passes.

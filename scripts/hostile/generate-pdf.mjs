@@ -7,6 +7,20 @@ import { HELVETICA, pdf, stream, textPage } from '../corpus/pdf-writer.mjs';
 const directory = new URL('../../hostile/pdf/', import.meta.url);
 await mkdir(directory, { recursive: true });
 
+// One unused malformed kid rejects during prefetch, before the caller can observe its promise (#206).
+await writeFile(
+  new URL('unused-malformed-page-kid.pdf', directory),
+  pdf(
+    [
+      '<< /Type /Catalog /Pages 2 0 R >>',
+      '<< /Type /Pages /Kids [3 0 R 4 0 R] /Count 1 >>',
+      '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>',
+      '<< /Type /Page /Bad ) >>',
+    ],
+    '/Root 1 0 R',
+  ),
+);
+
 const page = (parent, contents, extra = '') =>
   `<< /Type /Page /Parent ${parent} 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contents} 0 R${extra} >>`;
 
@@ -70,10 +84,14 @@ await writeFile(
     const child = level === levels - 1 ? 8 : self + 1;
     const count = 10 ** (levels - level);
     const parent = level === 0 ? '' : ` /Parent ${self - 1} 0 R`;
-    objects.push(`<< /Type /Pages${parent} /Kids [${Array.from({ length: 10 }, () => `${child} 0 R`).join(' ')}] /Count ${count} >>`);
+    objects.push(
+      `<< /Type /Pages${parent} /Kids [${Array.from({ length: 10 }, () => `${child} 0 R`).join(' ')}] /Count ${count} >>`,
+    );
   }
   objects.push(HELVETICA);
-  objects.push('<< /Type /Page /Parent 6 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 7 0 R >> >> /Contents 9 0 R >>');
+  objects.push(
+    '<< /Type /Page /Parent 6 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 7 0 R >> >> /Contents 9 0 R >>',
+  );
   objects.push(stream(textPage(['One page object, shared 100,000 times.'])));
   await writeFile(new URL('pages-100000-shared.pdf', directory), pdf(objects, '/Root 1 0 R'));
 }

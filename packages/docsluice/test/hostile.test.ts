@@ -6,6 +6,7 @@ import { createRegistry } from '../src/core/registry.js';
 import type { FormatPlugin } from '../src/core/registry.js';
 import { sevenZipPlugin } from '../src/readers/7z/index.js';
 import { rarPlugin } from '../src/readers/rar/index.js';
+import { checkUnhandledRejections } from '../../../scripts/hostile/unhandled-rejections.mjs';
 
 /** One `hostile/manifest.json` entry (docs/testing.md, section 3). */
 interface ManifestEntry {
@@ -73,7 +74,7 @@ describe('hostile corpus', () => {
       const started = performance.now();
       let outcome: { error: string } | { warnings: string[] };
       try {
-        const doc = await extract(bytes, options);
+        const doc = await checkUnhandledRejections(() => extract(bytes, options));
         outcome = { warnings: doc.warnings.map(({ code }) => code) };
       } catch (error) {
         outcome = { error: (error as { code?: string }).code ?? String(error) };

@@ -331,7 +331,9 @@
     "parser"
   ],
   "dependencies": {
-    "fflate": "0.8.2",
+    "fflate": "0.8.2"
+  },
+  "devDependencies": {
     "unpdf": "1.8.1"
   }
 }

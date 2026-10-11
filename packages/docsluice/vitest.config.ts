@@ -1,9 +1,12 @@
 import { defineConfig } from 'vitest/config';
+import { pdfjsPatchPlugin } from '../../scripts/pdfjs-patch.mjs';
 
 const coverage = process.argv.includes('--coverage');
 
 export default defineConfig({
+  plugins: [pdfjsPatchPlugin()],
   test: {
+    server: { deps: { inline: ['unpdf'] } },
     include: ['test/**/*.test.ts'],
     testTimeout: 10_000,
     // Timing tests skip themselves under coverage instrumentation.

@@ -58,3 +58,21 @@ jobs:
             gzip,
             tar,
             pdf,
+          ]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: node --test scripts/fuzz-run.test.mjs
+      - id: fuzz
+        run: node scripts/fuzz-run.mjs "${{ matrix.target }}" --seconds 1800 --memory-mb 1024 --artifacts fuzz-artifacts
+      - uses: actions/upload-artifact@v7
+        if: always() && steps.fuzz.outcome != 'success'
+        with:
+          name: fuzz-failure-${{ matrix.target }}
+          path: fuzz-artifacts
+          if-no-files-found: ignore
+          retention-days: 30

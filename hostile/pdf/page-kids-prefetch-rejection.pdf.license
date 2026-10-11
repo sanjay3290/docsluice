@@ -1,0 +1,4 @@
+SPDX-License-Identifier: CC0-1.0
+Source: PDF fuzz artifact 11658963690 from docsluice PR #205, run 38022594087.
+Requirements: SEC-9
+Notes: mutated synthetic corpus PDF; preserved crash bytes.
