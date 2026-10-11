@@ -32,6 +32,9 @@ const entries = JSON.parse(readFileSync(new URL('manifest.json', root), 'utf8'))
 const ownKeys = (target: object): string[] => Reflect.ownKeys(target).map(String).sort();
 const objectKeys = ownKeys(Object.prototype);
 const arrayKeys = ownKeys(Array.prototype);
+const coverage =
+  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env
+    ?.DOCSLUICE_COVERAGE === '1';
 
 function registryWith(id: string) {
   const plugin = PLUGINS.get(id);
@@ -79,7 +82,7 @@ describe('hostile corpus', () => {
       } catch (error) {
         outcome = { error: (error as { code?: string }).code ?? String(error) };
       }
-      expect(performance.now() - started).toBeLessThan(entry.maxMs);
+      if (!coverage) expect(performance.now() - started).toBeLessThan(entry.maxMs);
       expect(outcome).toEqual(entry.expect);
       expect(fetch).not.toHaveBeenCalled();
       expect(ownKeys(Object.prototype)).toEqual(objectKeys);

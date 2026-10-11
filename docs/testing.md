@@ -82,6 +82,7 @@ Hostile files are made by scripts in `scripts/hostile/` where possible, so the r
 Every file must meet its own threshold, not just its group on average. `npm run coverage` (part of `npm run verify` and of the required CI job) runs the unit tests with v8 coverage. It fails when any file is below its line threshold, and writes a Markdown summary to the GitHub job summary: totals, each group's lowest file, and the ten files closest to their threshold. The thresholds live in `packages/docsluice/vitest.config.ts`. A new file without tests counts as 0%, so it fails until it has them.
 
 - Tests that measure time (the PERF checks) skip themselves under coverage, where instrumentation makes timing meaningless. `npm test` still runs them.
+- Hostile tests enforce `maxMs` during `npm test`. Coverage checks their outcomes and safety without the wall-clock assertion.
 - The worker-thread entry (`src/node/worker/worker.ts`) is excluded: it runs only inside a `Worker`, where the test process's coverage cannot see it. The built-package worker tests exercise it.
 - A branch that only a second, unreachable guard can reach is excluded with a `/* v8 ignore */` comment that says why. One example is the RTF HTML overflow mode behind `enterDepth`. Do not use such comments to hide untested code.
 
