@@ -467,6 +467,26 @@
       "sha256": "f60ba6111934851ce698ce8f14697de53959346d4c3f52da35dd7823199f9648",
       "file": "corpus/xls/workbook-1904-note.xls",
       "goldenStatus": "unreviewed"
+    },
+    {
+      "source": "scripts/corpus/src/article-two-columns.fodt",
+      "requirements": [
+        "PDF-2"
+      ],
+      "sizeBytes": 41705,
+      "sha256": "213fc003532729aa6bf54df3f8e58d4c398ab37e585ea373eea6d77a28d5f32a",
+      "file": "corpus/pdf/article-two-columns.pdf",
+      "goldenStatus": "reviewed"
+    },
+    {
+      "source": "scripts/corpus/src/newsletter-three-columns.fodt",
+      "requirements": [
+        "PDF-2"
+      ],
+      "sizeBytes": 30551,
+      "sha256": "b2cc3c08bdbf16f9ba5aa672481bb2f74cdb20ceba751d48c8d5fa86d3e6adc3",
+      "file": "corpus/pdf/newsletter-three-columns.pdf",
+      "goldenStatus": "reviewed"
     }
   ]
 }

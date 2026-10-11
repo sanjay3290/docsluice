@@ -71,6 +71,16 @@
     "pdfPassword": "docsluice-fixture-only"
   },
   {
+    "source": "src/article-two-columns.fodt",
+    "formats": ["pdf"],
+    "requirements": ["PDF-2"]
+  },
+  {
+    "source": "src/newsletter-three-columns.fodt",
+    "formats": ["pdf"],
+    "requirements": ["PDF-2"]
+  },
+  {
     "source": "src/gettysburg-address.fodt",
     "formats": ["epub"],
     "requirements": ["HTM-1"]
