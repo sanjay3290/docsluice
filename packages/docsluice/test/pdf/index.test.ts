@@ -147,13 +147,31 @@ describe('PDF reader', () => {
     expect(doc.metadata.pageCount).toBe(100_000);
   });
 
+  it('reads a Node Buffer and leaves the caller bytes intact', async () => {
+    const buffer = readFileSync(new URL('fonts-300.pdf', hostile));
+    const before = Uint8Array.from(buffer);
+    const doc = await extract(buffer, { limits: { pdfFonts: 3 } });
+    expect(pages(doc)[0]!.blocks).toMatchObject([{ kind: 'paragraph', text: 'AAA' }]);
+    expect(Uint8Array.from(buffer)).toEqual(before);
+  });
+
   it('caps CMap ranges so a 1 KB ToUnicode bomb stays small (#262)', async () => {
-    for (const file of ['cmap-range-16m.pdf', 'cmap-two-ranges-16m.pdf', 'cmap-shared-four-fonts.pdf']) {
+    const expected: [string, string][] = [
+      ['cmap-range-16m.pdf', 'A'],
+      ['cmap-two-ranges-16m.pdf', 'A'],
+      ['cmap-shared-four-fonts.pdf', 'AAAA'],
+      // The first 256 ranges fit the cap and map code 0x41 to U+0041 + 0x41; pdf.js drops the rest.
+      ['cmap-ranges-over-cap.pdf', '\u0082'],
+      ['cmap-high-code.pdf', 'A'],
+    ];
+    for (const [file, text] of expected) {
       const started = performance.now();
       const doc = await extract(read(hostile, file));
       // Before the cap: 1.9-3.2 GB and 7-17 s. The process tests bound the heap.
       expect(performance.now() - started, file).toBeLessThan(2000);
+      // A dropped range does not stop the document: the page and its text are still read.
       expect(pages(doc), file).toHaveLength(1);
+      expect(pages(doc)[0]!.blocks, file).toMatchObject([{ kind: 'paragraph', text }]);
       expect(doc.warnings, file).toEqual([]);
     }
   });

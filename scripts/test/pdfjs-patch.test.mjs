@@ -73,11 +73,13 @@ test('the page-index patch retains the callback promise and its rejection', asyn
 test('each CMap maps at most 65,536 codes through ranges', async () => {
   const { CMap } = await load(engine());
   const cmap = new CMap();
-  cmap.mapBfRange(0, 65_279, 'A');
-  cmap.mapCidRange(0x1_0000, 0x1_00ff, 1);
+  cmap.mapBfRange(0, 0xfeff, 'A');
+  cmap.mapCidRange(0xff00, 0xffff, 1);
   assert.equal(cmap.map.size, 65_536);
+  // Past the cap, every range method takes pdf.js's existing error path: parseCMap catches the
+  // error, warns and keeps parsing, so the range is dropped and the document keeps reading.
   for (const method of ['mapCidRange', 'mapBfRange', 'mapBfRangeToArray'])
-    assert.throws(() => cmap[method](0x2_0000, 0x2_0000, 1), new RegExp(`${method} - ignoring data`));
+    assert.throws(() => cmap[method](0, 0, 1), new RegExp(`${method} - ignoring data`));
   assert.equal(cmap.map.size, 65_536);
   // The cap is per CMap, and one oversized range is refused before its loop runs.
   const other = new CMap();

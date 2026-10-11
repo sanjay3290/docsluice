@@ -183,9 +183,10 @@ export async function openPdf(
   const engine = await loadEngine();
   // Fail closed: without the build patch, nothing bounds the fonts the engine loads.
   if (typeof engine.docsluiceTrackPdfFonts !== 'function') throw new Error('unpatched PDF engine');
-  // pdf.js may transfer the buffer; give it a copy so the caller's bytes stay intact.
+  // pdf.js may transfer the buffer; give it a copy so the caller's bytes stay intact. A plain
+  // Uint8Array copy: a subclass's slice() may return a view, and pdf.js refuses Node's Buffer.
   const task = engine.getDocument({
-    data: bytes.slice(),
+    data: new Uint8Array(bytes),
     ...ENGINE_OPTIONS,
     ...(password !== undefined ? { password } : {}),
   });
