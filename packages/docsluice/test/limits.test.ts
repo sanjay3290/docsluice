@@ -14,6 +14,7 @@ describe('limits', () => {
       outputChars: 20_000_000,
       cells: 2_000_000,
       pdfPages: 2_000,
+      pdfFonts: 256,
       timeMs: 60_000,
     });
     expect(Object.isFrozen(DEFAULT_LIMITS)).toBe(true);

@@ -8,7 +8,14 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const defaultRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUTPUT = 'docs/formats/support-matrix.md';
-const SIDECARS = ['.license', '.expected.json', '.expected.md', '.blocks.json', '.native.txt'];
+const SIDECARS = [
+  '.license',
+  '.expected.json',
+  '.expected.md',
+  '.expected.error',
+  '.blocks.json',
+  '.native.txt',
+];
 const METADATA = new Set(['README.md', '.gitattributes', '.gitkeep']);
 /** Package subpaths that are not format readers. */
 const NOT_READERS = new Set(['.', './node', './worker', './schema.json', './package.json']);
@@ -98,8 +105,9 @@ export function generateSupportMatrix(root = defaultRoot) {
     if (!existsSync(license)) throw new Error(`corpus/${input} has no .license file.`);
     const tags = parseLicenseTags(readFileSync(license, 'utf8'), `corpus/${input}.license`, requirements);
     const golden =
-      existsSync(path.join(corpus, `${input}.expected.json`)) &&
-      existsSync(path.join(corpus, `${input}.expected.md`));
+      existsSync(path.join(corpus, `${input}.expected.error`)) ||
+      (existsSync(path.join(corpus, `${input}.expected.json`)) &&
+        existsSync(path.join(corpus, `${input}.expected.md`)));
     const entry = byFormat.get(format) ?? { files: 0, goldens: 0 };
     entry.files++;
     if (golden) entry.goldens++;

@@ -116,27 +116,28 @@ Tracked changes are accepted by default; pass `revisions: 'reject'` or `'show'` 
 
 ## PDFs (from pdf-parse)
 
-The PDF reader arrives with milestone M2. Until then, `extract()` detects a PDF and throws `UnsupportedFormatError` (code `UNSUPPORTED_FORMAT`), so keep your PDF path for now and switch when the reader ships. The mapping will be:
-
-| pdf-parse                  | docsluice (M2)                                                   |
-| -------------------------- | ---------------------------------------------------------------- |
-| `data.text`                | `toText(doc)`                                                    |
-| `data.numpages`            | `doc.metadata.pageCount`; one `section` per page with `loc.page` |
-| `data.info`                | `doc.metadata`                                                   |
-| scanned pages without text | `doc.stats.needsOcr` and per-page `needsOcr`                     |
+| pdf-parse | docsluice |
+|---|---|
+| `data.text` | `toText(doc)` |
+| `data.numpages` | `doc.metadata.pageCount`; one `section` per page with `loc.page` and `loc.pageLabel` |
+| `data.info` | `doc.metadata` (title, authors, ISO dates, language) |
+| scanned pages without text | `doc.stats.needsOcr`, per-page `needsOcr` and a `NEEDS_OCR` warning with page numbers |
+| bookmarks, links | outline entries as `heading` blocks; web links as runs with `href` (`runs: true`) |
 
 ```ts
-import { detect, UnsupportedFormatError, extract } from 'docsluice';
+import { extractFile, toText } from 'docsluice/node';
 
-const pdf = new TextEncoder().encode('%PDF-1.7\n%âãÏÓ\n');
-const { format } = await detect(pdf);
-try {
-  await extract(pdf);
-} catch (error) {
-  // Keep the existing PDF path for now.
-  if (!(error instanceof UnsupportedFormatError) || format !== 'pdf') throw error;
+const doc = await extractFile('report.pdf');
+const text = toText(doc);
+const firstPage = doc.blocks[0];
+if (firstPage?.kind !== 'section' || firstPage.loc.page !== 1) throw new Error('pages are sections');
+if (doc.stats.needsOcr) {
+  // Some pages are scans: send them to OCR. doc.warnings lists the page numbers.
 }
+if (text.length === 0 || doc.metadata.pageCount === undefined) throw new Error('no text');
 ```
+
+Differences to know: PDF JavaScript is never run and launch or remote actions are never followed (`doc.features` reports them); a password-protected file throws `EncryptedError` unless you pass `password`; text follows the content stream for now, so multi-column reading order and repeated header/footer removal are still to come.
 
 ## Archives (from adm-zip and yauzl)
 
@@ -278,4 +279,4 @@ Every block has `loc`: `page`, `slide`, `sheet` and `range`, `path` (the child p
 2. Move redaction into `transform`.
 3. Send `toMarkdown(doc)` or `chunk(doc)` text to the model, and keep `loc` for citations.
 4. Compare text on a sample of your real (non-personal) files before removing the old packages; that comparison runs in your code base, not in docsluice.
-5. Remove `xlsx`, `mammoth`, `adm-zip` and `yauzl`; keep `pdf-parse` until the PDF reader ships.
+5. Remove `xlsx`, `pdf-parse`, `mammoth`, `adm-zip` and `yauzl`.

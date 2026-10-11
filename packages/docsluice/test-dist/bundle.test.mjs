@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import process from 'node:process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
@@ -44,7 +46,110 @@ test('importing extract from docsluice loads every reader lazily (RT-4)', async 
       assert.ok(owner, `${reader} reader is bundled`);
       assert.ok(owner.isDynamicEntry, `${reader} reader is a dynamically imported chunk`);
     }
+    // The PDF engine (unpdf's pdf.js build) loads only when a PDF arrives (ADR 0009).
+    const engineModules = (chunk) => chunk.moduleIds.filter((id) => /\/pdfjs-[^/]+\.js$/.test(id));
+    assert.equal(engineModules(entry).length, 0, 'the PDF engine is not in the entry chunk');
+    const engine = chunks.find((chunk) => engineModules(chunk).length > 0);
+    assert.ok(engine, 'the PDF engine is bundled');
+    assert.ok(engine.isDynamicEntry || !engine.isEntry, 'the PDF engine is a lazily loaded chunk');
   } finally {
     await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('each built engine contains every pdf.js patch and its license header', async () => {
+  const files = (await readdir(dist)).filter((name) => /^pdfjs-.*\.(?:js|cjs)$/.test(name));
+  assert.equal(files.length, 2);
+  for (const file of files) {
+    const code = await readFile(join(dist, file), 'utf8');
+    assert.equal([...code.matchAll(/docsluicePdfPrefetch\(/g)].length, 3, file);
+    for (const [method, next] of [
+      ['async getPageDict(', 'async getAllPageDicts('],
+      ['async getPageIndex(', 'get baseUrl('],
+    ]) {
+      const start = code.indexOf(method);
+      const end = code.indexOf(next, start);
+      assert.ok(start >= 0 && end > start, `${file}: ${method}`);
+      assert.equal([...code.slice(start, end).matchAll(/docsluicePdfPrefetch\(/g)].length, 1, method);
+    }
+    assert.equal([...code.matchAll(/docsluicePdfCMapReserve\(this,/g)].length, 3, file);
+    assert.equal(
+      [...code.matchAll(/docsluicePdfFontAllowed\(this\.idFactory\.getDocId\(\)\)/g)].length,
+      1,
+      file,
+    );
+    assert.match(code, /promise\.catch\(\(\) => \{\}\)/);
+    assert.match(code, /Copyright.*Mozilla Foundation/);
+    assert.match(code, /Apache-2\.0/);
+  }
+  const notices = await readFile(join(dist, 'THIRD_PARTY_NOTICES.md'), 'utf8');
+  assert.match(notices, /Apache License/);
+  assert.match(notices, /MIT License/);
+});
+
+test('malformed page-tree prefetch cannot crash a process with either package entry', () => {
+  for (const format of ['esm', 'cjs']) {
+    const load =
+      format === 'esm' ? "await import('docsluice')" : "createRequire(import.meta.url)('docsluice')";
+    const result = spawnSync(
+      process.execPath,
+      [
+        '--unhandled-rejections=strict',
+        '--input-type=module',
+        '-e',
+        `
+      import { readFileSync } from 'node:fs';
+      import { createRequire } from 'node:module';
+      const { extract } = ${load};
+      for (const [file, pages] of [
+        ['unused-malformed-page-kid.pdf', 1],
+        ['page-kids-prefetch-rejection.pdf', 1],
+        ['missing-outline-page.pdf', 1],
+        ['page-index-prefetch-rejection.pdf', 2],
+      ]) {
+        const bytes = new Uint8Array(readFileSync('../../hostile/pdf/' + file));
+        const document = await extract(bytes, { format: 'pdf' });
+        if (document.metadata.pageCount !== pages) throw new Error('Page count mismatch');
+        await new Promise(resolve => setImmediate(resolve));
+      }
+    `,
+      ],
+      { cwd: packageRoot, encoding: 'utf8', timeout: 10_000 },
+    );
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stderr, '');
+  }
+});
+
+test('CMap range bombs stay inside a 128 MB heap with either package entry (#262)', () => {
+  for (const format of ['esm', 'cjs']) {
+    const load =
+      format === 'esm' ? "await import('docsluice')" : "createRequire(import.meta.url)('docsluice')";
+    const result = spawnSync(
+      process.execPath,
+      [
+        '--max-old-space-size=128',
+        '--input-type=module',
+        '-e',
+        `
+      import { readFileSync } from 'node:fs';
+      import { createRequire } from 'node:module';
+      const { extract } = ${load};
+      for (const file of [
+        'cmap-range-16m.pdf',
+        'cmap-two-ranges-16m.pdf',
+        'cmap-shared-four-fonts.pdf',
+        'cmap-ranges-over-cap.pdf',
+        'fonts-300.pdf',
+      ]) {
+        const bytes = new Uint8Array(readFileSync('../../hostile/pdf/' + file));
+        const document = await extract(bytes, { format: 'pdf' });
+        if (document.metadata.pageCount !== 1) throw new Error('Page count mismatch');
+      }
+    `,
+      ],
+      { cwd: packageRoot, encoding: 'utf8', timeout: 20_000 },
+    );
+    assert.equal(result.status, 0, result.stderr);
   }
 });

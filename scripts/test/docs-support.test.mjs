@@ -114,6 +114,21 @@ test('fails for a reader without a format page or a corpus file without a licens
   }
 });
 
+test('counts an expected extraction error as a golden and excludes its sidecar', () => {
+  const root = fixtureRepo({
+    'corpus/csv/a.csv': 'damaged',
+    'corpus/csv/a.csv.license': license('CSV-1'),
+    'corpus/csv/a.csv.expected.error': 'CORRUPT_FILE',
+  });
+  try {
+    const page = generateSupportMatrix(root);
+    assert.match(page, /\| csv \| `docsluice\/csv` \| 1 \| 1 \|/);
+    assert.doesNotMatch(page, /no golden/);
+  } finally {
+    rmSync(root, { recursive: true });
+  }
+});
+
 test('check mode compares the committed page', () => {
   const root = fixtureRepo({ 'corpus/csv/a.csv': 'a\n', 'corpus/csv/a.csv.license': license('CSV-1') });
   try {

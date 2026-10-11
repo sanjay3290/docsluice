@@ -26,6 +26,8 @@ export interface Limits {
   cells: number;
   /** Maximum PDF pages. */
   pdfPages: number;
+  /** Maximum fonts the PDF engine loads across all PDFs; text in a refused font is lost (SEC-12). */
+  pdfFonts: number;
   /** Time budget in milliseconds (SEC-9). */
   timeMs: number;
 }
@@ -44,6 +46,7 @@ export const DEFAULT_LIMITS: Readonly<Limits> = Object.freeze({
   outputChars: 20_000_000,
   cells: 2_000_000,
   pdfPages: 2_000,
+  pdfFonts: 256,
   timeMs: 60_000,
 });
 
@@ -77,6 +80,8 @@ function getLimit(overrides: Partial<Limits>, key: keyof Limits): number | undef
       return overrides.cells;
     case 'pdfPages':
       return overrides.pdfPages;
+    case 'pdfFonts':
+      return overrides.pdfFonts;
     case 'timeMs':
       return overrides.timeMs;
   }
@@ -116,6 +121,9 @@ function setLimit(limits: Limits, key: keyof Limits, value: number): void {
       break;
     case 'pdfPages':
       limits.pdfPages = value;
+      break;
+    case 'pdfFonts':
+      limits.pdfFonts = value;
       break;
     case 'timeMs':
       limits.timeMs = value;

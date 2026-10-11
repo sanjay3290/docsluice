@@ -4,6 +4,7 @@ import { mkdir, mkdtemp, readdir, readFile, rm, stat, writeFile } from 'node:fs/
 import { tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { patchPdfJs } from './pdfjs-patch.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const packageRoot = join(root, 'packages/docsluice');
@@ -78,6 +79,7 @@ export const TARGETS = {
     export: 'fuzzZipContainer',
     seeds: ['corpus/zip', 'hostile/zip'],
   },
+  pdf: { module: 'fuzz/pdf.fuzz.js', export: 'fuzzPdf', seeds: ['corpus/pdf', 'hostile/pdf'] },
   pptx: { module: 'fuzz/pptx.fuzz.js', export: 'fuzzPptx', seeds: ['corpus/pptx', 'hostile/pptx'] },
   'xlsx-numfmt': {
     module: 'fuzz/xlsx-numfmt.fuzz.js',
@@ -130,7 +132,14 @@ function parseArgs(args) {
 
 // Licences, goldens, manifests and readmes are not inputs; every other corpus or hostile file is a seed.
 const SIDECAR_NAMES = new Set(['README.md', 'manifest.json', '.gitattributes', '.gitkeep']);
-const SIDECAR_SUFFIXES = ['.license', '.expected.json', '.expected.md', '.blocks.json', '.native.txt'];
+const SIDECAR_SUFFIXES = [
+  '.license',
+  '.expected.json',
+  '.expected.md',
+  '.expected.error',
+  '.blocks.json',
+  '.native.txt',
+];
 function isSidecar(name) {
   return SIDECAR_NAMES.has(name) || SIDECAR_SUFFIXES.some((suffix) => name.endsWith(suffix));
 }
@@ -297,6 +306,18 @@ async function compileFuzzSources(
     throw new Error(
       `TypeScript fuzz-source compilation failed (exit ${result.code ?? result.signal}):\n${diagnostic}`,
     );
+  }
+  // The source fuzzer uses the same patched engine as the shipped PDF chunk.
+  const engine = await readFile(fileURLToPath(import.meta.resolve('unpdf/pdfjs')), 'utf8');
+  await mkdir(join(buildDir, 'vendor'), { recursive: true });
+  await writeFile(join(buildDir, 'vendor/pdfjs.mjs'), patchPdfJs(engine));
+  for (const [file, specifier] of [
+    ['src/readers/pdf/engine.js', '../../../vendor/pdfjs.mjs'],
+    ['fuzz/pdf.fuzz.js', '../vendor/pdfjs.mjs'],
+  ]) {
+    const path = join(buildDir, file);
+    const source = await readFile(path, 'utf8');
+    await writeFile(path, source.replaceAll('unpdf/pdfjs', specifier));
   }
 }
 

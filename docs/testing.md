@@ -25,7 +25,7 @@ corpus/
 
 - The golden runner (`packages/docsluice/test/golden.test.ts`, part of `npm test`) walks `corpus/`, extracts each file with its name as the `filename` hint, and compares `toJSON(doc, { stable: true })` and `toMarkdown(doc)` byte for byte with the expected files (no trailing newline). A mismatch fails with a diff.
 - A file whose expected outputs are missing fails with instructions; CI never creates them. A corpus file for a format that has no reader yet must still fail with `UNSUPPORTED_FORMAT` and must have no expected files. Adding the reader therefore fails the run until its goldens are reviewed and committed.
-- Every input needs a `.license` with an `SPDX-License-Identifier:` line, or the run fails. Other sidecars that the runner ignores: `.blocks.json` and `.native.txt` (reader-specific fixtures).
+- Every input needs a `.license` with an `SPDX-License-Identifier:` line, or the run fails. An input whose reviewed outcome is an error has a `.expected.error` sidecar holding the error code (for example `ENCRYPTED` for a password-protected file opened without its password) instead of `.expected.json`/`.expected.md`. Other sidecars that the runner ignores: `.blocks.json` and `.native.txt` (reader-specific fixtures).
 - `UPDATE_GOLDEN=1 npm test` rewrites the expected files. Read every diff before you commit it. A golden change in a PR must be explained in the PR body.
 - `.license` file format:
 
@@ -61,7 +61,7 @@ hostile/
 { "file": "zip/bomb-42k.zip", "expect": { "error": "LIMIT_EXCEEDED" }, "maxMs": 2000, "maxHeapMB": 256, "requirement": "SEC-1" }
 ```
 
-`expect` is either `{ "error": "<code>" }` or `{ "warnings": ["<code>", ...] }`. An optional `"format"` forces that reader, for attack files that detection would otherwise route to a different format. An optional `"plugin"` (`"7z"` or `"rar"`) registers that opt-in format plugin ([ADR 0014](adr/0014-7z-rar-listing-plugins.md)) for the file. The runner (`packages/docsluice/test/hostile.test.ts`) also checks: finished within `maxMs`, no global prototype changed (`Object.prototype` and `Array.prototype` have no new keys), no network call (`fetch` is stubbed to throw), no unhandled rejection (Vitest fails the run on one), and every file in `hostile/` has exactly one entry. `maxHeapMB` is recorded for an isolated runner; in-process Vitest cannot measure heap per file.
+`expect` is either `{ "error": "<code>" }` or `{ "warnings": ["<code>", ...] }`. An optional `"format"` forces that reader, for attack files that detection would otherwise route to a different format. An optional `"plugin"` (`"7z"` or `"rar"`) registers that opt-in format plugin ([ADR 0014](adr/0014-7z-rar-listing-plugins.md)) for the file. The runner (`packages/docsluice/test/hostile.test.ts`) also checks: finished within `maxMs`, no global prototype changed (`Object.prototype` and `Array.prototype` have no new keys), no network call (`fetch` is stubbed to throw), no unhandled rejection (a scoped guard drains pending rejections; Vitest also rejects unhandled errors), and every file in `hostile/` has exactly one entry. `maxHeapMB` is recorded for an isolated runner; in-process Vitest cannot measure heap per file.
 
 Hostile files are made by scripts in `scripts/hostile/` where possible, so the repo holds the recipe, not only the bytes.
 
@@ -82,6 +82,7 @@ Hostile files are made by scripts in `scripts/hostile/` where possible, so the r
 Every file must meet its own threshold, not just its group on average. `npm run coverage` (part of `npm run verify` and of the required CI job) runs the unit tests with v8 coverage. It fails when any file is below its line threshold, and writes a Markdown summary to the GitHub job summary: totals, each group's lowest file, and the ten files closest to their threshold. The thresholds live in `packages/docsluice/vitest.config.ts`. A new file without tests counts as 0%, so it fails until it has them.
 
 - Tests that measure time (the PERF checks) skip themselves under coverage, where instrumentation makes timing meaningless. `npm test` still runs them.
+- Hostile tests enforce `maxMs` during `npm test`. Coverage checks their outcomes and safety without the wall-clock assertion.
 - The worker-thread entry (`src/node/worker/worker.ts`) is excluded: it runs only inside a `Worker`, where the test process's coverage cannot see it. The built-package worker tests exercise it.
 - A branch that only a second, unreachable guard can reach is excluded with a `/* v8 ignore */` comment that says why. One example is the RTF HTML overflow mode behind `enterDepth`. Do not use such comments to hide untested code.
 

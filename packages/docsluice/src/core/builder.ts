@@ -510,9 +510,16 @@ export class DocBuilder {
 
   /**
    * Open a section; sections exceeding `blockDepth` are flattened into their parent.
-   * `hidden` marks hidden sheets and slides (XLS-1, PPT-5).
+   * `hidden` marks hidden sheets and slides (XLS-1, PPT-5); `needsOcr` marks PDF pages with no
+   * text layer (PDF-4).
    */
-  openSection(role: SectionRole, loc: Location = {}, title?: string, hidden?: boolean | 'very'): boolean {
+  openSection(
+    role: SectionRole,
+    loc: Location = {},
+    title?: string,
+    hidden?: boolean | 'very',
+    needsOcr?: boolean,
+  ): boolean {
     if (this.#stopped) return false;
     const parentTarget = this.#target();
     const canNest = this.#sectionDepth + 1 <= this.#budget.limits.blockDepth;
@@ -521,6 +528,7 @@ export class DocBuilder {
         const section: SectionBlock = { kind: 'section', role, blocks: [], loc };
         if (title !== undefined) section.title = normalizeText(title, this.#budget);
         if (hidden !== undefined && hidden !== false) section.hidden = hidden;
+        if (needsOcr === true) section.needsOcr = true;
         const pendingStart = this.#pendingOutputChars;
         const pending = pendingStart + (section.title?.length ?? 0);
         const canKeep = this.#budget.checkOutputChars(pending);

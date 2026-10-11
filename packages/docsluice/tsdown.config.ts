@@ -1,4 +1,5 @@
 import { defineConfig } from 'tsdown';
+import { pdfjsPatchPlugin } from '../../scripts/pdfjs-patch.mjs';
 
 export default defineConfig({
   entry: {
@@ -55,6 +56,7 @@ export default defineConfig({
     mbox: 'src/readers/mbox/index.ts',
     msg: 'src/readers/msg/index.ts',
     epub: 'src/readers/epub/index.ts',
+    pdf: 'src/readers/pdf/index.ts',
   },
   format: ['esm', 'cjs'],
   platform: 'neutral',
@@ -62,4 +64,7 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
+  deps: { alwaysBundle: ['unpdf'] },
+  plugins: [pdfjsPatchPlugin()],
+  copy: ['../../THIRD_PARTY_NOTICES.md'],
 });

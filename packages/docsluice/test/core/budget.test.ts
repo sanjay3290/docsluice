@@ -41,6 +41,7 @@ describe('Budget', () => {
     ['cells', 'addCells'],
     ['outputChars', 'addOutputChars'],
     ['pdfPages', 'addPages'],
+    ['pdfFonts', 'addFonts'],
   ] as const;
 
   it.each(counters)('enforces %s in throw mode at the exact boundary', (limit, method) => {

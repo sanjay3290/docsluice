@@ -353,6 +353,7 @@ These numbers are starting points. Tune them with benchmarks before 1.0. Every l
 | Output characters | 20,000,000 |
 | Spreadsheet cells (whole workbook) | 2,000,000 |
 | PDF pages | 2,000 |
+| PDF fonts loaded (all PDFs in one extraction) | 256 |
 | Time | 60 seconds |
 
 Option `onLimit: 'truncate' | 'throw'`. Default `truncate`: return what was read so far, with a `TRUNCATED` warning. Input size and ratio limits always throw, because a partial bomb is still a bomb.

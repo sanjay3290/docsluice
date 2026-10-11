@@ -6,6 +6,7 @@ import { createRegistry } from '../src/core/registry.js';
 import type { FormatPlugin } from '../src/core/registry.js';
 import { sevenZipPlugin } from '../src/readers/7z/index.js';
 import { rarPlugin } from '../src/readers/rar/index.js';
+import { checkUnhandledRejections } from '../../../scripts/hostile/unhandled-rejections.mjs';
 
 /** One `hostile/manifest.json` entry (docs/testing.md, section 3). */
 interface ManifestEntry {
@@ -31,6 +32,9 @@ const entries = JSON.parse(readFileSync(new URL('manifest.json', root), 'utf8'))
 const ownKeys = (target: object): string[] => Reflect.ownKeys(target).map(String).sort();
 const objectKeys = ownKeys(Object.prototype);
 const arrayKeys = ownKeys(Array.prototype);
+const coverage =
+  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env
+    ?.DOCSLUICE_COVERAGE === '1';
 
 function registryWith(id: string) {
   const plugin = PLUGINS.get(id);
@@ -73,12 +77,12 @@ describe('hostile corpus', () => {
       const started = performance.now();
       let outcome: { error: string } | { warnings: string[] };
       try {
-        const doc = await extract(bytes, options);
+        const doc = await checkUnhandledRejections(() => extract(bytes, options));
         outcome = { warnings: doc.warnings.map(({ code }) => code) };
       } catch (error) {
         outcome = { error: (error as { code?: string }).code ?? String(error) };
       }
-      expect(performance.now() - started).toBeLessThan(entry.maxMs);
+      if (!coverage) expect(performance.now() - started).toBeLessThan(entry.maxMs);
       expect(outcome).toEqual(entry.expect);
       expect(fetch).not.toHaveBeenCalled();
       expect(ownKeys(Object.prototype)).toEqual(objectKeys);

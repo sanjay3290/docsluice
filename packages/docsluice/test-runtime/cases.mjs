@@ -19,7 +19,15 @@ function xmlContext() {
 }
 
 /** Run runtime-neutral checks against the installed/built public package entry. */
-export async function runRuntimeContract({ validZip, traversalZip, hostileXml, csv, html, hostileHtml }) {
+export async function runRuntimeContract({
+  validZip,
+  traversalZip,
+  hostileXml,
+  csv,
+  html,
+  hostileHtml,
+  pdf,
+}) {
   const validArchive = openZip(validZip, new Budget(DEFAULT_LIMITS));
   assert(validArchive.entries.length > 0, 'valid ZIP should expose entries');
   const contentXml = validArchive.entries.find((entry) => entry.name === 'content.xml');
@@ -69,4 +77,12 @@ export async function runRuntimeContract({ validZip, traversalZip, hostileXml, c
     toText(hostilePage) === 'visible',
     'script, style, noscript, template and comment text must be dropped',
   );
+
+  // The PDF engine (pdf.js through unpdf) loads lazily and runs without eval, network or a worker.
+  const survey = await extract(pdf, { filename: 'survey.pdf' });
+  assert(survey.format === 'pdf', 'PDF should be detected');
+  const labels = survey.blocks.map((block) => block.loc.pageLabel);
+  assert(labels.join(',') === 'i,ii,A-1,A-2,A-3', 'PDF page labels should be read');
+  assert(survey.metadata.title === 'Estuary Survey', 'PDF metadata should be read');
+  assert(toText(survey).includes('Salinity rose along the transect.'), 'PDF text should be read');
 }

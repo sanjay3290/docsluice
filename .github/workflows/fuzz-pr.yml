@@ -55,6 +55,7 @@ jobs:
             xlsb,
             gzip,
             tar,
+            pdf,
           ]
     steps:
       - uses: actions/checkout@v7

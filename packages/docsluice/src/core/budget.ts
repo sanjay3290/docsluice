@@ -3,7 +3,8 @@ import { ALWAYS_THROW_LIMITS, resolveLimits } from './limits.js';
 import type { Limits } from './limits.js';
 import { WarningSink } from './warnings.js';
 
-type Counter = 'inputBytes' | 'totalUncompressedBytes' | 'zipEntries' | 'cells' | 'outputChars' | 'pdfPages';
+type Counter =
+  'inputBytes' | 'totalUncompressedBytes' | 'zipEntries' | 'cells' | 'outputChars' | 'pdfPages' | 'pdfFonts';
 export type DepthKind = 'xml' | 'block' | 'child';
 
 export interface BudgetOptions {
@@ -106,6 +107,9 @@ export class Budget {
   get pages(): number {
     return this.#state.counters.get('pdfPages') ?? 0;
   }
+  get fonts(): number {
+    return this.#state.counters.get('pdfFonts') ?? 0;
+  }
 
   /** Create a deeper view without resetting the shared clock, signal or allowance. */
   child(): Budget {
@@ -146,6 +150,9 @@ export class Budget {
   }
   addPages(amount: number): boolean {
     return this.#add('pdfPages', amount);
+  }
+  addFonts(amount: number): boolean {
+    return this.#add('pdfFonts', amount);
   }
 
   #add(counter: Counter, amount: number): boolean {

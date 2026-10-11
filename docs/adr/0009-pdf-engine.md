@@ -10,7 +10,8 @@ A PDF parser written from scratch takes years (risk R1). pdf.js is the reference
 
 ## Decision
 
-Use `unpdf` **1.8.1** (exact pin; MIT; no dependencies; its serverless bundle reports pdf.js **6.1.200**) behind docsluice's own reading-order layer and budget. Load it only through dynamic `import()` when a PDF arrives. Turn off JavaScript evaluation, font loading from the network and every remote action (PDF-10, SEC-10).
+Vendor `unpdf` **1.8.1** at build time as an exact devDependency.
+Use its serverless pdf.js build (exact pin; MIT; no dependencies; its serverless bundle reports pdf.js **6.1.200**) behind docsluice's own reading-order layer and budget. Load it only through dynamic `import()` when a PDF arrives. Turn off JavaScript evaluation, font loading from the network and every remote action (PDF-10, SEC-10).
 
 How the PDF reader must use it:
 
@@ -64,5 +65,60 @@ All four checks pass for `unpdf`: (1) it runs in all the CI runtimes tested (Nod
 ## Consequences
 
 - The PDF reader is the one large subpath. It is excluded from the 40 KB reader budget and gets 500 KB gzipped.
-- The dependency is added in the PDF reader issue, pinned exactly to `1.8.1`, not in this spike.
+- The PDF reader bundles the engine from the exact `unpdf` devDependency. No runtime dependency is added.
 - Updating `unpdf` (and so pdf.js) re-runs the checks above in the PDF reader's runtime tests.
+- Found with the PDF reader (#45): loading the engine changes globals once — it sets `globalThis.DOMMatrix` (minimal polyfill, when missing), `pdfjsLib`, `pdfjsWorker` and `_pdfjsTestingUtils`, and polyfills `Map.prototype.getOrInsertComputed`, `Uint8Array.prototype.toHex` and `Math.sumPrecise` where missing. `Object.prototype` and `Array.prototype` are untouched. This is documented in `docs/formats/pdf.md`; the PDF fuzz target loads the engine before the runner's prototype baseline.
+- Found by the PDF fuzz target (#45): on some malformed page trees pdf.js (both builds) leaves an internal prefetch promise rejected and unobserved during `getDocument()`; in Node this is an `unhandledRejection`. Tracked in #206.
+
+## Page-kids prefetch patch (issue #206)
+
+The owner approved a local patch on 2026-10-10.
+Malformed unused page-tree kids can reject an unobserved prefetch promise.
+Node then stops the process under its default rejection policy.
+
+The build attaches a no-op rejection handler and retains the original promise.
+Later callers still receive its original result or error.
+The transform matches structure, independently of minified names.
+The build fails unless each approved site matches exactly once.
+Unit tests and fuzz tests use the same transform.
+The hostile corpus includes the fuzz crash and a minimal synthetic PDF.
+The hostile runner rejects any unhandled rejection for every format.
+
+`THIRD_PARTY_NOTICES.md` records the Apache-2.0 and MIT licenses.
+The bundled engine retains a license header and a modification notice.
+Remove the patch after pdf.js and unpdf release the fix.
+The owner posts the upstream report drafted on #206.
+
+The patched PDF reader measures 490.06 KB minified and gzipped.
+Its RT-5 budget remains 500 KB.
+Local verification passes with Node 24, UTC, and a real macOS temporary path.
+Issue #260 tracks failures with the default macOS test environment.
+
+PDF fuzz found a separate unhandled promise in `Catalog.getPageIndex` after the first patch.
+The owner approved the second patch in PR #205 on 2026-10-10.
+It observes sibling promises before the method can throw for an absent outline target.
+It retains each original callback promise for later awaiters.
+Each built engine contains one patch in each method.
+The hostile corpus retains the new CI crash and a minimal missing-outline-page PDF.
+Issue #261 records the reproduction and the decision.
+Merge still requires green CI, including PDF fuzz.
+
+## CMap cap and font limit (issue #262)
+
+PDF fuzz then failed its 1024 MiB memory cap.
+pdf.js expands each CMap range into one array entry per code, up to 16.7 million codes.
+A 921-byte PDF needed 1.9 GB and 6.7 s. The work is synchronous, so `timeMs` cannot stop it.
+The owner chose option 2 on 2026-10-11.
+
+- A third patch caps each CMap at 65,536 codes mapped through ranges.
+  A font cannot address more glyphs. A range past the cap takes pdf.js's existing
+  "ignoring data above MAX_MAP_RANGE" error path, which drops that range only.
+- A new public limit, `pdfFonts` (default 256), counts the fonts pdf.js loads per extraction.
+  A fourth patch site in `PartialEvaluator.loadFont` asks a docsluice allowance before each new font.
+  Past the allowance, pdf.js gets its own error font. The reader then follows `onLimit`.
+- Each site must match exactly once, or the build fails.
+
+One font with a full CMap still costs about 7 MB, so 256 fonts can cost about 1.8 GB.
+Callers that read untrusted PDFs in a small memory budget should lower `pdfFonts`.
+The PDF fuzz target uses `pdfFonts: 32`.
+

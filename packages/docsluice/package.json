@@ -133,6 +133,9 @@
       ],
       "epub": [
         "dist/epub.d.ts"
+      ],
+      "pdf": [
+        "dist/pdf.d.ts"
       ]
     }
   },
@@ -301,7 +304,11 @@
       "require": "./dist/epub.cjs"
     },
     "./schema.json": "./schema.json",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./pdf": {
+      "import": "./dist/pdf.js",
+      "require": "./dist/pdf.cjs"
+    }
   },
   "scripts": {
     "build": "tsdown && node scripts/generate-schema.mjs",
@@ -325,5 +332,8 @@
   ],
   "dependencies": {
     "fflate": "0.8.2"
+  },
+  "devDependencies": {
+    "unpdf": "1.8.1"
   }
 }

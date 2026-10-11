@@ -410,3 +410,8 @@ test('CLI: exit codes, stderr warnings, --strict-exit and the npm bin symlink', 
     rmSync(directory, { recursive: true, force: true });
   }
 });
+
+test('PDF reader subpath loads lazily', async () => {
+  const pdf = await import('docsluice/pdf');
+  assert.equal(pdf.pdfReader.id, 'pdf');
+});
