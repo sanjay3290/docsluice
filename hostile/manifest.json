@@ -2012,6 +2012,17 @@
   },
   {
     "file": "pdf/xfa-only-form.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-11"
+  },
+  {
     "file": "pdf/damaged-truncated.pdf",
     "format": "pdf",
     "expect": {
@@ -2055,7 +2066,6 @@
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
-    "requirement": "SEC-11"
     "requirement": "PDF-9"
   },
   {

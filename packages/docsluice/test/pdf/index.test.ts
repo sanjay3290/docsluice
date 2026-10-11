@@ -199,6 +199,8 @@ describe('PDF reader', () => {
       ],
     });
     expect(doc.stats.truncated).toBe(true);
+  });
+
   describe('damaged files (PDF-9)', () => {
     const texts = (doc: DocsluiceDocument) =>
       pages(doc).map((page) => page.blocks.map((block) => ('text' in block ? block.text : '')).join(' '));
