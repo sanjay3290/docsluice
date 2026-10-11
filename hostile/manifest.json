@@ -1952,10 +1952,74 @@
     "file": "pdf/page-index-prefetch-rejection.pdf",
     "format": "pdf",
     "expect": {
-      "warnings": ["UNREADABLE_PART"]
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
     },
     "maxMs": 2000,
     "maxHeapMB": 128,
     "requirement": "SEC-9"
+  },
+  {
+    "file": "pdf/cmap-range-16m.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "pdf/cmap-two-ranges-16m.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "pdf/cmap-shared-four-fonts.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "pdf/cmap-ranges-over-cap.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "pdf/cmap-high-code.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
+  },
+  {
+    "file": "pdf/fonts-300.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": [
+        "TRUNCATED"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "SEC-12"
   }
 ]

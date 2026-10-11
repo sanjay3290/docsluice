@@ -122,6 +122,7 @@ One root `Budget` per top-level `extract()` call. Each child gets a budget view 
 | output characters | `outputChars` | `onLimit` |
 | cells | `cells` | `onLimit` |
 | PDF pages | `pdfPages` | `onLimit` |
+| PDF fonts loaded by the engine | `pdfFonts` | `onLimit` |
 | time | `timeMs` | `TimeoutError` |
 | caller signal | — | `AbortError` |
 

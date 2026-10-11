@@ -12,7 +12,8 @@ export async function fuzzPdf(input: Uint8Array): Promise<void> {
     await extract(input, {
       format: 'pdf',
       runs: true,
-      limits: { pdfPages: 20, outputChars: 65_536, timeMs: 2_000 },
+      // Each font may hold a 65,536-code CMap (about 7 MB); 32 fonts keep one run well inside the cap.
+      limits: { pdfPages: 20, pdfFonts: 32, outputChars: 65_536, timeMs: 2_000 },
     });
   } catch (error) {
     // Malformed PDFs, passwords and resource limits are ordinary outcomes; anything else is a finding.

@@ -147,6 +147,43 @@ describe('PDF reader', () => {
     expect(doc.metadata.pageCount).toBe(100_000);
   });
 
+  it('caps CMap ranges so a 1 KB ToUnicode bomb stays small (#262)', async () => {
+    for (const file of ['cmap-range-16m.pdf', 'cmap-two-ranges-16m.pdf', 'cmap-shared-four-fonts.pdf']) {
+      const started = performance.now();
+      const doc = await extract(read(hostile, file));
+      // Before the cap: 1.9-3.2 GB and 7-17 s. The process tests bound the heap.
+      expect(performance.now() - started, file).toBeLessThan(2000);
+      expect(pages(doc), file).toHaveLength(1);
+      expect(doc.warnings, file).toEqual([]);
+    }
+  });
+
+  it('stops loading fonts at the pdfFonts limit and keeps the text read so far', async () => {
+    const doc = await extract(read(hostile, 'fonts-300.pdf'));
+    expect(doc.stats.truncated).toBe(true);
+    expect(doc.warnings.map((warning) => warning.code)).toEqual(['TRUNCATED']);
+    expect(doc.warnings[0]!.message).toContain('pdfFonts');
+    // Text in a refused font is lost: with 50 fonts allowed, 50 of the 300 letters remain.
+    const limited = await extract(read(hostile, 'fonts-300.pdf'), { limits: { pdfFonts: 50 } });
+    expect(pages(limited)[0]!.blocks).toMatchObject([{ kind: 'paragraph', text: 'A'.repeat(50) }]);
+  });
+
+  it('throws LimitExceededError for pdfFonts in throw mode', async () => {
+    await expect(extract(read(hostile, 'fonts-300.pdf'), { onLimit: 'throw' })).rejects.toMatchObject({
+      name: 'LimitExceededError',
+      limit: 'pdfFonts',
+    });
+  });
+
+  it('counts fonts across the whole extraction and stops the next page', async () => {
+    const doc = await extract(read(hostile, 'cmap-shared-four-fonts.pdf'), { limits: { pdfFonts: 2 } });
+    expect(doc.stats.truncated).toBe(true);
+    expect(doc.warnings[0]!.message).toContain('"pdfFonts" is 2');
+    const empty = await extract(textPdf(3, 1), { limits: { pdfFonts: 0 } });
+    expect(pages(empty)).toHaveLength(1);
+    expect(empty.stats.truncated).toBe(true);
+  });
+
   it('reads a 100-page text PDF within the PERF budget', async () => {
     const bytes = textPdf(100, 40);
     const started = performance.now();

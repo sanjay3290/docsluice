@@ -61,6 +61,10 @@ export interface PdfDocument {
   page(index: number, budget: Budget): Promise<PdfPageContent>;
   /** Fraction of the page area painted by images (for needsOcr); 0 when there are none. */
   imageCoverage(index: number, budget: Budget): Promise<number>;
+  /** Fonts the engine has loaded for this document so far. */
+  readonly fontsLoaded: number;
+  /** The engine refused a font because the font allowance was used up. */
+  readonly fontsDenied: boolean;
   close(): Promise<void>;
 }
 
@@ -116,12 +120,20 @@ interface EngineDocument {
   getJSActions(): Promise<Record<string, unknown> | null>;
   getAttachments(): Promise<Record<string, unknown> | null>;
 }
+interface EngineFontTracker {
+  readonly loaded: number;
+  readonly denied: boolean;
+  release(): void;
+}
 interface EngineModule {
   getDocument(options: Record<string, unknown>): {
+    docId: string;
     promise: Promise<EngineDocument>;
     destroy(): Promise<void>;
   };
   OPS: Record<string, number>;
+  /** Added by the docsluice build patch (scripts/pdfjs-patch.mjs, #262). */
+  docsluiceTrackPdfFonts?(loadingTaskDocId: string, limit: number): EngineFontTracker;
 }
 
 /** Options from ADR 0009: no eval, no network, no font or CMap loading, no worker. */
@@ -159,19 +171,30 @@ function hasEntries(value: Record<string, unknown> | null | undefined): boolean 
   return value !== null && value !== undefined && Object.keys(value).length > 0;
 }
 
-/** Open a PDF with the engine. Password-protected files throw `PdfPasswordError`. */
-export async function openPdf(bytes: Uint8Array, password: string | undefined): Promise<PdfDocument> {
+/**
+ * Open a PDF with the engine. Password-protected files throw `PdfPasswordError`. The engine loads
+ * at most `fontLimit` fonts for this document; it gives any further font an error font.
+ */
+export async function openPdf(
+  bytes: Uint8Array,
+  password: string | undefined,
+  fontLimit: number,
+): Promise<PdfDocument> {
   const engine = await loadEngine();
+  // Fail closed: without the build patch, nothing bounds the fonts the engine loads.
+  if (typeof engine.docsluiceTrackPdfFonts !== 'function') throw new Error('unpatched PDF engine');
   // pdf.js may transfer the buffer; give it a copy so the caller's bytes stay intact.
   const task = engine.getDocument({
     data: bytes.slice(),
     ...ENGINE_OPTIONS,
     ...(password !== undefined ? { password } : {}),
   });
+  const fonts = engine.docsluiceTrackPdfFonts(task.docId, fontLimit);
   let document: EngineDocument;
   try {
     document = await task.promise;
   } catch (error) {
+    fonts.release();
     await task.destroy().catch(() => undefined);
     const name = (error as { name?: unknown }).name;
     if (name === 'PasswordException') {
@@ -185,6 +208,12 @@ export async function openPdf(bytes: Uint8Array, password: string | undefined): 
 
   return {
     pageCount: document.numPages,
+    get fontsLoaded() {
+      return fonts.loaded;
+    },
+    get fontsDenied() {
+      return fonts.denied;
+    },
     async pageLabels() {
       const labels = await document.getPageLabels().catch(() => null);
       return labels && labels.length === document.numPages ? labels : undefined;
@@ -319,6 +348,7 @@ export async function openPdf(bytes: Uint8Array, password: string | undefined): 
       return pageArea > 0 ? Math.min(1, covered / pageArea) : 0;
     },
     async close() {
+      fonts.release();
       await task.destroy().catch(() => undefined);
     },
   };

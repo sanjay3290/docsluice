@@ -132,9 +132,22 @@ function metadataOf(info: Awaited<ReturnType<PdfDocument['info']>>, pageCount: n
   return metadata;
 }
 
+/**
+ * Charge fonts the engine loaded since the last call. When the engine refused a font, charge one
+ * more to cross the `pdfFonts` limit: that throws or truncates as `onLimit` says.
+ */
+function chargeFonts(pdf: PdfDocument, ctx: ReadContext, charged: { fonts: number }): boolean {
+  const fresh = pdf.fontsLoaded - charged.fonts;
+  charged.fonts = pdf.fontsLoaded;
+  const within = ctx.budget.addFonts(fresh);
+  return within && (!pdf.fontsDenied || ctx.budget.addFonts(1));
+}
+
 async function open(ctx: ReadContext): Promise<PdfDocument> {
   try {
-    return await openPdf(ctx.bytes, ctx.options.password);
+    // Fonts are shared across every PDF in one extraction (NST-1): give the engine what is left.
+    const fontLimit = Math.max(0, ctx.budget.limits.pdfFonts - ctx.budget.fonts);
+    return await openPdf(ctx.bytes, ctx.options.password, fontLimit);
   } catch (error) {
     if (error instanceof PdfPasswordError) {
       throw new EncryptedError(error.wrongPassword ? 'wrong-password' : 'password-required');
@@ -173,7 +186,10 @@ export const pdfReader: Reader = {
       }
 
       const needsOcr: number[] = [];
-      for (let index = 0; index < pdf.pageCount; index++) {
+      const charged = { fonts: 0 };
+      // Past the font limit, keep the page in progress, then stop.
+      let fontsLeft = true;
+      for (let index = 0; fontsLeft && index < pdf.pageCount; index++) {
         ctx.budget.tick();
         if (!ctx.budget.addPages(1)) break;
         const number = index + 1;
@@ -186,6 +202,7 @@ export const pdfReader: Reader = {
           content = await pdf.page(index, ctx.budget);
         } catch (error) {
           if (error instanceof DocsluiceError) throw error;
+          fontsLeft = chargeFonts(pdf, ctx, charged);
           ctx.warnings.add({
             code: 'UNREADABLE_PART',
             message: `Page ${number} could not be read.`,
@@ -195,13 +212,21 @@ export const pdfReader: Reader = {
           ctx.out.closeSection();
           continue;
         }
+        fontsLeft = chargeFonts(pdf, ctx, charged);
         if (content.hasJavaScript) ctx.out.setFeature('hasJavaScript');
         if (content.links.length > 0) ctx.out.setFeature('hasExternalLinks');
         const hasText = content.items.some((item) => item.text.trim().length > 0);
         let pageNeedsOcr = false;
-        if (!hasText && (await pdf.imageCoverage(index, ctx.budget).catch(() => 0)) >= OCR_COVERAGE) {
-          pageNeedsOcr = true;
-          needsOcr.push(number);
+        if (!hasText && fontsLeft) {
+          const coverage = await pdf.imageCoverage(index, ctx.budget).catch((error: unknown) => {
+            if (error instanceof DocsluiceError) throw error;
+            return 0;
+          });
+          fontsLeft = chargeFonts(pdf, ctx, charged);
+          if (coverage >= OCR_COVERAGE) {
+            pageNeedsOcr = true;
+            needsOcr.push(number);
+          }
         }
 
         if (!ctx.out.openSection('page', loc, undefined, undefined, pageNeedsOcr)) break;

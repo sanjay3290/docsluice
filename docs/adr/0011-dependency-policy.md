@@ -23,7 +23,7 @@ Runtime dependencies of `docsluice` are limited to this list:
 | `unpdf` | 1.8.1 | Patched pdf.js, bundled in the lazy PDF chunk | 0009 |
 
 `unpdf` is an exact devDependency. It adds no runtime dependency.
-The build must find each approved page-tree prefetch patch site exactly once.
+The build must find each approved patch site exactly once (#206, #261, #262).
 The package includes both license texts in `dist/THIRD_PARTY_NOTICES.md`.
 
 ## Consequences

@@ -9,7 +9,8 @@ Copyright Mozilla Foundation.
 The PDF reader bundles pdf.js through unpdf 1.8.1.
 The build adds rejection handlers to page-kids and page-index prefetch promises.
 The handlers retain the original promises for later callers.
-See scripts/pdfjs-patch.mjs and issues #206 and #261.
+The build also caps the codes each CMap maps through ranges and counts loaded fonts.
+See scripts/pdfjs-patch.mjs and issues #206, #261 and #262.
 
 ### Apache-2.0 license
 

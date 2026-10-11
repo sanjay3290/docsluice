@@ -102,3 +102,23 @@ Each built engine contains one patch in each method.
 The hostile corpus retains the new CI crash and a minimal missing-outline-page PDF.
 Issue #261 records the reproduction and the decision.
 Merge still requires green CI, including PDF fuzz.
+
+## CMap cap and font limit (issue #262)
+
+PDF fuzz then failed its 1024 MiB memory cap.
+pdf.js expands each CMap range into one array entry per code, up to 16.7 million codes.
+A 921-byte PDF needed 1.9 GB and 6.7 s. The work is synchronous, so `timeMs` cannot stop it.
+The owner chose option 2 on 2026-10-11.
+
+- A third patch caps each CMap at 65,536 codes mapped through ranges.
+  A font cannot address more glyphs. A range past the cap takes pdf.js's existing
+  "ignoring data above MAX_MAP_RANGE" error path, which drops that range only.
+- A new public limit, `pdfFonts` (default 256), counts the fonts pdf.js loads per extraction.
+  A fourth patch site in `PartialEvaluator.loadFont` asks a docsluice allowance before each new font.
+  Past the allowance, pdf.js gets its own error font. The reader then follows `onLimit`.
+- Each site must match exactly once, or the build fails.
+
+One font with a full CMap still costs about 7 MB, so 256 fonts can cost about 1.8 GB.
+Callers that read untrusted PDFs in a small memory budget should lower `pdfFonts`.
+The PDF fuzz target uses `pdfFonts: 32`.
+

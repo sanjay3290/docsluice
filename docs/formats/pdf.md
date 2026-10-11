@@ -10,6 +10,8 @@ The PDF reader turns each page into a `section` with `role: 'page'`, `loc.page` 
 - Embedded files set `features.hasEmbeddedFiles` (they are not extracted yet).
 - Loading the engine (once, on the first PDF) changes the global environment the way pdf.js does: it defines `globalThis.DOMMatrix` when missing (a minimal polyfill), `globalThis.pdfjsLib`, `globalThis.pdfjsWorker` and `globalThis._pdfjsTestingUtils`, and adds polyfills for `Map.prototype.getOrInsertComputed`, `Uint8Array.prototype.toHex` and `Math.sumPrecise` where the runtime lacks them. `Object.prototype` and `Array.prototype` are not changed, and nothing changes per document.
 - Every page counts toward the `pdfPages` limit (default 2,000); the reader stops there with `TRUNCATED`. It ticks the budget per page and per text item, and the output goes through the usual output-character and depth limits.
+- Every font the engine loads counts toward the `pdfFonts` limit (default 256), shared by all PDFs in one extraction. Past the limit the engine refuses further fonts, so their text is lost. With `onLimit: 'truncate'` the reader keeps the page in progress, adds `TRUNCATED` and stops. With `onLimit: 'throw'` it throws `LimitExceededError` (`limit: 'pdfFonts'`).
+- Each CMap (ToUnicode or embedded encoding) maps at most 65,536 codes through ranges. A range past that cap is dropped, and the CMap keeps the ranges read before it. Without the cap, a 1 KB file could expand one range into 16.7 million strings (#262).
 
 ## Pages and text (PDF-1)
 
@@ -37,7 +39,7 @@ The PDF subpath is the one large reader: about 480 KB gzipped with pdf.js, budge
 
 Performance: a generated 100-page text PDF (40 lines per page) extracts in about 0.3–0.5 s locally (PERF-1 target: 3 s); the test bound is 6 s.
 
-Hostile samples in `hostile/pdf/`: a JavaScript open action plus document JavaScript (`hasJavaScript`, nothing runs), launch and remote `GoToR` links (`hasExternalLinks`, never followed), a trailer whose `/Prev` points at itself, a 100,000-page tree built from shared nodes (stops at `pdfPages` with `TRUNCATED`), and a page tree nested 2,000 deep. None makes a network call.
+Hostile samples in `hostile/pdf/`: a JavaScript open action plus document JavaScript (`hasJavaScript`, nothing runs), launch and remote `GoToR` links (`hasExternalLinks`, never followed), a trailer whose `/Prev` points at itself, a 100,000-page tree built from shared nodes (stops at `pdfPages` with `TRUNCATED`), a page tree nested 2,000 deep, ToUnicode ranges that claim 16.7 million codes (alone, twice, and shared by four fonts), 512 ranges past the CMap cap, and 300 fonts on one page (stops at `pdfFonts` with `TRUNCATED`). None makes a network call.
 
 ## Engine patch
 
@@ -45,6 +47,7 @@ The PDF reader bundles a patched pdf.js from the exact `unpdf` 1.8.1 devDependen
 It adds no runtime dependency.
 The build observes unused page-kids and page-index prefetch rejections and retains each original promise.
 The build fails unless each patch site matches exactly once.
+The build also caps CMap ranges and counts loaded fonts (#262); see Safety above.
 The patch prevents the Node process crash recorded in #206.
 The hostile corpus includes the fuzz crash and a minimal synthetic PDF.
 Both package entries pass a separate process test under Node's default rejection policy.

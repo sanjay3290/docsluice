@@ -43,6 +43,7 @@ const LIMIT_FLAGS: Record<LimitKey, string> = {
   outputChars: 'max-output-chars',
   cells: 'max-cells',
   pdfPages: 'max-pdf-pages',
+  pdfFonts: 'max-pdf-fonts',
   timeMs: 'timeout',
 };
 

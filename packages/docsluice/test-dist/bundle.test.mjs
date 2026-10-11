@@ -57,7 +57,7 @@ test('importing extract from docsluice loads every reader lazily (RT-4)', async 
   }
 });
 
-test('each built engine contains both prefetch patches and its license header', async () => {
+test('each built engine contains every pdf.js patch and its license header', async () => {
   const files = (await readdir(dist)).filter((name) => /^pdfjs-.*\.(?:js|cjs)$/.test(name));
   assert.equal(files.length, 2);
   for (const file of files) {
@@ -72,6 +72,12 @@ test('each built engine contains both prefetch patches and its license header', 
       assert.ok(start >= 0 && end > start, `${file}: ${method}`);
       assert.equal([...code.slice(start, end).matchAll(/docsluicePdfPrefetch\(/g)].length, 1, method);
     }
+    assert.equal([...code.matchAll(/docsluicePdfCMapReserve\(this,/g)].length, 3, file);
+    assert.equal(
+      [...code.matchAll(/docsluicePdfFontAllowed\(this\.idFactory\.getDocId\(\)\)/g)].length,
+      1,
+      file,
+    );
     assert.match(code, /promise\.catch\(\(\) => \{\}\)/);
     assert.match(code, /Copyright.*Mozilla Foundation/);
     assert.match(code, /Apache-2\.0/);
@@ -112,5 +118,38 @@ test('malformed page-tree prefetch cannot crash a process with either package en
     );
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.stderr, '');
+  }
+});
+
+test('CMap range bombs stay inside a 128 MB heap with either package entry (#262)', () => {
+  for (const format of ['esm', 'cjs']) {
+    const load =
+      format === 'esm' ? "await import('docsluice')" : "createRequire(import.meta.url)('docsluice')";
+    const result = spawnSync(
+      process.execPath,
+      [
+        '--max-old-space-size=128',
+        '--input-type=module',
+        '-e',
+        `
+      import { readFileSync } from 'node:fs';
+      import { createRequire } from 'node:module';
+      const { extract } = ${load};
+      for (const file of [
+        'cmap-range-16m.pdf',
+        'cmap-two-ranges-16m.pdf',
+        'cmap-shared-four-fonts.pdf',
+        'cmap-ranges-over-cap.pdf',
+        'fonts-300.pdf',
+      ]) {
+        const bytes = new Uint8Array(readFileSync('../../hostile/pdf/' + file));
+        const document = await extract(bytes, { format: 'pdf' });
+        if (document.metadata.pageCount !== 1) throw new Error('Page count mismatch');
+      }
+    `,
+      ],
+      { cwd: packageRoot, encoding: 'utf8', timeout: 20_000 },
+    );
+    assert.equal(result.status, 0, result.stderr);
   }
 });

@@ -10,10 +10,20 @@ const indexSite =
   '.push(xref.fetchAsync(kid).then(node=>{if(!(node instanceof Node))throw new Failure(`Kid node must be a dictionary.`);if(node.has(`Count`)){let amount=node.get(`Count`);if(Number.isInteger(amount)&&amount>=0){count+=amount;return}throw new Failure(`Count must be a (positive) integer.`)}count++}))';
 const prefetchSource = `export function prefetch(kid, Ref, cache, xref) { return ${site}; }`;
 const indexSource = `export function prefetchIndex(xref, kid, Node, Failure) { let count = 0; const pending = []; pending${indexSite}; return pending[0]; }`;
+const rangeSite = (method) =>
+  `${method}(low,high,value){if(high-low>MAX)throw Error(\`${method} - ignoring data above MAX_MAP_RANGE.\`);for(;low<=high;)this.map.set(low++,value)}`;
+const oneSite = 'mapOne(code,value){this._map[code]=value}';
+const cmapSource = `const MAX = 2 ** 24 - 1; export class CMap { map = new Map(); _map = []; ${['mapCidRange', 'mapBfRange', 'mapBfRangeToArray'].map(rangeSite).join(' ')} ${oneSite} }`;
+const fontSite =
+  'loadFont(name,dict,extra=null){let errorFont=async()=>`error`;if(dict.cacheKey&&this.fontCache.has(dict.cacheKey))return this.fontCache.get(dict.cacheKey);let{promise:done}=Promise.withResolvers();return `loaded`}';
+const fontSource = `export class Evaluator { fontCache = new Map(); idFactory = { getDocId: () => 'g_d7' }; ${fontSite} }`;
+/** A synthetic engine with every patch site once; `replace` swaps one site's text. */
+const engine = (replace = (text) => text) =>
+  [prefetchSource, indexSource, cmapSource, fontSource].map(replace).join(';\n');
+const load = (source) => import(`data:text/javascript,${encodeURIComponent(patchPdfJs(source))}`);
 
 test('the prefetch patch retains the promise and its rejection for later callers', async () => {
-  const source = `${prefetchSource};${indexSource}`;
-  const patched = await import(`data:text/javascript,${encodeURIComponent(patchPdfJs(source))}`);
+  const patched = await load(engine());
   const failure = new Error('malformed page kid');
   const promise = Promise.reject(failure);
   let handlers = 0;
@@ -39,8 +49,7 @@ test('the prefetch patch retains the promise and its rejection for later callers
 });
 
 test('the page-index patch retains the callback promise and its rejection', async () => {
-  const source = `${prefetchSource};${indexSource}`;
-  const patched = await import(`data:text/javascript,${encodeURIComponent(patchPdfJs(source))}`);
+  const patched = await load(engine());
   const promise = Promise.resolve(42);
   const originalThen = promise.then.bind(promise);
   let callbackPromise;
@@ -61,18 +70,72 @@ test('the page-index patch retains the callback promise and its rejection', asyn
   await assert.rejects(stored, /Kid node must be a dictionary/);
 });
 
-test('the prefetch patch refuses a missing, changed, or repeated site', () => {
-  for (const source of ['', site.replace('fetchAsync(kid)', 'fetchAsync(other)'), `${site};${site}`])
-    assert.throws(() => patchPdfJs(`${source};pending${indexSite}`), /exactly once/);
+test('each CMap maps at most 65,536 codes through ranges', async () => {
+  const { CMap } = await load(engine());
+  const cmap = new CMap();
+  cmap.mapBfRange(0, 65_279, 'A');
+  cmap.mapCidRange(0x1_0000, 0x1_00ff, 1);
+  assert.equal(cmap.map.size, 65_536);
+  for (const method of ['mapCidRange', 'mapBfRange', 'mapBfRangeToArray'])
+    assert.throws(() => cmap[method](0x2_0000, 0x2_0000, 1), new RegExp(`${method} - ignoring data`));
+  assert.equal(cmap.map.size, 65_536);
+  // The cap is per CMap, and one oversized range is refused before its loop runs.
+  const other = new CMap();
+  assert.throws(() => other.mapBfRange(0, 0xff_fffe, 'A'), /ignoring data above MAX_MAP_RANGE/);
+  assert.equal(other.map.size, 0);
+  other.mapBfRange(5, 4, 'A');
+  other.mapBfRange(0, 65_535, 'A');
+  assert.equal(other.map.size, 65_536);
 });
 
-test('the page-index patch refuses a missing, changed, or repeated site', () => {
-  for (const source of [
-    '',
-    indexSite.replace('node instanceof Node', 'other instanceof Node'),
-    `${indexSite};pending${indexSite}`,
-  ])
-    assert.throws(() => patchPdfJs(`${site};pending${source}`), /exactly once/);
+test('each CMap stores only codes below 65,536', async () => {
+  const { CMap } = await load(engine());
+  const cmap = new CMap();
+  // One high code would make pdf.js copy the CMap into an array of 16.7 million slots.
+  assert.throws(() => cmap.mapBfRange(0xff_ff00, 0xff_ffff, 'A'), /ignoring data/);
+  assert.throws(() => cmap.mapCidRange(0xff00, 0x1_0000, 1), /ignoring data/);
+  cmap.mapOne(0xff_ffff, 'A');
+  cmap.mapOne(0xffff, 'B');
+  assert.deepEqual(Object.keys(cmap._map), ['65535']);
+  assert.equal(cmap.map.size, 0);
+});
+
+test('the engine refuses fonts past the tracked allowance', async () => {
+  const { Evaluator, docsluiceTrackPdfFonts } = await load(engine());
+  const evaluator = new Evaluator();
+  assert.equal(await evaluator.loadFont('F0', {}), 'loaded');
+  const fonts = docsluiceTrackPdfFonts('d7', 2);
+  assert.equal(await evaluator.loadFont('F1', {}), 'loaded');
+  assert.equal(await evaluator.loadFont('F2', {}), 'loaded');
+  assert.equal(fonts.denied, false);
+  assert.equal(await evaluator.loadFont('F3', {}), 'error');
+  assert.deepEqual([fonts.loaded, fonts.denied], [2, true]);
+  // A cached font is not a new load.
+  evaluator.fontCache.set('key', 'cached');
+  assert.equal(await evaluator.loadFont('F4', { cacheKey: 'key' }), 'cached');
+  fonts.release();
+  assert.equal(await evaluator.loadFont('F5', {}), 'loaded');
+});
+
+test('every patch refuses a missing, changed, or repeated site', () => {
+  const sites = [
+    [site, site.replace('fetchAsync(kid)', 'fetchAsync(other)')],
+    [indexSite, indexSite.replace('node instanceof Node', 'other instanceof Node')],
+    ...['mapCidRange', 'mapBfRange', 'mapBfRangeToArray'].map((method) => [
+      rangeSite(method),
+      rangeSite(method).replace('high-low>MAX', 'low-high>MAX'),
+    ]),
+    [oneSite, oneSite.replace('_map[code]=value', '_map[value]=code')],
+    [fontSite, fontSite.replace('let errorFont', 'let otherFont')],
+  ];
+  assert.ok(patchPdfJs(engine()));
+  for (const [text, changed] of sites)
+    for (const variant of ['', changed, `${text} ${text}`])
+      assert.throws(
+        () => patchPdfJs(engine((part) => part.replace(text, variant))),
+        /exactly once/,
+        text.slice(0, 40),
+      );
 });
 
 test('the pinned engine has exactly one match for each patch site', async () => {

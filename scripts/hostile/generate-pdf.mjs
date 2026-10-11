@@ -129,3 +129,53 @@ await writeFile(
   objects.push(stream(textPage(['At the bottom of a deep page tree.'])));
   await writeFile(new URL('deep-page-tree-2000.pdf', directory), pdf(objects, '/Root 1 0 R'));
 }
+
+// ToUnicode CMaps whose ranges claim millions of codes (#262). pdf.js expands each range into an
+// array; the build patch caps each CMap at 65,536 codes and the pdfFonts limit caps the fonts.
+{
+  const toUnicode = (ranges) =>
+    stream(
+      [
+        '/CIDInit /ProcSet findresource begin 12 dict begin begincmap',
+        '1 begincodespacerange <00000000> <FFFFFFFF> endcodespacerange',
+        ...ranges.map(([low, high]) => `1 beginbfrange <${low}> <${high}> <0041> endbfrange`),
+        'endcmap CMapName currentdict /CMap defineresource pop end end',
+      ].join('\n'),
+    );
+  const fontsPage = (fonts, cmapRanges, file) => {
+    // 1 catalog, 2 pages, 3 page, 4 contents, 5 ToUnicode (when given), 6.. fonts.
+    const names = Array.from({ length: fonts }, (_, index) => `/F${index} ${6 + index} 0 R`);
+    const shows = Array.from({ length: fonts }, (_, index) => `/F${index} 12 Tf (A) Tj`);
+    const font = cmapRanges
+      ? '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /ToUnicode 5 0 R >>'
+      : HELVETICA;
+    return writeFile(
+      new URL(file, directory),
+      pdf(
+        [
+          '<< /Type /Catalog /Pages 2 0 R >>',
+          '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+          `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << ${names.join(' ')} >> >> /Contents 4 0 R >>`,
+          stream(`BT 72 720 Td ${shows.join(' ')} ET`),
+          cmapRanges ? toUnicode(cmapRanges) : '<< >>',
+          ...Array.from({ length: fonts }, () => font),
+        ],
+        '/Root 1 0 R',
+      ),
+    );
+  };
+  const block = (high) => [`${high}000000`, `${high}FFFFFE`];
+  await fontsPage(1, [block('00')], 'cmap-range-16m.pdf');
+  await fontsPage(1, [block('00'), block('01')], 'cmap-two-ranges-16m.pdf');
+  await fontsPage(4, [block('00')], 'cmap-shared-four-fonts.pdf');
+  // 512 valid 256-code ranges: the first 256 fit the 65,536-code cap, the rest are dropped.
+  const small = Array.from({ length: 512 }, (_, index) => {
+    const prefix = index.toString(16).padStart(6, '0');
+    return [`${prefix}00`, `${prefix}FF`];
+  });
+  await fontsPage(1, small, 'cmap-ranges-over-cap.pdf');
+  // One code at 0xFFFFFF: pdf.js would copy the CMap into an array of 16.7 million slots.
+  await fontsPage(1, [['00FFFFFF', '00FFFFFF']], 'cmap-high-code.pdf');
+  // 300 fonts on one page: past the default pdfFonts limit of 256.
+  await fontsPage(300, undefined, 'fonts-300.pdf');
+}

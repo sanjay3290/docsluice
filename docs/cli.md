@@ -31,6 +31,7 @@ Every current core limit has a numeric CLI flag. Defaults come from `DEFAULT_LIM
 | `outputChars` | `--max-output-chars` |
 | `cells` | `--max-cells` |
 | `pdfPages` | `--max-pdf-pages` |
+| `pdfFonts` | `--max-pdf-fonts` |
 | `timeMs` | `--timeout` |
 
 Glob expansion is bounded before any document extraction begins. One CLI invocation shares a budget across all glob patterns: at most 50,000 yielded or visited filesystem entries, at most 50,000 fallback traversal states, at most 1,000 matched files, and the resolved core `timeMs` deadline (`--timeout`, 60 seconds by default). Node's native `fs/promises.glob` path counts yielded paths and enforces the same match and elapsed-time bounds; the Node 20 fallback supports `*`, `?`, and `**` path segments, streams directory entries instead of materializing each directory, counts entries and queued traversal states, and skips symlinked directories. A zero timeout rejects glob expansion immediately, consistent with the core budget. These fixed internal expansion caps do not add CLI flags.
