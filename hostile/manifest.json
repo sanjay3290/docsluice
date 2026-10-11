@@ -2023,6 +2023,76 @@
     "requirement": "SEC-11"
   },
   {
+    "file": "pdf/damaged-truncated.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART",
+        "UNREADABLE_PART",
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "PDF-9"
+  },
+  {
+    "file": "pdf/damaged-xref-offsets.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "PDF-9"
+  },
+  {
+    "file": "pdf/damaged-page-content.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": []
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "PDF-9"
+  },
+  {
+    "file": "pdf/damaged-last-page-object.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "PDF-9"
+  },
+  {
+    "file": "pdf/damaged-middle-page-object.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "PDF-9"
+  },
+  {
+    "file": "pdf/damaged-object-stream.pdf",
+    "format": "pdf",
+    "expect": {
+      "warnings": [
+        "UNREADABLE_PART"
+      ]
+    },
+    "maxMs": 2000,
+    "maxHeapMB": 128,
+    "requirement": "PDF-9"
+  },
+  {
     "file": "pdf/fonts-300.pdf",
     "format": "pdf",
     "expect": {

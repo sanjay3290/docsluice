@@ -67,6 +67,20 @@ A page with no visible text whose images cover at least a quarter of its area is
 - `metadata` comes from the Info dictionary, with XMP `dc:title`/`dc:creator` as fallbacks: `title`, `authors`, `created` and `modified` (PDF dates such as `D:20260401093000+02'00'` become ISO 8601, `2026-04-01T09:30:00+02:00`; no zone gives no offset), `pageCount` and `language` (the catalog `/Lang`). With `metadata: false` authors are removed.
 - Outline entries (bookmarks) become `heading` blocks at the start of their target page, in outline order, with level = outline depth + 1 (at most 6). An entry whose destination cannot be resolved opens the first page.
 
+## Damaged files (PDF-9)
+
+A damaged PDF gives the pages that can be read and `UNREADABLE_PART` warnings for the rest. The hostile samples come from `scripts/hostile/pdf-damage.mjs`.
+
+| Damage | Result |
+| --- | --- |
+| Wrong cross-reference offsets | The engine rebuilds the table, and every page reads. |
+| Truncated file (no xref table or trailer) | The reader finds the last `/Catalog` object with a bounded byte scan and appends a minimal trailer to a copy. The engine's own reconstruction then indexes the surviving objects. Warnings: `The PDF is damaged: its trailer was rebuilt, so pages may be missing.`, plus `Page N could not be read.` for each empty page in the rebuilt file. |
+| A page dictionary that cannot be parsed | That page is an empty section with `UNREADABLE_PART`. |
+| A page in a broken object stream | That page is an empty section with `UNREADABLE_PART`. |
+| A content stream that cannot be decoded | The engine reads it as an empty page and does not report it, so there is no warning. The other pages read. |
+
+**Known gap (#266):** the engine stops walking the page tree at the first page dictionary it cannot parse. Pages after a broken page are lost, not only the broken page. A fix needs another engine patch and waits on an owner decision.
+
 ## Errors
 
 - **Encryption (PDF-5).**
