@@ -29,6 +29,7 @@ Each output receives a CC0 license sidecar recording the LibreOffice version, so
 | scanned-image-only.fodt          | PDF-6 image-only page with no text layer (`needsOcr`)                              |
 | article-two-columns.fodt         | PDF-2 two columns, full-width title, mid-page heading, footnote, superscripts      |
 | newsletter-three-columns.fodt    | PDF-2 three balanced columns                                                       |
+| permissions-only.fodt            | PDF-5 owner (permissions) password only; opens without a password                  |
 | deck-12-slides.fodp              | PPT-1 twelve slides; PPT-3 tables/groups; PPT-4 notes; hidden slide                |
 | deck-groups-table.fodp           | PPT-3 groups and table                                                             |
 | deck-hidden-notes.fodp           | PPT-4 notes; hidden slide                                                          |

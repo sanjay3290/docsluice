@@ -79,6 +79,22 @@ test('PDF fixture password is encoded as export filter options and limited to PD
   );
 });
 
+test('a PDF permissions password restricts permissions and opens without a password', async (t) => {
+  const plan = [
+    { source: 'src/sample.fodt', formats: ['pdf'], requirements: ['PDF-5'], pdfPermissionPassword: 'owner-only' },
+  ];
+  const job = validatePlan(plan)[0];
+  assert.match(job.conversion, /"RestrictPermissions":\{"type":"boolean","value":"true"\}/);
+  assert.match(job.conversion, /"PermissionPassword":\{"type":"string","value":"owner-only"\}/);
+  assert.doesNotMatch(job.conversion, /DocumentOpenPassword/);
+  assert.throws(() => validatePlan([{ ...plan[0], pdfPassword: 'user' }]), /not both/);
+  assert.throws(() => validatePlan([{ ...plan[0], pdfPermissionPassword: 'with space' }]), /printable ASCII/);
+  const opts = await setup(t);
+  await buildFixtures({ ...opts, plan });
+  const license = await readFile(path.join(opts.root, 'corpus/pdf/sample.pdf.license'), 'utf8');
+  assert.match(license, /opens without a password; fixed public permissions password: owner-only/);
+});
+
 test('PDF test password is recorded in the fixture license sidecar', async (t) => {
   const opts = await setup(t);
   const password = 'docsluice-fixture-only';

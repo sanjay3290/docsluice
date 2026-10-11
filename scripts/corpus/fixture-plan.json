@@ -81,6 +81,12 @@
     "requirements": ["PDF-2"]
   },
   {
+    "source": "src/permissions-only.fodt",
+    "formats": ["pdf"],
+    "requirements": ["PDF-5"],
+    "pdfPermissionPassword": "docsluice-owner-only"
+  },
+  {
     "source": "src/gettysburg-address.fodt",
     "formats": ["epub"],
     "requirements": ["HTM-1"]

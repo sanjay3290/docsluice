@@ -179,3 +179,26 @@ await writeFile(
   // 300 fonts on one page: past the default pdfFonts limit of 256.
   await fontsPage(300, undefined, 'fonts-300.pdf');
 }
+
+// Encryption the engine cannot open (PDF-5): a public-key security handler and an unknown
+// algorithm version. Both must fail with EncryptedError('unsupported-encryption').
+for (const [file, encrypt] of [
+  ['encrypt-public-key.pdf', '<< /Filter /Adobe.PubSec /SubFilter /adbe.pkcs7.s5 /V 4 /R 4 /Length 128 >>'],
+  [
+    'encrypt-unknown-version.pdf',
+    '<< /Filter /Standard /V 9 /R 9 /Length 128 /P -4 /O <00> /U <00> >>',
+  ],
+]) {
+  await writeFile(
+    new URL(file, directory),
+    pdf(
+      [
+        '<< /Type /Catalog /Pages 2 0 R >>',
+        '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+        '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>',
+        encrypt,
+      ],
+      '/Root 1 0 R /Encrypt 4 0 R /ID [<0123456789abcdef0123456789abcdef> <0123456789abcdef0123456789abcdef>]',
+    ),
+  );
+}

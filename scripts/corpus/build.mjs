@@ -57,13 +57,18 @@ export function validatePlan(plan) {
     const allowed = conversions.get(extension);
     if (!allowed) throw new Error('Unsupported source extension');
     if (!Array.isArray(entry.formats) || entry.formats.length === 0) throw new Error('Formats are required');
-    if (entry.pdfPassword !== undefined) {
+    // A document-open (user) password, or a permissions (owner) password only.
+    if (entry.pdfPassword !== undefined && entry.pdfPermissionPassword !== undefined) {
+      throw new Error('Use pdfPassword or pdfPermissionPassword, not both');
+    }
+    for (const password of [entry.pdfPassword, entry.pdfPermissionPassword]) {
+      if (password === undefined) continue;
       if (!entry.formats.includes('pdf')) throw new Error('PDF password can only be used with PDF outputs');
       if (
-        typeof entry.pdfPassword !== 'string' ||
-        entry.pdfPassword.length < 1 ||
-        entry.pdfPassword.length > 64 ||
-        Array.from(entry.pdfPassword).some((character) => {
+        typeof password !== 'string' ||
+        password.length < 1 ||
+        password.length > 64 ||
+        Array.from(password).some((character) => {
           const code = character.charCodeAt(0);
           return code < 0x21 || code > 0x7e;
         })
@@ -91,6 +96,17 @@ export function validatePlan(plan) {
           JSON.stringify({
             EncryptFile: { type: 'boolean', value: 'true' },
             DocumentOpenPassword: { type: 'string', value: entry.pdfPassword },
+          });
+      } else if (format === 'pdf' && entry.pdfPermissionPassword !== undefined) {
+        // Encrypted with an empty user password: it opens without a password.
+        conversion +=
+          ':' +
+          JSON.stringify({
+            RestrictPermissions: { type: 'boolean', value: 'true' },
+            PermissionPassword: { type: 'string', value: entry.pdfPermissionPassword },
+            Printing: { type: 'long', value: '0' },
+            Changes: { type: 'long', value: '0' },
+            EnableCopyingOfContent: { type: 'boolean', value: 'false' },
           });
       }
       jobs.push({ ...entry, format, conversion, file });
@@ -204,7 +220,11 @@ export async function buildFixtures({
       assertSignature(bytes, job.format);
       const notes = job.pdfPassword
         ? 'Notes: Synthetic fixture; fixed public password for opening this test PDF: ' + job.pdfPassword + '.'
-        : 'Notes: Synthetic fixture; requirement association needs reader-owner golden review.';
+        : job.pdfPermissionPassword
+          ? 'Notes: Synthetic fixture; opens without a password; fixed public permissions password: ' +
+            job.pdfPermissionPassword +
+            '.'
+          : 'Notes: Synthetic fixture; requirement association needs reader-owner golden review.';
       const license = [
         'SPDX-License-Identifier: CC0-1.0',
         'Source: made for docsluice with ' + version + ' from scripts/corpus/' + job.source,
