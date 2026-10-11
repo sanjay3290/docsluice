@@ -16,8 +16,35 @@ The PDF reader turns each page into a `section` with `role: 'page'`, `loc.page` 
 ## Pages and text (PDF-1)
 
 - Page labels come from the document's `/PageLabels` (decimal, upper and lower roman, letters, prefixes, start values). `loc.pageLabel` is set when a label differs from the page number.
-- Text items are joined in content-stream order. A new line starts at an engine line end or a vertical jump; a new paragraph starts after a vertical gap larger than 1.6 line heights; items separated by a visible horizontal gap are separated by a space. Reading order for columns, de-hyphenation and header/footer removal arrive later (PDF-2, PDF-3), so repeated headers and footers stay in the text for now.
+- Text is laid out in reading order (PDF-2); see below. Header and footer removal arrives with PDF-3, so repeated headers and footers stay in the text for now.
 - With `runs: true`, text inside a web link annotation (`http`, `https`, `mailto`) becomes a run with `href`.
+
+## Reading order (PDF-2)
+
+The layout code is in `src/readers/pdf/layout/`. It is a set of pure functions over the engine's text items.
+
+- **Direction.** Items are grouped by text direction, in quarter turns. The direction with the most text is laid out first, in a frame where its text runs left to right. A page whose text runs up or down, whether it is a rotated page or text drawn rotated, reads like an upright page. Text in other quarter turns follows, laid out the same way. Skewed text comes last, one paragraph per item, in content-stream order.
+- **Lines.** Items within half a font size of a row's baseline form one row. That keeps superscripts and subscripts on their line, with no space. A row splits into segments at a gap wider than 1.5 font sizes, or 0.6 font sizes when the two items are not next to each other in the content stream. A space goes between items at a gap wider than 0.2 font sizes, or where the content stream had a whitespace item.
+- **Columns.** A recursive XY-cut, walked with an explicit stack and at most 32 levels deep, looks for a vertical gutter. The text on each side must look like a column: at least two lines, with a median width of at least five font sizes. Both sides must overlap vertically. Lines that cross the gutter (titles, mid-page headings, full-width figures, footnotes) split the page into bands. The bands are read from top to bottom, and each band's columns from left to right. A key-value list or a narrow table is not taken for columns.
+- **Paragraphs.** A new paragraph starts at any of these:
+  - a baseline step larger than 1.6 font sizes;
+  - a font-size change of 20 % or more;
+  - a bullet, including a symbol-font glyph in the Private Use Area;
+  - a table or form row (a line split by wide gaps);
+  - a first-line indent after a line that ends a sentence or stops short of the column's edge.
+
+  A paragraph that runs on into the next column (no sentence end, then a lowercase word) stays one paragraph.
+- **Hyphens.** A line-end hyphen after a letter is removed when the next line starts with a lowercase letter.
+- **Right-to-left.** Items the engine marks right-to-left keep their content-stream (logical) order, and such lines read their segments from the right.
+- **Headings.** Font-size headings are detected only when the document has no outline. A paragraph of at most three lines and 200 characters, set at least 1.25 times the page's body size, is a heading. The body size is the median font size by character. The level is 1 at 1.9 times the body size or more, 2 at 1.5 times or more, and 3 otherwise.
+- **Determinism.** Coordinates are rounded to 1/100 pt, and every sort ends on the content-stream index, so the same items always give the same order.
+
+**Accuracy.** `node scripts/corpus/pdf-reading-order.mjs`, run after a build, measures word order on ten hand-checked corpus pages: the two-column article, the three-column newsletter, lists and tables, notes, links, labels, headings and a slide. The result is 1,358 of 1,358 words in order, and all 10 pages are exact. This is the start of QA-7.
+
+**Known gaps.**
+
+- Two column sections stacked with no line between them read as one pair of columns.
+- Text tables read row by row only when their cells are short; tables are PDF-8.
 
 ## Pages without a text layer (PDF-4)
 

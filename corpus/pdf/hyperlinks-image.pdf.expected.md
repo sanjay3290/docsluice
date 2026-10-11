@@ -2,6 +2,8 @@
 
 # Marsh Transect Diagram
 
-Marsh Transect Diagram Open the transect protocol for method details.
+Marsh Transect Diagram
+
+Open the transect protocol for method details.
 
 Image follows the site description.

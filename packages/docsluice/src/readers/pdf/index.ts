@@ -3,81 +3,12 @@ import type { Location, Metadata, Run } from '../../core/model.js';
 import type { Reader, ReadContext } from '../../core/reader.js';
 import { openPdf, PdfPasswordError } from './engine.js';
 import type { PdfDocument, PdfLink, PdfOutlineItem, PdfTextItem } from './engine.js';
+import { layoutPage } from './layout/index.js';
+import type { LayoutParagraph } from './layout/index.js';
 import { pageRanges, parsePdfDate } from './text.js';
 
 /** A page with no text whose images cover at least a quarter of it needs OCR (PDF-4). */
 const OCR_COVERAGE = 0.25;
-/** A line more than this many line heights below the previous one starts a new paragraph. */
-const PARAGRAPH_GAP = 1.6;
-
-interface Line {
-  items: PdfTextItem[];
-  y: number;
-  height: number;
-}
-
-/**
- * Lines and paragraphs in content-stream order (reading order arrives with PDF-2): a new line at an
- * engine line end or a vertical jump, a new paragraph after a gap larger than 1.6 line heights.
- */
-function paragraphs(items: readonly PdfTextItem[], ctx: ReadContext): PdfTextItem[][] {
-  const lines: Line[] = [];
-  let line: Line | undefined;
-  for (const item of items) {
-    ctx.budget.tick();
-    const height = Math.max(item.height, 1);
-    if (
-      line &&
-      item.text.trim().length > 0 &&
-      Math.abs(item.y - line.y) > Math.max(line.height, height) / 2
-    ) {
-      lines.push(line);
-      line = undefined;
-    }
-    if (!line) {
-      if (item.text.trim().length === 0 && !item.endOfLine) continue;
-      line = { items: [], y: item.y, height };
-    }
-    // Items separated by a visible horizontal gap are separate words.
-    const last = line.items.at(-1);
-    if (
-      last &&
-      item.x - (last.x + last.width) > 0.15 * height &&
-      !/\s$/u.test(last.text) &&
-      !/^\s/u.test(item.text)
-    ) {
-      line.items.push({ ...item, text: ' ', width: 0, endOfLine: false });
-    }
-    line.items.push(item);
-    line.height = Math.max(line.height, height);
-    if (item.endOfLine) {
-      lines.push(line);
-      line = undefined;
-    }
-  }
-  if (line) lines.push(line);
-  const result: PdfTextItem[][] = [];
-  let current: PdfTextItem[] = [];
-  let previous: Line | undefined;
-  for (const next of lines) {
-    ctx.budget.tick();
-    if (previous) {
-      const gap = previous.y - next.y;
-      if (gap < 0 || gap > PARAGRAPH_GAP * Math.max(previous.height, next.height)) {
-        if (current.length > 0) result.push(current);
-        current = [];
-      } else {
-        // A soft line wrap inside a paragraph becomes a space.
-        current.push({ ...next.items[0]!, text: ' ', width: 0, endOfLine: false });
-      }
-    }
-    current.push(...next.items);
-    previous = next;
-  }
-  if (current.length > 0) result.push(current);
-  return result;
-}
-
 function linkFor(item: PdfTextItem, links: readonly PdfLink[]): string | undefined {
   const x = item.x + item.width / 2;
   const y = item.y + item.height / 2;
@@ -97,7 +28,7 @@ function linkFor(item: PdfTextItem, links: readonly PdfLink[]): string | undefin
 }
 
 function paragraphText(
-  parts: readonly PdfTextItem[],
+  parts: LayoutParagraph<PdfTextItem>['parts'],
   links: readonly PdfLink[],
   ctx: ReadContext,
 ): { text: string; runs?: Run[] } {
@@ -108,7 +39,7 @@ function paragraphText(
     ctx.budget.tick();
     text += part.text;
     if (!ctx.options.runs) continue;
-    const href = part.text.trim().length > 0 ? linkFor(part, links) : undefined;
+    const href = part.item && part.text.trim().length > 0 ? linkFor(part.item, links) : undefined;
     if (href !== undefined) linked = true;
     const last = runs.at(-1);
     if (last && last.href === href) last.text += part.text;
@@ -236,11 +167,17 @@ export const pdfReader: Reader = {
           open = ctx.out.heading(Math.min(item.depth + 1, 6) as 1 | 2 | 3 | 4 | 5 | 6, item.title, loc);
           if (!open) break;
         }
-        for (const parts of open ? paragraphs(content.items, ctx) : []) {
+        // Font-size headings only when the document has no outline to give them (PDF-2).
+        const layout = open ? layoutPage(content.items, { headings: outline.size === 0 }, ctx.budget) : [];
+        for (const { parts, heading } of layout) {
           ctx.budget.tick();
           const { text, runs } = paragraphText(parts, content.links, ctx);
           if (text.trim().length === 0) continue;
-          if (!ctx.out.paragraph(text, loc, runs)) break;
+          const written =
+            heading === undefined
+              ? ctx.out.paragraph(text, loc, runs)
+              : ctx.out.heading(heading, text.trim(), loc);
+          if (!written) break;
         }
         if (!ctx.out.closeSection()) break;
       }

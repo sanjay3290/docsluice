@@ -14,6 +14,11 @@ export interface PdfTextItem {
   height: number;
   /** The engine saw a line end after this item. */
   endOfLine: boolean;
+  /** Text direction: the first column of the item's text matrix. */
+  dirX: number;
+  dirY: number;
+  /** The engine marked the item right-to-left. */
+  rtl: boolean;
 }
 
 export interface PdfLink {
@@ -85,6 +90,7 @@ interface EngineTextItem {
   width?: number;
   height?: number;
   hasEOL?: boolean;
+  dir?: string;
 }
 interface EngineAnnotation {
   subtype?: string;
@@ -298,6 +304,9 @@ export async function openPdf(
           width: raw.width ?? 0,
           height: raw.height ?? Math.abs(raw.transform[3] ?? 0),
           endOfLine: raw.hasEOL === true,
+          dirX: raw.transform[0] ?? 1,
+          dirY: raw.transform[1] ?? 0,
+          rtl: raw.dir === 'rtl',
         });
       }
       const links: PdfLink[] = [];
