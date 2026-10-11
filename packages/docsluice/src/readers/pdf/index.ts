@@ -5,6 +5,7 @@ import { openPdf, PdfPasswordError, PdfUnsupportedEncryptionError } from './engi
 import type { PdfDocument, PdfLink, PdfOutlineItem, PdfTextItem } from './engine.js';
 import { layoutPage } from './layout/index.js';
 import type { LayoutParagraph } from './layout/index.js';
+import { rebuildTrailer } from './repair.js';
 import { pageRanges, parsePdfDate } from './text.js';
 
 /** A page with no text whose images cover at least a quarter of it needs OCR (PDF-4). */
@@ -74,29 +75,46 @@ function chargeFonts(pdf: PdfDocument, ctx: ReadContext, charged: { fonts: numbe
   return within && (!pdf.fontsDenied || ctx.budget.addFonts(1));
 }
 
-async function open(ctx: ReadContext): Promise<PdfDocument> {
+/** Open with the given password; a file that needs none also opens when one is passed. */
+async function openBytes(bytes: Uint8Array, ctx: ReadContext): Promise<PdfDocument> {
   // Fonts are shared across every PDF in one extraction (NST-1): give the engine what is left.
   const fontLimit = Math.max(0, ctx.budget.limits.pdfFonts - ctx.budget.fonts);
   const password = ctx.options.password;
   try {
+    return await openPdf(bytes, password, fontLimit);
+  } catch (error) {
+    // The engine tries a given password instead of the empty user password: a file that opens
+    // without a password (owner password only) must not fail because a password was passed.
+    if (!(error instanceof PdfPasswordError && error.wrongPassword && password !== undefined)) throw error;
     try {
-      return await openPdf(ctx.bytes, password, fontLimit);
-    } catch (error) {
-      // The engine tries a given password instead of the empty user password: a file that opens
-      // without a password (owner password only) must not fail because a password was passed.
-      if (!(error instanceof PdfPasswordError && error.wrongPassword && password !== undefined)) throw error;
-      try {
-        return await openPdf(ctx.bytes, undefined, fontLimit);
-      } catch {
-        throw error;
-      }
+      return await openPdf(bytes, undefined, fontLimit);
+    } catch {
+      throw error;
     }
+  }
+}
+
+/**
+ * Open the PDF. When the engine cannot open it, retry once with a rebuilt trailer: a truncated
+ * file keeps the pages that survived (PDF-9). `repaired` tells the caller to warn.
+ */
+async function open(ctx: ReadContext): Promise<{ pdf: PdfDocument; repaired: boolean }> {
+  try {
+    return { pdf: await openBytes(ctx.bytes, ctx), repaired: false };
   } catch (error) {
     if (error instanceof PdfPasswordError) {
       throw new EncryptedError(error.wrongPassword ? 'wrong-password' : 'password-required');
     }
     if (error instanceof PdfUnsupportedEncryptionError) throw new EncryptedError('unsupported-encryption');
     if (error instanceof DocsluiceError) throw error;
+    const rebuilt = rebuildTrailer(ctx.bytes, ctx.budget);
+    if (rebuilt) {
+      try {
+        return { pdf: await openBytes(rebuilt, ctx), repaired: true };
+      } catch (retry) {
+        if (retry instanceof DocsluiceError) throw retry;
+      }
+    }
     throw new CorruptFileError('The PDF could not be opened.', { cause: error });
   }
 }
@@ -111,7 +129,13 @@ export const pdfReader: Reader = {
   id: 'pdf',
   mimeTypes: ['application/pdf'],
   async read(ctx: ReadContext): Promise<void> {
-    const pdf = await open(ctx);
+    const { pdf, repaired } = await open(ctx);
+    if (repaired) {
+      ctx.warnings.add({
+        code: 'UNREADABLE_PART',
+        message: 'The PDF is damaged: its trailer was rebuilt, so pages may be missing.',
+      });
+    }
     try {
       ctx.budget.tick();
       const info = await pdf.info();
@@ -174,6 +198,10 @@ export const pdfReader: Reader = {
           if (coverage >= OCR_COVERAGE) {
             pageNeedsOcr = true;
             needsOcr.push(number);
+          }
+          // In a rebuilt file an empty page is most likely one whose objects were lost.
+          if (repaired && coverage === 0) {
+            ctx.warnings.add({ code: 'UNREADABLE_PART', message: `Page ${number} could not be read.`, loc });
           }
         }
 

@@ -199,6 +199,62 @@ describe('PDF reader', () => {
       ],
     });
     expect(doc.stats.truncated).toBe(true);
+  describe('damaged files (PDF-9)', () => {
+    const texts = (doc: DocsluiceDocument) =>
+      pages(doc).map((page) => page.blocks.map((block) => ('text' in block ? block.text : '')).join(' '));
+    const survives = (page: number) => `Page ${page} text survives.`;
+    const unreadable = (page: number) => ({
+      code: 'UNREADABLE_PART',
+      message: `Page ${page} could not be read.`,
+      loc: { page },
+    });
+
+    it('rebuilds the trailer of a truncated file and keeps the pages that survived', async () => {
+      const doc = await extract(read(hostile, 'damaged-truncated.pdf'));
+      expect(texts(doc)).toEqual([survives(1), survives(2), survives(3), '', '']);
+      expect(doc.warnings).toEqual([
+        {
+          code: 'UNREADABLE_PART',
+          message: 'The PDF is damaged: its trailer was rebuilt, so pages may be missing.',
+        },
+        unreadable(4),
+        unreadable(5),
+      ]);
+    });
+
+    it('reads a file whose xref offsets are wrong', async () => {
+      const doc = await extract(read(hostile, 'damaged-xref-offsets.pdf'));
+      expect(texts(doc)).toEqual([1, 2, 3, 4, 5].map(survives));
+      expect(doc.warnings).toEqual([]);
+    });
+
+    it('keeps the other pages when one content stream cannot be decoded', async () => {
+      // The engine reads an undecodable stream as an empty page and does not report it.
+      const doc = await extract(read(hostile, 'damaged-page-content.pdf'));
+      expect(texts(doc)).toEqual([survives(1), '', survives(3), survives(4), survives(5)]);
+    });
+
+    it('warns for a page whose dictionary cannot be parsed', async () => {
+      const last = await extract(read(hostile, 'damaged-last-page-object.pdf'));
+      expect(texts(last)).toEqual([survives(1), survives(2), survives(3), survives(4), '']);
+      expect(last.warnings).toEqual([unreadable(5)]);
+      // The engine stops at the first broken kid, so later pages are lost (#266).
+      const middle = await extract(read(hostile, 'damaged-middle-page-object.pdf'));
+      expect(texts(middle)).toEqual([survives(1), '']);
+      expect(middle.warnings).toEqual([unreadable(2)]);
+    });
+
+    it('warns for a page in a broken object stream', async () => {
+      const doc = await extract(read(hostile, 'damaged-object-stream.pdf'));
+      expect(texts(doc)).toEqual([survives(1), '']);
+      expect(doc.warnings).toEqual([unreadable(2)]);
+    });
+
+    it('still fails a file with no catalog to rebuild from', async () => {
+      const bytes = read(hostile, 'damaged-truncated.pdf');
+      const cut = bytes.slice(0, 40);
+      await expect(extract(cut, { format: 'pdf' })).rejects.toMatchObject({ code: 'CORRUPT_FILE' });
+    });
   });
 
   it('turns bytes that are not a readable PDF into CorruptFileError', async () => {
