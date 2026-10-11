@@ -31,7 +31,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | ods | `docsluice/ods` | 8 | 8 | [ods.md](ods.md) |
 | odt | `docsluice/odt` | 4 | 4 | [odt.md](odt.md) |
 | ole | no reader | 4 | 4 | [ole.md](ole.md) |
-| pdf | `docsluice/pdf` | 11 | 11 | [pdf.md](pdf.md) |
+| pdf | `docsluice/pdf` | 13 | 13 | [pdf.md](pdf.md) |
 | ppt | `docsluice/ppt` | 3 | 3 | [ppt.md](ppt.md) |
 | pptx | `docsluice/pptx` | 7 | 7 | [pptx.md](pptx.md) |
 | rar | `docsluice/rar` | 2 | 0 | [rar.md](rar.md) |
@@ -91,7 +91,7 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | NST-6 | Detect a file that contains itself (a recursive zip, "quine") and stop. | Not covered | — |
 | PDF-1 | Extract the text layer page by page, with page numbers and page labels (for example "iv" or "A-3"). | `pdf/labels-outline-links.pdf` | — |
 | PDF-10 | Never run PDF JavaScript and never follow launch or remote actions. | `pdf/labels-outline-links.pdf` | 2 |
-| PDF-2 | Put text in reading order: join words into lines, lines into paragraphs, and handle two-column pages. | Not covered | — |
+| PDF-2 | Put text in reading order: join words into lines, lines into paragraphs, and handle two-column pages. | `pdf/article-two-columns.pdf`<br>`pdf/newsletter-three-columns.pdf` | — |
 | PDF-4 | Detect pages with no text layer and report `needsOcr: true` per page. Never return a silent empty result. | `pdf/scanned-image-only.pdf` | — |
 | PDF-5 | Encrypted PDFs: open with an empty user password if allowed; accept a `password` option; else throw `EncryptedError`. | `pdf/encrypted-document.pdf` | — |
 | PDF-6 | Read document metadata, outline (bookmarks) as headings, and link targets. | `pdf/labels-outline-links.pdf` | — |
@@ -134,4 +134,4 @@ no corpus or hostile file is tagged with that requirement; it may still have uni
 | XLS-7 | Each cell has an address (`Sheet2!B7`) for citations. | `ods/cell-types.ods`<br>`xlsx/cell-types.xlsx` | — |
 | XML-1 | Generic XML gives element text with its path. No DTD processing ever. | `xml/external-entity.xml`<br>`xml/internal-entity-expansion.xml`<br>`xml/namespaces-and-paths.xml` | — |
 
-48 of 79 P0 requirements have at least one corpus or hostile file.
+49 of 79 P0 requirements have at least one corpus or hostile file.

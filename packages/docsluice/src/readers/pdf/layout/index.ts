@@ -307,8 +307,8 @@ function gutterOf<T>(
     const left = sides[0].filter((segment) => segment.x1 <= leftEdge + 2 * size || !blockers.add(segment));
     const right = sides[1].filter((segment) => segment.x0 >= rightEdge - minGap || !blockers.add(segment));
     if (!isColumn(left, size, budget) || !isColumn(right, size, budget)) continue;
-    const [top0, bottom0] = extent(left);
-    const [top1, bottom1] = extent(right);
+    const [top0, bottom0] = extent(left, budget);
+    const [top1, bottom1] = extent(right, budget);
     if (Math.min(bottom0, bottom1) - Math.max(top0, top1) < 2 * size) continue;
     return { left, right, blockers };
   }
@@ -326,10 +326,11 @@ function isColumn<T>(side: Segment<T>[], size: number, budget: Budget): boolean 
   return median(widths) >= COLUMN_MIN_WIDTH * size;
 }
 
-function extent<T>(segments: Segment<T>[]): [number, number] {
+function extent<T>(segments: Segment<T>[], budget: Budget): [number, number] {
   let top = Infinity;
   let bottom = -Infinity;
   for (const segment of segments) {
+    budget.tick();
     top = Math.min(top, segment.top);
     bottom = Math.max(bottom, segment.bottom);
   }
@@ -498,6 +499,7 @@ function paragraphsOf<T extends LayoutItem>(boxes: Box<T>[], budget: Budget) {
     let margin = Infinity;
     let right = -Infinity;
     for (const line of lines) {
+      budget.tick();
       margin = Math.min(margin, line.x0);
       right = Math.max(right, line.x1);
     }
@@ -572,7 +574,10 @@ export function layoutPage<T extends LayoutItem>(
       if (body > 0 && lines.length <= 3) {
         let size = Infinity;
         let length = 0;
-        for (const part of parts) length += part.text.length;
+        for (const part of parts) {
+          budget.tick();
+          length += part.text.length;
+        }
         for (const line of lines) size = Math.min(size, line.size);
         const ratio = size / body;
         if (ratio >= HEADING_SIZE && length <= 200)
